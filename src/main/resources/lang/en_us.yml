@@ -1,0 +1,50 @@
+# === Basic UI Messages ===
+prefix: "§7[§bCC-System§7] "
+no_permission: "§cYou don't have permission."
+usage: "§cUsage: /ccsystem <toggle|lang|reload>"
+enabled: "enabled"
+disabled: "disabled"
+
+# === CCSystem Command Messages ===
+toggle_success: "§a%function% has been set to %status%."
+function_not_found: "§cFunction not found: %function%"
+lang_updated: "§aLanguage has been updated to %lang%."
+reload_success: "§aConfiguration has been reloaded."
+
+# === ResourceWorldManager Messages ===
+broadcast_success: "§aResource world 【%world_name%】 generation has completed."
+console_success: "§aResource world 【%world_name%】 has been successfully generated. (Border size: %border_size%)"
+pregen_priority_complete: "§aResource world 【%world_name%】 priority area pre-generation is complete and you can warp now!"
+pregen_all_complete: "Resource world 【%world_name%】 full area generation has completed."
+
+# === CrafterCrossingMisc Custom Messages ===
+custom_messages:
+  example_message:
+    style: "random"  # random, order, batch
+    texts:
+      - "§aMessage example 1"
+      - "§bMessage example 2"
+      - "§cMessage example 3"
+
+# === NPC Messages ===
+npc_messages:
+  example_npc:
+    - "§6[NPC] Hello!"
+    - "§6[NPC] Can I help you with anything?"
+
+# === Resource Command Messages ===
+resource.usage.generate: "§cUsage: /resource generate <type>:<variation> [border_size]"
+resource.usage.teleport: "§cUsage: /resource teleport <type>:<variation> [player]"
+resource.usage.pause_pregen: "§cUsage: /resource pause_pregen <type>:<variation>"
+resource.usage.close: "§cUsage: /resource close <type>:<variation>"
+resource.invalid_format: "§cInvalid format (example: normal:a)"
+resource.generation_start: "§eStarting generation of resource world %type%:%variation%..."
+resource.generation_success: "§aResource world %type%:%variation% has been successfully generated."
+resource.generation_failed: "§cFailed to generate resource world %type%:%variation%. Check console for details."
+player_not_found: "§cPlayer %player% not found."
+player_only_command: "§cThis command can only be executed by players."
+resource.reload_success: "§a[CC-System] Configuration has been reloaded."
+resource.pause_success: "§a[CC-System] Pre-generation of resource world (%type%:%variation%) has been paused."
+resource.pause_failed: "§c[CC-System] Resource world (%type%:%variation%) pre-generation is not running."
+resource.close_success: "§a[CC-System] Resource world (%type%:%variation%) has been closed."
+resource.close_failed: "§c[CC-System] Resource world (%type%:%variation%) does not exist."

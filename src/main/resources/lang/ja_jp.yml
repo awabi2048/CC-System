@@ -1,0 +1,50 @@
+# === 基本UI メッセージ ===
+prefix: "§7[§bCC-System§7] "
+no_permission: "§c権限がありません。"
+usage: "§c使用法: /ccsystem <toggle|lang|reload>"
+enabled: "有効"
+disabled: "無効"
+
+# === CCSystemコマンド メッセージ ===
+toggle_success: "§a%function% を %status% に設定しました。"
+function_not_found: "§c機能が見つかりません: %function%"
+lang_updated: "§a言語を %lang% に設定しました。"
+reload_success: "§a設定を再読み込みしました。"
+
+# === ResourceWorldManager メッセージ ===
+broadcast_success: "§a資源ワールド【%world_name%】の生成が完了しました。"
+console_success: "§a資源ワールド【%world_name%】の生成に成功しました。(ボーダーサイズ: %border_size%)"
+pregen_priority_complete: "§a資源ワールド【%world_name%】の仮生成が完了し、ワープ可能になりました！"
+pregen_all_complete: "資源ワールド【%world_name%】の全エリア生成が完了しました。"
+
+# === CrafterCrossingMisc カスタムメッセージ ===
+custom_messages:
+  example_message:
+    style: "random"  # random, order, batch
+    texts:
+      - "§aメッセージ例1"
+      - "§bメッセージ例2"
+      - "§cメッセージ例3"
+
+# === NPC メッセージ定義 ===
+npc_messages:
+  example_npc:
+    - "§6[NPC] こんにちは！"
+    - "§6[NPC] 何かお手伝いできることはありますか？"
+
+# === Resource Command Messages ===
+resource.usage.generate: "§c使用法: /resource generate <type>:<variation> [border_size]"
+resource.usage.teleport: "§c使用法: /resource teleport <type>:<variation> [player]"
+resource.usage.pause_pregen: "§c使用法: /resource pause_pregen <type>:<variation>"
+resource.usage.close: "§c使用法: /resource close <type>:<variation>"
+resource.invalid_format: "§c形式が正しくありません (例: normal:a)"
+resource.generation_start: "§e資源ワールド %type%:%variation% の生成を開始します..."
+resource.generation_success: "§a資源ワールド %type%:%variation% の生成に成功しました。"
+resource.generation_failed: "§c資源ワールド %type%:%variation% の生成に失敗しました。詳細はコンソールを確認してください。"
+player_not_found: "§cプレイヤー %player% は見つかりません。"
+player_only_command: "§cこのコマンドはプレイヤーのみ実行可能です。"
+resource.reload_success: "§a[CC-System] 設定を再読み込みしました。"
+resource.pause_success: "§a[CC-System] 資源ワールド (%type%:%variation%) の事前読み込みを中断しました。"
+resource.pause_failed: "§c[CC-System] 資源ワールド (%type%:%variation%) の事前読み込みは実行されていません。"
+resource.close_success: "§a[CC-System] 資源ワールド (%type%:%variation%) を閉鎖しました。"
+resource.close_failed: "§c[CC-System] 資源ワールド (%type%:%variation%) が存在しません。"

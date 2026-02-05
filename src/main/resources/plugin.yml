@@ -1,0 +1,111 @@
+name: CC-System
+version: 1.0.0
+author: awabi2048
+main: com.awabi2048.ccsystem.CCSystem
+api-version: 1.20
+description: CrafterCrossingMiscとResourceWorldManagerを統合したプラグイン
+
+commands:
+  resource:
+    description: 資源ワールド管理コマンド
+    usage: /resource <generate|teleport|reload|pause_pregen|close|monitor>
+    permission: ccsystem.resource.use
+  
+  delay:
+    description: コマンド遅延実行
+    usage: /delay <time with s(sec)|t(tick)> <command>
+    permission: ccsystem.delay.use
+  
+  npc_message:
+    description: NPCメッセージ表示
+    usage: /npc_message <message_id> [player]
+    permission: ccsystem.npc_message.use
+  
+  ccsystem:
+    description: CC-System管理コマンド
+    usage: /ccsystem <toggle|lang|reload>
+    permission: ccsystem.admin
+
+permissions:
+  ccsystem.*:
+    description: CC-Systemの全権限
+    default: op
+    children:
+      ccsystem.admin: true
+      ccsystem.resource.*: true
+      ccsystem.npc_message.use: true
+      ccsystem.delay.use: true
+  
+  ccsystem.admin:
+    description: CC-System管理権限
+    default: op
+    children:
+      ccsystem.toggle: true
+      ccsystem.lang: true
+      ccsystem.reload: true
+  
+  ccsystem.toggle:
+    description: /ccsystem toggle コマンド使用権限
+    default: op
+  
+  ccsystem.lang:
+    description: /ccsystem lang コマンド使用権限
+    default: true
+  
+  ccsystem.reload:
+    description: /ccsystem reload コマンド使用権限
+    default: op
+  
+  ccsystem.resource.*:
+    description: 資源ワールド管理の全権限
+    default: op
+    children:
+      ccsystem.resource.use: true
+      ccsystem.resource.generate: true
+      ccsystem.resource.teleport: true
+      ccsystem.resource.reload: true
+      ccsystem.resource.pause_pregen: true
+      ccsystem.resource.close: true
+      ccsystem.resource.monitor: true
+  
+  ccsystem.resource.use:
+    description: /resource コマンド使用権限
+    default: op
+  
+  ccsystem.resource.generate:
+    description: /resource generate 権限
+    default: op
+  
+  ccsystem.resource.teleport:
+    description: /resource teleport 権限
+    default: true
+  
+  ccsystem.resource.reload:
+    description: /resource reload 権限
+    default: op
+  
+  ccsystem.resource.pause_pregen:
+    description: /resource pause_pregen 権限
+    default: op
+  
+  ccsystem.resource.close:
+    description: /resource close 権限
+    default: op
+  
+  ccsystem.resource.monitor:
+    description: /resource monitor 権限
+    default: true
+  
+  ccsystem.npc_message.use:
+    description: /npc_message コマンド使用権限
+    default: op
+  
+  ccsystem.delay.use:
+    description: /delay コマンド使用権限
+    default: op
+  
+  craftercrossing.test:
+    description: テスト用権限（プラグイン内の全権限を付与）
+    default: op
+    children:
+      ccsystem.*: true

@@ -1,0 +1,137 @@
+# CC-System 統合設定ファイル
+# CrafterCrossingMiscとResourceWorldManagerの機能を統合しています
+
+# === コア設定 ===
+core:
+  language: "ja"
+  debug: false
+
+# === CrafterCrossingMisc機能 ===
+
+# Shift + F バインダー
+# プレイヤーがスニーク中にFキー(オフハンドへ持ち替え)を押した際に実行されるコマンド
+shift_f_binder:
+  commands:
+    - "say %player_name%"
+  # プレースホルダー: %player_name%, %player_uuid%
+
+# 音楽再生機能
+# 特定のワールドに移動した際に音楽を再生します
+music:
+  enabled: true
+  worlds:
+    world:
+      sound: "minecraft:music.game"
+      volume: 1.0
+      pitch: 1.0
+      duration: 200 # 音楽の長さ(秒)
+    world_nether:
+      sound: "minecraft:music.nether"
+      volume: 1.0
+      pitch: 1.0
+      duration: 200
+
+# globalSoundEvents ゲームルール自動無効化
+# ワールド読み込み時に globalSoundEvents を false に設定します
+global_sound_events:
+  enabled: true
+
+
+
+# === ResourceWorldManager機能 ===
+
+# 避難先のコマンド設定 (プレイヤーに実行させるコマンド)
+evacuation_command: "spawn"
+
+
+
+# 事前生成設定
+pregen:
+  priority_diameter: 1000
+  delay_ticks: 5
+  batch_size: 25
+
+# 足場設定
+scaffold:
+  material: "GLASS"
+  radius: 3
+  action_bar_message: "§bShift長押しでスポーンに戻ります"
+  particle:
+    type: "CLOUD"
+    count: 5
+    speed: 0.01
+    interval: 2
+  sound:
+    start: "BLOCK_NOTE_BLOCK_BELL"
+    success: "ENTITY_EXPERIENCE_ORB_PICKUP"
+
+# スポーン位置検索の設定
+spawn:
+  search_radius: 64
+  search_attempts: 200
+  safe_blocks:
+    - "GRASS_BLOCK"
+    - "DIRT"
+    - "COARSE_DIRT"
+    - "PODZOL"
+    - "STONE"
+    - "COBBLESTONE"
+    - "SAND"
+    - "SANDSTONE"
+    - "GRAVEL"
+    - "MOSS_BLOCK"
+
+# ネザー用スポーン位置検索の設定
+nether_spawn:
+  search_radius: 64
+  search_attempts: 200
+  safe_blocks:
+    - "NETHERRACK"
+    - "SOUL_SAND"
+    - "SOUL_SOIL"
+    - "BASALT"
+    - "BLACKSTONE"
+    - "NETHER_BRICKS"
+    - "CRIMSON_NYLIUM"
+    - "WARPED_NYLIUM"
+
+# マクロ設定 - 資源ワールドの各タイミングでコンソールコマンドを実行
+macros:
+  # ワールド削除前に実行されるコマンド
+  before_delete:
+    enabled: false
+    commands:
+      - "say 資源ワールドの削除を開始します"
+  
+  # ワールド生成完了後に実行されるコマンド
+  after_generation:
+    enabled: false
+    commands:
+      - "say 資源ワールド%world_name%が生成されました"
+  
+  # 優先エリア生成完了後に実行されるコマンド
+  after_priority_pregen:
+    enabled: false
+    commands:
+      - "say 資源ワールド%world_name%の優先エリアが生成完了しました"
+  
+  # 全エリア生成完了後に実行されるコマンド
+  after_all_pregen:
+    enabled: false
+    commands:
+      - "say 資源ワールド%world_name%の全エリア生成が完了しました"
+
+# リソースタイプ設定
+resources:
+  normal:
+    base_name: "resource_normal"
+    default_border: 5000
+    variations: ["a", "b", "c"]
+  nether:
+    base_name: "resource_nether"
+    default_border: 2500
+    variations: ["a", "b"]
+  end:
+    base_name: "resource_end"
+    default_border: 3000
+    variations: ["a"]
