@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem
 
 import org.bukkit.plugin.java.JavaPlugin
+import com.awabi2048.ccsystem.api.CCSystemAPI
+import com.awabi2048.ccsystem.api.CCSystemAPIImpl
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
@@ -21,6 +23,14 @@ class CCSystem : JavaPlugin() {
     companion object {
         lateinit var instance: CCSystem
             private set
+        
+        private lateinit var _api: CCSystemAPI
+        
+        /**
+         * CC-System APIを取得します
+         * 他のプラグインがこのメソッド経由でCC-Systemの機能を利用できます
+         */
+        fun getAPI(): CCSystemAPI = _api
     }
     
     lateinit var musicListener: MusicListener
@@ -28,6 +38,9 @@ class CCSystem : JavaPlugin() {
     override fun onEnable() {
         // インスタンス保存
         instance = this
+        
+        // API初期化
+        _api = CCSystemAPIImpl()
         
         // 設定読み込み
         saveDefaultConfig()
