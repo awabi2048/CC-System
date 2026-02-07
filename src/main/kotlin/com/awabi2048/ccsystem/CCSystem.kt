@@ -17,6 +17,10 @@ import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
 import com.awabi2048.ccsystem.features.misc.listener.WorldListener
 import com.awabi2048.ccsystem.features.resourceworld.command.ResourceCommand
 import com.awabi2048.ccsystem.features.resourceworld.listener.ResourceListener
+import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
+import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
+import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
+import java.io.File
 
 class CCSystem : JavaPlugin() {
     
@@ -34,6 +38,27 @@ class CCSystem : JavaPlugin() {
     }
     
     lateinit var musicListener: MusicListener
+    lateinit var resourceListener: ResourceListener
+
+    fun ensureDefaultFiles() {
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs()
+        }
+
+        saveDefaultConfig()
+
+        val langDir = File(dataFolder, "lang")
+        if (!langDir.exists()) {
+            langDir.mkdirs()
+        }
+
+        listOf("ja_jp", "en_us").forEach { lang ->
+            val file = File(langDir, "$lang.yml")
+            if (!file.exists()) {
+                saveResource("lang/$lang.yml", false)
+            }
+        }
+    }
     
     override fun onEnable() {
         // インスタンス保存
@@ -43,7 +68,7 @@ class CCSystem : JavaPlugin() {
         _api = CCSystemAPIImpl()
         
         // 設定読み込み
-        saveDefaultConfig()
+        ensureDefaultFiles()
         reloadConfig()
         
         // マネージャー初期化
@@ -52,8 +77,14 @@ class CCSystem : JavaPlugin() {
         MessageManager.load()
         PlayerDataManager.load()
         
+        // 資源ワールドマネージャー初期化
+        PregenerationStateManager.load()
+        WorldManager.loadExistingWorlds()
+        ScoreboardManager.init()
+        
         // リスナー初期化
         musicListener = MusicListener()
+        resourceListener = ResourceListener()
         
         // リスナー登録
         server.pluginManager.registerEvents(musicListener, this)
@@ -61,18 +92,26 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(WorldListener(), this)
-        server.pluginManager.registerEvents(ResourceListener(), this)
+        server.pluginManager.registerEvents(resourceListener, this)
+        
+        // 中断されていた事前生成を再開
+        WorldManager.resumePregeneration()
         
         // コマンド登録
         getCommand("resource")?.setExecutor(ResourceCommand())
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
-        getCommand("ccsystem")?.setExecutor(CCSystemCommand())
+        getCommand("cc-system")?.setExecutor(CCSystemCommand())
         
         logger.info("CC-System v${description.version} を有効化しました")
     }
 
     override fun onDisable() {
+        // 資源ワールド関連のクリーンアップ
+        WorldManager.cancelAllPregenTasks()
+        ScoreboardManager.disable()
+        resourceListener.cancelMonitorTask()
+        
         logger.info("CC-System v${description.version} を無効化しました")
     }
 }

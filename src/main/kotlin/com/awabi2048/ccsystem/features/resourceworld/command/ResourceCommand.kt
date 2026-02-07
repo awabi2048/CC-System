@@ -19,7 +19,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
 
         when (args[0].lowercase()) {
             "generate" -> {
-                if (!hasPluginPermission(sender, "ccsystem.resource.generate")) {
+                if (!hasPluginPermission(sender, "cc-system.resource.generate")) {
                     sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
                     return true
                 }
@@ -50,7 +50,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             }
 
              "teleport" -> {
-                 if (!hasPluginPermission(sender, "ccsystem.resource.teleport")) {
+                 if (!hasPluginPermission(sender, "cc-system.resource.teleport")) {
                      sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
                      return true
                  }
@@ -87,21 +87,10 @@ class ResourceCommand : CommandExecutor, TabCompleter {
                 return true
             }
 
-             "reload" -> {
-                 if (!hasPluginPermission(sender, "ccsystem.resource.reload")) {
-                     sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
-                     return true
-                 }
-                val plugin = CCSystem.instance
-                plugin.saveDefaultConfig()
-                plugin.reloadConfig()
-                 ConfigManager.load(plugin.config)
-                 sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.reload_success"))
-                 return true
-            }
+
 
              "pause_pregen" -> {
-                 if (!hasPluginPermission(sender, "ccsystem.resource.pause_pregen")) {
+                 if (!hasPluginPermission(sender, "cc-system.resource.pause_pregen")) {
                      sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
                      return true
                  }
@@ -130,7 +119,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             }
 
              "close" -> {
-                 if (!hasPluginPermission(sender, "ccsystem.resource.close")) {
+                 if (!hasPluginPermission(sender, "cc-system.resource.close")) {
                      sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
                      return true
                  }
@@ -159,7 +148,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             }
 
              "monitor" -> {
-                 if (!hasPluginPermission(sender, "ccsystem.resource.monitor")) {
+                 if (!hasPluginPermission(sender, "cc-system.resource.monitor")) {
                      sender.sendMessage(LanguageManager.getMessage(sender as? Player, "no_permission"))
                      return true
                  }
@@ -179,7 +168,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
     }
 
     private fun hasPluginPermission(sender: CommandSender, permission: String): Boolean {
-        return sender.hasPermission(permission) || sender.hasPermission("ccsystem.*") || sender.isOp
+        return sender.hasPermission(permission) || sender.hasPermission("cc-system.*") || sender.isOp
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> {
@@ -187,12 +176,11 @@ class ResourceCommand : CommandExecutor, TabCompleter {
 
         if (args.size == 1) {
             val subCommands = mutableListOf<String>()
-            if (hasPluginPermission(sender, "ccsystem.resource.generate")) subCommands.add("generate")
-            if (hasPluginPermission(sender, "ccsystem.resource.teleport")) subCommands.add("teleport")
-            if (hasPluginPermission(sender, "ccsystem.resource.reload")) subCommands.add("reload")
-            if (hasPluginPermission(sender, "ccsystem.resource.pause_pregen")) subCommands.add("pause_pregen")
-            if (hasPluginPermission(sender, "ccsystem.resource.close")) subCommands.add("close")
-            if (hasPluginPermission(sender, "ccsystem.resource.monitor")) subCommands.add("monitor")
+            if (hasPluginPermission(sender, "cc-system.resource.generate")) subCommands.add("generate")
+            if (hasPluginPermission(sender, "cc-system.resource.teleport")) subCommands.add("teleport")
+            if (hasPluginPermission(sender, "cc-system.resource.pause_pregen")) subCommands.add("pause_pregen")
+            if (hasPluginPermission(sender, "cc-system.resource.close")) subCommands.add("close")
+            if (hasPluginPermission(sender, "cc-system.resource.monitor")) subCommands.add("monitor")
 
             list.addAll(subCommands.filter { it.startsWith(args[0].lowercase()) })
         } else if (args.size == 2) {
@@ -206,7 +194,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
                 }
             }
         } else if (args.size == 3 && args[0].lowercase() == "teleport") {
-            if (hasPluginPermission(sender, "ccsystem.resource.teleport")) {
+            if (hasPluginPermission(sender, "cc-system.resource.teleport")) {
                 list.addAll(Bukkit.getOnlinePlayers().map { it.name }.filter { it.lowercase().startsWith(args[2].lowercase()) })
             }
         }

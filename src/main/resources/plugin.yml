@@ -8,99 +8,96 @@ description: CrafterCrossingMiscとResourceWorldManagerを統合したプラグ�
 commands:
   resource:
     description: 資源ワールド管理コマンド
-    usage: /resource <generate|teleport|reload|pause_pregen|close|monitor>
-    permission: ccsystem.resource.use
+    usage: /resource <generate|teleport|pause_pregen|close|monitor>
+    permission: cc-system.resource.use
   
   delay:
     description: コマンド遅延実行
     usage: /delay <time with s(sec)|t(tick)> <command>
-    permission: ccsystem.delay.use
+    permission: cc-system.delay.use
   
   npc_message:
     description: NPCメッセージ表示
     usage: /npc_message <message_id> [player]
-    permission: ccsystem.npc_message.use
+    permission: cc-system.npc_message.use
   
-  ccsystem:
+  cc-system:
     description: CC-System管理コマンド
-    usage: /ccsystem <toggle|lang|reload>
-    permission: ccsystem.admin
+    usage: /cc-system <toggle|lang|reload>
+    permission: cc-system.admin
+    aliases:
+      - ccs
 
 permissions:
-  ccsystem.*:
+  cc-system.*:
     description: CC-Systemの全権限
     default: op
     children:
-      ccsystem.admin: true
-      ccsystem.resource.*: true
-      ccsystem.npc_message.use: true
-      ccsystem.delay.use: true
+      cc-system.admin: true
+      cc-system.resource.*: true
+      cc-system.npc_message.use: true
+      cc-system.delay.use: true
   
-  ccsystem.admin:
+  cc-system.admin:
     description: CC-System管理権限
     default: op
     children:
-      ccsystem.toggle: true
-      ccsystem.lang: true
-      ccsystem.reload: true
+      cc-system.toggle: true
+      cc-system.lang: true
+      cc-system.reload: true
   
-  ccsystem.toggle:
+  cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
     default: op
   
-  ccsystem.lang:
+  cc-system.lang:
     description: /ccsystem lang コマンド使用権限
     default: true
   
-  ccsystem.reload:
+  cc-system.reload:
     description: /ccsystem reload コマンド使用権限
     default: op
   
-  ccsystem.resource.*:
+  cc-system.resource.*:
     description: 資源ワールド管理の全権限
     default: op
     children:
-      ccsystem.resource.use: true
-      ccsystem.resource.generate: true
-      ccsystem.resource.teleport: true
-      ccsystem.resource.reload: true
-      ccsystem.resource.pause_pregen: true
-      ccsystem.resource.close: true
-      ccsystem.resource.monitor: true
-  
-  ccsystem.resource.use:
+      cc-system.resource.use: true
+      cc-system.resource.generate: true
+      cc-system.resource.teleport: true
+      cc-system.resource.pause_pregen: true
+      cc-system.resource.close: true
+      cc-system.resource.monitor: true
+
+  cc-system.resource.use:
     description: /resource コマンド使用権限
     default: op
-  
-  ccsystem.resource.generate:
+
+  cc-system.resource.generate:
     description: /resource generate 権限
     default: op
-  
-  ccsystem.resource.teleport:
+
+  cc-system.resource.teleport:
     description: /resource teleport 権限
     default: true
-  
-  ccsystem.resource.reload:
-    description: /resource reload 権限
-    default: op
-  
-  ccsystem.resource.pause_pregen:
+
+  cc-system.resource.pause_pregen:
     description: /resource pause_pregen 権限
     default: op
-  
-  ccsystem.resource.close:
+
+  cc-system.resource.close:
     description: /resource close 権限
     default: op
-  
-  ccsystem.resource.monitor:
+
+  cc-system.resource.monitor:
     description: /resource monitor 権限
     default: true
-  
-  ccsystem.npc_message.use:
+
+  cc-system.npc_message.use:
     description: /npc_message コマンド使用権限
     default: op
   
-  ccsystem.delay.use:
+  cc-system.delay.use:
     description: /delay コマンド使用権限
     default: op
   
@@ -108,4 +105,4 @@ permissions:
     description: テスト用権限（プラグイン内の全権限を付与）
     default: op
     children:
-      ccsystem.*: true
+      cc-system.*: true

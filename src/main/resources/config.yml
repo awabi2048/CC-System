@@ -96,6 +96,8 @@ nether_spawn:
     - "WARPED_NYLIUM"
 
 # マクロ設定 - 資源ワールドの各タイミングでコンソールコマンドを実行
+# 利用可能なプレースホルダー: {world_name}, {display_world_name}
+# after_generationのみ %border_size% も利用可能
 macros:
   # ワールド削除前に実行されるコマンド
   before_delete:
@@ -107,19 +109,19 @@ macros:
   after_generation:
     enabled: false
     commands:
-      - "say 資源ワールド%world_name%が生成されました"
+      - "say 資源ワールド{world_name}が生成されました"
   
   # 優先エリア生成完了後に実行されるコマンド
   after_priority_pregen:
     enabled: false
     commands:
-      - "say 資源ワールド%world_name%の優先エリアが生成完了しました"
+      - "say 資源ワールド{world_name}の優先エリアが生成完了しました"
   
   # 全エリア生成完了後に実行されるコマンド
   after_all_pregen:
     enabled: false
     commands:
-      - "say 資源ワールド%world_name%の全エリア生成が完了しました"
+      - "say 資源ワールド{world_name}の全エリア生成が完了しました"
 
 # リソースタイプ設定
 resources:

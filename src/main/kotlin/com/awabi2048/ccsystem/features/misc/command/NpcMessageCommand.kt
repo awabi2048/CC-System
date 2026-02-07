@@ -83,8 +83,8 @@ class NpcMessageCommand : CommandExecutor, TabCompleter {
     }
 
     private fun hasPermission(sender: CommandSender): Boolean {
-        return sender.hasPermission("ccsystem.npc_message.use") ||
-               sender.hasPermission("ccsystem.*") ||
+        return sender.hasPermission("cc-system.npc_message.use") ||
+               sender.hasPermission("cc-system.*") ||
                sender.isOp
     }
 

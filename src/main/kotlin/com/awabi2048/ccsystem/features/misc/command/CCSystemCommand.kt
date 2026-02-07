@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 /**
  * CC-System管理コマンド
- * 使用法: /ccsystem <toggle|lang|reload>
+ * 使用法: /cc-system <toggle|lang|reload>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
@@ -87,18 +87,28 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     sender.sendMessage("§cこのコマンドはプレイヤーのみ実行可能です。")
                     return true
                 }
-                if (args.size < 2) {
-                    sender.sendMessage(LanguageManager.getMessage(player, "usage"))
-                    return true
-                }
 
-                val lang = args[1].lowercase()
-                LanguageManager.setPlayerLang(player, lang)
+                val availableLangs = listOf("ja_jp", "en_us")
+                val currentLang = PlayerDataManager.getString(player.uniqueId, "lang", "ja_jp")
+                    ?: "ja_jp"
+
+                val currentIndex = availableLangs.indexOf(currentLang)
+                val nextIndex = if (currentIndex >= availableLangs.size - 1) 0 else currentIndex + 1
+                val nextLang = availableLangs[nextIndex]
+
+                LanguageManager.setPlayerLang(player, nextLang)
+
+                val displayName = getLanguageDisplayName(nextLang)
                 sender.sendMessage(
-                    LanguageManager.getMessage(player, "lang_updated", "lang" to lang)
+                    LanguageManager.getMessage(
+                        player,
+                        "lang_updated",
+                        "lang" to displayName
+                    )
                 )
             }
             "reload" -> {
+                CCSystem.instance.ensureDefaultFiles()
                 CCSystem.instance.reloadConfig()
                 ConfigManager.reload(CCSystem.instance.config)
                 LanguageManager.load()
@@ -121,9 +131,17 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     }
 
     private fun hasPermission(sender: CommandSender): Boolean {
-        return sender.hasPermission("ccsystem.admin") ||
-               sender.hasPermission("ccsystem.*") ||
+        return sender.hasPermission("cc-system.admin") ||
+               sender.hasPermission("cc-system.*") ||
                sender.isOp
+    }
+
+    private fun getLanguageDisplayName(lang: String): String {
+        return when (lang) {
+            "ja_jp" -> "日本語"
+            "en_us" -> "English"
+            else -> lang
+        }
     }
 
     override fun onTabComplete(
@@ -144,11 +162,6 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             when (args[0].lowercase()) {
                 "toggle" -> {
                     return listOf("play_music").filter {
-                        it.startsWith(args[1], ignoreCase = true)
-                    }
-                }
-                "lang" -> {
-                    return listOf("ja_jp", "en_us").filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }

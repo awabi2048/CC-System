@@ -71,8 +71,8 @@ class DelayCommand : CommandExecutor, TabCompleter {
     }
 
     private fun hasPermission(sender: CommandSender): Boolean {
-        return sender.hasPermission("ccsystem.delay.use") ||
-               sender.hasPermission("ccsystem.*") ||
+        return sender.hasPermission("cc-system.delay.use") ||
+               sender.hasPermission("cc-system.*") ||
                sender.isOp
     }
 
