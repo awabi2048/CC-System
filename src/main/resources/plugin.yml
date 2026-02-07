@@ -23,7 +23,7 @@ commands:
   
   cc-system:
     description: CC-System管理コマンド
-    usage: /cc-system <toggle|lang|reload>
+    usage: /cc-system <toggle|lang|reload|update-day>
     permission: cc-system.admin
     aliases:
       - ccs
@@ -45,6 +45,7 @@ permissions:
       cc-system.toggle: true
       cc-system.lang: true
       cc-system.reload: true
+      cc-system.update-day: true
   
   cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
@@ -56,6 +57,10 @@ permissions:
   
   cc-system.reload:
     description: /ccsystem reload コマンド使用権限
+    default: op
+
+  cc-system.update-day:
+    description: /ccsystem update-day コマンド使用権限
     default: op
   
   cc-system.resource.*:

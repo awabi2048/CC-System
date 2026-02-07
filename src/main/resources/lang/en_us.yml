@@ -1,7 +1,7 @@
 # === Basic UI Messages ===
 prefix: "§7[§bCC-System§7] "
 no_permission: "§cYou don't have permission."
-usage: "§cUsage: /ccsystem <toggle|lang|reload>"
+usage: "§cUsage: /ccsystem <toggle|lang|reload|update-day>"
 enabled: "enabled"
 disabled: "disabled"
 
@@ -10,6 +10,11 @@ toggle_success: "§a%function% has been set to %status%."
 function_not_found: "§cFunction not found: %function%"
 lang_updated: "§aLanguage has been updated to %lang%."
 reload_success: "§aConfiguration has been reloaded."
+public_sign_enabled: "§aPublicSign has been enabled. Expire date: %expire_date%"
+public_sign_open_editor: "§eOpened sign editor dialog."
+public_sign_show_dialog: "§aDisplayed PublicSign contents."
+public_sign_edit_saved: "§aSaved sign contents."
+public_sign_update_day_done: "§aUpdate-day process completed. Reset count: %count%"
 
 # === ResourceWorldManager Messages ===
 broadcast_success: "§aResource world 【%world_name%】 generation has completed."

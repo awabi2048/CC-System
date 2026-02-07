@@ -1,7 +1,7 @@
 # === 基本UI メッセージ ===
 prefix: "§7[§bCC-System§7] "
 no_permission: "§c権限がありません。"
-usage: "§c使用法: /ccsystem <toggle|lang|reload>"
+usage: "§c使用法: /ccsystem <toggle|lang|reload|update-day>"
 enabled: "有効"
 disabled: "無効"
 
@@ -10,6 +10,11 @@ toggle_success: "§a%function% を %status% に設定しました。"
 function_not_found: "§c機能が見つかりません: %function%"
 lang_updated: "§a言語を %lang% に設定しました。"
 reload_success: "§a設定を再読み込みしました。"
+public_sign_enabled: "§aPublicSignを有効化しました。期限: %expire_date%"
+public_sign_open_editor: "§e看板編集ダイアログを開きました。"
+public_sign_show_dialog: "§aPublicSignの内容を表示しました。"
+public_sign_edit_saved: "§a看板内容を保存しました。"
+public_sign_update_day_done: "§a日付更新処理が完了しました。リセット件数: %count%"
 
 # === ResourceWorldManager メッセージ ===
 broadcast_success: "§a資源ワールド【%world_name%】の生成が完了しました。"

@@ -28,6 +28,10 @@ object ConfigManager {
     
     // globalSoundEvents 自動無効化
     private var globalSoundEventsAutoDisable: Boolean = true
+
+    // PublicSign設定
+    private var publicSignDefaultExpireDays: Int = 7
+    private var publicSignContentLines: Int = 3
     
     // === ResourceWorldManager設定 ===
     
@@ -145,6 +149,11 @@ object ConfigManager {
         // globalSoundEvents 自動無効化
         val globalSoundSection = fileConfig.getConfigurationSection("global_sound_events")
         globalSoundEventsAutoDisable = globalSoundSection?.getBoolean("enabled") ?: true
+
+        // PublicSign設定
+        val publicSignSection = fileConfig.getConfigurationSection("public_sign")
+        publicSignDefaultExpireDays = publicSignSection?.getInt("default_expire_days") ?: 7
+        publicSignContentLines = (publicSignSection?.getInt("content_lines") ?: 3).coerceIn(1, 20)
         
         // === ResourceWorldManager設定の読み込み ===
         
@@ -272,6 +281,8 @@ object ConfigManager {
     fun getMusicSetting(worldName: String): MusicSetting? = worldMusicSettings[worldName]
     fun getAllMusicSettings(): Map<String, MusicSetting> = worldMusicSettings.toMap()
     fun isGlobalSoundEventsAutoDisable(): Boolean = globalSoundEventsAutoDisable
+    fun getPublicSignDefaultExpireDays(): Int = publicSignDefaultExpireDays
+    fun getPublicSignContentLines(): Int = publicSignContentLines
     
     // ResourceWorldManager設定
     fun getEvacuationCommand(): String = evacuationCommand

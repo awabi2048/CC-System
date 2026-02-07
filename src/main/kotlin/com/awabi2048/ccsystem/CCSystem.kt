@@ -15,6 +15,8 @@ import com.awabi2048.ccsystem.features.misc.listener.ShiftFBinderListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDataListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
 import com.awabi2048.ccsystem.features.misc.listener.WorldListener
+import com.awabi2048.ccsystem.features.publicsign.listener.PublicSignListener
+import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.resourceworld.command.ResourceCommand
 import com.awabi2048.ccsystem.features.resourceworld.listener.ResourceListener
 import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
@@ -76,6 +78,7 @@ class CCSystem : JavaPlugin() {
         LanguageManager.load()
         MessageManager.load()
         PlayerDataManager.load()
+        PublicSignManager.load()
         
         // 資源ワールドマネージャー初期化
         PregenerationStateManager.load()
@@ -93,6 +96,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(WorldListener(), this)
         server.pluginManager.registerEvents(resourceListener, this)
+        server.pluginManager.registerEvents(PublicSignListener(), this)
         
         // 中断されていた事前生成を再開
         WorldManager.resumePregeneration()

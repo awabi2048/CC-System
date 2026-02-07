@@ -5,15 +5,17 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
+import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import java.time.LocalDate
 
 /**
  * CC-System管理コマンド
- * 使用法: /cc-system <toggle|lang|reload>
+ * 使用法: /cc-system <toggle|lang|reload|update-day>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
@@ -113,6 +115,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 ConfigManager.reload(CCSystem.instance.config)
                 LanguageManager.load()
                 MessageManager.load()
+                PublicSignManager.load()
 
                 // 音楽再生設定を反映させるためにタスクを更新
                 CCSystem.instance.musicListener.stopAllPlayersMusic()
@@ -121,6 +124,16 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 }
 
                 sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
+            }
+            "update-day" -> {
+                val resetCount = PublicSignManager.updateDay(LocalDate.now())
+                sender.sendMessage(
+                    LanguageManager.getMessage(
+                        player,
+                        "public_sign_update_day_done",
+                        "count" to resetCount.toString()
+                    )
+                )
             }
             else -> {
                 sender.sendMessage(LanguageManager.getMessage(player, "usage"))
@@ -153,7 +166,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         if (!hasPermission(sender)) return emptyList()
 
         if (args.size == 1) {
-            return listOf("toggle", "lang", "reload").filter {
+            return listOf("toggle", "lang", "reload", "update-day").filter {
                 it.startsWith(args[0], ignoreCase = true)
             }
         }
