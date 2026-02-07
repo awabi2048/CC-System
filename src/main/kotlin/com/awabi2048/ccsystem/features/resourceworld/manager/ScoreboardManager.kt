@@ -24,7 +24,8 @@ object ScoreboardManager {
     fun toggleMonitor(player: Player): String {
         if (monitoringPlayers.contains(player.uniqueId)) {
             monitoringPlayers.remove(player.uniqueId)
-            player.scoreboard = Bukkit.getScoreboardManager()?.newScoreboard
+            val manager = Bukkit.getScoreboardManager()
+            player.scoreboard = manager?.newScoreboard ?: player.scoreboard
             return "§c[CC-System] モニターをオフにしました。"
         } else {
             monitoringPlayers.add(player.uniqueId)
@@ -129,7 +130,8 @@ object ScoreboardManager {
 
         for (uuid in monitoringPlayers) {
             val player = Bukkit.getPlayer(uuid)
-            player?.scoreboard = Bukkit.getScoreboardManager()?.newScoreboard
+            val manager = Bukkit.getScoreboardManager()
+            player?.scoreboard = manager?.newScoreboard ?: player?.scoreboard
         }
         monitoringPlayers.clear()
     }
