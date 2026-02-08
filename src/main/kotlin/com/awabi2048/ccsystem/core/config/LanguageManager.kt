@@ -110,13 +110,26 @@ object LanguageManager {
      * 生の文字列メッセージを取得
      */
     fun getRawString(player: Player?, key: String): String {
+        return getRawString(player, key, *emptyArray())
+    }
+
+    fun getRawString(
+        player: Player?,
+        key: String,
+        vararg placeholders: Pair<String, String>
+    ): String {
         val lang =
             if (player != null)
                 PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
                     ?: DEFAULT_LANG
             else DEFAULT_LANG
         val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
-        return config?.getString(key) ?: key
+
+        var message = config?.getString(key) ?: key
+        placeholders.forEach { (placeholder, value) ->
+            message = message.replace("%$placeholder%", value)
+        }
+        return message
     }
 
     /**
@@ -130,6 +143,25 @@ object LanguageManager {
             else DEFAULT_LANG
         val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
         return config?.getStringList(key) ?: emptyList()
+    }
+
+    fun getStringListWithPlaceholders(
+        player: Player?,
+        key: String,
+        vararg placeholders: Pair<String, String>
+    ): List<String> {
+        val list = getStringList(player, key)
+        return list.map { line ->
+            var result = line
+            placeholders.forEach { (placeholder, value) ->
+                result = result.replace("%$placeholder%", value)
+            }
+            result
+        }
+    }
+
+    fun deserializeLegacy(message: String): Component {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(message)
     }
 
     /**

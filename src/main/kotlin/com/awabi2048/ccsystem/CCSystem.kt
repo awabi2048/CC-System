@@ -17,6 +17,8 @@ import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
 import com.awabi2048.ccsystem.features.misc.listener.WorldListener
 import com.awabi2048.ccsystem.features.publicsign.listener.PublicSignListener
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
+import com.awabi2048.ccsystem.features.rentalarea.listener.RentalAreaListener
+import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.resourceworld.command.ResourceCommand
 import com.awabi2048.ccsystem.features.resourceworld.listener.ResourceListener
 import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
@@ -60,6 +62,11 @@ class CCSystem : JavaPlugin() {
                 saveResource("lang/$lang.yml", false)
             }
         }
+
+        val rentalAreaFile = File(dataFolder, "rental_area_data.yml")
+        if (!rentalAreaFile.exists()) {
+            saveResource("rental_area_data.yml", false)
+        }
     }
     
     override fun onEnable() {
@@ -79,6 +86,7 @@ class CCSystem : JavaPlugin() {
         MessageManager.load()
         PlayerDataManager.load()
         PublicSignManager.load()
+        RentalAreaManager.load()
         
         // 資源ワールドマネージャー初期化
         PregenerationStateManager.load()
@@ -97,6 +105,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(WorldListener(), this)
         server.pluginManager.registerEvents(resourceListener, this)
         server.pluginManager.registerEvents(PublicSignListener(), this)
+        server.pluginManager.registerEvents(RentalAreaListener(), this)
         
         // 中断されていた事前生成を再開
         WorldManager.resumePregeneration()

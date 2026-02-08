@@ -23,7 +23,7 @@ commands:
   
   cc-system:
     description: CC-System管理コマンド
-    usage: /cc-system <toggle|lang|reload|update-day>
+    usage: /cc-system <toggle|lang|reload|update-day|rental-ticket>
     permission: cc-system.admin
     aliases:
       - ccs
@@ -46,6 +46,8 @@ permissions:
       cc-system.lang: true
       cc-system.reload: true
       cc-system.update-day: true
+      cc-system.rental-ticket: true
+      cc-system.rental.bypass: true
   
   cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
@@ -61,6 +63,14 @@ permissions:
 
   cc-system.update-day:
     description: /ccsystem update-day コマンド使用権限
+    default: op
+
+  cc-system.rental-ticket:
+    description: /ccsystem rental-ticket コマンド使用権限
+    default: op
+
+  cc-system.rental.bypass:
+    description: レンタルエリア保護のバイパス権限
     default: op
   
   cc-system.resource.*:

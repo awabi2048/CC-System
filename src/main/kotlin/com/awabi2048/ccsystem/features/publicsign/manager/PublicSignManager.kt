@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.publicsign.manager
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.time.DatePolicy
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
 import org.bukkit.configuration.file.YamlConfiguration
@@ -137,7 +138,7 @@ object PublicSignManager {
 
         for ((location, data) in signs) {
             when {
-                !today.isBefore(data.expireDate) -> {
+                DatePolicy.isExpired(today, data.expireDate) -> {
                     expiredLocations.add(location)
                 }
 

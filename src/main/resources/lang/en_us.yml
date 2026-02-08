@@ -1,7 +1,7 @@
 # === Basic UI Messages ===
 prefix: "§7[§bCC-System§7] "
 no_permission: "§cYou don't have permission."
-usage: "§cUsage: /ccsystem <toggle|lang|reload|update-day>"
+usage: "§cUsage: /ccsystem <toggle|lang|reload|update-day|rental-ticket>"
 enabled: "enabled"
 disabled: "disabled"
 
@@ -15,6 +15,33 @@ public_sign_open_editor: "§eOpened sign editor dialog."
 public_sign_show_dialog: "§aDisplayed PublicSign contents."
 public_sign_edit_saved: "§aSaved sign contents."
 public_sign_update_day_done: "§aUpdate-day process completed. Reset count: %count%"
+update_day_done: "§aUpdate-day process completed. PublicSign: %public_sign_count% / RentalArea: %rental_area_count%"
+
+rental_ticket_usage: "§cUsage: /cc-system rental-ticket <player> <days> [amount]"
+rental_ticket_invalid_days: "§cPlease specify an integer of 1 or greater for days."
+rental_ticket_give_success: "§aGave rental area ticket(s) to %player%. (days: %days%, amount: %amount%)"
+rental_ticket_received: "§aYou received rental area ticket(s). (days: %days%, amount: %amount%)"
+rental_ticket_name: "&bRental Area Ticket"
+rental_ticket_lore:
+  - "&7Rental days: &e%days%"
+  - "&7Right-click inside rental area to contract"
+
+rental_area_invalid_ticket: "§cThis ticket cannot be used."
+rental_area_ticket_missing: "§cTicket not found. Contract failed."
+rental_area_not_found: "§cRental area not found."
+rental_area_already_owned: "§cThis rental area is already contracted."
+rental_area_already_owned_with_days: "§cThis rental area is already contracted. Remaining days: %days%"
+rental_area_already_owned_by_you: "§eYou already own this rental area. Remaining days: %days%"
+rental_area_player_already_has_contract: "§cYou already have another active rental area."
+rental_area_contract_done: "§aContract completed. Area: %area_id% / Expire: %expire_date%"
+rental_area_contract_confirm_title: "Confirm Rental Contract"
+rental_area_contract_confirm_body:
+  - "Area ID: %area_id%"
+  - "World: %world%"
+  - "Days: %days%"
+  - "Expire: %expire_date%"
+rental_area_contract_confirm_yes: "Confirm"
+rental_area_contract_confirm_no: "Cancel"
 
 # === ResourceWorldManager Messages ===
 broadcast_success: "§aResource world 【%world_name%】 generation has completed."

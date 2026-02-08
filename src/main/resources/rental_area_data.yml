@@ -1,0 +1,16 @@
+# レンタルエリア定義
+#
+# 書式:
+# <area_id>:
+#   world: <world_name>
+#   pos_1: (x_1, y_1, z_1)
+#   pos_2: (x_2, y_2, z_2)
+#   owner: <uuid>
+#   expire_date: <date>
+
+# sample_area:
+#   world: world
+#   pos_1: (100, 64, 100)
+#   pos_2: (110, 80, 110)
+#   owner:
+#   expire_date:

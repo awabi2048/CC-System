@@ -5,7 +5,10 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
+import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
+import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
+import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -15,7 +18,7 @@ import java.time.LocalDate
 
 /**
  * CC-System管理コマンド
- * 使用法: /cc-system <toggle|lang|reload|update-day>
+ * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
@@ -116,6 +119,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 LanguageManager.load()
                 MessageManager.load()
                 PublicSignManager.load()
+                RentalAreaManager.load()
 
                 // 音楽再生設定を反映させるためにタスクを更新
                 CCSystem.instance.musicListener.stopAllPlayersMusic()
@@ -127,13 +131,67 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             }
             "update-day" -> {
                 val resetCount = PublicSignManager.updateDay(LocalDate.now())
+                val rentalExpiredCount = RentalAreaManager.updateDay(LocalDate.now())
                 sender.sendMessage(
                     LanguageManager.getMessage(
                         player,
-                        "public_sign_update_day_done",
-                        "count" to resetCount.toString()
+                        "update_day_done",
+                        "public_sign_count" to resetCount.toString(),
+                        "rental_area_count" to rentalExpiredCount.toString()
                     )
                 )
+            }
+            "rental-ticket" -> {
+                if (args.size < 3) {
+                    sender.sendMessage(LanguageManager.getMessage(player, "rental_ticket_usage"))
+                    return true
+                }
+
+                val target = Bukkit.getPlayerExact(args[1])
+                if (target == null) {
+                    sender.sendMessage(
+                        LanguageManager.getMessage(
+                            player,
+                            "player_not_found",
+                            "player" to args[1]
+                        )
+                    )
+                    return true
+                }
+
+                val days = args[2].toIntOrNull()
+                if (days == null || days <= 0) {
+                    sender.sendMessage(LanguageManager.getMessage(player, "rental_ticket_invalid_days"))
+                    return true
+                }
+
+                val amount = args.getOrNull(3)?.toIntOrNull()?.coerceIn(1, 64) ?: 1
+                val ticket = CustomItemFactory.createRentalTicket(target, days, amount)
+                val leftovers = target.inventory.addItem(ticket)
+                leftovers.values.forEach { overflow ->
+                    target.world.dropItemNaturally(target.location, overflow)
+                }
+
+                sender.sendMessage(
+                    LanguageManager.getMessage(
+                        player,
+                        "rental_ticket_give_success",
+                        "player" to target.name,
+                        "days" to days.toString(),
+                        "amount" to amount.toString()
+                    )
+                )
+
+                if (sender != target) {
+                    target.sendMessage(
+                        LanguageManager.getMessage(
+                            target,
+                            "rental_ticket_received",
+                            "days" to days.toString(),
+                            "amount" to amount.toString()
+                        )
+                    )
+                }
             }
             else -> {
                 sender.sendMessage(LanguageManager.getMessage(player, "usage"))
@@ -166,7 +224,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         if (!hasPermission(sender)) return emptyList()
 
         if (args.size == 1) {
-            return listOf("toggle", "lang", "reload", "update-day").filter {
+            return listOf("toggle", "lang", "reload", "update-day", "rental-ticket").filter {
                 it.startsWith(args[0], ignoreCase = true)
             }
         }
@@ -178,6 +236,23 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }
+                "rental-ticket" -> {
+                    return Bukkit.getOnlinePlayers().map { it.name }.filter {
+                        it.startsWith(args[1], ignoreCase = true)
+                    }
+                }
+            }
+        }
+
+        if (args.size == 3 && args[0].equals("rental-ticket", ignoreCase = true)) {
+            return listOf("7", "14", "30").filter {
+                it.startsWith(args[2], ignoreCase = true)
+            }
+        }
+
+        if (args.size == 4 && args[0].equals("rental-ticket", ignoreCase = true)) {
+            return listOf("1", "16", "64").filter {
+                it.startsWith(args[3], ignoreCase = true)
             }
         }
 

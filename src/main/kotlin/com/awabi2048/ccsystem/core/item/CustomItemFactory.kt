@@ -1,0 +1,59 @@
+package com.awabi2048.ccsystem.core.item
+
+import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.config.LanguageManager
+import io.papermc.paper.datacomponent.DataComponentTypes
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+
+object CustomItemFactory {
+    private const val RENTAL_TICKET_ITEM_ID = "rental_ticket"
+
+    private val itemIdKey: NamespacedKey
+        get() = NamespacedKey(CCSystem.instance, "custom_item_id")
+
+    private val rentalDaysKey: NamespacedKey
+        get() = NamespacedKey(CCSystem.instance, "rental_days")
+
+    fun createRentalTicket(player: Player?, days: Int, amount: Int = 1): ItemStack {
+        val item = ItemStack(Material.POISONOUS_POTATO, amount.coerceIn(1, 64))
+        val meta = item.itemMeta ?: return item
+
+        meta.displayName(LanguageManager.getMessage(player, "rental_ticket_name"))
+
+        val lore = LanguageManager.getStringListWithPlaceholders(
+            player,
+            "rental_ticket_lore",
+            "days" to days.toString()
+        ).map { LanguageManager.deserializeLegacy(it) }
+        meta.lore(lore)
+
+        meta.persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, RENTAL_TICKET_ITEM_ID)
+        meta.persistentDataContainer.set(rentalDaysKey, PersistentDataType.INTEGER, days)
+
+        meta.setItemModel(NamespacedKey.minecraft("filled_map"))
+        item.itemMeta = meta
+        item.unsetData(DataComponentTypes.CONSUMABLE)
+
+        return item
+    }
+
+    fun isRentalTicket(item: ItemStack?): Boolean {
+        if (item == null || item.type == Material.AIR) {
+            return false
+        }
+        val meta = item.itemMeta ?: return false
+        val itemId = meta.persistentDataContainer.get(itemIdKey, PersistentDataType.STRING)
+        return itemId == RENTAL_TICKET_ITEM_ID
+    }
+
+    fun getRentalDays(item: ItemStack?): Int? {
+        if (!isRentalTicket(item)) {
+            return null
+        }
+        return item?.itemMeta?.persistentDataContainer?.get(rentalDaysKey, PersistentDataType.INTEGER)
+    }
+}
