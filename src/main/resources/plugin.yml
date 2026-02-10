@@ -27,6 +27,11 @@ commands:
     permission: cc-system.admin
     aliases:
       - ccs
+  
+  rental-receive:
+    description: 期限切れレンタルエリアの回収アイテムを受け取る
+    usage: /rental-receive [area_id]
+    permission: cc-system.rental.receive
 
 permissions:
   cc-system.*:
@@ -72,6 +77,10 @@ permissions:
   cc-system.rental.bypass:
     description: レンタルエリア保護のバイパス権限
     default: op
+
+  cc-system.rental.receive:
+    description: 期限切れレンタルエリアの回収アイテムを受け取る権限
+    default: true
   
   cc-system.resource.*:
     description: 資源ワールド管理の全権限

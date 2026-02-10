@@ -1,7 +1,9 @@
 package com.awabi2048.ccsystem.features.rentalarea.manager
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.time.DatePolicy
+import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -117,6 +119,22 @@ object RentalAreaManager {
         return DatePolicy.remainingDays(today, expireDate)
     }
 
+    fun isActiveOwnerAt(playerId: UUID, location: Location, today: LocalDate = LocalDate.now()): Boolean {
+        val area = getAreaAt(location) ?: return false
+        val owner = area.owner ?: return false
+        val expireDate = area.expireDate ?: return false
+        if (DatePolicy.isExpired(today, expireDate)) {
+            return false
+        }
+        return owner == playerId
+    }
+
+    fun isOwnerAt(playerId: UUID, location: Location): Boolean {
+        val area = getAreaAt(location) ?: return false
+        val owner = area.owner ?: return false
+        return owner == playerId
+    }
+
     fun contractArea(
         areaId: String,
         owner: UUID,
@@ -187,6 +205,8 @@ object RentalAreaManager {
             return
         }
 
+        val owner = area.owner
+
         val minX = minOf(area.pos1.x, area.pos2.x)
         val maxX = maxOf(area.pos1.x, area.pos2.x)
         val minY = minOf(area.pos1.y, area.pos2.y)
@@ -194,15 +214,36 @@ object RentalAreaManager {
         val minZ = minOf(area.pos1.z, area.pos2.z)
         val maxZ = maxOf(area.pos1.z, area.pos2.z)
 
-        for (x in minX..maxX) {
-            for (y in minY..maxY) {
-                for (z in minZ..maxZ) {
-                    world.getBlockAt(x, y, z).setType(Material.AIR, false)
-                }
+        val targets = PlacedBlockLedgerManager.removeInCuboid(
+            worldId = world.uid,
+            minX = minX,
+            maxX = maxX,
+            minY = minY,
+            maxY = maxY,
+            minZ = minZ,
+            maxZ = maxZ
+        )
+
+        val collectedItems = mutableListOf<org.bukkit.inventory.ItemStack>()
+
+        for (target in targets) {
+            val (x, y, z) = PlacedBlockLedgerManager.unpack(target.packedPos)
+            val block = world.getBlockAt(x, y, z)
+            val state = block.state
+
+            if (owner != null) {
+                val items = RemainedItemManager.collectBlockItems(state)
+                collectedItems.addAll(items)
             }
+
+            block.setType(Material.AIR, false)
         }
 
-        CCSystem.instance.logger.info("[RentalArea] area '${area.id}' を期限切れで撤去しました")
+        if (owner != null && collectedItems.isNotEmpty()) {
+            RemainedItemManager.saveItems(owner, area.id, collectedItems)
+        }
+
+        CCSystem.instance.logger.info("[RentalArea] area '${area.id}' を期限切れで撤去しました (対象: ${targets.size} ブロック, 回収アイテム: ${collectedItems.size} 個)")
     }
 
     private fun saveAreaState(areaId: String) {

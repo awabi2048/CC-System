@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.CCSystemAPIImpl
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
+import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
@@ -19,6 +20,8 @@ import com.awabi2048.ccsystem.features.publicsign.listener.PublicSignListener
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.listener.RentalAreaListener
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
+import com.awabi2048.ccsystem.features.rentalarea.command.RentalReceiveCommand
+import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import com.awabi2048.ccsystem.features.resourceworld.command.ResourceCommand
 import com.awabi2048.ccsystem.features.resourceworld.listener.ResourceListener
 import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
@@ -67,6 +70,11 @@ class CCSystem : JavaPlugin() {
         if (!rentalAreaFile.exists()) {
             saveResource("rental_area_data.yml", false)
         }
+
+        val placedBlockLedgerFile = File(dataFolder, "placed_block_ledger.yml")
+        if (!placedBlockLedgerFile.exists()) {
+            saveResource("placed_block_ledger.yml", false)
+        }
     }
     
     override fun onEnable() {
@@ -85,6 +93,8 @@ class CCSystem : JavaPlugin() {
         LanguageManager.load()
         MessageManager.load()
         PlayerDataManager.load()
+        PlacedBlockLedgerManager.load()
+        RemainedItemManager.load()
         PublicSignManager.load()
         RentalAreaManager.load()
         
@@ -115,12 +125,14 @@ class CCSystem : JavaPlugin() {
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
+        getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
         
         logger.info("CC-System v${description.version} を有効化しました")
     }
 
     override fun onDisable() {
         // 資源ワールド関連のクリーンアップ
+        PlacedBlockLedgerManager.save()
         WorldManager.cancelAllPregenTasks()
         ScoreboardManager.disable()
         resourceListener.cancelMonitorTask()

@@ -43,6 +43,12 @@ rental_area_contract_confirm_body:
 rental_area_contract_confirm_yes: "契約する"
 rental_area_contract_confirm_no: "キャンセル"
 
+rental_area_remained_items_notification: "§e期限切れレンタルエリアの回収アイテムがあります。(件数: %count%, エリア: %areas%)"
+rental_area_remained_items_click: "§b[クリックで受け取る]"
+rental_area_no_remained_items: "§c回収アイテムはありません。"
+
+command_player_only: "§cこのコマンドはプレイヤーのみ実行可能です。"
+
 # === ResourceWorldManager メッセージ ===
 broadcast_success: "§a資源ワールド【%world_name%】の生成が完了しました。"
 console_success: "§a資源ワールド【%world_name%】の生成に成功しました。(ボーダーサイズ: %border_size%)"

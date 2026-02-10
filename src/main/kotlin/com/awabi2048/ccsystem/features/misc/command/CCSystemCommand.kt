@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
+import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
@@ -118,6 +119,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 ConfigManager.reload(CCSystem.instance.config)
                 LanguageManager.load()
                 MessageManager.load()
+                PlacedBlockLedgerManager.load()
                 PublicSignManager.load()
                 RentalAreaManager.load()
 

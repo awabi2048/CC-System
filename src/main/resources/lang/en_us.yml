@@ -43,6 +43,12 @@ rental_area_contract_confirm_body:
 rental_area_contract_confirm_yes: "Confirm"
 rental_area_contract_confirm_no: "Cancel"
 
+rental_area_remained_items_notification: "§eYou have items from expired rental areas. (Count: %count%, Areas: %areas%)"
+rental_area_remained_items_click: "§b[Click to receive]"
+rental_area_no_remained_items: "§cNo items to receive."
+
+command_player_only: "§cThis command can only be executed by players."
+
 # === ResourceWorldManager Messages ===
 broadcast_success: "§aResource world 【%world_name%】 generation has completed."
 console_success: "§aResource world 【%world_name%】 has been successfully generated. (Border size: %border_size%)"
