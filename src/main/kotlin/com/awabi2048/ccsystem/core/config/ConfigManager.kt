@@ -4,6 +4,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.Sound
+import org.bukkit.Difficulty
 
 /**
  * CC-System統合設定マネージャー
@@ -44,6 +45,9 @@ object ConfigManager {
     private var pregenPriorityDiameter: Int = 1000
     private var pregenDelayTicks: Long = 5
     private var pregenBatchSize: Int = 25
+    
+    // デフォルト難易度
+    private var defaultDifficulty: Difficulty = Difficulty.NORMAL
     
     // 足場設定
     private var scaffoldMaterial: Material = Material.GLASS
@@ -167,6 +171,14 @@ object ConfigManager {
         pregenPriorityDiameter = pregenSection?.getInt("priority_diameter") ?: 1000
         pregenDelayTicks = (pregenSection?.getInt("delay_ticks") ?: 5).toLong()
         pregenBatchSize = pregenSection?.getInt("batch_size") ?: 25
+        
+        // デフォルト難易度
+        val difficultyStr = fileConfig.getString("default_difficulty") ?: "normal"
+        defaultDifficulty = try {
+            Difficulty.valueOf(difficultyStr.uppercase())
+        } catch (e: IllegalArgumentException) {
+            Difficulty.NORMAL
+        }
         
         // 足場設定
         val scaffoldSection = fileConfig.getConfigurationSection("scaffold")
@@ -292,6 +304,7 @@ object ConfigManager {
     fun getPregenPriorityDiameter(): Int = pregenPriorityDiameter
     fun getPregenDelayTicks(): Long = pregenDelayTicks
     fun getPregenBatchSize(): Int = pregenBatchSize
+    fun getDefaultDifficulty(): Difficulty = defaultDifficulty
     
     fun getScaffoldMaterial(): Material = scaffoldMaterial
     fun getScaffoldRadius(): Int = scaffoldRadius

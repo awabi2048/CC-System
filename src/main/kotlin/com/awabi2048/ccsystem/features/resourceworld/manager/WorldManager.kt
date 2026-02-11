@@ -48,7 +48,7 @@ object WorldManager {
     /**
      * 資源ワールドを生成する
      */
-    fun generateResourceWorld(type: String, variation: String, customBorderSize: Int? = null): Boolean {
+    fun generateResourceWorld(type: String, variation: String, customBorderSize: Int? = null, customDifficulty: Difficulty? = null): Boolean {
         val resourceConfig = ConfigManager.getResourceConfig(type) ?: run {
             logger.warning("リソースタイプ $type の設定が見つかりません。")
             return false
@@ -99,6 +99,11 @@ object WorldManager {
         // 5. スポーン地点の設定
         val spawnLoc: Location = calculateSpawnLocation(world)
         world.setSpawnLocation(spawnLoc)
+
+        // 5.5 難易度の設定（引数 > config > NORMALの優先順位）
+        val difficulty = customDifficulty ?: ConfigManager.getDefaultDifficulty()
+        world.difficulty = difficulty
+        logger.info("ワールド $worldName の難易度を ${difficulty.name} に設定しました。")
 
         // 6. メッセージの出力
         val broadcastMsg = LanguageManager.getRawString(null, "broadcast_success")
