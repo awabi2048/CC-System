@@ -56,6 +56,10 @@ pregen:
   delay_ticks: 5
   batch_size: 25
 
+# 資源ワールドのデフォルト難易度
+# 値: peaceful, easy, normal, hard
+default_difficulty: "normal"
+
 # 足場設定
 scaffold:
   material: "GLASS"

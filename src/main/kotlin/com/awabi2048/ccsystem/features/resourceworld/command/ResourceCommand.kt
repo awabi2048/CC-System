@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
 import org.bukkit.Bukkit
+import org.bukkit.Difficulty
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -38,9 +39,19 @@ class ResourceCommand : CommandExecutor, TabCompleter {
                 val type = target[0]
                 val variation = target[1]
                 val borderSize = if (args.size >= 3) args[2].toIntOrNull() else null
+                
+                val difficulty = if (args.size >= 4) {
+                    try {
+                        Difficulty.valueOf(args[3].uppercase())
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+                } else {
+                    null
+                }
 
                  sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.generation_start", "type" to type, "variation" to variation))
-                 val success = WorldManager.generateResourceWorld(type, variation, borderSize)
+                 val success = WorldManager.generateResourceWorld(type, variation, borderSize, difficulty)
                  if (success) {
                      sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.generation_success", "type" to type, "variation" to variation))
                  } else {
@@ -197,6 +208,12 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             if (hasPluginPermission(sender, "cc-system.resource.teleport")) {
                 list.addAll(Bukkit.getOnlinePlayers().map { it.name }.filter { it.lowercase().startsWith(args[2].lowercase()) })
             }
+        } else if (args.size == 3 && args[0].lowercase() == "generate") {
+            val difficulties = listOf("peaceful", "easy", "normal", "hard")
+            list.addAll(difficulties.filter { it.startsWith(args[2].lowercase()) })
+        } else if (args.size == 4 && args[0].lowercase() == "generate") {
+            val difficulties = listOf("peaceful", "easy", "normal", "hard")
+            list.addAll(difficulties.filter { it.startsWith(args[3].lowercase()) })
         }
 
         return list
