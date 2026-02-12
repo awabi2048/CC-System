@@ -132,6 +132,22 @@ macros:
     commands:
       - "say 資源ワールド{world_name}の全エリア生成が完了しました"
 
+# チャンクタスクキュー設定
+chunk_task_queue:
+  # コンテンツの優先度順序（左→右で優先度高→低）
+  # 使用可能な値: SUKIMA_DUNGEON, ARENA, RESOURCE
+  priority_order: [SUKIMA_DUNGEON, ARENA, RESOURCE]
+
+  # タスク読み込み間隔（Bukkitティック）
+  # 20ティック = 1秒
+  # タスク完了後、次のタスクを読み込むまでの待機時間
+  read_interval_ticks: 20
+
+  # キューデータの保存ファイル名（plugins/CC-System/ 配下）
+  queue_data_file: "queue_data.yml"
+
+
+
 # リソースタイプ設定
 resources:
   normal:
