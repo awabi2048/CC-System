@@ -27,6 +27,7 @@ import com.awabi2048.ccsystem.features.resourceworld.listener.ResourceListener
 import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
+import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import java.io.File
 
 class CCSystem : JavaPlugin() {
@@ -102,6 +103,9 @@ class CCSystem : JavaPlugin() {
         PregenerationStateManager.load()
         WorldManager.loadExistingWorlds()
         ScoreboardManager.init()
+
+        // チャンクタスクキューマネージャー初期化
+        ChunkTaskQueueManager.load()
         
         // リスナー初期化
         musicListener = MusicListener()
@@ -136,6 +140,9 @@ class CCSystem : JavaPlugin() {
         WorldManager.cancelAllPregenTasks()
         ScoreboardManager.disable()
         resourceListener.cancelMonitorTask()
+
+        // チャンクタスクキューのシャットダウン（状態保存）
+        ChunkTaskQueueManager.unload()
         
         logger.info("CC-System v${description.version} を無効化しました")
     }
