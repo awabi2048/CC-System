@@ -31,24 +31,27 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): Boolean {
         val player = sender as? Player
 
-        if (!hasPermission(sender)) {
-            sender.sendMessage(LanguageManager.getMessage(player, "no_permission"))
-            return true
-        }
-
         if (args.isEmpty()) {
             sender.sendMessage(LanguageManager.getMessage(player, "usage"))
             return true
         }
 
-        when (args[0].lowercase()) {
+        val subCommand = args[0].lowercase()
+        if (!hasPermissionForSubCommand(sender, subCommand)) {
+            sender.sendMessage(LanguageManager.getMessage(player, "no_permission"))
+            return true
+        }
+
+        when (subCommand) {
             "toggle" -> {
                 if (args.size < 2) {
                     sender.sendMessage(LanguageManager.getMessage(player, "usage"))
                     return true
                 }
 
-                when (args[1].lowercase()) {
+                val toggleFunction = args[1].lowercase()
+
+                when (toggleFunction) {
                     "play_music" -> {
                         if (player == null) {
                             sender.sendMessage("§cこのコマンドはプレイヤーのみ実行可能です。")
@@ -68,11 +71,12 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
 
                         val statusKey = if (newValue) "enabled" else "disabled"
                         val statusString = LanguageManager.getRawString(player, statusKey)
-                        sender.sendMessage(
-                            LanguageManager.getMessage(
+                        val functionName = getFunctionDisplayName(player, "play_music")
+                        player.sendActionBar(
+                            LanguageManager.getMessageWithoutPrefix(
                                 player,
                                 "toggle_success",
-                                "function" to "play_music",
+                                "function" to functionName,
                                 "status" to statusString
                             )
                         )
@@ -104,11 +108,13 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
 
                 LanguageManager.setPlayerLang(player, nextLang)
 
-                val displayName = getLanguageDisplayName(nextLang)
-                sender.sendMessage(
-                    LanguageManager.getMessage(
+                val displayName = getLanguageDisplayName(player, nextLang)
+                val functionName = getFunctionDisplayName(player, "lang")
+                player.sendActionBar(
+                    LanguageManager.getMessageWithoutPrefix(
                         player,
                         "lang_updated",
+                        "function" to functionName,
                         "lang" to displayName
                     )
                 )
@@ -206,18 +212,36 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         return true
     }
 
-    private fun hasPermission(sender: CommandSender): Boolean {
-        return sender.hasPermission("cc-system.admin") ||
-               sender.hasPermission("cc-system.*") ||
-               sender.isOp
+    private fun hasPermissionForSubCommand(sender: CommandSender, subCommand: String): Boolean {
+        val permission =
+            when (subCommand) {
+                "toggle" -> "cc-system.toggle"
+                "lang" -> "cc-system.lang"
+                "reload" -> "cc-system.reload"
+                "update-day" -> "cc-system.update-day"
+                "rental-ticket" -> "cc-system.rental-ticket"
+                else -> return true
+            }
+        return hasPluginPermission(sender, permission)
     }
 
-    private fun getLanguageDisplayName(lang: String): String {
-        return when (lang) {
-            "ja_jp" -> "日本語"
-            "en_us" -> "English"
-            else -> lang
-        }
+    private fun hasPluginPermission(sender: CommandSender, permission: String): Boolean {
+        return sender.hasPermission(permission) ||
+            sender.hasPermission("cc-system.admin") ||
+            sender.hasPermission("cc-system.*") ||
+            sender.isOp
+    }
+
+    private fun getFunctionDisplayName(player: Player?, function: String): String {
+        val key = "function.$function"
+        val localized = LanguageManager.getRawString(player, key)
+        return if (localized == key) function else localized
+    }
+
+    private fun getLanguageDisplayName(player: Player?, lang: String): String {
+        val key = "language.$lang"
+        val localized = LanguageManager.getRawString(player, key)
+        return if (localized == key) lang else localized
     }
 
     override fun onTabComplete(
@@ -226,10 +250,12 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): List<String>? {
-        if (!hasPermission(sender)) return emptyList()
-
         if (args.size == 1) {
-            return listOf("toggle", "lang", "reload", "update-day", "rental-ticket").filter {
+            val subCommands =
+                listOf("toggle", "lang", "reload", "update-day", "rental-ticket").filter {
+                    hasPermissionForSubCommand(sender, it)
+                }
+            return subCommands.filter {
                 it.startsWith(args[0], ignoreCase = true)
             }
         }
@@ -237,11 +263,13 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         if (args.size == 2) {
             when (args[0].lowercase()) {
                 "toggle" -> {
+                    if (!hasPermissionForSubCommand(sender, "toggle")) return emptyList()
                     return listOf("play_music").filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }
                 "rental-ticket" -> {
+                    if (!hasPermissionForSubCommand(sender, "rental-ticket")) return emptyList()
                     return Bukkit.getOnlinePlayers().map { it.name }.filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
@@ -249,13 +277,21 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             }
         }
 
-        if (args.size == 3 && args[0].equals("rental-ticket", ignoreCase = true)) {
+        if (
+            args.size == 3 &&
+                args[0].equals("rental-ticket", ignoreCase = true) &&
+                hasPermissionForSubCommand(sender, "rental-ticket")
+        ) {
             return listOf("7", "14", "30").filter {
                 it.startsWith(args[2], ignoreCase = true)
             }
         }
 
-        if (args.size == 4 && args[0].equals("rental-ticket", ignoreCase = true)) {
+        if (
+            args.size == 4 &&
+                args[0].equals("rental-ticket", ignoreCase = true) &&
+                hasPermissionForSubCommand(sender, "rental-ticket")
+        ) {
             return listOf("1", "16", "64").filter {
                 it.startsWith(args[3], ignoreCase = true)
             }

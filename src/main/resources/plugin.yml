@@ -24,7 +24,6 @@ commands:
   cc-system:
     description: CC-System管理コマンド
     usage: /cc-system <toggle|lang|reload|update-day|rental-ticket>
-    permission: cc-system.admin
     aliases:
       - ccs
   
@@ -60,7 +59,7 @@ permissions:
   
   cc-system.lang:
     description: /ccsystem lang コマンド使用権限
-    default: true
+    default: op
   
   cc-system.reload:
     description: /ccsystem reload コマンド使用権限

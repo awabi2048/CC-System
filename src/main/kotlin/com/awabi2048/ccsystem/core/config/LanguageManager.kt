@@ -107,6 +107,29 @@ object LanguageManager {
     }
 
     /**
+     * メッセージを取得（Component形式、prefixなし）
+     */
+    fun getMessageWithoutPrefix(
+        player: Player?,
+        key: String,
+        vararg placeholders: Pair<String, String>
+    ): Component {
+        val lang =
+            if (player != null)
+                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
+                    ?: DEFAULT_LANG
+            else DEFAULT_LANG
+        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+
+        var message = config?.getString(key) ?: key
+        placeholders.forEach { (placeholder, value) ->
+            message = message.replace("%$placeholder%", value)
+        }
+
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(message)
+    }
+
+    /**
      * 生の文字列メッセージを取得
      */
     fun getRawString(player: Player?, key: String): String {
