@@ -30,7 +30,7 @@ class DelayCommand : CommandExecutor, TabCompleter {
             return true
         }
 
-        val timeArg = args[0]
+        val timeArg = args[0].trim()
         val (timeValue, unit) = parseTime(timeArg)
 
         if (timeValue <= 0L) {
@@ -43,6 +43,9 @@ class DelayCommand : CommandExecutor, TabCompleter {
 
         // tickに変換（sの場合は秒→tick）
         val delayTicks = if (unit == 's') timeValue * 20L else timeValue
+        val delayLabel = formatDelayLabel(timeValue, unit, delayTicks)
+
+        CCSystem.instance.logger.info("遅延コマンドを予約しました: delay=$delayLabel, command=$commandToExecute")
 
         // 遅延実行
         Bukkit.getScheduler().scheduleSyncDelayedTask(CCSystem.instance, Runnable {
@@ -52,24 +55,32 @@ class DelayCommand : CommandExecutor, TabCompleter {
             }
         }, delayTicks)
 
-        sender.sendMessage("§a${timeArg}後にコマンドを実行します: $commandToExecute")
+        sender.sendMessage("§a${delayLabel}後にコマンドを実行します: $commandToExecute")
         return true
     }
 
     private fun parseTime(timeArg: String): Pair<Long, Char> {
-        val regex = Regex("""(?i)(\d+)([st])""")
-        val match = regex.find(timeArg)
+        val regex = Regex("""(?i)^(\d+)([st])$""")
+        val match = regex.matchEntire(timeArg)
         
         if (match != null) {
             val (value, unit) = match.destructured
             return Pair(value.toLong(), unit[0].lowercaseChar())
         }
         
-        // デフォルト: 秒として解釈（単位なし）
+        // デフォルト: tickとして解釈（単位なし）
         return try {
-            Pair(timeArg.toLong(), 's')
+            Pair(timeArg.toLong(), 't')
         } catch (e: NumberFormatException) {
-            Pair(0L, 's')
+            Pair(0L, 't')
+        }
+    }
+
+    private fun formatDelayLabel(timeValue: Long, unit: Char, delayTicks: Long): String {
+        return if (unit == 's') {
+            "${timeValue}秒"
+        } else {
+            "${delayTicks}tick"
         }
     }
 
