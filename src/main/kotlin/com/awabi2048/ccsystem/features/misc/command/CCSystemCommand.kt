@@ -129,6 +129,9 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     CCSystem.instance.musicListener.startAllPlayersMusic()
                 }
 
+                // 動的描画距離設定を再反映
+                CCSystem.instance.dynamicDistanceListener.reload()
+
                 sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
             }
             "update-day" -> {

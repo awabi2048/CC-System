@@ -12,6 +12,7 @@ import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
+import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
 import com.awabi2048.ccsystem.features.misc.listener.ShiftFBinderListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDataListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
@@ -47,6 +48,7 @@ class CCSystem : JavaPlugin() {
     
     lateinit var musicListener: MusicListener
     lateinit var resourceListener: ResourceListener
+    lateinit var dynamicDistanceListener: DynamicDistanceListener
 
     fun ensureDefaultFiles() {
         if (!dataFolder.exists()) {
@@ -110,6 +112,7 @@ class CCSystem : JavaPlugin() {
         // リスナー初期化
         musicListener = MusicListener()
         resourceListener = ResourceListener()
+        dynamicDistanceListener = DynamicDistanceListener()
         
         // リスナー登録
         server.pluginManager.registerEvents(musicListener, this)
@@ -118,6 +121,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(WorldListener(), this)
         server.pluginManager.registerEvents(resourceListener, this)
+        server.pluginManager.registerEvents(dynamicDistanceListener, this)
         server.pluginManager.registerEvents(PublicSignListener(), this)
         server.pluginManager.registerEvents(RentalAreaListener(), this)
         
@@ -140,6 +144,9 @@ class CCSystem : JavaPlugin() {
         WorldManager.cancelAllPregenTasks()
         ScoreboardManager.disable()
         resourceListener.cancelMonitorTask()
+        if (::dynamicDistanceListener.isInitialized) {
+            dynamicDistanceListener.shutdown()
+        }
 
         // チャンクタスクキューのシャットダウン（状態保存）
         ChunkTaskQueueManager.unload()

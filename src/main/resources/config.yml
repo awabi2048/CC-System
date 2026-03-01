@@ -41,6 +41,49 @@ public_sign:
   default_expire_days: 7
   content_lines: 3
 
+# 動的描画距離制御
+# 全ワールドを対象にし、world_blacklist で除外します
+dynamic_distance:
+  enabled: false
+  interval_ticks: 20
+  apply_cooldown_ticks: 60
+  world_blacklist:
+    - "lobby"
+    - "event_*"
+
+  # 各距離の範囲（"min..max"）
+  limits:
+    view: "2..20"
+    simulation: "2..12"
+    send: "2..20"
+
+  # 基準値
+  base:
+    view: 10
+    simulation: 6
+    send: 10
+
+  factors:
+    # 水平移動速度（blocks/sec）
+    # 最初に max_bps を満たしたルールの delta を適用
+    horizontal_speed:
+      - max_bps: 4.5
+        delta: { view: 1, simulation: 1, send: 1 }
+      - max_bps: 8.0
+        delta: { view: 2, simulation: 1, send: 2 }
+      - max_bps: 999.0
+        delta: { view: 3, simulation: 0, send: 3 }
+
+    # オンライン人数
+    # 最初に max_players を満たしたルールの delta を適用
+    online_players:
+      - max_players: 15
+        delta: { view: 0, simulation: 0, send: 0 }
+      - max_players: 35
+        delta: { view: -2, simulation: -1, send: -2 }
+      - max_players: 999
+        delta: { view: -4, simulation: -2, send: -4 }
+
 
 
 # === ResourceWorldManager機能 ===

@@ -13,6 +13,37 @@ import org.bukkit.Difficulty
  */
 object ConfigManager {
     private var config: FileConfiguration? = null
+
+    data class DistanceDelta(
+        val view: Int,
+        val simulation: Int,
+        val send: Int
+    )
+
+    data class SpeedFactorRule(
+        val maxBps: Double,
+        val delta: DistanceDelta
+    )
+
+    data class OnlineFactorRule(
+        val maxPlayers: Int,
+        val delta: DistanceDelta
+    )
+
+    data class DynamicDistanceSettings(
+        val enabled: Boolean,
+        val intervalTicks: Long,
+        val applyCooldownTicks: Long,
+        val worldBlacklist: List<String>,
+        val viewLimit: IntRange,
+        val simulationLimit: IntRange,
+        val sendLimit: IntRange,
+        val baseView: Int,
+        val baseSimulation: Int,
+        val baseSend: Int,
+        val speedRules: List<SpeedFactorRule>,
+        val onlineRules: List<OnlineFactorRule>
+    )
     
     // === コア設定 ===
     private var language: String = "ja"
@@ -33,6 +64,28 @@ object ConfigManager {
     // PublicSign設定
     private var publicSignDefaultExpireDays: Int = 7
     private var publicSignContentLines: Int = 3
+
+    // 動的描画距離設定
+    private var dynamicDistanceEnabled: Boolean = false
+    private var dynamicDistanceIntervalTicks: Long = 20
+    private var dynamicDistanceApplyCooldownTicks: Long = 60
+    private var dynamicDistanceWorldBlacklist: List<String> = emptyList()
+    private var dynamicDistanceViewLimit: IntRange = 2..20
+    private var dynamicDistanceSimulationLimit: IntRange = 2..12
+    private var dynamicDistanceSendLimit: IntRange = 2..20
+    private var dynamicDistanceBaseView: Int = 10
+    private var dynamicDistanceBaseSimulation: Int = 6
+    private var dynamicDistanceBaseSend: Int = 10
+    private var dynamicDistanceSpeedRules: List<SpeedFactorRule> = listOf(
+        SpeedFactorRule(4.5, DistanceDelta(1, 1, 1)),
+        SpeedFactorRule(8.0, DistanceDelta(2, 1, 2)),
+        SpeedFactorRule(999.0, DistanceDelta(3, 0, 3))
+    )
+    private var dynamicDistanceOnlineRules: List<OnlineFactorRule> = listOf(
+        OnlineFactorRule(15, DistanceDelta(0, 0, 0)),
+        OnlineFactorRule(35, DistanceDelta(-2, -1, -2)),
+        OnlineFactorRule(999, DistanceDelta(-4, -2, -4))
+    )
     
     // === ResourceWorldManager設定 ===
     
@@ -158,6 +211,26 @@ object ConfigManager {
         val publicSignSection = fileConfig.getConfigurationSection("public_sign")
         publicSignDefaultExpireDays = publicSignSection?.getInt("default_expire_days") ?: 7
         publicSignContentLines = (publicSignSection?.getInt("content_lines") ?: 3).coerceIn(1, 20)
+
+        // 動的描画距離設定
+        val dynamicDistanceSection = fileConfig.getConfigurationSection("dynamic_distance")
+        dynamicDistanceEnabled = dynamicDistanceSection?.getBoolean("enabled") ?: false
+        dynamicDistanceIntervalTicks = (dynamicDistanceSection?.getLong("interval_ticks") ?: 20L).coerceAtLeast(1L)
+        dynamicDistanceApplyCooldownTicks = (dynamicDistanceSection?.getLong("apply_cooldown_ticks") ?: 60L).coerceAtLeast(0L)
+        dynamicDistanceWorldBlacklist = dynamicDistanceSection?.getStringList("world_blacklist") ?: emptyList()
+
+        val limitSection = dynamicDistanceSection?.getConfigurationSection("limits")
+        dynamicDistanceViewLimit = parseRangeString(limitSection?.getString("view"), 2..20)
+        dynamicDistanceSimulationLimit = parseRangeString(limitSection?.getString("simulation"), 2..12)
+        dynamicDistanceSendLimit = parseRangeString(limitSection?.getString("send"), 2..20)
+
+        val baseSection = dynamicDistanceSection?.getConfigurationSection("base")
+        dynamicDistanceBaseView = baseSection?.getInt("view") ?: 10
+        dynamicDistanceBaseSimulation = baseSection?.getInt("simulation") ?: 6
+        dynamicDistanceBaseSend = baseSection?.getInt("send") ?: 10
+
+        dynamicDistanceSpeedRules = parseSpeedRules(fileConfig)
+        dynamicDistanceOnlineRules = parseOnlineRules(fileConfig)
         
         // === ResourceWorldManager設定の読み込み ===
         
@@ -280,6 +353,103 @@ object ConfigManager {
     fun reload(fileConfig: FileConfiguration) {
         load(fileConfig)
     }
+
+    private fun parseRangeString(raw: String?, defaultRange: IntRange): IntRange {
+        if (raw.isNullOrBlank()) return defaultRange
+        val regex = Regex("^\\s*(-?\\d+)\\s*\\.\\.\\s*(-?\\d+)\\s*$")
+        val matched = regex.find(raw) ?: return defaultRange
+        val first = matched.groupValues[1].toIntOrNull() ?: return defaultRange
+        val second = matched.groupValues[2].toIntOrNull() ?: return defaultRange
+        val min = kotlin.math.min(first, second)
+        val max = kotlin.math.max(first, second)
+        return min..max
+    }
+
+    private fun parseSpeedRules(fileConfig: FileConfiguration): List<SpeedFactorRule> {
+        val mapList = fileConfig.getMapList("dynamic_distance.factors.horizontal_speed")
+        if (mapList.isEmpty()) {
+            return listOf(
+                SpeedFactorRule(4.5, DistanceDelta(1, 1, 1)),
+                SpeedFactorRule(8.0, DistanceDelta(2, 1, 2)),
+                SpeedFactorRule(999.0, DistanceDelta(3, 0, 3))
+            )
+        }
+
+        val parsed = mutableListOf<SpeedFactorRule>()
+        for (entry in mapList) {
+            val maxBps = toDouble(entry["max_bps"]) ?: continue
+            val delta = parseDelta(entry["delta"]) ?: continue
+            parsed.add(SpeedFactorRule(maxBps, delta))
+        }
+
+        return if (parsed.isEmpty()) {
+            listOf(
+                SpeedFactorRule(4.5, DistanceDelta(1, 1, 1)),
+                SpeedFactorRule(8.0, DistanceDelta(2, 1, 2)),
+                SpeedFactorRule(999.0, DistanceDelta(3, 0, 3))
+            )
+        } else {
+            parsed.sortedBy { it.maxBps }
+        }
+    }
+
+    private fun parseOnlineRules(fileConfig: FileConfiguration): List<OnlineFactorRule> {
+        val mapList = fileConfig.getMapList("dynamic_distance.factors.online_players")
+        if (mapList.isEmpty()) {
+            return listOf(
+                OnlineFactorRule(15, DistanceDelta(0, 0, 0)),
+                OnlineFactorRule(35, DistanceDelta(-2, -1, -2)),
+                OnlineFactorRule(999, DistanceDelta(-4, -2, -4))
+            )
+        }
+
+        val parsed = mutableListOf<OnlineFactorRule>()
+        for (entry in mapList) {
+            val maxPlayers = toInt(entry["max_players"]) ?: continue
+            val delta = parseDelta(entry["delta"]) ?: continue
+            parsed.add(OnlineFactorRule(maxPlayers, delta))
+        }
+
+        return if (parsed.isEmpty()) {
+            listOf(
+                OnlineFactorRule(15, DistanceDelta(0, 0, 0)),
+                OnlineFactorRule(35, DistanceDelta(-2, -1, -2)),
+                OnlineFactorRule(999, DistanceDelta(-4, -2, -4))
+            )
+        } else {
+            parsed.sortedBy { it.maxPlayers }
+        }
+    }
+
+    private fun parseDelta(value: Any?): DistanceDelta? {
+        val map = value as? Map<*, *> ?: return null
+        val view = toInt(map["view"]) ?: return null
+        val simulation = toInt(map["simulation"]) ?: return null
+        val send = toInt(map["send"]) ?: return null
+        return DistanceDelta(view, simulation, send)
+    }
+
+    private fun toInt(value: Any?): Int? {
+        return when (value) {
+            is Int -> value
+            is Long -> value.toInt()
+            is Double -> value.toInt()
+            is Float -> value.toInt()
+            is String -> value.toIntOrNull()
+            else -> null
+        }
+    }
+
+    private fun toDouble(value: Any?): Double? {
+        return when (value) {
+            is Double -> value
+            is Float -> value.toDouble()
+            is Int -> value.toDouble()
+            is Long -> value.toDouble()
+            is String -> value.toDoubleOrNull()
+            else -> null
+        }
+    }
     
     // === ゲッターメソッド ===
     
@@ -295,6 +465,23 @@ object ConfigManager {
     fun isGlobalSoundEventsAutoDisable(): Boolean = globalSoundEventsAutoDisable
     fun getPublicSignDefaultExpireDays(): Int = publicSignDefaultExpireDays
     fun getPublicSignContentLines(): Int = publicSignContentLines
+
+    fun getDynamicDistanceSettings(): DynamicDistanceSettings {
+        return DynamicDistanceSettings(
+            enabled = dynamicDistanceEnabled,
+            intervalTicks = dynamicDistanceIntervalTicks,
+            applyCooldownTicks = dynamicDistanceApplyCooldownTicks,
+            worldBlacklist = dynamicDistanceWorldBlacklist.toList(),
+            viewLimit = dynamicDistanceViewLimit,
+            simulationLimit = dynamicDistanceSimulationLimit,
+            sendLimit = dynamicDistanceSendLimit,
+            baseView = dynamicDistanceBaseView,
+            baseSimulation = dynamicDistanceBaseSimulation,
+            baseSend = dynamicDistanceBaseSend,
+            speedRules = dynamicDistanceSpeedRules.toList(),
+            onlineRules = dynamicDistanceOnlineRules.toList()
+        )
+    }
     
     // ResourceWorldManager設定
     fun getEvacuationCommand(): String = evacuationCommand
