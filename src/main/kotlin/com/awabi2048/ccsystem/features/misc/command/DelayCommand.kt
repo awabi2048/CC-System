@@ -38,15 +38,18 @@ class DelayCommand : CommandExecutor, TabCompleter {
             return true
         }
 
-        // 残りの引数をコマンドとして結合
-        val commandToExecute = args.drop(1).joinToString(" ")
+        // 残りの引数をコマンドとして結合し、先頭と末尾の空白、および先頭のスラッシュを除去
+        val commandToExecute = args.drop(1).joinToString(" ").trim().removePrefix("/")
 
         // tickに変換（sの場合は秒→tick）
         val delayTicks = if (unit == 's') timeValue * 20L else timeValue
 
         // 遅延実行
         Bukkit.getScheduler().scheduleSyncDelayedTask(CCSystem.instance, Runnable {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandToExecute)
+            val success = Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandToExecute)
+            if (!success) {
+                CCSystem.instance.logger.warning("遅延コマンドの実行に失敗しました: $commandToExecute")
+            }
         }, delayTicks)
 
         sender.sendMessage("§a${timeArg}後にコマンドを実行します: $commandToExecute")
@@ -54,7 +57,7 @@ class DelayCommand : CommandExecutor, TabCompleter {
     }
 
     private fun parseTime(timeArg: String): Pair<Long, Char> {
-        val regex = Regex("""(\d+)([st])""")
+        val regex = Regex("""(?i)(\d+)([st])""")
         val match = regex.find(timeArg)
         
         if (match != null) {
