@@ -14,13 +14,19 @@ object MacroManager {
 
     /**
      * ワールド削除前のマクロを実行
-     * プレースホルダー: {world_name}, {display_world_name}
+     * プレースホルダー: {world_name}, {display_world_name}, {old_world_name}
      */
     fun executeBeforeDelete(worldName: String) {
         if (!ConfigManager.isMacroBeforeDeleteEnabled()) return
 
         val commands = ConfigManager.getMacroBeforeDeleteCommands()
-        executeCommands(commands, worldName, resolveDisplayWorldName(worldName), "before_delete")
+        executeCommands(
+            commands,
+            worldName,
+            resolveDisplayWorldName(worldName),
+            "before_delete",
+            oldWorldName = worldName
+        )
     }
 
     /**
@@ -64,7 +70,8 @@ object MacroManager {
         worldName: String,
         displayWorldName: String,
         macroType: String,
-        borderSize: Int? = null
+        borderSize: Int? = null,
+        oldWorldName: String? = null
     ) {
         if (commands.isEmpty()) return
 
@@ -75,9 +82,15 @@ object MacroManager {
             var processedCommand = command
                 .replace("{world_name}", worldName)
                 .replace("{display_world_name}", displayWorldName)
+            if (oldWorldName != null) {
+                processedCommand = processedCommand.replace("{old_world_name}", oldWorldName)
+            }
             if (borderSize != null) {
                 processedCommand = processedCommand.replace("%border_size%", borderSize.toString())
             }
+
+            // 先頭の空白とスラッシュを除去
+            processedCommand = processedCommand.trim().removePrefix("/")
 
             try {
                 // コンソールからコマンドを実行
