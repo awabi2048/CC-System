@@ -23,7 +23,7 @@ class DelayCommand : CommandExecutor, TabCompleter {
     ): Boolean {
         if (!ConfigManager.isDelayCommandEnabled()) {
             sender.sendMessage(
-                LanguageManager.getMessage(null, "feature_disabled", "feature" to "delay")
+                LanguageManager.getMessage(null, "feature_disabled", "feature" to "delay_command")
             )
             return true
         }

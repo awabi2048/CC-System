@@ -161,19 +161,11 @@ class CCSystem : JavaPlugin() {
         }
         
         // コマンド登録
-        if (ConfigManager.isResourceWorldEnabled()) {
-            getCommand("resource")?.setExecutor(ResourceCommand())
-        }
-        if (ConfigManager.isDelayCommandEnabled()) {
-            getCommand("delay")?.setExecutor(DelayCommand())
-        }
-        if (ConfigManager.isNpcMessageEnabled()) {
-            getCommand("npc_message")?.setExecutor(NpcMessageCommand())
-        }
+        getCommand("resource")?.setExecutor(ResourceCommand())
+        getCommand("delay")?.setExecutor(DelayCommand())
+        getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
-        if (ConfigManager.isRentalAreaEnabled()) {
-            getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
-        }
+        getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
         
         logger.info("CC-System v${description.version} を有効化しました")
     }

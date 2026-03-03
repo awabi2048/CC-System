@@ -20,9 +20,21 @@ import java.time.LocalDate
 
 /**
  * CC-System管理コマンド
- * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket|status>
+ * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket|status|enable|disable>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
+
+    private val manageableFeatures = listOf(
+        "resource_world",
+        "rental_area",
+        "public_sign",
+        "music",
+        "dynamic_distance",
+        "shift_f_binder",
+        "disable_global_sound_events",
+        "delay_command",
+        "npc_message"
+    )
 
     override fun onCommand(
         sender: CommandSender,
@@ -141,34 +153,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 )
             }
             "reload" -> {
-                CCSystem.instance.ensureDefaultFiles()
-                CCSystem.instance.reloadConfig()
-                ConfigManager.reload(CCSystem.instance.config)
-                LanguageManager.load()
-                MessageManager.load()
-                PlacedBlockLedgerManager.load()
-                if (ConfigManager.isPublicSignEnabled()) {
-                    PublicSignManager.load()
-                }
-                if (ConfigManager.isRentalAreaEnabled()) {
-                    RemainedItemManager.load()
-                    RentalAreaManager.load()
-                }
-
-                // 音楽再生設定を反映させるためにタスクを更新
-                if (CCSystem.instance.hasMusicListener()) {
-                    CCSystem.instance.musicListener.stopAllPlayersMusic()
-                }
-                if (ConfigManager.isMusicEnabled() && CCSystem.instance.hasMusicListener()) {
-                    CCSystem.instance.musicListener.startAllPlayersMusic()
-                }
-
-                // 動的描画距離設定を再反映
-                if (CCSystem.instance.hasDynamicDistanceListener()) {
-                    CCSystem.instance.dynamicDistanceListener.reload()
-                }
-
-                sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
+                performReload(player, sender)
             }
             "update-day" -> {
                 val resetCount = if (ConfigManager.isPublicSignEnabled()) {
@@ -256,19 +241,8 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             "status" -> {
                 sender.sendMessage(LanguageManager.getMessageWithoutPrefix(player, "status_header"))
 
-                val features = listOf(
-                    "resource_world" to ConfigManager.isResourceWorldEnabled(),
-                    "rental_area" to ConfigManager.isRentalAreaEnabled(),
-                    "public_sign" to ConfigManager.isPublicSignEnabled(),
-                    "music" to ConfigManager.isMusicEnabled(),
-                    "dynamic_distance" to ConfigManager.isDynamicDistanceEnabled(),
-                    "shift_f_binder" to ConfigManager.isShiftFBinderEnabled(),
-                    "disable_global_sound_events" to ConfigManager.isGlobalSoundEventsAutoDisable(),
-                    "delay_command" to ConfigManager.isDelayCommandEnabled(),
-                    "npc_message" to ConfigManager.isNpcMessageEnabled()
-                )
-
-                for ((featureKey, enabled) in features) {
+                for (featureKey in manageableFeatures) {
+                    val enabled = isFeatureEnabled(featureKey)
                     val statusLabel = LanguageManager.getRawString(player, if (enabled) "enabled" else "disabled")
                     val statusText = if (enabled) "§a$statusLabel" else "§c$statusLabel"
                     val featureName = LanguageManager.getRawString(player, "feature.$featureKey")
@@ -281,6 +255,55 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         )
                     )
                 }
+            }
+            "enable", "disable" -> {
+                if (args.size < 2) {
+                    sender.sendMessage(LanguageManager.getMessage(player, "feature_toggle_usage"))
+                    return true
+                }
+
+                val featureKey = resolveFeatureKey(args[1])
+                if (featureKey == null) {
+                    sender.sendMessage(
+                        LanguageManager.getMessage(
+                            player,
+                            "function_not_found",
+                            "function" to args[1]
+                        )
+                    )
+                    return true
+                }
+
+                val targetEnabled = subCommand == "enable"
+                val currentEnabled = isFeatureEnabled(featureKey)
+                val featureName = LanguageManager.getRawString(player, "feature.$featureKey")
+                val targetStatus = LanguageManager.getRawString(player, if (targetEnabled) "enabled" else "disabled")
+
+                if (currentEnabled == targetEnabled) {
+                    sender.sendMessage(
+                        LanguageManager.getMessage(
+                            player,
+                            "feature_already_set",
+                            "feature" to featureName,
+                            "status" to targetStatus
+                        )
+                    )
+                    return true
+                }
+
+                CCSystem.instance.config.set("features.$featureKey", targetEnabled)
+                CCSystem.instance.saveConfig()
+
+                sender.sendMessage(
+                    LanguageManager.getMessage(
+                        player,
+                        "feature_set_success",
+                        "feature" to featureName,
+                        "status" to targetStatus
+                    )
+                )
+
+                performReload(player, sender)
             }
             else -> {
                 sender.sendMessage(LanguageManager.getMessage(player, "usage"))
@@ -299,6 +322,8 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 "update-day" -> "cc-system.update-day"
                 "rental-ticket" -> "cc-system.rental-ticket"
                 "status" -> "cc-system.status"
+                "enable" -> "cc-system.enable"
+                "disable" -> "cc-system.disable"
                 else -> return true
             }
         return hasPluginPermission(sender, permission)
@@ -331,7 +356,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): List<String>? {
         if (args.size == 1) {
             val subCommands =
-                listOf("toggle", "lang", "reload", "update-day", "rental-ticket", "status").filter {
+                listOf("toggle", "lang", "reload", "update-day", "rental-ticket", "status", "enable", "disable").filter {
                     hasPermissionForSubCommand(sender, it) &&
                         when (it) {
                             "rental-ticket" -> ConfigManager.isRentalAreaEnabled()
@@ -359,6 +384,14 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }
+                "enable", "disable" -> {
+                    if (!hasPermissionForSubCommand(sender, args[0].lowercase())) return emptyList()
+
+                    val targetEnabled = args[0].equals("enable", ignoreCase = true)
+                    return manageableFeatures
+                        .filter { isFeatureEnabled(it) != targetEnabled }
+                        .filter { it.startsWith(args[1], ignoreCase = true) }
+                }
             }
         }
 
@@ -385,5 +418,55 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         }
 
         return emptyList()
+    }
+
+    private fun resolveFeatureKey(raw: String): String? {
+        val normalized = raw.lowercase().replace('-', '_')
+        return manageableFeatures.firstOrNull { it == normalized }
+    }
+
+    private fun isFeatureEnabled(featureKey: String): Boolean {
+        return when (featureKey) {
+            "resource_world" -> ConfigManager.isResourceWorldEnabled()
+            "rental_area" -> ConfigManager.isRentalAreaEnabled()
+            "public_sign" -> ConfigManager.isPublicSignEnabled()
+            "music" -> ConfigManager.isMusicEnabled()
+            "dynamic_distance" -> ConfigManager.isDynamicDistanceEnabled()
+            "shift_f_binder" -> ConfigManager.isShiftFBinderEnabled()
+            "disable_global_sound_events" -> ConfigManager.isGlobalSoundEventsAutoDisable()
+            "delay_command" -> ConfigManager.isDelayCommandEnabled()
+            "npc_message" -> ConfigManager.isNpcMessageEnabled()
+            else -> false
+        }
+    }
+
+    private fun performReload(player: Player?, sender: CommandSender) {
+        CCSystem.instance.ensureDefaultFiles()
+        CCSystem.instance.reloadConfig()
+        ConfigManager.reload(CCSystem.instance.config)
+        LanguageManager.load()
+        MessageManager.load()
+        PlacedBlockLedgerManager.load()
+
+        if (ConfigManager.isPublicSignEnabled()) {
+            PublicSignManager.load()
+        }
+        if (ConfigManager.isRentalAreaEnabled()) {
+            RemainedItemManager.load()
+            RentalAreaManager.load()
+        }
+
+        if (CCSystem.instance.hasMusicListener()) {
+            CCSystem.instance.musicListener.stopAllPlayersMusic()
+        }
+        if (ConfigManager.isMusicEnabled() && CCSystem.instance.hasMusicListener()) {
+            CCSystem.instance.musicListener.startAllPlayersMusic()
+        }
+
+        if (CCSystem.instance.hasDynamicDistanceListener()) {
+            CCSystem.instance.dynamicDistanceListener.reload()
+        }
+
+        sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
     }
 }
