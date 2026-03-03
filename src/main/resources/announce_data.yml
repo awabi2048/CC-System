@@ -1,0 +1,16 @@
+# お知らせデータ
+# announcements:
+#   <id>:
+#     title: "&aお知らせタイトル"
+#     icon: PAPER
+#     content_lines:
+#       - "1行目"
+#       - "2行目"
+#       - "3行目"
+#     end_at_raw: "2026/03/10-10:30"
+#     indefinite: false
+#     issued_at: "2026-03-03T12:00:00Z"
+#     expires_at: "2026-03-03T13:30:00Z"
+#     updated_at: "2026-03-03T12:00:00Z"
+
+announcements: {}

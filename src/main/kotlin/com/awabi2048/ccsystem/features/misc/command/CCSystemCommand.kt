@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
+import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -447,6 +448,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         LanguageManager.load()
         MessageManager.load()
         PlacedBlockLedgerManager.load()
+        AnnouncementManager.load()
 
         if (ConfigManager.isPublicSignEnabled()) {
             PublicSignManager.load()

@@ -24,6 +24,8 @@ object ConfigManager {
     private var featureGlobalSoundEventsEnabled: Boolean = true
     private var featureDelayCommandEnabled: Boolean = true
     private var featureNpcMessageEnabled: Boolean = true
+    private var announceMenuCommand: String = "menu"
+    private var announceUncheckedNotifyIntervalMinutes: Long = 10L
 
     data class DistanceDelta(
         val view: Int,
@@ -195,6 +197,9 @@ object ConfigManager {
         val coreSection = fileConfig.getConfigurationSection("core")
         language = coreSection?.getString("language") ?: "ja"
         debug = coreSection?.getBoolean("debug") ?: false
+        announceMenuCommand = fileConfig.getString("announce_menu_command") ?: "menu"
+        announceUncheckedNotifyIntervalMinutes =
+            (fileConfig.getLong("announce_unchecked_notify_interval_minutes", 10L)).coerceAtLeast(1L)
         
         // === CrafterCrossingMisc設定の読み込み ===
         
@@ -473,6 +478,8 @@ object ConfigManager {
     fun isShiftFBinderEnabled(): Boolean = featureShiftFBinderEnabled
     fun isDelayCommandEnabled(): Boolean = featureDelayCommandEnabled
     fun isNpcMessageEnabled(): Boolean = featureNpcMessageEnabled
+    fun getAnnounceMenuCommand(): String = announceMenuCommand
+    fun getAnnounceUncheckedNotifyIntervalMinutes(): Long = announceUncheckedNotifyIntervalMinutes
     fun isDynamicDistanceEnabled(): Boolean = featureDynamicDistanceEnabled
     fun getPublicSignDefaultExpireDays(): Int = publicSignDefaultExpireDays
     fun getPublicSignContentLines(): Int = publicSignContentLines
