@@ -4,6 +4,8 @@ author: awabi2048
 main: com.awabi2048.ccsystem.CCSystem
 api-version: 1.20
 description: CrafterCrossingMiscとResourceWorldManagerを統合したプラグイン
+softdepend:
+  - CMI
 
 commands:
   resource:
@@ -32,6 +34,13 @@ commands:
     usage: /rental-receive [area_id]
     permission: cc-system.rental.receive
 
+  announcement:
+    description: サーバーお知らせメニューを開く
+    usage: /announcement [-menu]
+    aliases:
+      - an
+    permission: cc-system.announce.use
+
 permissions:
   cc-system.*:
     description: CC-Systemの全権限
@@ -39,6 +48,7 @@ permissions:
     children:
       cc-system.admin: true
       cc-system.resource.*: true
+      cc-system.announce.*: true
       cc-system.npc_message.use: true
       cc-system.delay.use: true
   
@@ -55,6 +65,8 @@ permissions:
       cc-system.enable: true
       cc-system.disable: true
       cc-system.rental.bypass: true
+      cc-system.announce.use: true
+      cc-system.announce.manage: true
   
   cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
@@ -138,6 +150,23 @@ permissions:
   cc-system.delay.use:
     description: /delay コマンド使用権限
     default: op
+
+  cc-system.announce.*:
+    description: お知らせ機能の全権限
+    default: op
+    children:
+      cc-system.announce.use: true
+      cc-system.announce.manage: true
+
+  cc-system.announce.use:
+    description: /announcement コマンド使用権限
+    default: true
+
+  cc-system.announce.manage:
+    description: お知らせ管理権限（追加・編集・削除・詳細表示）
+    default: op
+    children:
+      cc-system.announce.use: true
   
   craftercrossing.test:
     description: テスト用権限（プラグイン内の全権限を付与）

@@ -8,6 +8,10 @@ import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
 import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
+import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
+import com.awabi2048.ccsystem.features.announce.listener.AnnounceListener
+import com.awabi2048.ccsystem.features.announce.listener.AnnouncementNotificationListener
+import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
 import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
@@ -49,10 +53,12 @@ class CCSystem : JavaPlugin() {
     lateinit var musicListener: MusicListener
     lateinit var resourceListener: ResourceListener
     lateinit var dynamicDistanceListener: DynamicDistanceListener
+    lateinit var announcementNotificationListener: AnnouncementNotificationListener
 
     fun hasMusicListener(): Boolean = ::musicListener.isInitialized
     fun hasResourceListener(): Boolean = ::resourceListener.isInitialized
     fun hasDynamicDistanceListener(): Boolean = ::dynamicDistanceListener.isInitialized
+    fun hasAnnouncementNotificationListener(): Boolean = ::announcementNotificationListener.isInitialized
 
     fun ensureDefaultFiles() {
         if (!dataFolder.exists()) {
@@ -82,6 +88,11 @@ class CCSystem : JavaPlugin() {
         if (!placedBlockLedgerFile.exists()) {
             saveResource("placed_block_ledger.yml", false)
         }
+
+        val announceDataFile = File(dataFolder, "announce_data.yml")
+        if (!announceDataFile.exists()) {
+            saveResource("announce_data.yml", false)
+        }
     }
     
     override fun onEnable() {
@@ -101,6 +112,7 @@ class CCSystem : JavaPlugin() {
         MessageManager.load()
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()
+        AnnouncementManager.load()
         if (ConfigManager.isRentalAreaEnabled()) {
             RemainedItemManager.load()
             RentalAreaManager.load()
@@ -129,6 +141,7 @@ class CCSystem : JavaPlugin() {
         if (ConfigManager.getDynamicDistanceSettings().enabled) {
             dynamicDistanceListener = DynamicDistanceListener()
         }
+        announcementNotificationListener = AnnouncementNotificationListener()
         
         // リスナー登録
         if (hasMusicListener()) {
@@ -154,6 +167,8 @@ class CCSystem : JavaPlugin() {
         if (ConfigManager.isRentalAreaEnabled()) {
             server.pluginManager.registerEvents(RentalAreaListener(), this)
         }
+        server.pluginManager.registerEvents(AnnounceListener(), this)
+        server.pluginManager.registerEvents(announcementNotificationListener, this)
         
         // 中断されていた事前生成を再開
         if (ConfigManager.isResourceWorldEnabled()) {
@@ -166,6 +181,9 @@ class CCSystem : JavaPlugin() {
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
+        val announceCommand = AnnounceCommand()
+        getCommand("announcement")?.setExecutor(announceCommand)
+        getCommand("announcement")?.tabCompleter = announceCommand
         
         logger.info("CC-System v${description.version} を有効化しました")
     }
@@ -183,6 +201,10 @@ class CCSystem : JavaPlugin() {
         if (hasDynamicDistanceListener()) {
             dynamicDistanceListener.shutdown()
         }
+        if (hasAnnouncementNotificationListener()) {
+            announcementNotificationListener.shutdown()
+        }
+        AnnouncementManager.unload()
 
         // チャンクタスクキューのシャットダウン（状態保存）
         ChunkTaskQueueManager.unload()
