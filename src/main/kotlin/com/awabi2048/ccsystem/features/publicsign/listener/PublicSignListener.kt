@@ -32,6 +32,10 @@ class PublicSignListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onSignChange(event: SignChangeEvent) {
+        if (!ConfigManager.isPublicSignEnabled()) {
+            return
+        }
+
         val worldName = event.block.world.name
         val location = PublicSignManager.toLocation(
             worldName,
@@ -69,6 +73,10 @@ class PublicSignListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onRightClickSign(event: PlayerInteractEvent) {
+        if (!ConfigManager.isPublicSignEnabled()) {
+            return
+        }
+
         if (event.action != Action.RIGHT_CLICK_BLOCK) {
             return
         }
@@ -96,6 +104,10 @@ class PublicSignListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onSignBreak(event: BlockBreakEvent) {
+        if (!ConfigManager.isPublicSignEnabled()) {
+            return
+        }
+
         val location = PublicSignManager.toLocation(
             event.block.world.name,
             event.block.x,

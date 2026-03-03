@@ -9,6 +9,7 @@ import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
+import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -19,7 +20,7 @@ import java.time.LocalDate
 
 /**
  * CC-System管理コマンド
- * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket>
+ * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket|status>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
@@ -53,6 +54,26 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
 
                 when (toggleFunction) {
                     "play_music" -> {
+                        if (!ConfigManager.isMusicEnabled()) {
+                            sender.sendMessage(
+                                LanguageManager.getMessage(
+                                    player,
+                                    "feature_disabled",
+                                    "feature" to getFunctionDisplayName(player, "play_music")
+                                )
+                            )
+                            return true
+                        }
+                        if (!CCSystem.instance.hasMusicListener()) {
+                            sender.sendMessage(
+                                LanguageManager.getMessage(
+                                    player,
+                                    "feature_disabled",
+                                    "feature" to getFunctionDisplayName(player, "play_music")
+                                )
+                            )
+                            return true
+                        }
                         if (player == null) {
                             sender.sendMessage("§cこのコマンドはプレイヤーのみ実行可能です。")
                             return true
@@ -126,23 +147,40 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 LanguageManager.load()
                 MessageManager.load()
                 PlacedBlockLedgerManager.load()
-                PublicSignManager.load()
-                RentalAreaManager.load()
+                if (ConfigManager.isPublicSignEnabled()) {
+                    PublicSignManager.load()
+                }
+                if (ConfigManager.isRentalAreaEnabled()) {
+                    RemainedItemManager.load()
+                    RentalAreaManager.load()
+                }
 
                 // 音楽再生設定を反映させるためにタスクを更新
-                CCSystem.instance.musicListener.stopAllPlayersMusic()
-                if (ConfigManager.isMusicEnabled()) {
+                if (CCSystem.instance.hasMusicListener()) {
+                    CCSystem.instance.musicListener.stopAllPlayersMusic()
+                }
+                if (ConfigManager.isMusicEnabled() && CCSystem.instance.hasMusicListener()) {
                     CCSystem.instance.musicListener.startAllPlayersMusic()
                 }
 
                 // 動的描画距離設定を再反映
-                CCSystem.instance.dynamicDistanceListener.reload()
+                if (CCSystem.instance.hasDynamicDistanceListener()) {
+                    CCSystem.instance.dynamicDistanceListener.reload()
+                }
 
                 sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
             }
             "update-day" -> {
-                val resetCount = PublicSignManager.updateDay(LocalDate.now())
-                val rentalExpiredCount = RentalAreaManager.updateDay(LocalDate.now())
+                val resetCount = if (ConfigManager.isPublicSignEnabled()) {
+                    PublicSignManager.updateDay(LocalDate.now())
+                } else {
+                    0
+                }
+                val rentalExpiredCount = if (ConfigManager.isRentalAreaEnabled()) {
+                    RentalAreaManager.updateDay(LocalDate.now())
+                } else {
+                    0
+                }
                 sender.sendMessage(
                     LanguageManager.getMessage(
                         player,
@@ -153,6 +191,17 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 )
             }
             "rental-ticket" -> {
+                if (!ConfigManager.isRentalAreaEnabled()) {
+                    sender.sendMessage(
+                        LanguageManager.getMessage(
+                            player,
+                            "feature_disabled",
+                            "feature" to "rental_area"
+                        )
+                    )
+                    return true
+                }
+
                 if (args.size < 3) {
                     sender.sendMessage(LanguageManager.getMessage(player, "rental_ticket_usage"))
                     return true
@@ -204,6 +253,35 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     )
                 }
             }
+            "status" -> {
+                sender.sendMessage(LanguageManager.getMessageWithoutPrefix(player, "status_header"))
+
+                val features = listOf(
+                    "resource_world" to ConfigManager.isResourceWorldEnabled(),
+                    "rental_area" to ConfigManager.isRentalAreaEnabled(),
+                    "public_sign" to ConfigManager.isPublicSignEnabled(),
+                    "music" to ConfigManager.isMusicEnabled(),
+                    "dynamic_distance" to ConfigManager.isDynamicDistanceEnabled(),
+                    "shift_f_binder" to ConfigManager.isShiftFBinderEnabled(),
+                    "disable_global_sound_events" to ConfigManager.isGlobalSoundEventsAutoDisable(),
+                    "delay_command" to ConfigManager.isDelayCommandEnabled(),
+                    "npc_message" to ConfigManager.isNpcMessageEnabled()
+                )
+
+                for ((featureKey, enabled) in features) {
+                    val statusLabel = LanguageManager.getRawString(player, if (enabled) "enabled" else "disabled")
+                    val statusText = if (enabled) "§a$statusLabel" else "§c$statusLabel"
+                    val featureName = LanguageManager.getRawString(player, "feature.$featureKey")
+                    sender.sendMessage(
+                        LanguageManager.getMessageWithoutPrefix(
+                            player,
+                            "status_line",
+                            "feature" to featureName,
+                            "status" to statusText
+                        )
+                    )
+                }
+            }
             else -> {
                 sender.sendMessage(LanguageManager.getMessage(player, "usage"))
             }
@@ -220,6 +298,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 "reload" -> "cc-system.reload"
                 "update-day" -> "cc-system.update-day"
                 "rental-ticket" -> "cc-system.rental-ticket"
+                "status" -> "cc-system.status"
                 else -> return true
             }
         return hasPluginPermission(sender, permission)
@@ -252,8 +331,12 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): List<String>? {
         if (args.size == 1) {
             val subCommands =
-                listOf("toggle", "lang", "reload", "update-day", "rental-ticket").filter {
-                    hasPermissionForSubCommand(sender, it)
+                listOf("toggle", "lang", "reload", "update-day", "rental-ticket", "status").filter {
+                    hasPermissionForSubCommand(sender, it) &&
+                        when (it) {
+                            "rental-ticket" -> ConfigManager.isRentalAreaEnabled()
+                            else -> true
+                        }
                 }
             return subCommands.filter {
                 it.startsWith(args[0], ignoreCase = true)
@@ -264,12 +347,14 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             when (args[0].lowercase()) {
                 "toggle" -> {
                     if (!hasPermissionForSubCommand(sender, "toggle")) return emptyList()
+                    if (!ConfigManager.isMusicEnabled()) return emptyList()
                     return listOf("play_music").filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }
                 "rental-ticket" -> {
                     if (!hasPermissionForSubCommand(sender, "rental-ticket")) return emptyList()
+                    if (!ConfigManager.isRentalAreaEnabled()) return emptyList()
                     return Bukkit.getOnlinePlayers().map { it.name }.filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
@@ -278,8 +363,9 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         }
 
         if (
-            args.size == 3 &&
+                args.size == 3 &&
                 args[0].equals("rental-ticket", ignoreCase = true) &&
+                ConfigManager.isRentalAreaEnabled() &&
                 hasPermissionForSubCommand(sender, "rental-ticket")
         ) {
             return listOf("7", "14", "30").filter {
@@ -288,8 +374,9 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         }
 
         if (
-            args.size == 4 &&
+                args.size == 4 &&
                 args[0].equals("rental-ticket", ignoreCase = true) &&
+                ConfigManager.isRentalAreaEnabled() &&
                 hasPermissionForSubCommand(sender, "rental-ticket")
         ) {
             return listOf("1", "16", "64").filter {

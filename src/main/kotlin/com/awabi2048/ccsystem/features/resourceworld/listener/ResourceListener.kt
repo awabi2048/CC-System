@@ -35,6 +35,14 @@ class ResourceListener : Listener {
         // 定期的にスニーク状態と足場内判定を確認するタスク
         monitorTask = object : BukkitRunnable() {
             override fun run() {
+                if (!ConfigManager.isResourceWorldEnabled()) {
+                    for (uuid in bossBars.keys.toList()) {
+                        cleanupBossBar(uuid)
+                    }
+                    sneakTicks.clear()
+                    return
+                }
+
                 for (player in Bukkit.getOnlinePlayers()) {
                     val uuid = player.uniqueId
                     val world = player.world
@@ -185,6 +193,10 @@ class ResourceListener : Listener {
 
     @EventHandler
     fun onEntityPortal(event: EntityPortalEvent) {
+        if (!ConfigManager.isResourceWorldEnabled()) {
+            return
+        }
+
         val entity = event.entity
         val fromWorld = entity.world
 

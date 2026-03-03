@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.features.rentalarea.command
 
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -10,6 +11,13 @@ import org.bukkit.entity.Player
 
 class RentalReceiveCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            sender.sendMessage(
+                LanguageManager.getMessage(sender as? Player, "feature_disabled", "feature" to "rental_area")
+            )
+            return true
+        }
+
         if (sender !is Player) {
             sender.sendMessage(LanguageManager.getMessage(null, "command_player_only"))
             return true
@@ -43,6 +51,10 @@ class RentalReceiveCommand : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): List<String> {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return emptyList()
+        }
+
         if (sender !is Player) {
             return emptyList()
         }

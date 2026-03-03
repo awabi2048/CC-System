@@ -16,6 +16,13 @@ import org.bukkit.entity.Player
 class ResourceCommand : CommandExecutor, TabCompleter {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (!ConfigManager.isResourceWorldEnabled()) {
+            sender.sendMessage(
+                LanguageManager.getMessage(sender as? Player, "feature_disabled", "feature" to "resource_world")
+            )
+            return true
+        }
+
         if (args.isEmpty()) return false
 
         when (args[0].lowercase()) {
@@ -183,6 +190,10 @@ class ResourceCommand : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> {
+        if (!ConfigManager.isResourceWorldEnabled()) {
+            return emptyList()
+        }
+
         val list = mutableListOf<String>()
 
         if (args.size == 1) {

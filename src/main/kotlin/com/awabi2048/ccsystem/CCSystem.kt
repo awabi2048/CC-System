@@ -50,6 +50,10 @@ class CCSystem : JavaPlugin() {
     lateinit var resourceListener: ResourceListener
     lateinit var dynamicDistanceListener: DynamicDistanceListener
 
+    fun hasMusicListener(): Boolean = ::musicListener.isInitialized
+    fun hasResourceListener(): Boolean = ::resourceListener.isInitialized
+    fun hasDynamicDistanceListener(): Boolean = ::dynamicDistanceListener.isInitialized
+
     fun ensureDefaultFiles() {
         if (!dataFolder.exists()) {
             dataFolder.mkdirs()
@@ -97,43 +101,79 @@ class CCSystem : JavaPlugin() {
         MessageManager.load()
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()
-        RemainedItemManager.load()
-        PublicSignManager.load()
-        RentalAreaManager.load()
+        if (ConfigManager.isRentalAreaEnabled()) {
+            RemainedItemManager.load()
+            RentalAreaManager.load()
+        }
+        if (ConfigManager.isPublicSignEnabled()) {
+            PublicSignManager.load()
+        }
         
         // 資源ワールドマネージャー初期化
-        PregenerationStateManager.load()
-        WorldManager.loadExistingWorlds()
-        ScoreboardManager.init()
+        if (ConfigManager.isResourceWorldEnabled()) {
+            PregenerationStateManager.load()
+            WorldManager.loadExistingWorlds()
+            ScoreboardManager.init()
+        }
 
         // チャンクタスクキューマネージャー初期化
         ChunkTaskQueueManager.load()
         
         // リスナー初期化
-        musicListener = MusicListener()
-        resourceListener = ResourceListener()
-        dynamicDistanceListener = DynamicDistanceListener()
+        if (ConfigManager.isMusicEnabled()) {
+            musicListener = MusicListener()
+        }
+        if (ConfigManager.isResourceWorldEnabled()) {
+            resourceListener = ResourceListener()
+        }
+        if (ConfigManager.getDynamicDistanceSettings().enabled) {
+            dynamicDistanceListener = DynamicDistanceListener()
+        }
         
         // リスナー登録
-        server.pluginManager.registerEvents(musicListener, this)
-        server.pluginManager.registerEvents(ShiftFBinderListener(), this)
+        if (hasMusicListener()) {
+            server.pluginManager.registerEvents(musicListener, this)
+        }
+        if (ConfigManager.isShiftFBinderEnabled()) {
+            server.pluginManager.registerEvents(ShiftFBinderListener(), this)
+        }
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
-        server.pluginManager.registerEvents(WorldListener(), this)
-        server.pluginManager.registerEvents(resourceListener, this)
-        server.pluginManager.registerEvents(dynamicDistanceListener, this)
-        server.pluginManager.registerEvents(PublicSignListener(), this)
-        server.pluginManager.registerEvents(RentalAreaListener(), this)
+        if (ConfigManager.isGlobalSoundEventsAutoDisable()) {
+            server.pluginManager.registerEvents(WorldListener(), this)
+        }
+        if (hasResourceListener()) {
+            server.pluginManager.registerEvents(resourceListener, this)
+        }
+        if (hasDynamicDistanceListener()) {
+            server.pluginManager.registerEvents(dynamicDistanceListener, this)
+        }
+        if (ConfigManager.isPublicSignEnabled()) {
+            server.pluginManager.registerEvents(PublicSignListener(), this)
+        }
+        if (ConfigManager.isRentalAreaEnabled()) {
+            server.pluginManager.registerEvents(RentalAreaListener(), this)
+        }
         
         // 中断されていた事前生成を再開
-        WorldManager.resumePregeneration()
+        if (ConfigManager.isResourceWorldEnabled()) {
+            WorldManager.resumePregeneration()
+        }
         
         // コマンド登録
-        getCommand("resource")?.setExecutor(ResourceCommand())
-        getCommand("delay")?.setExecutor(DelayCommand())
-        getCommand("npc_message")?.setExecutor(NpcMessageCommand())
+        if (ConfigManager.isResourceWorldEnabled()) {
+            getCommand("resource")?.setExecutor(ResourceCommand())
+        }
+        if (ConfigManager.isDelayCommandEnabled()) {
+            getCommand("delay")?.setExecutor(DelayCommand())
+        }
+        if (ConfigManager.isNpcMessageEnabled()) {
+            getCommand("npc_message")?.setExecutor(NpcMessageCommand())
+        }
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
-        getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
+        if (ConfigManager.isRentalAreaEnabled()) {
+            getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
+        }
         
         logger.info("CC-System v${description.version} を有効化しました")
     }
@@ -141,10 +181,14 @@ class CCSystem : JavaPlugin() {
     override fun onDisable() {
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()
-        WorldManager.cancelAllPregenTasks()
-        ScoreboardManager.disable()
-        resourceListener.cancelMonitorTask()
-        if (::dynamicDistanceListener.isInitialized) {
+        if (ConfigManager.isResourceWorldEnabled()) {
+            WorldManager.cancelAllPregenTasks()
+            ScoreboardManager.disable()
+        }
+        if (hasResourceListener()) {
+            resourceListener.cancelMonitorTask()
+        }
+        if (hasDynamicDistanceListener()) {
             dynamicDistanceListener.shutdown()
         }
 

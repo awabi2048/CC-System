@@ -12,6 +12,10 @@ class ShiftFBinderListener : Listener {
 
     @EventHandler
     fun onShiftF(event: PlayerSwapHandItemsEvent) {
+        if (!ConfigManager.isShiftFBinderEnabled()) {
+            return
+        }
+
         val player = event.player
         
         // スニーク中ならキャンセルしてコマンド実行

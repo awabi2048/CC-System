@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.features.rentalarea.listener
 
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
@@ -78,6 +79,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInteract(event: PlayerInteractEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         if (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.RIGHT_CLICK_AIR) {
             return
         }
@@ -161,6 +166,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlace(event: BlockPlaceEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         val player = event.player
         val hasBypass = player.hasPermission(BYPASS_PERMISSION) || player.isOp
 
@@ -187,6 +196,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBreak(event: BlockBreakEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         val player = event.player
         if (player.hasPermission(BYPASS_PERMISSION) || player.isOp) {
             return
@@ -211,6 +224,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBucketEmpty(event: PlayerBucketEmptyEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         val player = event.player
         if (player.hasPermission(BYPASS_PERMISSION) || player.isOp) {
             return
@@ -229,36 +246,57 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockBurn(event: BlockBurnEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.block.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockFade(event: BlockFadeEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.block.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockForm(event: BlockFormEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.block.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockSpread(event: BlockSpreadEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.block.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockFromTo(event: BlockFromToEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.toBlock.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onEntityChangeBlock(event: EntityChangeBlockEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         clearLedgerAt(event.block.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBlockExplode(event: BlockExplodeEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         event.blockList().forEach { block ->
             clearLedgerAt(block.location)
         }
@@ -266,6 +304,9 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onEntityExplode(event: EntityExplodeEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         event.blockList().forEach { block ->
             clearLedgerAt(block.location)
         }
@@ -273,6 +314,9 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPistonExtend(event: BlockPistonExtendEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         event.blocks.forEach { block ->
             clearLedgerAt(block.location)
             val moved = block.location.clone().add(
@@ -286,6 +330,9 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPistonRetract(event: BlockPistonRetractEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
         event.blocks.forEach { block ->
             clearLedgerAt(block.location)
             val moved = block.location.clone().add(
@@ -449,6 +496,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onJoin(event: PlayerJoinEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         val player = event.player
         if (!RemainedItemManager.hasRemainedItems(player.uniqueId)) {
             return
@@ -478,6 +529,10 @@ class RentalAreaListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onInventoryClose(event: InventoryCloseEvent) {
+        if (!ConfigManager.isRentalAreaEnabled()) {
+            return
+        }
+
         val player = event.player
         if (player !is org.bukkit.entity.Player) {
             return

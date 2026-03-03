@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.features.misc.command
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -20,6 +21,13 @@ class DelayCommand : CommandExecutor, TabCompleter {
         label: String,
         args: Array<out String>
     ): Boolean {
+        if (!ConfigManager.isDelayCommandEnabled()) {
+            sender.sendMessage(
+                LanguageManager.getMessage(null, "feature_disabled", "feature" to "delay")
+            )
+            return true
+        }
+
         if (!hasPermission(sender)) {
             sender.sendMessage(LanguageManager.getMessage(null, "no_permission"))
             return true
@@ -96,6 +104,7 @@ class DelayCommand : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): List<String>? {
+        if (!ConfigManager.isDelayCommandEnabled()) return emptyList()
         if (!hasPermission(sender)) return emptyList()
 
         if (args.size == 1) {

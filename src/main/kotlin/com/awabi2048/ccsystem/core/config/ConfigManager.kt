@@ -14,6 +14,17 @@ import org.bukkit.Difficulty
 object ConfigManager {
     private var config: FileConfiguration? = null
 
+    // === 機能トグル ===
+    private var featureResourceWorldEnabled: Boolean = true
+    private var featureRentalAreaEnabled: Boolean = true
+    private var featurePublicSignEnabled: Boolean = true
+    private var featureMusicEnabled: Boolean = true
+    private var featureDynamicDistanceEnabled: Boolean = false
+    private var featureShiftFBinderEnabled: Boolean = true
+    private var featureGlobalSoundEventsEnabled: Boolean = true
+    private var featureDelayCommandEnabled: Boolean = true
+    private var featureNpcMessageEnabled: Boolean = true
+
     data class DistanceDelta(
         val view: Int,
         val simulation: Int,
@@ -55,18 +66,13 @@ object ConfigManager {
     private var shiftFBinderCommands: List<String> = listOf("say %player_name%")
     
     // 音楽再生設定
-    private var musicEnabled: Boolean = true
     private val worldMusicSettings = mutableMapOf<String, MusicSetting>()
     
-    // globalSoundEvents 自動無効化
-    private var globalSoundEventsAutoDisable: Boolean = true
-
     // PublicSign設定
     private var publicSignDefaultExpireDays: Int = 7
     private var publicSignContentLines: Int = 3
 
     // 動的描画距離設定
-    private var dynamicDistanceEnabled: Boolean = false
     private var dynamicDistanceIntervalTicks: Long = 20
     private var dynamicDistanceApplyCooldownTicks: Long = 60
     private var dynamicDistanceWorldBlacklist: List<String> = emptyList()
@@ -172,6 +178,18 @@ object ConfigManager {
      */
     fun load(fileConfig: FileConfiguration) {
         config = fileConfig
+
+        // 機能トグルの読み込み
+        val featuresSection = fileConfig.getConfigurationSection("features")
+        featureResourceWorldEnabled = featuresSection?.getBoolean("resource_world", true) ?: true
+        featureRentalAreaEnabled = featuresSection?.getBoolean("rental_area", true) ?: true
+        featurePublicSignEnabled = featuresSection?.getBoolean("public_sign", true) ?: true
+        featureMusicEnabled = featuresSection?.getBoolean("music", true) ?: true
+        featureDynamicDistanceEnabled = featuresSection?.getBoolean("dynamic_distance", false) ?: false
+        featureShiftFBinderEnabled = featuresSection?.getBoolean("shift_f_binder", true) ?: true
+        featureGlobalSoundEventsEnabled = featuresSection?.getBoolean("disable_global_sound_events", true) ?: true
+        featureDelayCommandEnabled = featuresSection?.getBoolean("delay_command", true) ?: true
+        featureNpcMessageEnabled = featuresSection?.getBoolean("npc_message", true) ?: true
         
         // コア設定の読み込み
         val coreSection = fileConfig.getConfigurationSection("core")
@@ -186,7 +204,6 @@ object ConfigManager {
         
         // 音楽再生
         val musicSection = fileConfig.getConfigurationSection("music")
-        musicEnabled = musicSection?.getBoolean("enabled") ?: true
         
         val worldsSection = musicSection?.getConfigurationSection("worlds")
         worldMusicSettings.clear()
@@ -203,10 +220,6 @@ object ConfigManager {
             }
         }
         
-        // globalSoundEvents 自動無効化
-        val globalSoundSection = fileConfig.getConfigurationSection("global_sound_events")
-        globalSoundEventsAutoDisable = globalSoundSection?.getBoolean("enabled") ?: true
-
         // PublicSign設定
         val publicSignSection = fileConfig.getConfigurationSection("public_sign")
         publicSignDefaultExpireDays = publicSignSection?.getInt("default_expire_days") ?: 7
@@ -214,7 +227,6 @@ object ConfigManager {
 
         // 動的描画距離設定
         val dynamicDistanceSection = fileConfig.getConfigurationSection("dynamic_distance")
-        dynamicDistanceEnabled = dynamicDistanceSection?.getBoolean("enabled") ?: false
         dynamicDistanceIntervalTicks = (dynamicDistanceSection?.getLong("interval_ticks") ?: 20L).coerceAtLeast(1L)
         dynamicDistanceApplyCooldownTicks = (dynamicDistanceSection?.getLong("apply_cooldown_ticks") ?: 60L).coerceAtLeast(0L)
         dynamicDistanceWorldBlacklist = dynamicDistanceSection?.getStringList("world_blacklist") ?: emptyList()
@@ -298,32 +310,24 @@ object ConfigManager {
         val macroSection = fileConfig.getConfigurationSection("macros")
         
         val beforeDeleteSection = macroSection?.getConfigurationSection("before_delete")
-        macroBeforeDeleteEnabled = beforeDeleteSection?.getBoolean("enabled") ?: false
         macroBeforeDelete.clear()
-        if (macroBeforeDeleteEnabled) {
-            macroBeforeDelete.addAll(beforeDeleteSection?.getStringList("commands") ?: emptyList())
-        }
+        macroBeforeDelete.addAll(beforeDeleteSection?.getStringList("commands") ?: emptyList())
+        macroBeforeDeleteEnabled = macroBeforeDelete.isNotEmpty()
         
         val afterGenSection = macroSection?.getConfigurationSection("after_generation")
-        macroAfterGenerationEnabled = afterGenSection?.getBoolean("enabled") ?: false
         macroAfterGeneration.clear()
-        if (macroAfterGenerationEnabled) {
-            macroAfterGeneration.addAll(afterGenSection?.getStringList("commands") ?: emptyList())
-        }
+        macroAfterGeneration.addAll(afterGenSection?.getStringList("commands") ?: emptyList())
+        macroAfterGenerationEnabled = macroAfterGeneration.isNotEmpty()
         
         val afterPrioritySection = macroSection?.getConfigurationSection("after_priority_pregen")
-        macroAfterPriorityPregenEnabled = afterPrioritySection?.getBoolean("enabled") ?: false
         macroAfterPriorityPregen.clear()
-        if (macroAfterPriorityPregenEnabled) {
-            macroAfterPriorityPregen.addAll(afterPrioritySection?.getStringList("commands") ?: emptyList())
-        }
+        macroAfterPriorityPregen.addAll(afterPrioritySection?.getStringList("commands") ?: emptyList())
+        macroAfterPriorityPregenEnabled = macroAfterPriorityPregen.isNotEmpty()
         
         val afterAllSection = macroSection?.getConfigurationSection("after_all_pregen")
-        macroAfterAllPregenEnabled = afterAllSection?.getBoolean("enabled") ?: false
         macroAfterAllPregen.clear()
-        if (macroAfterAllPregenEnabled) {
-            macroAfterAllPregen.addAll(afterAllSection?.getStringList("commands") ?: emptyList())
-        }
+        macroAfterAllPregen.addAll(afterAllSection?.getStringList("commands") ?: emptyList())
+        macroAfterAllPregenEnabled = macroAfterAllPregen.isNotEmpty()
         
         // リソースタイプ設定の読み込み
         resourceConfigs.clear()
@@ -459,16 +463,23 @@ object ConfigManager {
     
     // CrafterCrossingMisc設定
     fun getShiftFBinderCommands(): List<String> = shiftFBinderCommands
-    fun isMusicEnabled(): Boolean = musicEnabled
+    fun isResourceWorldEnabled(): Boolean = featureResourceWorldEnabled
+    fun isRentalAreaEnabled(): Boolean = featureRentalAreaEnabled
+    fun isPublicSignEnabled(): Boolean = featurePublicSignEnabled
+    fun isMusicEnabled(): Boolean = featureMusicEnabled
     fun getMusicSetting(worldName: String): MusicSetting? = worldMusicSettings[worldName]
     fun getAllMusicSettings(): Map<String, MusicSetting> = worldMusicSettings.toMap()
-    fun isGlobalSoundEventsAutoDisable(): Boolean = globalSoundEventsAutoDisable
+    fun isGlobalSoundEventsAutoDisable(): Boolean = featureGlobalSoundEventsEnabled
+    fun isShiftFBinderEnabled(): Boolean = featureShiftFBinderEnabled
+    fun isDelayCommandEnabled(): Boolean = featureDelayCommandEnabled
+    fun isNpcMessageEnabled(): Boolean = featureNpcMessageEnabled
+    fun isDynamicDistanceEnabled(): Boolean = featureDynamicDistanceEnabled
     fun getPublicSignDefaultExpireDays(): Int = publicSignDefaultExpireDays
     fun getPublicSignContentLines(): Int = publicSignContentLines
 
     fun getDynamicDistanceSettings(): DynamicDistanceSettings {
         return DynamicDistanceSettings(
-            enabled = dynamicDistanceEnabled,
+            enabled = featureDynamicDistanceEnabled,
             intervalTicks = dynamicDistanceIntervalTicks,
             applyCooldownTicks = dynamicDistanceApplyCooldownTicks,
             worldBlacklist = dynamicDistanceWorldBlacklist.toList(),

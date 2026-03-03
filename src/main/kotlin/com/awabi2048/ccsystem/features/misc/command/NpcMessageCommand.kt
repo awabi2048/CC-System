@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.misc.command
 
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -22,6 +23,13 @@ class NpcMessageCommand : CommandExecutor, TabCompleter {
         label: String,
         args: Array<out String>
     ): Boolean {
+        if (!ConfigManager.isNpcMessageEnabled()) {
+            sender.sendMessage(
+                LanguageManager.getMessage(null, "feature_disabled", "feature" to "npc_message")
+            )
+            return true
+        }
+
         if (!hasPermission(sender)) {
             sender.sendMessage(LanguageManager.getMessage(null, "no_permission"))
             return true
@@ -94,6 +102,7 @@ class NpcMessageCommand : CommandExecutor, TabCompleter {
         alias: String,
         args: Array<out String>
     ): List<String>? {
+        if (!ConfigManager.isNpcMessageEnabled()) return emptyList()
         if (!hasPermission(sender)) return emptyList()
 
         if (args.size == 1) {
