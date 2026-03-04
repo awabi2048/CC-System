@@ -37,7 +37,7 @@ object PublicSignManager {
     private lateinit var config: YamlConfiguration
 
     fun load() {
-        dataFile = File(CCSystem.instance.dataFolder, "public_sign_data.yml")
+        dataFile = File(CCSystem.instance.dataFolder, "data/public_sign/public_sign_data.yml")
         if (!dataFile.exists()) {
             dataFile.parentFile?.mkdirs()
             dataFile.createNewFile()

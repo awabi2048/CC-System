@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.queue.storage
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
@@ -18,8 +19,10 @@ object QueueStorageManager {
     private val plugin get() = CCSystem.instance
 
     private fun getStorageFile(): File {
-        val fileName = plugin.config.getString("chunk_task_queue.queue_data_file", "queue_data.yml")!!
-        return File(plugin.dataFolder, fileName)
+        val relativePath = ConfigManager.getChunkTaskQueueDataFilePath()
+        val file = File(plugin.dataFolder, relativePath)
+        file.parentFile?.mkdirs()
+        return file
     }
 
     /**

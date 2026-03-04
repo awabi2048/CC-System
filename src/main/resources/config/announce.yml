@@ -1,0 +1,5 @@
+# /announcement -menu でレッドストーンを押した際に実行するコマンド（プレイヤー実行）
+announce_menu_command: "menu"
+
+# 未確認お知らせがあるプレイヤーへの再通知間隔（分）
+announce_unchecked_notify_interval_minutes: 10

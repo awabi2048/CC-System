@@ -256,7 +256,8 @@ class AnnounceListener : Listener {
         }
 
         private fun getPlayerLangCode(player: Player): String {
-            return PlayerDataManager.getString(player.uniqueId, "lang", "ja_jp")?.lowercase() ?: "ja_jp"
+            val defaultLang = ConfigManager.getDefaultLanguage()
+            return PlayerDataManager.getString(player.uniqueId, "lang", defaultLang)?.lowercase() ?: defaultLang
         }
 
         private fun deserializeStyledUserText(raw: String): Component {

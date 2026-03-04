@@ -56,7 +56,7 @@ object RentalAreaManager {
     private lateinit var config: YamlConfiguration
 
     fun load() {
-        dataFile = File(CCSystem.instance.dataFolder, "rental_area_data.yml")
+        dataFile = File(CCSystem.instance.dataFolder, "data/rental_area/rental_area_data.yml")
         if (!dataFile.exists()) {
             dataFile.parentFile?.mkdirs()
             dataFile.createNewFile()

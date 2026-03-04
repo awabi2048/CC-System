@@ -14,7 +14,7 @@ import java.io.FileWriter
 object PregenerationStateManager {
     private val gson = Gson()
     private val stateFile: File
-        get() = File(CCSystem.instance.dataFolder, "pregeneration_state.json")
+        get() = File(CCSystem.instance.dataFolder, "data/resource_world/pregeneration_state.json")
 
     private var states = mutableMapOf<String, PregenState>()
 

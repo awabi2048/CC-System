@@ -60,7 +60,7 @@ object AnnouncementManager {
     fun load() {
         unload()
 
-        dataFile = File(CCSystem.instance.dataFolder, "announce_data.yml")
+        dataFile = File(CCSystem.instance.dataFolder, "data/announce/announce_data.yml")
         if (!dataFile.exists()) {
             dataFile.parentFile?.mkdirs()
             dataFile.createNewFile()

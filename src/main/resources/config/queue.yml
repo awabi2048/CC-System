@@ -1,0 +1,12 @@
+# チャンクタスクキュー設定
+chunk_task_queue:
+  # コンテンツの優先度順序（左→右で優先度高→低）
+  # 使用可能な値: SUKIMA_DUNGEON, ARENA, RESOURCE
+  priority_order: [SUKIMA_DUNGEON, ARENA, RESOURCE]
+
+  # タスク読み込み間隔（Bukkitティック）
+  # 20ティック = 1秒
+  read_interval_ticks: 20
+
+  # キューデータの保存ファイル名（plugins/CC-System/ 配下）
+  queue_data_file: "data/queue/queue_data.yml"

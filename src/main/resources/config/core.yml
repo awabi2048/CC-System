@@ -1,0 +1,16 @@
+# === コア設定 ===
+core:
+  default_language: "ja_jp"
+  debug: false
+
+# 機能トグル
+features:
+  resource_world: true
+  rental_area: true
+  public_sign: true
+  music: true
+  dynamic_distance: false
+  shift_f_binder: true
+  disable_global_sound_events: true
+  delay_command: true
+  npc_message: true

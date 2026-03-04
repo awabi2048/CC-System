@@ -1,0 +1,89 @@
+# === ResourceWorld設定 ===
+
+# 避難先のコマンド設定 (プレイヤーに実行させるコマンド)
+evacuation_command: "spawn"
+
+# 事前生成設定
+pregen:
+  priority_diameter: 1000
+  delay_ticks: 5
+  batch_size: 25
+
+# 資源ワールドのデフォルト難易度
+# 値: peaceful, easy, normal, hard
+default_difficulty: "normal"
+
+# 足場設定
+scaffold:
+  material: "GLASS"
+  radius: 3
+  action_bar_message: "§bShift長押しでスポーンに戻ります"
+  particle:
+    type: "CLOUD"
+    count: 5
+    speed: 0.01
+    interval: 2
+  sound:
+    start: "BLOCK_NOTE_BLOCK_BELL"
+    success: "ENTITY_EXPERIENCE_ORB_PICKUP"
+
+# スポーン位置検索の設定
+spawn:
+  search_radius: 64
+  search_attempts: 200
+  safe_blocks:
+    - "GRASS_BLOCK"
+    - "DIRT"
+    - "COARSE_DIRT"
+    - "PODZOL"
+    - "STONE"
+    - "COBBLESTONE"
+    - "SAND"
+    - "SANDSTONE"
+    - "GRAVEL"
+    - "MOSS_BLOCK"
+
+# ネザー用スポーン位置検索の設定
+nether_spawn:
+  search_radius: 64
+  search_attempts: 200
+  safe_blocks:
+    - "NETHERRACK"
+    - "SOUL_SAND"
+    - "SOUL_SOIL"
+    - "BASALT"
+    - "BLACKSTONE"
+    - "NETHER_BRICKS"
+    - "CRIMSON_NYLIUM"
+    - "WARPED_NYLIUM"
+
+# マクロ設定 - 資源ワールドの各タイミングでコンソールコマンドを実行
+# 利用可能なプレースホルダー: {world_name}, {display_world_name}
+# after_generationのみ %border_size% も利用可能
+macros:
+  before_delete:
+    commands: []
+
+  after_generation:
+    commands: []
+
+  after_priority_pregen:
+    commands: []
+
+  after_all_pregen:
+    commands: []
+
+# リソースタイプ設定
+resources:
+  normal:
+    base_name: "resource_normal"
+    default_border: 5000
+    variations: ["a", "b", "c"]
+  nether:
+    base_name: "resource_nether"
+    default_border: 2500
+    variations: ["a", "b"]
+  end:
+    base_name: "resource_end"
+    default_border: 3000
+    variations: ["a"]

@@ -65,34 +65,32 @@ class CCSystem : JavaPlugin() {
             dataFolder.mkdirs()
         }
 
-        saveDefaultConfig()
-
-        val langDir = File(dataFolder, "lang")
-        if (!langDir.exists()) {
-            langDir.mkdirs()
-        }
-
-        listOf("ja_jp", "en_us").forEach { lang ->
-            val file = File(langDir, "$lang.yml")
+        listOf(
+            "config/core.yml",
+            "config/misc.yml",
+            "config/resource_world.yml",
+            "config/rental_area.yml",
+            "config/public_sign.yml",
+            "config/announce.yml",
+            "config/queue.yml",
+            "lang/ja_jp.yml",
+            "lang/en_us.yml",
+            "data/rental_area/rental_area_data.yml",
+            "data/ledger/placed_block_ledger.yml",
+            "data/announce/announce_data.yml"
+        ).forEach { resourcePath ->
+            val file = File(dataFolder, resourcePath)
             if (!file.exists()) {
-                saveResource("lang/$lang.yml", false)
+                file.parentFile?.mkdirs()
+                saveResource(resourcePath, false)
             }
         }
 
-        val rentalAreaFile = File(dataFolder, "rental_area_data.yml")
-        if (!rentalAreaFile.exists()) {
-            saveResource("rental_area_data.yml", false)
-        }
-
-        val placedBlockLedgerFile = File(dataFolder, "placed_block_ledger.yml")
-        if (!placedBlockLedgerFile.exists()) {
-            saveResource("placed_block_ledger.yml", false)
-        }
-
-        val announceDataFile = File(dataFolder, "announce_data.yml")
-        if (!announceDataFile.exists()) {
-            saveResource("announce_data.yml", false)
-        }
+        File(dataFolder, "data/public_sign").mkdirs()
+        File(dataFolder, "data/resource_world").mkdirs()
+        File(dataFolder, "data/queue").mkdirs()
+        File(dataFolder, "data/rental_area/remained_item").mkdirs()
+        File(dataFolder, "playerdata").mkdirs()
     }
     
     override fun onEnable() {
@@ -104,10 +102,9 @@ class CCSystem : JavaPlugin() {
         
         // 設定読み込み
         ensureDefaultFiles()
-        reloadConfig()
         
         // マネージャー初期化
-        ConfigManager.load(config)
+        ConfigManager.load()
         LanguageManager.load()
         MessageManager.load()
         PlayerDataManager.load()

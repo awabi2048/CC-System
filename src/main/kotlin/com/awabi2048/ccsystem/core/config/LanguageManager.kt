@@ -13,7 +13,6 @@ import java.io.File
  */
 object LanguageManager {
     private val langFiles = mutableMapOf<String, YamlConfiguration>()
-    private const val DEFAULT_LANG = "ja_jp"
 
     /**
      * 言語ファイルをロードする
@@ -74,7 +73,33 @@ object LanguageManager {
      * プレイヤーの言語を設定
      */
     fun setPlayerLang(player: Player, lang: String) {
-        PlayerDataManager.set(player.uniqueId, "lang", lang.lowercase())
+        val normalizedLang = lang.lowercase()
+        val defaultLang = getDefaultLanguageCode()
+        if (normalizedLang == defaultLang) {
+            PlayerDataManager.setIfDataFileExists(player.uniqueId, "lang", null)
+            return
+        }
+        PlayerDataManager.set(player.uniqueId, "lang", normalizedLang)
+    }
+
+    private fun getDefaultLanguageCode(): String {
+        val configured = ConfigManager.getDefaultLanguage().lowercase()
+        return when {
+            langFiles.containsKey(configured) -> configured
+            langFiles.containsKey("ja_jp") -> "ja_jp"
+            langFiles.isNotEmpty() -> langFiles.keys.first()
+            else -> "ja_jp"
+        }
+    }
+
+    private fun getPlayerLanguageCode(player: Player?): String {
+        val defaultLang = getDefaultLanguageCode()
+        if (player == null) {
+            return defaultLang
+        }
+        return PlayerDataManager.getString(player.uniqueId, "lang", defaultLang)
+            ?.lowercase()
+            ?: defaultLang
     }
 
     /**
@@ -85,12 +110,9 @@ object LanguageManager {
         key: String,
         vararg placeholders: Pair<String, String>
     ): Component {
-        val lang =
-            if (player != null)
-                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
-                    ?: DEFAULT_LANG
-            else DEFAULT_LANG
-        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+        val defaultLang = getDefaultLanguageCode()
+        val lang = getPlayerLanguageCode(player)
+        val config = langFiles[lang] ?: langFiles[defaultLang]
 
         var message = config?.getString(key) ?: key
         val prefix = config?.getString("prefix") ?: ""
@@ -114,12 +136,9 @@ object LanguageManager {
         key: String,
         vararg placeholders: Pair<String, String>
     ): Component {
-        val lang =
-            if (player != null)
-                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
-                    ?: DEFAULT_LANG
-            else DEFAULT_LANG
-        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+        val defaultLang = getDefaultLanguageCode()
+        val lang = getPlayerLanguageCode(player)
+        val config = langFiles[lang] ?: langFiles[defaultLang]
 
         var message = config?.getString(key) ?: key
         placeholders.forEach { (placeholder, value) ->
@@ -141,12 +160,9 @@ object LanguageManager {
         key: String,
         vararg placeholders: Pair<String, String>
     ): String {
-        val lang =
-            if (player != null)
-                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
-                    ?: DEFAULT_LANG
-            else DEFAULT_LANG
-        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+        val defaultLang = getDefaultLanguageCode()
+        val lang = getPlayerLanguageCode(player)
+        val config = langFiles[lang] ?: langFiles[defaultLang]
 
         var message = config?.getString(key) ?: key
         placeholders.forEach { (placeholder, value) ->
@@ -159,12 +175,9 @@ object LanguageManager {
      * 文字列リストを取得
      */
     fun getStringList(player: Player?, key: String): List<String> {
-        val lang =
-            if (player != null)
-                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
-                    ?: DEFAULT_LANG
-            else DEFAULT_LANG
-        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+        val defaultLang = getDefaultLanguageCode()
+        val lang = getPlayerLanguageCode(player)
+        val config = langFiles[lang] ?: langFiles[defaultLang]
         return config?.getStringList(key) ?: emptyList()
     }
 
@@ -208,12 +221,9 @@ object LanguageManager {
      * カスタムメッセージIDの一覧を取得
      */
     fun getCustomMessageIds(player: Player?): Set<String> {
-        val lang =
-            if (player != null)
-                PlayerDataManager.getString(player.uniqueId, "lang", DEFAULT_LANG)
-                    ?: DEFAULT_LANG
-            else DEFAULT_LANG
-        val config = langFiles[lang] ?: langFiles[DEFAULT_LANG]
+        val defaultLang = getDefaultLanguageCode()
+        val lang = getPlayerLanguageCode(player)
+        val config = langFiles[lang] ?: langFiles[defaultLang]
         val customMessagesSection = config?.getConfigurationSection("custom_messages")
         return customMessagesSection?.getKeys(false) ?: emptySet()
     }

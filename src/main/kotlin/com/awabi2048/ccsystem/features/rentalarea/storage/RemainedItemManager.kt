@@ -15,7 +15,7 @@ import java.util.UUID
 
 object RemainedItemManager {
     private val storageDir: File by lazy {
-        val dir = File(CCSystem.instance.dataFolder, "rental_area/remained_item")
+        val dir = File(CCSystem.instance.dataFolder, "data/rental_area/remained_item")
         if (!dir.exists()) {
             dir.mkdirs()
         }

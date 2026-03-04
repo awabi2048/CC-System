@@ -133,8 +133,9 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 }
 
                 val availableLangs = listOf("ja_jp", "en_us")
-                val currentLang = PlayerDataManager.getString(player.uniqueId, "lang", "ja_jp")
-                    ?: "ja_jp"
+                val defaultLang = ConfigManager.getDefaultLanguage()
+                val currentLang = PlayerDataManager.getString(player.uniqueId, "lang", defaultLang)
+                    ?: defaultLang
 
                 val currentIndex = availableLangs.indexOf(currentLang)
                 val nextIndex = if (currentIndex >= availableLangs.size - 1) 0 else currentIndex + 1
@@ -292,8 +293,10 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     return true
                 }
 
-                CCSystem.instance.config.set("features.$featureKey", targetEnabled)
-                CCSystem.instance.saveConfig()
+                if (!ConfigManager.setFeatureEnabled(featureKey, targetEnabled)) {
+                    sender.sendMessage("§c機能設定の保存に失敗しました。")
+                    return true
+                }
 
                 sender.sendMessage(
                     LanguageManager.getMessage(
@@ -443,8 +446,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
 
     private fun performReload(player: Player?, sender: CommandSender) {
         CCSystem.instance.ensureDefaultFiles()
-        CCSystem.instance.reloadConfig()
-        ConfigManager.reload(CCSystem.instance.config)
+        ConfigManager.reload()
         LanguageManager.load()
         MessageManager.load()
         PlacedBlockLedgerManager.load()

@@ -13,7 +13,7 @@ object PlacedBlockLedgerManager {
     private lateinit var config: YamlConfiguration
 
     fun load() {
-        dataFile = File(CCSystem.instance.dataFolder, "placed_block_ledger.yml")
+        dataFile = File(CCSystem.instance.dataFolder, "data/ledger/placed_block_ledger.yml")
         if (!dataFile.exists()) {
             dataFile.parentFile?.mkdirs()
             dataFile.createNewFile()

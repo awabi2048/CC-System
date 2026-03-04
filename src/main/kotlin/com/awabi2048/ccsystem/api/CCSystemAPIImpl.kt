@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -14,15 +16,8 @@ import org.bukkit.entity.Player
 internal class CCSystemAPIImpl : CCSystemAPI {
     
     override fun getPlayerLanguage(player: Player): String {
-        return LanguageManager.getRawString(player, "") // プレイヤーの言語を取得
-            .let { 
-                // プレイヤーのデータから言語設定を直接取得
-                com.awabi2048.ccsystem.core.data.PlayerDataManager.getString(
-                    player.uniqueId, 
-                    "lang", 
-                    "ja_jp"
-                ) ?: "ja_jp"
-            }
+        val defaultLang = ConfigManager.getDefaultLanguage()
+        return PlayerDataManager.getString(player.uniqueId, "lang", defaultLang) ?: defaultLang
     }
     
     override fun setPlayerLanguage(player: Player, language: String) {

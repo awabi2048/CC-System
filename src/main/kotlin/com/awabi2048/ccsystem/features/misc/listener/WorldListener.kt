@@ -14,7 +14,7 @@ class WorldListener : Listener {
 
     @EventHandler
     fun onWorldLoad(event: WorldLoadEvent) {
-        // config.yml で機能が有効になっているかチェック
+        // 分割設定で機能が有効になっているかチェック
         if (!ConfigManager.isGlobalSoundEventsAutoDisable()) {
             return
         }

@@ -10,7 +10,7 @@ import java.util.UUID
  */
 object PlayerDataManager {
     private val playerData = mutableMapOf<UUID, YamlConfiguration>()
-    private val dataDir = File(CCSystem.instance.dataFolder, "userdata")
+    private val dataDir = File(CCSystem.instance.dataFolder, "playerdata")
 
     /**
      * プレイヤーデータをロードする
@@ -34,6 +34,20 @@ object PlayerDataManager {
                 YamlConfiguration()
             }
         }
+    }
+
+    private fun getDataIfFileExists(uuid: UUID): YamlConfiguration? {
+        val file = getFile(uuid)
+        if (!file.exists()) {
+            return null
+        }
+        return playerData.getOrPut(uuid) {
+            YamlConfiguration.loadConfiguration(file)
+        }
+    }
+
+    fun hasPlayerDataFile(uuid: UUID): Boolean {
+        return getFile(uuid).exists()
     }
 
     /**
@@ -66,13 +80,28 @@ object PlayerDataManager {
         save(uuid)
     }
 
+    fun setIfDataFileExists(uuid: UUID, key: String, value: Any?): Boolean {
+        val data = getDataIfFileExists(uuid) ?: return false
+        data.set(key, value)
+        save(uuid)
+        return true
+    }
+
     /**
      * データを保存
      */
     fun save(uuid: UUID) {
         val data = playerData[uuid] ?: return
+        val file = getFile(uuid)
+        if (data.getKeys(true).isEmpty()) {
+            if (file.exists()) {
+                file.delete()
+            }
+            return
+        }
         try {
-            data.save(getFile(uuid))
+            file.parentFile?.mkdirs()
+            data.save(file)
         } catch (e: Exception) {
             CCSystem.instance.logger.severe("Failed to save player data for $uuid: ${e.message}")
         }

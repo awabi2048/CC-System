@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.queue
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
@@ -67,10 +68,9 @@ object ChunkTaskQueueManager {
         saveToStorage()
     }
 
-    /** config.ymlからキュー設定を読み込みます */
+    /** queue.ymlからキュー設定を読み込みます */
     private fun loadConfig() {
-        val config = plugin.config
-        val orderList = config.getStringList("chunk_task_queue.priority_order")
+        val orderList = ConfigManager.getChunkTaskQueuePriorityOrder()
 
         priorityOrder = if (orderList.isNotEmpty()) {
             orderList.mapNotNull { ContentType.fromString(it) }.also { parsed ->
@@ -91,7 +91,7 @@ object ChunkTaskQueueManager {
             ContentType.entries
         }
 
-        readIntervalTicks = config.getLong("chunk_task_queue.read_interval_ticks", 20L)
+        readIntervalTicks = ConfigManager.getChunkTaskQueueReadIntervalTicks()
         plugin.logger.info("キュー優先度順: ${priorityOrder.joinToString(" > ")}")
         plugin.logger.info("キュー読み込み間隔: ${readIntervalTicks}tick")
     }
