@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.core.config.MessageManager
 import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
+import com.awabi2048.ccsystem.features.clock.manager.ClockManager
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
@@ -106,6 +107,28 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         val statusKey = if (newValue) "enabled" else "disabled"
                         val statusString = LanguageManager.getRawString(player, statusKey)
                         val functionName = getFunctionDisplayName(player, "play_music")
+                        player.sendActionBar(
+                            LanguageManager.getMessageWithoutPrefix(
+                                player,
+                                "toggle_success",
+                                "function" to functionName,
+                                "status" to statusString
+                            )
+                        )
+                    }
+                    "clock_bar" -> {
+                        if (player == null) {
+                            sender.sendMessage("§cこのコマンドはプレイヤーのみ実行可能です。")
+                            return true
+                        }
+
+                        val current = PlayerDataManager.getBoolean(player.uniqueId, ClockManager.PLAYER_DATA_CLOCK_BAR, true)
+                        val newValue = !current
+                        PlayerDataManager.set(player.uniqueId, ClockManager.PLAYER_DATA_CLOCK_BAR, newValue)
+
+                        val statusKey = if (newValue) "enabled" else "disabled"
+                        val statusString = LanguageManager.getRawString(player, statusKey)
+                        val functionName = getFunctionDisplayName(player, "clock_bar")
                         player.sendActionBar(
                             LanguageManager.getMessageWithoutPrefix(
                                 player,
@@ -381,8 +404,11 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             when (args[0].lowercase()) {
                 "toggle" -> {
                     if (!hasPermissionForSubCommand(sender, "toggle")) return emptyList()
-                    if (!ConfigManager.isMusicEnabled()) return emptyList()
-                    return listOf("play_music").filter {
+                    val toggleTargets = mutableListOf("clock_bar")
+                    if (ConfigManager.isMusicEnabled()) {
+                        toggleTargets.add("play_music")
+                    }
+                    return toggleTargets.filter {
                         it.startsWith(args[1], ignoreCase = true)
                     }
                 }

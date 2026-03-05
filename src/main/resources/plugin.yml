@@ -41,6 +41,11 @@ commands:
       - an
     permission: cc-system.announce.use
 
+  clock:
+    description: タイマー・アラームを設定する
+    usage: /clock <timer|alarm|list|cancel>
+    permission: cc-system.clock.set
+
 permissions:
   cc-system.*:
     description: CC-Systemの全権限
@@ -51,6 +56,7 @@ permissions:
       cc-system.announce.*: true
       cc-system.npc_message.use: true
       cc-system.delay.use: true
+      cc-system.clock.set: true
   
   cc-system.admin:
     description: CC-System管理権限
@@ -67,6 +73,7 @@ permissions:
       cc-system.rental.bypass: true
       cc-system.announce.use: true
       cc-system.announce.manage: true
+      cc-system.clock.set: true
   
   cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
@@ -167,6 +174,10 @@ permissions:
     default: op
     children:
       cc-system.announce.use: true
+
+  cc-system.clock.set:
+    description: /clock コマンド使用権限
+    default: op
   
   craftercrossing.test:
     description: テスト用権限（プラグイン内の全権限を付与）

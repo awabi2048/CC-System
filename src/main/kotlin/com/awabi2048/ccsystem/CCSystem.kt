@@ -12,6 +12,8 @@ import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.listener.AnnounceListener
 import com.awabi2048.ccsystem.features.announce.listener.AnnouncementNotificationListener
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
+import com.awabi2048.ccsystem.features.clock.command.ClockCommand
+import com.awabi2048.ccsystem.features.clock.manager.ClockManager
 import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
@@ -279,7 +281,8 @@ class CCSystem : JavaPlugin() {
             "lang/en_us.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
-            "data/announce/announce_data.yml"
+            "data/announce/announce_data.yml",
+            "data/clock/clock_data.yml"
         ).forEach { resourcePath ->
             val file = File(dataFolder, resourcePath)
             if (!file.exists()) {
@@ -292,6 +295,7 @@ class CCSystem : JavaPlugin() {
         File(dataFolder, "data/resource_world").mkdirs()
         File(dataFolder, "data/queue").mkdirs()
         File(dataFolder, "data/rental_area/remained_item").mkdirs()
+        File(dataFolder, "data/clock").mkdirs()
         File(dataFolder, "playerdata").mkdirs()
     }
     
@@ -312,6 +316,7 @@ class CCSystem : JavaPlugin() {
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()
         AnnouncementManager.load()
+        ClockManager.load()
 
         // チャンクタスクキューマネージャー初期化
         ChunkTaskQueueManager.load()
@@ -332,6 +337,9 @@ class CCSystem : JavaPlugin() {
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
+        val clockCommand = ClockCommand()
+        getCommand("clock")?.setExecutor(clockCommand)
+        getCommand("clock")?.tabCompleter = clockCommand
         val announceCommand = AnnounceCommand()
         getCommand("announcement")?.setExecutor(announceCommand)
         getCommand("announcement")?.tabCompleter = announceCommand
@@ -346,6 +354,7 @@ class CCSystem : JavaPlugin() {
         if (hasAnnouncementNotificationListener()) {
             announcementNotificationListener.shutdown()
         }
+        ClockManager.unload()
         AnnouncementManager.unload()
 
         // チャンクタスクキューのシャットダウン（状態保存）
