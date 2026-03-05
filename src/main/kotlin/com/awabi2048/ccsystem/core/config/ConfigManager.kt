@@ -209,6 +209,20 @@ object ConfigManager {
         }
     }
 
+    fun setDebugEnabled(enabled: Boolean): Boolean {
+        if (!::coreConfig.isInitialized || !::coreConfigFile.isInitialized) {
+            return false
+        }
+        coreConfig.set("core.debug", enabled)
+        return runCatching {
+            coreConfig.save(coreConfigFile)
+            true
+        }.getOrElse {
+            CCSystem.instance.logger.warning("core.debug の保存に失敗しました: ${it.message}")
+            false
+        }
+    }
+
     private fun loadYaml(relativePath: String): YamlConfiguration {
         val file = File(CCSystem.instance.dataFolder, relativePath)
         if (!file.exists()) {

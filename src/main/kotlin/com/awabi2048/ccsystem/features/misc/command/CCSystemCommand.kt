@@ -9,7 +9,6 @@ import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
-import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -31,6 +30,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         "public_sign",
         "music",
         "dynamic_distance",
+        "debug",
         "shift_f_binder",
         "disable_global_sound_events",
         "delay_command",
@@ -293,7 +293,12 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     return true
                 }
 
-                if (!ConfigManager.setFeatureEnabled(featureKey, targetEnabled)) {
+                val saved = when (featureKey) {
+                    "debug" -> ConfigManager.setDebugEnabled(targetEnabled)
+                    else -> ConfigManager.setFeatureEnabled(featureKey, targetEnabled)
+                }
+
+                if (!saved) {
                     sender.sendMessage("§c機能設定の保存に失敗しました。")
                     return true
                 }
@@ -436,6 +441,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             "public_sign" -> ConfigManager.isPublicSignEnabled()
             "music" -> ConfigManager.isMusicEnabled()
             "dynamic_distance" -> ConfigManager.isDynamicDistanceEnabled()
+            "debug" -> ConfigManager.isDebug()
             "shift_f_binder" -> ConfigManager.isShiftFBinderEnabled()
             "disable_global_sound_events" -> ConfigManager.isGlobalSoundEventsAutoDisable()
             "delay_command" -> ConfigManager.isDelayCommandEnabled()
@@ -451,25 +457,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         MessageManager.load()
         PlacedBlockLedgerManager.load()
         AnnouncementManager.load()
-
-        if (ConfigManager.isPublicSignEnabled()) {
-            PublicSignManager.load()
-        }
-        if (ConfigManager.isRentalAreaEnabled()) {
-            RemainedItemManager.load()
-            RentalAreaManager.load()
-        }
-
-        if (CCSystem.instance.hasMusicListener()) {
-            CCSystem.instance.musicListener.stopAllPlayersMusic()
-        }
-        if (ConfigManager.isMusicEnabled() && CCSystem.instance.hasMusicListener()) {
-            CCSystem.instance.musicListener.startAllPlayersMusic()
-        }
-
-        if (CCSystem.instance.hasDynamicDistanceListener()) {
-            CCSystem.instance.dynamicDistanceListener.reload()
-        }
+        CCSystem.instance.syncFeatureRuntime()
 
         sender.sendMessage(LanguageManager.getMessage(player, "reload_success"))
     }

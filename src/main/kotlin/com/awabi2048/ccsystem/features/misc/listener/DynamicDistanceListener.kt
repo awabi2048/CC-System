@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -103,6 +104,7 @@ class DynamicDistanceListener : Listener {
         val onlinePlayers = Bukkit.getOnlinePlayers()
         val onlineCount = onlinePlayers.size
         val seconds = settings.intervalTicks.toDouble() / 20.0
+        val debugEnabled = ConfigManager.isDebug()
         logicalTick += settings.intervalTicks
 
         for (player in onlinePlayers) {
@@ -114,6 +116,9 @@ class DynamicDistanceListener : Listener {
                     resetPlayerToWorldDefault(player)
                     state.adjusted = false
                     state.lastAppliedDistance = null
+                }
+                if (debugEnabled) {
+                    player.sendActionBar("§8[DD] §7blacklisted: ${player.world.name}")
                 }
                 continue
             }
@@ -162,7 +167,44 @@ class DynamicDistanceListener : Listener {
                 state.lastAppliedDistance = target
                 state.adjusted = true
             }
+
+            if (debugEnabled) {
+                sendDebugActionBar(
+                    player = player,
+                    state = state,
+                    onlineCount = onlineCount,
+                    speedDelta = speedDelta,
+                    onlineDelta = onlineDelta,
+                    target = target,
+                    changed = changed,
+                    shouldApply = shouldApply
+                )
+            }
         }
+    }
+
+    private fun sendDebugActionBar(
+        player: Player,
+        state: PlayerState,
+        onlineCount: Int,
+        speedDelta: ConfigManager.DistanceDelta,
+        onlineDelta: ConfigManager.DistanceDelta,
+        target: AppliedDistance,
+        changed: Boolean,
+        shouldApply: Boolean
+    ) {
+        val speedText = String.format(Locale.US, "%.2f", state.smoothedSpeedBps)
+        val applyState = when {
+            shouldApply -> "apply"
+            changed -> "cooldown"
+            else -> "hold"
+        }
+        player.sendActionBar(
+            "§8[DD] §fV:${target.view} S:${target.simulation} Send:${target.send} " +
+                "§7spd:$speedText p:$onlineCount " +
+                "dS(${speedDelta.view}/${speedDelta.simulation}/${speedDelta.send}) " +
+                "dP(${onlineDelta.view}/${onlineDelta.simulation}/${onlineDelta.send}) §e$applyState"
+        )
     }
 
     private fun applyDistance(player: Player, distance: AppliedDistance) {

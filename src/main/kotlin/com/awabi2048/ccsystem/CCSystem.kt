@@ -34,6 +34,9 @@ import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import java.io.File
+import org.bukkit.GameRule
+import org.bukkit.event.HandlerList
+import org.bukkit.event.Listener
 
 class CCSystem : JavaPlugin() {
     
@@ -55,10 +58,209 @@ class CCSystem : JavaPlugin() {
     lateinit var dynamicDistanceListener: DynamicDistanceListener
     lateinit var announcementNotificationListener: AnnouncementNotificationListener
 
+    private var musicListenerRegistered: Boolean = false
+    private var resourceListenerRegistered: Boolean = false
+    private var dynamicDistanceListenerRegistered: Boolean = false
+
+    private var shiftFBinderListener: ShiftFBinderListener? = null
+    private var shiftFBinderListenerRegistered: Boolean = false
+
+    private var worldListener: WorldListener? = null
+    private var worldListenerRegistered: Boolean = false
+
+    private var publicSignListener: PublicSignListener? = null
+    private var publicSignListenerRegistered: Boolean = false
+
+    private var rentalAreaListener: RentalAreaListener? = null
+    private var rentalAreaListenerRegistered: Boolean = false
+
+    private var resourceRuntimeInitialized: Boolean = false
+
     fun hasMusicListener(): Boolean = ::musicListener.isInitialized
     fun hasResourceListener(): Boolean = ::resourceListener.isInitialized
     fun hasDynamicDistanceListener(): Boolean = ::dynamicDistanceListener.isInitialized
     fun hasAnnouncementNotificationListener(): Boolean = ::announcementNotificationListener.isInitialized
+
+    private fun registerListenerIfNeeded(listener: Listener, isRegistered: Boolean): Boolean {
+        if (isRegistered) {
+            return true
+        }
+        server.pluginManager.registerEvents(listener, this)
+        return true
+    }
+
+    private fun unregisterListenerIfNeeded(listener: Listener?, isRegistered: Boolean): Boolean {
+        if (!isRegistered || listener == null) {
+            return isRegistered
+        }
+        HandlerList.unregisterAll(listener)
+        return false
+    }
+
+    fun syncFeatureRuntime() {
+        syncMusicFeature()
+        syncShiftFBinderFeature()
+        syncGlobalSoundEventsFeature()
+        syncDynamicDistanceFeature()
+        syncPublicSignFeature()
+        syncRentalAreaFeature()
+        syncResourceWorldFeature()
+    }
+
+    private fun syncMusicFeature() {
+        if (ConfigManager.isMusicEnabled()) {
+            if (!hasMusicListener()) {
+                musicListener = MusicListener()
+            }
+            musicListenerRegistered = registerListenerIfNeeded(musicListener, musicListenerRegistered)
+            musicListener.stopAllPlayersMusic()
+            musicListener.startAllPlayersMusic()
+            return
+        }
+
+        if (hasMusicListener()) {
+            musicListener.stopAllPlayersMusic()
+            musicListenerRegistered = unregisterListenerIfNeeded(musicListener, musicListenerRegistered)
+        }
+    }
+
+    private fun syncShiftFBinderFeature() {
+        if (ConfigManager.isShiftFBinderEnabled()) {
+            if (shiftFBinderListener == null) {
+                shiftFBinderListener = ShiftFBinderListener()
+            }
+            shiftFBinderListenerRegistered =
+                registerListenerIfNeeded(shiftFBinderListener ?: return, shiftFBinderListenerRegistered)
+            return
+        }
+
+        shiftFBinderListenerRegistered = unregisterListenerIfNeeded(shiftFBinderListener, shiftFBinderListenerRegistered)
+    }
+
+    private fun syncGlobalSoundEventsFeature() {
+        if (ConfigManager.isGlobalSoundEventsAutoDisable()) {
+            if (worldListener == null) {
+                worldListener = WorldListener()
+            }
+            worldListenerRegistered = registerListenerIfNeeded(worldListener ?: return, worldListenerRegistered)
+            applyGlobalSoundEventsRuleToLoadedWorlds()
+            return
+        }
+
+        worldListenerRegistered = unregisterListenerIfNeeded(worldListener, worldListenerRegistered)
+    }
+
+    private fun syncDynamicDistanceFeature() {
+        if (ConfigManager.isDynamicDistanceEnabled()) {
+            if (!hasDynamicDistanceListener()) {
+                dynamicDistanceListener = DynamicDistanceListener()
+            } else {
+                dynamicDistanceListener.reload()
+            }
+            dynamicDistanceListenerRegistered =
+                registerListenerIfNeeded(dynamicDistanceListener, dynamicDistanceListenerRegistered)
+            return
+        }
+
+        if (hasDynamicDistanceListener()) {
+            dynamicDistanceListener.shutdown()
+            dynamicDistanceListenerRegistered = unregisterListenerIfNeeded(dynamicDistanceListener, dynamicDistanceListenerRegistered)
+        }
+    }
+
+    private fun syncPublicSignFeature() {
+        if (ConfigManager.isPublicSignEnabled()) {
+            PublicSignManager.load()
+            if (publicSignListener == null) {
+                publicSignListener = PublicSignListener()
+            }
+            publicSignListenerRegistered = registerListenerIfNeeded(publicSignListener ?: return, publicSignListenerRegistered)
+            return
+        }
+
+        publicSignListenerRegistered = unregisterListenerIfNeeded(publicSignListener, publicSignListenerRegistered)
+    }
+
+    private fun syncRentalAreaFeature() {
+        if (ConfigManager.isRentalAreaEnabled()) {
+            RemainedItemManager.load()
+            RentalAreaManager.load()
+            if (rentalAreaListener == null) {
+                rentalAreaListener = RentalAreaListener()
+            }
+            rentalAreaListenerRegistered = registerListenerIfNeeded(rentalAreaListener ?: return, rentalAreaListenerRegistered)
+            return
+        }
+
+        rentalAreaListenerRegistered = unregisterListenerIfNeeded(rentalAreaListener, rentalAreaListenerRegistered)
+    }
+
+    private fun syncResourceWorldFeature() {
+        if (ConfigManager.isResourceWorldEnabled()) {
+            ensureResourceRuntimeInitialized()
+            if (!resourceListenerRegistered) {
+                resourceListener = ResourceListener()
+                resourceListenerRegistered = registerListenerIfNeeded(resourceListener, resourceListenerRegistered)
+            }
+            return
+        }
+
+        if (hasResourceListener()) {
+            resourceListener.cancelMonitorTask()
+            resourceListenerRegistered = unregisterListenerIfNeeded(resourceListener, resourceListenerRegistered)
+        }
+
+        if (resourceRuntimeInitialized) {
+            WorldManager.cancelAllPregenTasks()
+            ScoreboardManager.disable()
+            resourceRuntimeInitialized = false
+        }
+    }
+
+    private fun ensureResourceRuntimeInitialized() {
+        if (resourceRuntimeInitialized) {
+            return
+        }
+        PregenerationStateManager.load()
+        WorldManager.loadExistingWorlds()
+        ScoreboardManager.init()
+        WorldManager.resumePregeneration()
+        resourceRuntimeInitialized = true
+    }
+
+    private fun applyGlobalSoundEventsRuleToLoadedWorlds() {
+        for (world in server.worlds) {
+            world.setGameRule(GameRule.GLOBAL_SOUND_EVENTS, false)
+        }
+    }
+
+    private fun shutdownFeatureRuntime() {
+        if (hasMusicListener()) {
+            musicListener.stopAllPlayersMusic()
+            musicListenerRegistered = unregisterListenerIfNeeded(musicListener, musicListenerRegistered)
+        }
+
+        if (hasDynamicDistanceListener()) {
+            dynamicDistanceListener.shutdown()
+            dynamicDistanceListenerRegistered = unregisterListenerIfNeeded(dynamicDistanceListener, dynamicDistanceListenerRegistered)
+        }
+
+        if (hasResourceListener()) {
+            resourceListener.cancelMonitorTask()
+            resourceListenerRegistered = unregisterListenerIfNeeded(resourceListener, resourceListenerRegistered)
+        }
+
+        shiftFBinderListenerRegistered = unregisterListenerIfNeeded(shiftFBinderListener, shiftFBinderListenerRegistered)
+        worldListenerRegistered = unregisterListenerIfNeeded(worldListener, worldListenerRegistered)
+        publicSignListenerRegistered = unregisterListenerIfNeeded(publicSignListener, publicSignListenerRegistered)
+        rentalAreaListenerRegistered = unregisterListenerIfNeeded(rentalAreaListener, rentalAreaListenerRegistered)
+
+        if (resourceRuntimeInitialized) {
+            WorldManager.cancelAllPregenTasks()
+            ScoreboardManager.disable()
+            resourceRuntimeInitialized = false
+        }
+    }
 
     fun ensureDefaultFiles() {
         if (!dataFolder.exists()) {
@@ -110,67 +312,19 @@ class CCSystem : JavaPlugin() {
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()
         AnnouncementManager.load()
-        if (ConfigManager.isRentalAreaEnabled()) {
-            RemainedItemManager.load()
-            RentalAreaManager.load()
-        }
-        if (ConfigManager.isPublicSignEnabled()) {
-            PublicSignManager.load()
-        }
-        
-        // 資源ワールドマネージャー初期化
-        if (ConfigManager.isResourceWorldEnabled()) {
-            PregenerationStateManager.load()
-            WorldManager.loadExistingWorlds()
-            ScoreboardManager.init()
-        }
 
         // チャンクタスクキューマネージャー初期化
         ChunkTaskQueueManager.load()
-        
-        // リスナー初期化
-        if (ConfigManager.isMusicEnabled()) {
-            musicListener = MusicListener()
-        }
-        if (ConfigManager.isResourceWorldEnabled()) {
-            resourceListener = ResourceListener()
-        }
-        if (ConfigManager.getDynamicDistanceSettings().enabled) {
-            dynamicDistanceListener = DynamicDistanceListener()
-        }
+
         announcementNotificationListener = AnnouncementNotificationListener()
-        
+
         // リスナー登録
-        if (hasMusicListener()) {
-            server.pluginManager.registerEvents(musicListener, this)
-        }
-        if (ConfigManager.isShiftFBinderEnabled()) {
-            server.pluginManager.registerEvents(ShiftFBinderListener(), this)
-        }
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
-        if (ConfigManager.isGlobalSoundEventsAutoDisable()) {
-            server.pluginManager.registerEvents(WorldListener(), this)
-        }
-        if (hasResourceListener()) {
-            server.pluginManager.registerEvents(resourceListener, this)
-        }
-        if (hasDynamicDistanceListener()) {
-            server.pluginManager.registerEvents(dynamicDistanceListener, this)
-        }
-        if (ConfigManager.isPublicSignEnabled()) {
-            server.pluginManager.registerEvents(PublicSignListener(), this)
-        }
-        if (ConfigManager.isRentalAreaEnabled()) {
-            server.pluginManager.registerEvents(RentalAreaListener(), this)
-        }
         server.pluginManager.registerEvents(AnnounceListener(), this)
         server.pluginManager.registerEvents(announcementNotificationListener, this)
-        
-        // 中断されていた事前生成を再開
-        if (ConfigManager.isResourceWorldEnabled()) {
-            WorldManager.resumePregeneration()
-        }
+
+        syncFeatureRuntime()
         
         // コマンド登録
         getCommand("resource")?.setExecutor(ResourceCommand())
@@ -188,16 +342,7 @@ class CCSystem : JavaPlugin() {
     override fun onDisable() {
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()
-        if (ConfigManager.isResourceWorldEnabled()) {
-            WorldManager.cancelAllPregenTasks()
-            ScoreboardManager.disable()
-        }
-        if (hasResourceListener()) {
-            resourceListener.cancelMonitorTask()
-        }
-        if (hasDynamicDistanceListener()) {
-            dynamicDistanceListener.shutdown()
-        }
+        shutdownFeatureRuntime()
         if (hasAnnouncementNotificationListener()) {
             announcementNotificationListener.shutdown()
         }
