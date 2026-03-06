@@ -126,7 +126,9 @@ class ResourceListener : Listener {
         val loc = player.location
         val spawn = player.world.spawnLocation
         val radius = ConfigManager.getScaffoldRadius()
-        return Math.abs(loc.blockX - spawn.blockX) <= radius && Math.abs(loc.blockZ - spawn.blockZ) <= radius
+        return Math.abs(loc.blockX - spawn.blockX) <= radius &&
+            Math.abs(loc.blockZ - spawn.blockZ) <= radius &&
+            loc.blockY == spawn.blockY
     }
 
     private fun spawnParticles(world: World) {
