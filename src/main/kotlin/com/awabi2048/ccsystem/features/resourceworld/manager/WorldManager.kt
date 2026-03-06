@@ -68,13 +68,30 @@ object WorldManager {
         if (existingWorldName != null) {
             MacroManager.executeBeforeDelete(existingWorldName)
         }
-        deleteResourceWorld(type, variation)
+        deleteResourceWorld(type, variation) { deleted ->
+            if (!deleted) {
+                val errorMsg = "既存の資源ワールド削除が完了しなかったため、新規生成を中止しました。"
+                logger.severe(errorMsg)
+                Bukkit.broadcastMessage("§c[CC-System] $errorMsg")
+                return@deleteResourceWorld
+            }
 
-        // 2. 新しいワールド名を決定
+            createResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
+        }
+        
+        return true
+    }
+
+    private fun createResourceWorld(
+        resourceConfig: ConfigManager.ResourceConfig,
+        type: String,
+        variation: String,
+        customBorderSize: Int?,
+        customDifficulty: Difficulty?
+    ): Boolean {
         val dateStr = LocalDateTime.now().format(dateFormatter)
         val worldName = "${resourceConfig.baseName}.$variation.$dateStr"
 
-        // 3. ワールド生成の設定
         val creator = WorldCreator(worldName)
         when (type.lowercase()) {
             "nether" -> creator.environment(World.Environment.NETHER)
@@ -90,22 +107,18 @@ object WorldManager {
             return false
         }
 
-        // 4. ワールドボーダーの設定
         val borderSize = customBorderSize ?: resourceConfig.defaultBorder
         val border = world.worldBorder
         border.setCenter(0.5, 0.5)
         border.size = borderSize.toDouble()
 
-        // 5. スポーン地点の設定
         val spawnLoc: Location = calculateSpawnLocation(world)
         world.setSpawnLocation(spawnLoc)
 
-        // 5.5 難易度の設定（引数 > config > NORMALの優先順位）
         val difficulty = customDifficulty ?: ConfigManager.getDefaultDifficulty()
         world.difficulty = difficulty
         logger.info("ワールド $worldName の難易度を ${difficulty.name} に設定しました。")
 
-        // 6. メッセージの出力
         val broadcastMsg = LanguageManager.getRawString(null, "broadcast_success")
             .replace("%world_name%", worldName)
             .replace("%border_size%", borderSize.toString())
@@ -115,16 +128,10 @@ object WorldManager {
 
         Bukkit.broadcastMessage(broadcastMsg)
         logger.info(consoleMsg)
-        
-        // 7. 足場の生成
+
         createScaffold(world, spawnLoc)
-
-        // 8. 生成完了後マクロの実行
         MacroManager.executeAfterGeneration(worldName, borderSize)
-
-        // 9. 事前生成プロセスの開始
         startPregeneration(world, borderSize)
-        
         return true
     }
 
@@ -438,8 +445,11 @@ object WorldManager {
     /**
      * 指定されたリソースタイプとバリエーションに該当する既存ワールドを削除する
      */
-    fun deleteResourceWorld(type: String, variation: String) {
-        val resourceConfig = ConfigManager.getResourceConfig(type) ?: return
+    fun deleteResourceWorld(type: String, variation: String, onComplete: (Boolean) -> Unit = {}) {
+        val resourceConfig = ConfigManager.getResourceConfig(type) ?: run {
+            onComplete(false)
+            return
+        }
         val prefix = "${resourceConfig.baseName}.$variation."
 
         val worldsToRemove = Bukkit.getWorlds().filter { it.name.startsWith(prefix) }
@@ -477,7 +487,12 @@ object WorldManager {
             
             override fun run() {
                 val worldContainer = Bukkit.getWorldContainer()
-                val files = worldContainer.listFiles() ?: return
+                val files = worldContainer.listFiles() ?: run {
+                    this.cancel()
+                    logger.severe("ワールドコンテナの一覧取得に失敗したため、ワールド削除状態を確認できませんでした。")
+                    onComplete(false)
+                    return
+                }
                 var hasRemainingFiles = false
                 
                 for (file in files) {
@@ -499,6 +514,9 @@ object WorldManager {
                     this.cancel()
                     if (hasRemainingFiles) {
                         logger.severe("ワールドフォルダの削除が完了しませんでした。手動での削除が必要かもしれません。")
+                        onComplete(false)
+                    } else {
+                        onComplete(true)
                     }
                 }
             }
