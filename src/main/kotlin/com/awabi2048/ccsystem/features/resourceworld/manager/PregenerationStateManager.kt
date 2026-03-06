@@ -25,6 +25,7 @@ object PregenerationStateManager {
         val worldName: String,
         val borderSize: Int,
         var currentIndex: Int = 0,
+        var elapsedMillis: Long = 0L,
         var priorityCompleted: Boolean = false,
         var allCompleted: Boolean = false
     )

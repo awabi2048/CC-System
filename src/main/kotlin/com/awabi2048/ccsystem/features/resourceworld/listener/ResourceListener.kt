@@ -177,7 +177,7 @@ class ResourceListener : Listener {
             }
         }.runTaskLater(CCSystem.instance, 1L)
 
-        player.sendMessage("§a[CC-System] 資源ワールドから帰還しました。")
+        player.sendMessage("§a資源ワールドから帰還しました。")
     }
 
     private fun cleanupBossBar(uuid: UUID) {

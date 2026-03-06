@@ -68,6 +68,7 @@ object ScoreboardManager {
 
                 // 事前読み込み状況
                 val pregenProgress = WorldManager.getPregenProgress(world.name)
+                val priorityPregenProgress = WorldManager.getPriorityPregenProgress(world.name)
                 val priorityCompleteTime = WorldManager.getPriorityCompleteTime(world.name)
                 val allCompleteTime = WorldManager.getAllCompleteTime(world.name)
 
@@ -76,11 +77,11 @@ object ScoreboardManager {
                     pregenStatus = "§d完了"
                 } else if (priorityCompleteTime != null) {
                     pregenStatus = "§d完了"
-                } else if (pregenProgress >= 100) {
+                } else if (priorityPregenProgress >= 100) {
                     pregenStatus = "§d完了"
-                } else if (pregenProgress > 0) {
-                    val estimatedMinutes = calculateEstimatedMinutes(world.name, priorityCompleteTime == null)
-                    pregenStatus = "§b${pregenProgress}%§7(約${estimatedMinutes}分)"
+                } else if (priorityPregenProgress > 0) {
+                    val estimatedMinutes = calculateEstimatedMinutes(world.name, true)
+                    pregenStatus = "§b${priorityPregenProgress}%§7(約${estimatedMinutes}分)"
                 } else {
                     pregenStatus = "§7未開始"
                 }
@@ -120,15 +121,19 @@ object ScoreboardManager {
         val taskInfo = WorldManager.getPregenTasks()[worldName]
         if (taskInfo == null) return 0
 
-        val pregenProgress = WorldManager.getPregenProgress(worldName)
-        if (pregenProgress == 0) return 0
+        val progress = if (isPriority) {
+            WorldManager.getPriorityPregenProgress(worldName)
+        } else {
+            WorldManager.getPregenProgress(worldName)
+        }
+        if (progress == 0) return 0
 
         val currentTime = System.currentTimeMillis()
         val elapsedTime = currentTime - taskInfo.startTime
         val elapsedTimeMinutes = elapsedTime / 60000.0
 
         // 予想総時間 = 経過時間 / 進捗率 * 100
-        val estimatedTotalMinutes = elapsedTimeMinutes / pregenProgress * 100
+        val estimatedTotalMinutes = elapsedTimeMinutes / progress * 100
         val remainingMinutes = (estimatedTotalMinutes - elapsedTimeMinutes).toInt()
 
         return maxOf(0, remainingMinutes)

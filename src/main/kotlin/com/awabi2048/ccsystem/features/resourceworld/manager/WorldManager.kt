@@ -25,12 +25,16 @@ object WorldManager {
     // 現在の生成進捗 (ワールド名 -> 進捗率%)
     private val pregenProgress = mutableMapOf<String, Int>()
 
+    // 優先エリアの生成進捗 (ワールド名 -> 進捗率%)
+    private val priorityPregenProgress = mutableMapOf<String, Int>()
+
     data class PregenTaskInfo(
         val runnable: BukkitRunnable,
         val startTime: Long,
         val borderSize: Int,
         val totalChunks: Int,
-        val priorityChunksCount: Int
+        val priorityChunksCount: Int,
+        var currentIndex: Int
     )
 
     // 事前読み込みタスクの追跡 (ワールド名 -> TaskInfo) - 管理機能用
@@ -273,13 +277,13 @@ object WorldManager {
      * チャンクの事前生成を開始する
      */
     private fun startPregeneration(world: World, borderSize: Int) {
-        startPregeneration(world, borderSize, 0, false, false)
+        startPregeneration(world, borderSize, 0, 0L, false, false)
     }
 
     /**
      * チャンクの事前生成を開始する（中断からの再開対応）
      */
-    private fun startPregeneration(world: World, borderSize: Int, startIndex: Int, priorityCompleted: Boolean, allCompleted: Boolean) {
+    private fun startPregeneration(world: World, borderSize: Int, startIndex: Int, elapsedMillis: Long, priorityCompleted: Boolean, allCompleted: Boolean) {
         if (allCompleted) {
             logger.info("ワールド ${world.name} の事前生成は既に完了しています。")
             return
@@ -306,13 +310,21 @@ object WorldManager {
 
         val sortedChunks = priorityChunks + remainingChunks
         val totalChunks = sortedChunks.size
-        val startTime = System.currentTimeMillis()
+        val startTime = System.currentTimeMillis() - elapsedMillis
+        val initialPercent = (startIndex * 100) / totalChunks.coerceAtLeast(1)
+        val initialPriorityPercent = ((startIndex.coerceAtMost(priorityChunks.size)) * 100) / priorityChunks.size.coerceAtLeast(1)
+        pregenProgress[world.name] = initialPercent
+        priorityPregenProgress[world.name] = if (priorityCompleted) 100 else initialPriorityPercent
+        if (priorityCompleted) {
+            readyWorlds.add(world.name)
+        }
 
         // 状態の初期化・更新
         val state = PregenerationStateManager.PregenState(
             worldName = world.name,
             borderSize = borderSize,
             currentIndex = startIndex,
+            elapsedMillis = elapsedMillis,
             priorityCompleted = priorityCompleted,
             allCompleted = false
         )
@@ -332,10 +344,13 @@ object WorldManager {
                 }
 
                 index = endIdx
+                pregenTaskInfos[world.name]?.currentIndex = index
 
                 // 進捗報告
                 val percent = (index * 100) / totalChunks
                 pregenProgress[world.name] = percent
+                val priorityPercent = ((index.coerceAtMost(priorityChunks.size)) * 100) / priorityChunks.size.coerceAtLeast(1)
+                priorityPregenProgress[world.name] = priorityPercent
 
                 if (percent / 10 > lastReportedPercent / 10) {
                     logger.info("資源ワールド ${world.name} チャンク生成中... $percent%")
@@ -344,7 +359,10 @@ object WorldManager {
 
                 // 定期的に状態を保存（10%ごと）
                 if (percent / 10 > lastSavedPercent / 10) {
-                    PregenerationStateManager.updateState(world.name) { it.currentIndex = index }
+                    PregenerationStateManager.updateState(world.name) {
+                        it.currentIndex = index
+                        it.elapsedMillis = (System.currentTimeMillis() - startTime).coerceAtLeast(0L)
+                    }
                     PregenerationStateManager.save()
                     lastSavedPercent = percent
                 }
@@ -362,7 +380,11 @@ object WorldManager {
                     // 優先エリア生成完了後マクロの実行
                     MacroManager.executeAfterPriorityPregen(world.name)
 
-                    PregenerationStateManager.updateState(world.name) { it.priorityCompleted = true }
+                    PregenerationStateManager.updateState(world.name) {
+                        it.currentIndex = index
+                        it.elapsedMillis = (System.currentTimeMillis() - startTime).coerceAtLeast(0L)
+                        it.priorityCompleted = true
+                    }
                     PregenerationStateManager.save()
                 }
 
@@ -371,6 +393,7 @@ object WorldManager {
                     val msg = LanguageManager.getRawString(null, "pregen_all_complete").replace("%world_name%", world.name)
                     logger.info(ChatColor.stripColor(msg))
                     pregenProgress.remove(world.name)
+                    priorityPregenProgress.remove(world.name)
                     allCompleteTime[world.name] = System.currentTimeMillis()
                     pregenTaskInfos.remove(world.name)
                     pregenTasks.remove(world.name)
@@ -386,7 +409,7 @@ object WorldManager {
 
         // タスクを開始して情報を保存
         task.runTaskTimer(CCSystem.instance, 0L, delay)
-        val taskInfo = PregenTaskInfo(task, startTime, borderSize, totalChunks, priorityChunks.size)
+        val taskInfo = PregenTaskInfo(task, startTime, borderSize, totalChunks, priorityChunks.size, startIndex)
         pregenTaskInfos[world.name] = taskInfo
         pregenTasks[world.name] = task
     }
@@ -397,12 +420,18 @@ object WorldManager {
 
     fun getPregenProgress(worldName: String): Int = pregenProgress[worldName] ?: 0
 
+    fun getPriorityPregenProgress(worldName: String): Int = priorityPregenProgress[worldName] ?: if (readyWorlds.contains(worldName)) 100 else 0
+
     /**
      * すべての事前生成タスクをキャンセルする
      */
     fun cancelAllPregenTasks() {
         logger.info("すべての事前生成タスクをキャンセルしています...")
         for ((worldName, taskInfo) in pregenTaskInfos) {
+            PregenerationStateManager.updateState(worldName) {
+                it.currentIndex = taskInfo.currentIndex
+                it.elapsedMillis = (System.currentTimeMillis() - taskInfo.startTime).coerceAtLeast(0L)
+            }
             taskInfo.runnable.cancel()
             logger.info("ワールド $worldName の事前生成タスクをキャンセルしました。")
         }
@@ -433,12 +462,12 @@ object WorldManager {
                 continue
             }
 
-            if (readyWorlds.contains(state.worldName) && !state.priorityCompleted) {
+            if (state.priorityCompleted) {
                 readyWorlds.add(state.worldName)
             }
 
             logger.info("ワールド ${state.worldName} の事前生成をインデックス ${state.currentIndex} から再開します...")
-            startPregeneration(world, state.borderSize, state.currentIndex, state.priorityCompleted, false)
+            startPregeneration(world, state.borderSize, state.currentIndex, state.elapsedMillis, state.priorityCompleted, false)
         }
     }
 
@@ -458,6 +487,7 @@ object WorldManager {
             val worldName = world.name
             readyWorlds.remove(worldName)
             pregenProgress.remove(worldName)
+            priorityPregenProgress.remove(worldName)
 
             // 事前生成タスクをキャンセル
             pregenTaskInfos[worldName]?.runnable?.cancel()
@@ -602,12 +632,14 @@ object WorldManager {
                     readyWorlds.add(worldName)
                     pregenProgress[worldName] = 100 // 既存ワールドは100%完了とみなす
                     logger.info("資源ワールド $worldName のロードに成功しました。")
+                    priorityPregenProgress[worldName] = 100
                 } else {
                     logger.severe("資源ワールド $worldName のロードに失敗しました。")
                 }
             } else {
                 readyWorlds.add(worldName)
                 pregenProgress[worldName] = 100 // 既存ワールドは100%完了とみなす
+                priorityPregenProgress[worldName] = 100
             }
         }
     }
@@ -648,6 +680,13 @@ object WorldManager {
 
         val task = pregenTasks[world.name]
         if (task != null) {
+            pregenTaskInfos[world.name]?.let { taskInfo ->
+                PregenerationStateManager.updateState(world.name) {
+                    it.currentIndex = taskInfo.currentIndex
+                    it.elapsedMillis = (System.currentTimeMillis() - taskInfo.startTime).coerceAtLeast(0L)
+                }
+                PregenerationStateManager.save()
+            }
             task.cancel()
             pregenTasks.remove(world.name)
             logger.info("資源ワールド ${world.name} の事前読み込みを中断しました。")
@@ -685,6 +724,7 @@ object WorldManager {
 
         readyWorlds.remove(world.name)
         pregenProgress.remove(world.name)
+        priorityPregenProgress.remove(world.name)
         priorityCompleteTime.remove(world.name)
         allCompleteTime.remove(world.name)
 
