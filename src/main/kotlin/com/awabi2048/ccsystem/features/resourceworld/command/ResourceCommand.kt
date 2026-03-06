@@ -207,11 +207,20 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             list.addAll(subCommands.filter { it.startsWith(args[0].lowercase()) })
         } else if (args.size == 2) {
             val query = args[1].lowercase()
-            for ((type, config) in ConfigManager.getAllResourceConfigs()) {
-                for (variation in config.variations) {
-                    val target = "$type:$variation"
-                    if (target.startsWith(query)) {
-                        list.add(target)
+            when (args[0].lowercase()) {
+                "teleport", "pause_pregen", "close" -> {
+                    list.addAll(
+                        getAvailableResourceTargets().filter { it.startsWith(query) }
+                    )
+                }
+                else -> {
+                    for ((type, config) in ConfigManager.getAllResourceConfigs()) {
+                        for (variation in config.variations) {
+                            val target = "$type:$variation"
+                            if (target.startsWith(query)) {
+                                list.add(target)
+                            }
+                        }
                     }
                 }
             }
@@ -228,5 +237,19 @@ class ResourceCommand : CommandExecutor, TabCompleter {
         }
 
         return list
+    }
+
+    private fun getAvailableResourceTargets(): List<String> {
+        val worlds = Bukkit.getWorlds()
+        return ConfigManager.getAllResourceConfigs().flatMap { (type, config) ->
+            config.variations.mapNotNull { variation ->
+                val prefix = "${config.baseName}.${variation.lowercase()}."
+                if (worlds.any { it.name.startsWith(prefix) }) {
+                    "$type:$variation"
+                } else {
+                    null
+                }
+            }
+        }
     }
 }

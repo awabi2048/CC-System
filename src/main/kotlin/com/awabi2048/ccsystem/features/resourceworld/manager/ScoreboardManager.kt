@@ -6,7 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scoreboard.DisplaySlot
-import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard
 
 object ScoreboardManager {
@@ -49,11 +48,12 @@ object ScoreboardManager {
 
         val separator = "§7§m――――――――――――――――――"
         val header = "§f§l| §7ワールド | 仮読み込み | 全読み込み"
+        var separatorIndex = 0
 
         var line = 15
-        objective.getScore(separator).score = line--
+        setLine(objective, separator, line--, separatorIndex++)
         objective.getScore(header).score = line--
-        objective.getScore(separator).score = line--
+        setLine(objective, separator, line--, separatorIndex++)
 
         // 全ての資源ワールドを取得
         val allResourceConfigs = ConfigManager.getAllResourceConfigs()
@@ -75,7 +75,8 @@ object ScoreboardManager {
                 if (allCompleteTime != null) {
                     pregenStatus = "§d完了"
                 } else if (priorityCompleteTime != null) {
-                    // 優先エリア完了済み、全エリア進行中
+                    pregenStatus = "§d完了"
+                } else if (pregenProgress >= 100) {
                     pregenStatus = "§d完了"
                 } else if (pregenProgress > 0) {
                     val estimatedMinutes = calculateEstimatedMinutes(world.name, priorityCompleteTime == null)
@@ -88,6 +89,8 @@ object ScoreboardManager {
                 val allStatus: String
                 if (allCompleteTime != null) {
                     allStatus = "§d読み込み終了"
+                } else if (pregenProgress >= 100) {
+                    allStatus = "§d完了"
                 } else if (priorityCompleteTime != null) {
                     val estimatedMinutes = calculateEstimatedMinutes(world.name, false)
                     allStatus = "§b${pregenProgress}%§7(約${estimatedMinutes}分)"
@@ -97,13 +100,20 @@ object ScoreboardManager {
                 }
 
                 val lineText = "§f§l| $worldName $pregenStatus §f| $allStatus"
-                objective.getScore(lineText).score = line--
+                setLine(objective, lineText, line--)
             }
         }
 
-        objective.getScore(separator).score = line
-
         return scoreboard
+    }
+
+    private fun setLine(objective: org.bukkit.scoreboard.Objective, text: String, score: Int, suffixIndex: Int? = null) {
+        val entry = if (suffixIndex == null) {
+            text
+        } else {
+            text + "§${suffixIndex.toString(16)}"
+        }
+        objective.getScore(entry).score = score
     }
 
     private fun calculateEstimatedMinutes(worldName: String, isPriority: Boolean): Int {
