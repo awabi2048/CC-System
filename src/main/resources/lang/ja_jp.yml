@@ -167,7 +167,7 @@ npc_messages:
     - "§6[NPC] 何かお手伝いできることはありますか？"
 
 # === Resource Command Messages ===
-resource.usage.generate: "§c使用法: /resource generate <type>:<variation> [border_size]"
+resource.usage.generate: "§c使用法: /resource generate <type>:<variation> [border_size] [difficulty]"
 resource.usage.teleport: "§c使用法: /resource teleport <type>:<variation> [player]"
 resource.usage.pause_pregen: "§c使用法: /resource pause_pregen <type>:<variation>"
 resource.usage.close: "§c使用法: /resource close <type>:<variation>"

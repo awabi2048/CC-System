@@ -228,9 +228,6 @@ class ResourceCommand : CommandExecutor, TabCompleter {
             if (hasPluginPermission(sender, "cc-system.resource.teleport")) {
                 list.addAll(Bukkit.getOnlinePlayers().map { it.name }.filter { it.lowercase().startsWith(args[2].lowercase()) })
             }
-        } else if (args.size == 3 && args[0].lowercase() == "generate") {
-            val difficulties = listOf("peaceful", "easy", "normal", "hard")
-            list.addAll(difficulties.filter { it.startsWith(args[2].lowercase()) })
         } else if (args.size == 4 && args[0].lowercase() == "generate") {
             val difficulties = listOf("peaceful", "easy", "normal", "hard")
             list.addAll(difficulties.filter { it.startsWith(args[3].lowercase()) })

@@ -332,7 +332,9 @@ class CCSystem : JavaPlugin() {
         syncFeatureRuntime()
         
         // コマンド登録
-        getCommand("resource")?.setExecutor(ResourceCommand())
+        val resourceCommand = ResourceCommand()
+        getCommand("resource")?.setExecutor(resourceCommand)
+        getCommand("resource")?.tabCompleter = resourceCommand
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
