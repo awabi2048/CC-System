@@ -58,8 +58,10 @@ nether_spawn:
     - "WARPED_NYLIUM"
 
 # マクロ設定 - 資源ワールドの各タイミングでコンソールコマンドを実行
-# 利用可能なプレースホルダー: {world_name}, {display_world_name}
-# after_generationのみ %border_size% も利用可能
+# before_delete: {world_name}, {display_world_name}, {old_world_name}
+# after_generation: {world_name}, {display_world_name}, %border_size%
+# after_priority_pregen / after_all_pregen: {world_name}, {display_world_name}
+# 先頭の / は省略可能で、コマンドはコンソールとして実行されます
 macros:
   before_delete:
     commands: []

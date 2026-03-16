@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.resourceworld.listener
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.config.LanguageManager
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -177,7 +178,7 @@ class ResourceListener : Listener {
             }
         }.runTaskLater(CCSystem.instance, 1L)
 
-        player.sendMessage("§a資源ワールドから帰還しました。")
+        player.sendMessage(LanguageManager.getMessage(player, "resource.returned_from_world"))
     }
 
     private fun cleanupBossBar(uuid: UUID) {

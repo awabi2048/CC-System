@@ -74,9 +74,9 @@ object WorldManager {
         }
         deleteResourceWorld(type, variation) { deleted ->
             if (!deleted) {
-                val errorMsg = "既存の資源ワールド削除が完了しなかったため、新規生成を中止しました。"
+                val errorMsg = LanguageManager.getRawString(null, "resource.delete_incomplete_abort")
                 logger.severe(errorMsg)
-                Bukkit.broadcastMessage("§c[CC-System] $errorMsg")
+                Bukkit.broadcastMessage(LanguageManager.getRawString(null, "resource.delete_incomplete_abort_broadcast"))
                 return@deleteResourceWorld
             }
 
@@ -105,9 +105,9 @@ object WorldManager {
 
         logger.info("資源ワールド $worldName を生成しています...")
         val world = creator.createWorld() ?: run {
-            val errorMsg = "ワールド $worldName の生成に失敗しました。"
+            val errorMsg = LanguageManager.getRawString(null, "resource.world_create_failed", "world_name" to worldName)
             logger.severe(errorMsg)
-            Bukkit.broadcastMessage("§c[CC-System] $errorMsg")
+            Bukkit.broadcastMessage(errorMsg)
             return false
         }
 
@@ -502,7 +502,7 @@ object WorldManager {
             val evacuationCmd = ConfigManager.getEvacuationCommand()
             for (player in world.players) {
                 player.performCommand(evacuationCmd)
-                player.sendMessage("§e[CC-System] 資源ワールドが再生成されるため、避難しました。")
+                player.sendMessage(LanguageManager.getMessage(player, "resource.evacuated_for_regeneration"))
             }
 
             Bukkit.unloadWorld(world, false)
@@ -652,18 +652,18 @@ object WorldManager {
         val prefix = "${resourceConfig.baseName}.${variation.lowercase()}."
 
         val world = Bukkit.getWorlds().find { it.name.startsWith(prefix) } ?: run {
-            player.sendMessage("§c[CC-System] 指定された資源ワールドが存在しません。生成してください。")
+            player.sendMessage(LanguageManager.getMessage(player, "resource.world_not_found"))
             return false
         }
 
         if (!isWorldReady(world.name)) {
             val progress = getPregenProgress(world.name)
-            player.sendMessage("§c[CC-System] 資源ワールドは現在準備中です。優先エリアの生成をお待ちください ($progress%)")
+            player.sendMessage(LanguageManager.getMessage(player, "resource.world_not_ready", "progress" to progress.toString()))
             return false
         }
 
         player.teleport(world.spawnLocation)
-        player.sendMessage("§a[CC-System] 資源ワールド (${type}:${variation}) に移動しました。")
+        player.sendMessage(LanguageManager.getMessage(player, "resource.teleport_success", "type" to type, "variation" to variation))
         return true
     }
 
@@ -719,7 +719,7 @@ object WorldManager {
         val evacuationCmd = ConfigManager.getEvacuationCommand()
         for (player in world.players) {
             player.performCommand(evacuationCmd)
-            player.sendMessage("§e[CC-System] 資源ワールドが閉鎖されたため、帰還しました。")
+            player.sendMessage(LanguageManager.getMessage(player, "resource.returned_on_close"))
         }
 
         readyWorlds.remove(world.name)

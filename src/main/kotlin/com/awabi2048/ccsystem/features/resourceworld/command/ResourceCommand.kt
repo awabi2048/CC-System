@@ -80,7 +80,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
 
                 val target = args[1].split(":")
                 if (target.size != 2) {
-                    sender.sendMessage("§c形式が正しくありません (例: normal:a)")
+                    sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.invalid_format"))
                     return true
                 }
 
@@ -120,7 +120,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
 
                 val target = args[1].split(":")
                 if (target.size != 2) {
-                    sender.sendMessage("§c形式が正しくありません (例: normal:a)")
+                    sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.invalid_format"))
                     return true
                 }
 
@@ -149,7 +149,7 @@ class ResourceCommand : CommandExecutor, TabCompleter {
 
                 val target = args[1].split(":")
                 if (target.size != 2) {
-                    sender.sendMessage("§c形式が正しくありません (例: normal:a)")
+                    sender.sendMessage(LanguageManager.getMessage(sender as? Player, "resource.invalid_format"))
                     return true
                 }
 
