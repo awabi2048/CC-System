@@ -21,7 +21,7 @@ import java.time.LocalDate
 
 /**
  * CC-System管理コマンド
- * 使用法: /cc-system <toggle|lang|reload|update-day|rental-ticket|status|enable|disable>
+ * 使用法: /cc-system <toggle|reload|update-day|rental-ticket|status|enable|disable>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
@@ -148,34 +148,6 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         )
                     }
                 }
-            }
-            "lang" -> {
-                if (player == null) {
-                    sender.sendMessage("§cこのコマンドはプレイヤーのみ実行可能です。")
-                    return true
-                }
-
-                val availableLangs = listOf("ja_jp", "en_us")
-                val defaultLang = ConfigManager.getDefaultLanguage()
-                val currentLang = PlayerDataManager.getString(player.uniqueId, "lang", defaultLang)
-                    ?: defaultLang
-
-                val currentIndex = availableLangs.indexOf(currentLang)
-                val nextIndex = if (currentIndex >= availableLangs.size - 1) 0 else currentIndex + 1
-                val nextLang = availableLangs[nextIndex]
-
-                LanguageManager.setPlayerLang(player, nextLang)
-
-                val displayName = getLanguageDisplayName(player, nextLang)
-                val functionName = getFunctionDisplayName(player, "lang")
-                player.sendActionBar(
-                    LanguageManager.getMessageWithoutPrefix(
-                        player,
-                        "lang_updated",
-                        "function" to functionName,
-                        "lang" to displayName
-                    )
-                )
             }
             "reload" -> {
                 performReload(player, sender)
@@ -349,7 +321,6 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         val permission =
             when (subCommand) {
                 "toggle" -> "cc-system.toggle"
-                "lang" -> "cc-system.lang"
                 "reload" -> "cc-system.reload"
                 "update-day" -> "cc-system.update-day"
                 "rental-ticket" -> "cc-system.rental-ticket"
@@ -374,12 +345,6 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         return if (localized == key) function else localized
     }
 
-    private fun getLanguageDisplayName(player: Player?, lang: String): String {
-        val key = "language.$lang"
-        val localized = LanguageManager.getRawString(player, key)
-        return if (localized == key) lang else localized
-    }
-
     override fun onTabComplete(
         sender: CommandSender,
         command: Command,
@@ -388,7 +353,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): List<String>? {
         if (args.size == 1) {
             val subCommands =
-                listOf("toggle", "lang", "reload", "update-day", "rental-ticket", "status", "enable", "disable").filter {
+                listOf("toggle", "reload", "update-day", "rental-ticket", "status", "enable", "disable").filter {
                     hasPermissionForSubCommand(sender, it) &&
                         when (it) {
                             "rental-ticket" -> ConfigManager.isRentalAreaEnabled()
