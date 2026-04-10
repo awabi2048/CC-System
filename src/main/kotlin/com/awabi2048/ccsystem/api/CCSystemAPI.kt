@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 /**
@@ -17,19 +18,25 @@ interface CCSystemAPI {
     fun getPlayerLanguage(player: Player): String
     
     /**
-     * プレイヤーの言語設定を変更します
-     *
-     * @param player プレイヤー
-     * @param language 言語コード (例: "ja_jp", "en_us")
-     */
-    fun setPlayerLanguage(player: Player, language: String)
-    
-    /**
      * サポートされている言語コードの一覧を取得します
      *
      * @return サポートされている言語コードのセット
      */
     fun getSupportedLanguages(): Set<String>
+
+    fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): String
+
+    fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<String>
+
+    fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): Component
+
+    fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<Component>
+
+    fun hasI18nKey(key: String): Boolean
+
+    fun isI18nKeyMatch(title: String, key: String): Boolean
+
+    fun isI18nKeyStartWith(title: String, key: String): Boolean
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 

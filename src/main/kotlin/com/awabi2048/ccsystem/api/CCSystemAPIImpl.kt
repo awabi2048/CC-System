@@ -2,11 +2,11 @@ package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 /**
@@ -16,17 +16,39 @@ import org.bukkit.entity.Player
 internal class CCSystemAPIImpl : CCSystemAPI {
     
     override fun getPlayerLanguage(player: Player): String {
-        val defaultLang = ConfigManager.getDefaultLanguage()
-        return PlayerDataManager.getString(player.uniqueId, "lang", defaultLang) ?: defaultLang
-    }
-    
-    override fun setPlayerLanguage(player: Player, language: String) {
-        LanguageManager.setPlayerLang(player, language)
+        return LanguageManager.getPlayerLanguageCode(player)
     }
     
     override fun getSupportedLanguages(): Set<String> {
-        // サポートされている言語は ja_jp と en_us
-        return setOf("ja_jp", "en_us")
+        return LanguageManager.getSupportedLanguages()
+    }
+
+    override fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any>): String {
+        return LanguageManager.getUnified().getString(player, key, placeholders)
+    }
+
+    override fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any>): List<String> {
+        return LanguageManager.getUnified().getStringList(player, key, placeholders)
+    }
+
+    override fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any>): Component {
+        return LanguageManager.getUnified().getComponent(player, key, placeholders)
+    }
+
+    override fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any>): List<Component> {
+        return LanguageManager.getUnified().getComponentList(player, key, placeholders)
+    }
+
+    override fun hasI18nKey(key: String): Boolean {
+        return getSupportedLanguages().any { LanguageManager.getUnified().hasKey(it, key) }
+    }
+
+    override fun isI18nKeyMatch(title: String, key: String): Boolean {
+        return LanguageManager.getUnified().isKeyMatch(title, key)
+    }
+
+    override fun isI18nKeyStartWith(title: String, key: String): Boolean {
+        return LanguageManager.getUnified().isKeyStartWith(title, key)
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────

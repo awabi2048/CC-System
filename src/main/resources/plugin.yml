@@ -25,7 +25,7 @@ commands:
   
   cc-system:
     description: CC-System管理コマンド
-    usage: /cc-system <toggle|lang|reload|update-day|rental-ticket|status|enable|disable>
+    usage: /cc-system <toggle|reload|update-day|rental-ticket|status|enable|disable>
     aliases:
       - ccs
   
@@ -63,7 +63,6 @@ permissions:
     default: op
     children:
       cc-system.toggle: true
-      cc-system.lang: true
       cc-system.reload: true
       cc-system.update-day: true
       cc-system.rental-ticket: true
@@ -77,10 +76,6 @@ permissions:
   
   cc-system.toggle:
     description: /ccsystem toggle コマンド使用権限
-    default: op
-  
-  cc-system.lang:
-    description: /ccsystem lang コマンド使用権限
     default: op
   
   cc-system.reload:
