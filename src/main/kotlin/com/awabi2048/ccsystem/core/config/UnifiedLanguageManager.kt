@@ -44,7 +44,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     private val serializer = LegacyComponentSerializer.legacyAmpersand()
     private val plainSerializer = PlainTextComponentSerializer.plainText()
     private val registrations = linkedMapOf<String, SourceRegistration>()
-    private var languageData: Map<String, YamlConfiguration> = emptyMap()
+    private var languageDataBySource: Map<String, Map<String, YamlConfiguration>> = emptyMap()
 
     init {
         registrations[plugin.name] = SourceRegistration(plugin.name, plugin, emptySet())
@@ -57,8 +57,8 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
             throw IllegalStateException("言語ファイル検証に失敗しました:\n$detail")
         }
 
-        languageData = loadAllLanguages().also { loaded ->
-            if (loaded.isEmpty()) {
+        languageDataBySource = loadAllLanguages().also { loaded ->
+            if (loaded.isEmpty() || loaded.values.all { it.isEmpty() }) {
                 throw IllegalStateException("言語ファイルが見つかりません")
             }
         }
@@ -137,7 +137,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
 
     fun registerSource(sourceId: String, sourcePlugin: JavaPlugin, fileNames: Set<String> = emptySet()) {
         registrations[sourceId] = SourceRegistration(sourceId, sourcePlugin, fileNames)
-        languageData = loadAllLanguages()
+        languageDataBySource = loadAllLanguages()
     }
 
     fun unregisterSource(sourceId: String) {
@@ -145,7 +145,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
             return
         }
         registrations.remove(sourceId)
-        languageData = loadAllLanguages()
+        languageDataBySource = loadAllLanguages()
     }
 
     fun resolveLocale(player: Player?): String {
@@ -160,7 +160,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getSupportedLanguages(): Set<String> {
-        return languageData.keys
+        return availableLocales()
     }
 
     fun getDefaultLanguage(): String {
@@ -172,12 +172,16 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getString(player: Player?, key: String, placeholders: Map<String, Any>): String {
+        return getString(plugin.name, player, key, placeholders)
+    }
+
+    fun getString(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): String {
         val locale = resolveLocale(player)
-        val config = requireLanguage(locale)
+        val config = requireLanguage(sourceId, locale)
         val raw = when {
             config.isString(key) -> config.getString(key)
             else -> null
-        } ?: throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=$key expected=String")
+        } ?: throw IllegalStateException("言語キーが見つからないか型が不正です: source=$sourceId locale=$locale key=$key expected=String")
         return applyPlaceholders(raw, placeholders)
     }
 
@@ -186,10 +190,14 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getStringList(player: Player?, key: String, placeholders: Map<String, Any>): List<String> {
+        return getStringList(plugin.name, player, key, placeholders)
+    }
+
+    fun getStringList(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<String> {
         val locale = resolveLocale(player)
-        val config = requireLanguage(locale)
+        val config = requireLanguage(sourceId, locale)
         if (!config.isList(key)) {
-            throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=$key expected=List")
+            throw IllegalStateException("言語キーが見つからないか型が不正です: source=$sourceId locale=$locale key=$key expected=List")
         }
         return config.getStringList(key).map { applyPlaceholders(it, placeholders) }
     }
@@ -199,7 +207,11 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getComponent(player: Player?, key: String, placeholders: Map<String, Any>): Component {
-        return serializer.deserialize(getString(player, key, placeholders)).decoration(TextDecoration.ITALIC, false)
+        return getComponent(plugin.name, player, key, placeholders)
+    }
+
+    fun getComponent(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): Component {
+        return serializer.deserialize(getString(sourceId, player, key, placeholders)).decoration(TextDecoration.ITALIC, false)
     }
 
     fun getComponentList(player: Player?, key: String): List<Component> {
@@ -207,20 +219,32 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getComponentList(player: Player?, key: String, placeholders: Map<String, Any>): List<Component> {
-        return getStringList(player, key, placeholders).map {
+        return getComponentList(plugin.name, player, key, placeholders)
+    }
+
+    fun getComponentList(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<Component> {
+        return getStringList(sourceId, player, key, placeholders).map {
             serializer.deserialize(it).decoration(TextDecoration.ITALIC, false)
         }
     }
 
     fun getRawString(locale: String, key: String): String? {
+        return getRawString(plugin.name, locale, key)
+    }
+
+    fun getRawString(sourceId: String, locale: String, key: String): String? {
         val resolvedLocale = resolveLocale(locale)
-        val config = languageData[resolvedLocale] ?: return null
+        val config = languageDataBySource[sourceId]?.get(resolvedLocale) ?: return null
         return config.getString(key)
     }
 
     fun getRawStringList(locale: String, key: String): List<String>? {
+        return getRawStringList(plugin.name, locale, key)
+    }
+
+    fun getRawStringList(sourceId: String, locale: String, key: String): List<String>? {
         val resolvedLocale = resolveLocale(locale)
-        val config = languageData[resolvedLocale] ?: return null
+        val config = languageDataBySource[sourceId]?.get(resolvedLocale) ?: return null
         if (!config.isList(key)) {
             return null
         }
@@ -228,24 +252,40 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun hasKey(player: Player?, key: String): Boolean {
-        return hasKey(resolveLocale(player), key)
+        return hasKey(plugin.name, resolveLocale(player), key)
     }
 
     fun hasKey(locale: String, key: String): Boolean {
-        return languageData[resolveLocale(locale)]?.contains(key) == true
+        return hasKey(plugin.name, locale, key)
+    }
+
+    fun hasKey(sourceId: String, player: Player?, key: String): Boolean {
+        return hasKey(sourceId, resolveLocale(player), key)
+    }
+
+    fun hasKey(sourceId: String, locale: String, key: String): Boolean {
+        return languageDataBySource[sourceId]?.get(resolveLocale(locale))?.contains(key) == true
     }
 
     fun getSectionKeys(player: Player?, key: String): Set<String> {
         val locale = resolveLocale(player)
-        return languageData[locale]?.getConfigurationSection(key)?.getKeys(false) ?: emptySet()
+        return languageDataBySource[plugin.name]?.get(locale)?.getConfigurationSection(key)?.getKeys(false) ?: emptySet()
     }
 
     fun isKeyMatch(title: String, key: String): Boolean {
-        return buildTemplateRegex(key)?.matches(title) == true
+        return isKeyMatch(plugin.name, title, key)
+    }
+
+    fun isKeyMatch(sourceId: String, title: String, key: String): Boolean {
+        return buildTemplateRegex(sourceId, key)?.matches(title) == true
     }
 
     fun isKeyStartWith(title: String, key: String): Boolean {
-        val regex = buildTemplateRegex(key, anchoredEnd = false) ?: return false
+        return isKeyStartWith(plugin.name, title, key)
+    }
+
+    fun isKeyStartWith(sourceId: String, title: String, key: String): Boolean {
+        val regex = buildTemplateRegex(sourceId, key, anchoredEnd = false) ?: return false
         return regex.containsMatchIn(title)
     }
 
@@ -256,17 +296,17 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     private fun resolveLocale(raw: String?): String {
         val normalized = normalizeLocale(raw)
         return when {
-            languageData.containsKey(normalized) -> normalized
-            languageData.containsKey(ConfigManager.getDefaultLanguage()) -> ConfigManager.getDefaultLanguage()
-            languageData.containsKey("ja_jp") -> "ja_jp"
-            languageData.isNotEmpty() -> languageData.keys.first()
+            availableLocales().contains(normalized) -> normalized
+            availableLocales().contains(ConfigManager.getDefaultLanguage()) -> ConfigManager.getDefaultLanguage()
+            availableLocales().contains("ja_jp") -> "ja_jp"
+            availableLocales().isNotEmpty() -> availableLocales().first()
             else -> "ja_jp"
         }
     }
 
-    private fun requireLanguage(locale: String): YamlConfiguration {
-        return languageData[locale]
-            ?: throw IllegalStateException("言語がロードされていません: $locale")
+    private fun requireLanguage(sourceId: String, locale: String): YamlConfiguration {
+        return languageDataBySource[sourceId]?.get(locale)
+            ?: throw IllegalStateException("言語がロードされていません: source=$sourceId locale=$locale")
     }
 
     private fun normalizeLocale(raw: String?): String {
@@ -289,8 +329,8 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
         return resolved
     }
 
-    private fun buildTemplateRegex(key: String, anchoredEnd: Boolean = true): Regex? {
-        val templates = languageData.values.mapNotNull { it.getString(key) }.distinct()
+    private fun buildTemplateRegex(sourceId: String, key: String, anchoredEnd: Boolean = true): Regex? {
+        val templates = languageDataBySource[sourceId].orEmpty().values.mapNotNull { it.getString(key) }.distinct()
         if (templates.isEmpty()) {
             return null
         }
@@ -308,43 +348,49 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
         return Regex(union)
     }
 
-    private fun loadAllLanguages(): Map<String, YamlConfiguration> {
-        val locales = discoverLocales()
-        return locales.associateWith { locale -> loadLocale(locale) }
+    private fun loadAllLanguages(): Map<String, Map<String, YamlConfiguration>> {
+        return registrations.values.associate { source ->
+            source.sourceId to loadSourceLanguages(source)
+        }
     }
 
-    private fun discoverLocales(): Set<String> {
+    private fun discoverLocales(source: SourceRegistration): Set<String> {
         val locales = linkedSetOf<String>()
         locales += normalizeLocale(ConfigManager.getDefaultLanguage())
         locales += "ja_jp"
         locales += "en_us"
 
-        registrations.values.forEach { source ->
-            locales += discoverEffectiveLanguageFiles(source.plugin, source.fileNames).keys
-        }
+        locales += discoverEffectiveLanguageFiles(source.plugin, source.fileNames).keys
 
         return locales
     }
 
-    private fun loadLocale(locale: String): YamlConfiguration {
+    private fun loadSourceLanguages(source: SourceRegistration): Map<String, YamlConfiguration> {
+        val locales = discoverLocales(source)
+        return locales.associateWith { locale -> loadLocale(source, locale) }
+    }
+
+    private fun loadLocale(source: SourceRegistration, locale: String): YamlConfiguration {
         val merged = YamlConfiguration()
         val mergedKeys = mutableMapOf<String, String>()
 
-        registrations.values.forEach { source ->
-            discoverEffectiveLanguageFiles(source.plugin, source.fileNames)[locale]
-                ?.toSortedMap()
-                ?.values
-                ?.forEach { file ->
-                    val config = YamlConfiguration.loadConfiguration(file.content.reader())
-                    mergeConfig(target = merged, source = config, mergedKeys = mergedKeys, sourceName = file.sourceName)
-                }
-        }
+        discoverEffectiveLanguageFiles(source.plugin, source.fileNames)[locale]
+            ?.toSortedMap()
+            ?.values
+            ?.forEach { file ->
+                val config = YamlConfiguration.loadConfiguration(file.content.reader())
+                mergeConfig(target = merged, source = config, mergedKeys = mergedKeys, sourceName = file.sourceName)
+            }
 
         if (merged.getKeys(true).isEmpty()) {
             throw IllegalStateException("言語ファイルが見つかりません: $locale")
         }
 
         return merged
+    }
+
+    private fun availableLocales(): Set<String> {
+        return languageDataBySource.values.flatMap { it.keys }.toCollection(linkedSetOf())
     }
 
     private fun discoverEffectiveLanguageFiles(sourcePlugin: JavaPlugin, allowedFileNames: Set<String> = emptySet()): Map<String, Map<String, DiscoveredLanguageFile>> {
