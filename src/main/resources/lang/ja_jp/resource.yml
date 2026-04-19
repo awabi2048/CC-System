@@ -1,0 +1,34 @@
+broadcast_success: §a資源ワールド【%world_name%】の生成が完了しました。
+console_success: '§a資源ワールド【%world_name%】の生成に成功しました。(ボーダーサイズ: %border_size%)'
+pregen_priority_complete: §a資源ワールド【%world_name%】の仮生成が完了し、ワープ可能になりました！
+pregen_all_complete: 資源ワールド【%world_name%】の全エリア生成が完了しました。
+resource:
+  usage:
+    generate: '§c使用法: /resource generate <type>:<variation> [border_size] [difficulty]'
+    teleport: '§c使用法: /resource teleport <type>:<variation> [player]'
+    pause_pregen: '§c使用法: /resource pause_pregen <type>:<variation>'
+    close: '§c使用法: /resource close <type>:<variation>'
+  invalid_format: '§c形式が正しくありません (例: normal:a)'
+  generation_start: §e資源ワールド %type%:%variation% の生成を開始します...
+  generation_success: §a資源ワールド %type%:%variation% の生成に成功しました。
+  generation_failed: §c資源ワールド %type%:%variation% の生成に失敗しました。詳細はコンソールを確認してください。
+  delete_incomplete_abort: 既存の資源ワールド削除が完了しなかったため、新規生成を中止しました。
+  delete_incomplete_abort_broadcast: §c[CC-System] 既存の資源ワールド削除が完了しなかったため、新規生成を中止しました。
+  world_create_failed: §c[CC-System] ワールド %world_name% の生成に失敗しました。
+  evacuated_for_regeneration: §e[CC-System] 資源ワールドが再生成されるため、避難しました。
+  world_not_found: §c[CC-System] 指定された資源ワールドが存在しません。生成してください。
+  world_not_ready: §c[CC-System] 資源ワールドは現在準備中です。優先エリアの生成をお待ちください (%progress%%)
+  teleport_success: §a[CC-System] 資源ワールド (%type%:%variation%) に移動しました。
+  returned_on_close: §e[CC-System] 資源ワールドが閉鎖されたため、帰還しました。
+  returned_from_world: §a資源ワールドから帰還しました。
+  normal:
+    name: 通常資源ワールド
+  nether:
+    name: ネザー資源ワールド
+  end:
+    name: エンド資源ワールド
+  reload_success: §a[CC-System] 設定を再読み込みしました。
+  pause_success: §a[CC-System] 資源ワールド (%type%:%variation%) の事前読み込みを中断しました。
+  pause_failed: §c[CC-System] 資源ワールド (%type%:%variation%) の事前読み込みは実行されていません。
+  close_success: §a[CC-System] 資源ワールド (%type%:%variation%) を閉鎖しました。
+  close_failed: §c[CC-System] 資源ワールド (%type%:%variation%) が存在しません。

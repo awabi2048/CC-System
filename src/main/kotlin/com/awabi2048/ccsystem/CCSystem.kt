@@ -39,6 +39,7 @@ import java.io.File
 import org.bukkit.GameRule
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import java.util.jar.JarFile
 
 class CCSystem : JavaPlugin() {
     
@@ -277,8 +278,6 @@ class CCSystem : JavaPlugin() {
             "config/public_sign.yml",
             "config/announce.yml",
             "config/queue.yml",
-            "lang/ja_jp.yml",
-            "lang/en_us.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
             "data/announce/announce_data.yml",
@@ -297,6 +296,28 @@ class CCSystem : JavaPlugin() {
         File(dataFolder, "data/rental_area/remained_item").mkdirs()
         File(dataFolder, "data/clock").mkdirs()
         File(dataFolder, "playerdata").mkdirs()
+        saveSplitLanguageResources()
+    }
+
+    private fun saveSplitLanguageResources() {
+        val codeSource = runCatching {
+            File(javaClass.protectionDomain.codeSource.location.toURI())
+        }.getOrNull() ?: return
+        if (!codeSource.isFile) {
+            return
+        }
+
+        JarFile(codeSource).use { jar ->
+            jar.entries().asSequence()
+                .filter { !it.isDirectory && it.name.startsWith("lang/") && it.name.endsWith(".yml") }
+                .forEach { entry ->
+                    val target = File(dataFolder, entry.name)
+                    if (!target.exists()) {
+                        target.parentFile?.mkdirs()
+                        saveResource(entry.name, false)
+                    }
+                }
+        }
     }
     
     override fun onEnable() {

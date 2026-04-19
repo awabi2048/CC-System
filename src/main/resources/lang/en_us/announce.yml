@@ -1,0 +1,55 @@
+announce_usage: '§cUsage: /announcement [-menu]'
+announce:
+  menu_title: §0Announcements
+  item_default_title: Announcement
+  datetime_format: MM/dd/yyyy hh:mm a
+  lore:
+    issued_at: '§8Issued: %datetime%'
+    updated_at: '§8Updated: %datetime%'
+    indefinite: '§8Expire: indefinite'
+    expires_at: '§8Expire: %datetime%'
+    help_left_click: §e§l| §eLeft Click §7Edit this announcement
+    help_right_click: §e§l| §eRight Click §7Delete this announcement
+  notify:
+    issued_title: '§aNew announcement: §f%title%'
+    toast_title: §aYou have %count% new announcements!
+    toast_description: §7Use /an to open
+  menu_command_item_name: §cOpen menu
+  menu_command_item_lore: §7Click to execute the menu command
+  add_item_name: §fAdd announcement
+  add_item_lore: §7Click to create a new announcement
+  add_limit_reached: §cYou can only have up to %max% announcements.
+  icon_select_instruction: §eClick an item in your own inventory to use it as the announcement icon.
+  menu_command_not_configured: §cannounce_menu_command is not configured.
+  menu_command_failed: §cFailed to execute the menu command.
+  add_success: §aAnnouncement added.
+  edit_success: §aAnnouncement updated.
+  delete_success: §aAnnouncement deleted.
+  edit_target_not_found: §cTarget announcement was not found.
+  invalid_title: §cTitle is required.
+  invalid_duration: §cInvalid end time format. (e.g. 2026/03/10-10:30 / 2026/03/10 / 10:30)
+  end_at_not_future: §cPlease specify an end time later than now.
+  title_warning:
+    required: §c§nTitle is required
+  end_at_warning:
+    invalid_format: §c§nInvalid date/time format
+    not_future: §c§nEnd time must be later than now
+  dialog_title: Add Announcement
+  dialog_body:
+  - Fill in required title, 3 content lines, end time, and indefinite option.
+  - 'End time examples: 2026/03/10-10:30 / 2026/03/10 / 10:30'
+  - When indefinite=true, end time will be ignored.
+  dialog_confirm: Add
+  dialog_cancel: Cancel
+  edit_dialog_title: Edit Announcement
+  edit_dialog_body:
+  - You can update title, contents, end time, and indefinite option.
+  edit_dialog_confirm: Update
+  delete_dialog_title: Delete Announcement
+  delete_dialog_body:
+  - 'The following announcement will be deleted:'
+  - '%title%'
+  delete_dialog_content_label: 'Contents:'
+  delete_dialog_content_empty: (no content)
+  delete_dialog_confirm: Delete
+  delete_dialog_cancel: Cancel

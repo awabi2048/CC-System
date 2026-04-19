@@ -1,0 +1,4 @@
+npc_messages:
+  example_npc:
+  - §6[NPC] Hello!
+  - §6[NPC] Can I help you with anything?
