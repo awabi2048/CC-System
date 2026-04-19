@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.api
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * CC-Systemが提供する公開API
@@ -26,7 +27,11 @@ interface CCSystemAPI {
 
     fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): String
 
+    fun getI18nString(locale: String, key: String, placeholders: Map<String, Any> = emptyMap()): String
+
     fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<String>
+
+    fun getI18nStringList(locale: String, key: String, placeholders: Map<String, Any> = emptyMap()): List<String>
 
     fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): Component
 
@@ -37,6 +42,12 @@ interface CCSystemAPI {
     fun isI18nKeyMatch(title: String, key: String): Boolean
 
     fun isI18nKeyStartWith(title: String, key: String): Boolean
+
+    fun validateI18nSource(sourcePlugin: JavaPlugin, featureByFile: Map<String, String> = emptyMap()): I18nValidationResult
+
+    fun registerI18nSource(sourceId: String, sourcePlugin: JavaPlugin, fileNames: Set<String> = emptySet())
+
+    fun unregisterI18nSource(sourceId: String)
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 

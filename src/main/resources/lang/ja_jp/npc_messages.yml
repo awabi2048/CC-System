@@ -1,0 +1,4 @@
+npc_messages:
+  example_npc:
+  - §6[NPC] こんにちは！
+  - §6[NPC] 何かお手伝いできることはありますか？
