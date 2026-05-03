@@ -66,12 +66,30 @@ object WorldManager {
         // 既存のワールド名を取得（マクロ用）
         val existingWorldPrefix = "${resourceConfig.baseName}.${variation}."
         val existingWorld = Bukkit.getWorlds().find { it.name.startsWith(existingWorldPrefix) }
-        val existingWorldName = existingWorld?.name
+        val existingWorldName = existingWorld?.name ?: findExistingResourceWorldFolderName(existingWorldPrefix)
 
         // 1. 既存の資源ワールドを削除（削除前マクロを実行）
         if (existingWorldName != null) {
             MacroManager.executeBeforeDelete(existingWorldName)
+            object : BukkitRunnable() {
+                override fun run() {
+                    deleteThenCreateResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
+                }
+            }.runTaskLater(CCSystem.instance, ConfigManager.getMacroBeforeDeleteWaitAfterTicks())
+        } else {
+            createResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
         }
+        
+        return true
+    }
+
+    private fun deleteThenCreateResourceWorld(
+        resourceConfig: ConfigManager.ResourceConfig,
+        type: String,
+        variation: String,
+        customBorderSize: Int?,
+        customDifficulty: Difficulty?
+    ) {
         deleteResourceWorld(type, variation) { deleted ->
             if (!deleted) {
                 val errorMsg = LanguageManager.getRawString(null, "resource.delete_incomplete_abort")
@@ -82,8 +100,14 @@ object WorldManager {
 
             createResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
         }
-        
-        return true
+    }
+
+    private fun findExistingResourceWorldFolderName(prefix: String): String? {
+        return Bukkit.getWorldContainer()
+            .listFiles()
+            ?.filter { it.isDirectory && it.name.startsWith(prefix) }
+            ?.maxByOrNull { it.name }
+            ?.name
     }
 
     private fun createResourceWorld(

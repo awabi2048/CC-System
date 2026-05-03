@@ -64,6 +64,7 @@ nether_spawn:
 # 先頭の / は省略可能で、コマンドはコンソールとして実行されます
 macros:
   before_delete:
+    wait_after_ticks: 20
     commands: []
 
   after_generation:
