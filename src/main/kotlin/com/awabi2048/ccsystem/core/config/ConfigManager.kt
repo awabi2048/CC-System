@@ -154,6 +154,7 @@ object ConfigManager {
     private val macroAfterPriorityPregen = mutableListOf<String>()
     private val macroAfterAllPregen = mutableListOf<String>()
     private var macroBeforeDeleteEnabled: Boolean = false
+    private var macroBeforeDeleteWaitAfterTicks: Long = 20L
     private var macroAfterGenerationEnabled: Boolean = false
     private var macroAfterPriorityPregenEnabled: Boolean = false
     private var macroAfterAllPregenEnabled: Boolean = false
@@ -364,6 +365,7 @@ object ConfigManager {
         val beforeDeleteSection = macroSection?.getConfigurationSection("before_delete")
         macroBeforeDelete.clear()
         macroBeforeDelete.addAll(beforeDeleteSection?.getStringList("commands") ?: emptyList())
+        macroBeforeDeleteWaitAfterTicks = (beforeDeleteSection?.getLong("wait_after_ticks") ?: 20L).coerceAtLeast(0L)
         macroBeforeDeleteEnabled = macroBeforeDelete.isNotEmpty()
 
         val afterGenSection = macroSection?.getConfigurationSection("after_generation")
@@ -581,6 +583,7 @@ object ConfigManager {
     fun getNetherSpawnSafeBlocks(): List<Material> = netherSpawnSafeBlocks.toList()
     fun isMacroBeforeDeleteEnabled(): Boolean = macroBeforeDeleteEnabled
     fun getMacroBeforeDeleteCommands(): List<String> = macroBeforeDelete.toList()
+    fun getMacroBeforeDeleteWaitAfterTicks(): Long = macroBeforeDeleteWaitAfterTicks
     fun isMacroAfterGenerationEnabled(): Boolean = macroAfterGenerationEnabled
     fun getMacroAfterGenerationCommands(): List<String> = macroAfterGeneration.toList()
     fun isMacroAfterPriorityPregenEnabled(): Boolean = macroAfterPriorityPregenEnabled
