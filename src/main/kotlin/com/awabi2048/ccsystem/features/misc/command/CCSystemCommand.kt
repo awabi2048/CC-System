@@ -33,6 +33,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         "dynamic_distance",
         "debug",
         "shift_f_binder",
+        "player_left_click_binder",
         "disable_global_sound_events",
         "delay_command",
         "npc_message"
@@ -434,6 +435,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             "dynamic_distance" -> ConfigManager.isDynamicDistanceEnabled()
             "debug" -> ConfigManager.isDebug()
             "shift_f_binder" -> ConfigManager.isShiftFBinderEnabled()
+            "player_left_click_binder" -> ConfigManager.isPlayerLeftClickBinderEnabled()
             "disable_global_sound_events" -> ConfigManager.isGlobalSoundEventsAutoDisable()
             "delay_command" -> ConfigManager.isDelayCommandEnabled()
             "npc_message" -> ConfigManager.isNpcMessageEnabled()

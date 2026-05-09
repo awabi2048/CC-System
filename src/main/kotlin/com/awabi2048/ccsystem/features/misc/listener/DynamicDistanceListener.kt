@@ -2,6 +2,8 @@ package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -70,7 +72,7 @@ class DynamicDistanceListener : Listener {
     @EventHandler
     fun onTeleport(event: PlayerTeleportEvent) {
         val state = states.getOrPut(event.player.uniqueId) { PlayerState() }
-        state.lastLocation = event.to?.clone() ?: event.player.location.clone()
+        state.lastLocation = event.to.clone()
         state.smoothedSpeedBps = 0.0
     }
 
@@ -118,7 +120,7 @@ class DynamicDistanceListener : Listener {
                     state.lastAppliedDistance = null
                 }
                 if (debugEnabled) {
-                    player.sendActionBar("§8[DD] §7blacklisted: ${player.world.name}")
+                    player.sendActionBar(legacy("§8[DD] §7blacklisted: ${player.world.name}"))
                 }
                 continue
             }
@@ -199,13 +201,15 @@ class DynamicDistanceListener : Listener {
             changed -> "cooldown"
             else -> "hold"
         }
-        player.sendActionBar(
+        player.sendActionBar(legacy(
             "§8[DD] §fV:${target.view} S:${target.simulation} Send:${target.send} " +
                 "§7spd:$speedText p:$onlineCount " +
                 "dS(${speedDelta.view}/${speedDelta.simulation}/${speedDelta.send}) " +
                 "dP(${onlineDelta.view}/${onlineDelta.simulation}/${onlineDelta.send}) §e$applyState"
-        )
+        ))
     }
+
+    private fun legacy(text: String): Component = LegacyComponentSerializer.legacySection().deserialize(text)
 
     private fun applyDistance(player: Player, distance: AppliedDistance) {
         player.setViewDistance(distance.view)

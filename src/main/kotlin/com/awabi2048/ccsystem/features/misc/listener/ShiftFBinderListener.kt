@@ -26,15 +26,7 @@ class ShiftFBinderListener : Listener {
             
             event.isCancelled = true
             
-            for (command in commands) {
-                if (command.isEmpty()) continue
-                
-                val processedCommand = command
-                    .replace("%player_name%", player.name)
-                    .replace("%player_uuid%", player.uniqueId.toString())
-                
-                player.performCommand(processedCommand)
-            }
+            BinderCommandExecutor.execute(player, commands)
         }
     }
 }

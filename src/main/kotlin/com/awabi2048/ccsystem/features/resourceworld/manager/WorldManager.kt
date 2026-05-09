@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.MacroManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -94,7 +95,7 @@ object WorldManager {
             if (!deleted) {
                 val errorMsg = LanguageManager.getRawString(null, "resource.delete_incomplete_abort")
                 logger.severe(errorMsg)
-                Bukkit.broadcastMessage(LanguageManager.getRawString(null, "resource.delete_incomplete_abort_broadcast"))
+                broadcastLegacy(LanguageManager.getRawString(null, "resource.delete_incomplete_abort_broadcast"))
                 return@deleteResourceWorld
             }
 
@@ -131,7 +132,7 @@ object WorldManager {
         val world = creator.createWorld() ?: run {
             val errorMsg = LanguageManager.getRawString(null, "resource.world_create_failed", "world_name" to worldName)
             logger.severe(errorMsg)
-            Bukkit.broadcastMessage(errorMsg)
+            broadcastLegacy(errorMsg)
             return false
         }
 
@@ -154,7 +155,7 @@ object WorldManager {
             .replace("%world_name%", worldName)
             .replace("%border_size%", borderSize.toString())
 
-        Bukkit.broadcastMessage(broadcastMsg)
+        broadcastLegacy(broadcastMsg)
         logger.info(consoleMsg)
 
         createScaffold(world, spawnLoc)
@@ -396,10 +397,10 @@ object WorldManager {
                     readyWorlds.add(world.name)
                     priorityCompleteTime[world.name] = System.currentTimeMillis()
                     val msg = LanguageManager.getRawString(null, "pregen_priority_complete").replace("%world_name%", world.name)
-                    Bukkit.broadcastMessage(msg)
+                    broadcastLegacy(msg)
 
                     val consoleMsg = LanguageManager.getRawString(null, "pregen_priority_complete").replace("%world_name%", world.name)
-                    logger.info(ChatColor.stripColor(consoleMsg))
+                    logger.info(consoleMsg)
 
                     // 優先エリア生成完了後マクロの実行
                     MacroManager.executeAfterPriorityPregen(world.name)
@@ -415,7 +416,7 @@ object WorldManager {
                 // 全完了判定
                 if (index >= totalChunks) {
                     val msg = LanguageManager.getRawString(null, "pregen_all_complete").replace("%world_name%", world.name)
-                    logger.info(ChatColor.stripColor(msg))
+                    logger.info(msg)
                     pregenProgress.remove(world.name)
                     priorityPregenProgress.remove(world.name)
                     allCompleteTime[world.name] = System.currentTimeMillis()
@@ -436,6 +437,10 @@ object WorldManager {
         val taskInfo = PregenTaskInfo(task, startTime, borderSize, totalChunks, priorityChunks.size, startIndex)
         pregenTaskInfos[world.name] = taskInfo
         pregenTasks[world.name] = task
+    }
+
+    private fun broadcastLegacy(message: String) {
+        Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(message))
     }
 
     data class ChunkCoords(val x: Int, val z: Int)

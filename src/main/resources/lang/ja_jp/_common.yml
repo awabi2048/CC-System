@@ -19,6 +19,7 @@ feature:
   dynamic_distance: 動的描画距離
   debug: デバッグ
   shift_f_binder: Shift+Fバインダー
+  player_left_click_binder: プレイヤー左クリックバインダー
   disable_global_sound_events: globalSoundEvents無効化
   delay_command: Delayコマンド
   npc_message: NPCメッセージ

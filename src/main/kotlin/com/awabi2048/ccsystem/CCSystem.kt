@@ -19,6 +19,8 @@ import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
 import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
+import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickBinderListener
+import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickTriggerListener
 import com.awabi2048.ccsystem.features.misc.listener.ShiftFBinderListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDataListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
@@ -68,6 +70,9 @@ class CCSystem : JavaPlugin() {
     private var shiftFBinderListener: ShiftFBinderListener? = null
     private var shiftFBinderListenerRegistered: Boolean = false
 
+    private var playerLeftClickBinderListener: PlayerLeftClickBinderListener? = null
+    private var playerLeftClickBinderListenerRegistered: Boolean = false
+
     private var worldListener: WorldListener? = null
     private var worldListenerRegistered: Boolean = false
 
@@ -103,6 +108,7 @@ class CCSystem : JavaPlugin() {
     fun syncFeatureRuntime() {
         syncMusicFeature()
         syncShiftFBinderFeature()
+        syncPlayerLeftClickBinderFeature()
         syncGlobalSoundEventsFeature()
         syncDynamicDistanceFeature()
         syncPublicSignFeature()
@@ -138,6 +144,20 @@ class CCSystem : JavaPlugin() {
         }
 
         shiftFBinderListenerRegistered = unregisterListenerIfNeeded(shiftFBinderListener, shiftFBinderListenerRegistered)
+    }
+
+    private fun syncPlayerLeftClickBinderFeature() {
+        if (ConfigManager.isPlayerLeftClickBinderEnabled()) {
+            if (playerLeftClickBinderListener == null) {
+                playerLeftClickBinderListener = PlayerLeftClickBinderListener()
+            }
+            playerLeftClickBinderListenerRegistered =
+                registerListenerIfNeeded(playerLeftClickBinderListener ?: return, playerLeftClickBinderListenerRegistered)
+            return
+        }
+
+        playerLeftClickBinderListenerRegistered =
+            unregisterListenerIfNeeded(playerLeftClickBinderListener, playerLeftClickBinderListenerRegistered)
     }
 
     private fun syncGlobalSoundEventsFeature() {
@@ -254,6 +274,8 @@ class CCSystem : JavaPlugin() {
         }
 
         shiftFBinderListenerRegistered = unregisterListenerIfNeeded(shiftFBinderListener, shiftFBinderListenerRegistered)
+        playerLeftClickBinderListenerRegistered =
+            unregisterListenerIfNeeded(playerLeftClickBinderListener, playerLeftClickBinderListenerRegistered)
         worldListenerRegistered = unregisterListenerIfNeeded(worldListener, worldListenerRegistered)
         publicSignListenerRegistered = unregisterListenerIfNeeded(publicSignListener, publicSignListenerRegistered)
         rentalAreaListenerRegistered = unregisterListenerIfNeeded(rentalAreaListener, rentalAreaListenerRegistered)
@@ -349,6 +371,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(AnnounceListener(), this)
         server.pluginManager.registerEvents(announcementNotificationListener, this)
+        server.pluginManager.registerEvents(PlayerLeftClickTriggerListener(), this)
 
         syncFeatureRuntime()
         
@@ -367,7 +390,7 @@ class CCSystem : JavaPlugin() {
         getCommand("announcement")?.setExecutor(announceCommand)
         getCommand("announcement")?.tabCompleter = announceCommand
         
-        logger.info("CC-System v${description.version} を有効化しました")
+        logger.info("CC-System v${pluginMeta.version} を有効化しました")
     }
 
     override fun onDisable() {
@@ -383,6 +406,6 @@ class CCSystem : JavaPlugin() {
         // チャンクタスクキューのシャットダウン（状態保存）
         ChunkTaskQueueManager.unload()
         
-        logger.info("CC-System v${description.version} を無効化しました")
+        logger.info("CC-System v${pluginMeta.version} を無効化しました")
     }
 }

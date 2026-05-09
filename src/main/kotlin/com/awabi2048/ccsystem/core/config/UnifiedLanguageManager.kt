@@ -152,7 +152,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
         if (player == null) {
             return resolveLocale(ConfigManager.getDefaultLanguage())
         }
-        return resolveLocale(player.locale)
+        return resolveLocale(player.locale().toString())
     }
 
     fun resolveLocale(sender: CommandSender?): String {

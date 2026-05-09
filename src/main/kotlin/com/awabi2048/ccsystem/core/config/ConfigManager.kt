@@ -31,6 +31,7 @@ object ConfigManager {
     private var featureMusicEnabled: Boolean = true
     private var featureDynamicDistanceEnabled: Boolean = false
     private var featureShiftFBinderEnabled: Boolean = true
+    private var featurePlayerLeftClickBinderEnabled: Boolean = true
     private var featureGlobalSoundEventsEnabled: Boolean = true
     private var featureDelayCommandEnabled: Boolean = true
     private var featureNpcMessageEnabled: Boolean = true
@@ -79,6 +80,7 @@ object ConfigManager {
 
     // === Misc設定 ===
     private var shiftFBinderCommands: List<String> = listOf("say %player_name%")
+    private var playerLeftClickBinderCommands: List<String> = listOf("say %player_name%")
     private val worldMusicSettings = mutableMapOf<String, MusicSetting>()
 
     // 動的描画距離設定
@@ -246,6 +248,7 @@ object ConfigManager {
         featureMusicEnabled = featuresSection?.getBoolean("music", true) ?: true
         featureDynamicDistanceEnabled = featuresSection?.getBoolean("dynamic_distance", false) ?: false
         featureShiftFBinderEnabled = featuresSection?.getBoolean("shift_f_binder", true) ?: true
+        featurePlayerLeftClickBinderEnabled = featuresSection?.getBoolean("player_left_click_binder", true) ?: true
         featureGlobalSoundEventsEnabled = featuresSection?.getBoolean("disable_global_sound_events", true) ?: true
         featureDelayCommandEnabled = featuresSection?.getBoolean("delay_command", true) ?: true
         featureNpcMessageEnabled = featuresSection?.getBoolean("npc_message", true) ?: true
@@ -267,6 +270,10 @@ object ConfigManager {
     private fun loadMiscSettings(misc: YamlConfiguration) {
         val shiftFBinderSection = misc.getConfigurationSection("shift_f_binder")
         shiftFBinderCommands = shiftFBinderSection?.getStringList("commands") ?: listOf("say %player_name%")
+
+        val playerLeftClickBinderSection = misc.getConfigurationSection("player_left_click_binder")
+        playerLeftClickBinderCommands =
+            playerLeftClickBinderSection?.getStringList("commands") ?: listOf("say %player_name%")
 
         val musicSection = misc.getConfigurationSection("music")
         val worldsSection = musicSection?.getConfigurationSection("worlds")
@@ -525,6 +532,7 @@ object ConfigManager {
     fun isDebug(): Boolean = debug
 
     fun getShiftFBinderCommands(): List<String> = shiftFBinderCommands
+    fun getPlayerLeftClickBinderCommands(): List<String> = playerLeftClickBinderCommands
     fun isResourceWorldEnabled(): Boolean = featureResourceWorldEnabled
     fun isRentalAreaEnabled(): Boolean = featureRentalAreaEnabled
     fun isPublicSignEnabled(): Boolean = featurePublicSignEnabled
@@ -533,6 +541,7 @@ object ConfigManager {
     fun getAllMusicSettings(): Map<String, MusicSetting> = worldMusicSettings.toMap()
     fun isGlobalSoundEventsAutoDisable(): Boolean = featureGlobalSoundEventsEnabled
     fun isShiftFBinderEnabled(): Boolean = featureShiftFBinderEnabled
+    fun isPlayerLeftClickBinderEnabled(): Boolean = featurePlayerLeftClickBinderEnabled
     fun isDelayCommandEnabled(): Boolean = featureDelayCommandEnabled
     fun isNpcMessageEnabled(): Boolean = featureNpcMessageEnabled
     fun getAnnounceMenuCommand(): String = announceMenuCommand

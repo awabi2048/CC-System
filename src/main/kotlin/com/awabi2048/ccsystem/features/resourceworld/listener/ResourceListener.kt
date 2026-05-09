@@ -73,8 +73,7 @@ class ResourceListener : Listener {
                             if (ticks == 2) {
                                 val soundName = ConfigManager.getSoundStart()
                                 try {
-                                    val sound = Sound.valueOf(soundName.uppercase())
-                                    player.playSound(player.location, sound, 1.0f, 1.0f)
+                                    player.playSound(player.location, soundName, 1.0f, 1.0f)
                                 } catch (e: IllegalArgumentException) {
                                     CCSystem.instance.logger.warning("Invalid start sound name: $soundName")
                                 }
@@ -170,8 +169,7 @@ class ResourceListener : Listener {
             override fun run() {
                 val soundName = ConfigManager.getSoundSuccess()
                 try {
-                    val sound = Sound.valueOf(soundName.uppercase())
-                    player.playSound(player.location, sound, 1.0f, 1.0f)
+                    player.playSound(player.location, soundName, 1.0f, 1.0f)
                 } catch (e: IllegalArgumentException) {
                     CCSystem.instance.logger.warning("Invalid success sound name: $soundName")
                 }

@@ -15,6 +15,7 @@ import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -64,7 +65,7 @@ class AnnounceListener : Listener {
         ): Inventory {
             val holder = AnnouncementMenuHolder(openedFromMenuArgument)
             val title = LanguageManager.getRawString(player, "announce.menu_title")
-            val inventory = Bukkit.createInventory(holder, MENU_SIZE, title)
+            val inventory = Bukkit.createInventory(holder, MENU_SIZE, LegacyComponentSerializer.legacySection().deserialize(title))
             holder.bind(inventory)
 
             val blackPane = createPane(Material.BLACK_STAINED_GLASS_PANE)

@@ -7,6 +7,13 @@ shift_f_binder:
     - "say %player_name%"
   # プレースホルダー: %player_name%, %player_uuid%
 
+# プレイヤー左クリックバインダー
+# プレイヤーが視線先のプレイヤーを左クリックし、他機能で処理されなかった場合に実行されるコマンド
+player_left_click_binder:
+  commands:
+    - "say %player_name%"
+  # プレースホルダー: %player_name%, %player_uuid%
+
 # 音楽再生機能
 # 特定のワールドに移動した際に音楽を再生します
 music:

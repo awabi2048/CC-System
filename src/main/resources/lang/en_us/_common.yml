@@ -19,6 +19,7 @@ feature:
   dynamic_distance: Dynamic Distance
   debug: Debug
   shift_f_binder: Shift+F Binder
+  player_left_click_binder: Player Left Click Binder
   disable_global_sound_events: Disable globalSoundEvents
   delay_command: Delay Command
   npc_message: NPC Message

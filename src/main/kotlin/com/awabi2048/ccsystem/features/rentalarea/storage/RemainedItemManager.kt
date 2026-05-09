@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.features.rentalarea.storage
 
 import com.awabi2048.ccsystem.CCSystem
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockState
@@ -76,7 +77,7 @@ object RemainedItemManager {
         val basePath = "$areaId.items"
         var index = 0
         for (item in items) {
-            if (item == null || item.type == Material.AIR) {
+            if (item.type == Material.AIR) {
                 continue
             }
             config.set("$basePath.$index", item)
@@ -115,7 +116,7 @@ object RemainedItemManager {
         }
 
         val title = "§8回収アイテム: $areaId"
-        val inventory = Bukkit.createInventory(null, 54, title)
+        val inventory = Bukkit.createInventory(null, 54, LegacyComponentSerializer.legacySection().deserialize(title))
 
         for (item in items) {
             inventory.addItem(item)

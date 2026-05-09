@@ -3,8 +3,10 @@ package com.awabi2048.ccsystem.features.publicsign.manager
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.time.DatePolicy
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.time.LocalDate
@@ -169,10 +171,11 @@ object PublicSignManager {
             return
         }
 
-        state.setLine(0, MARKER_TEXT)
-        state.setLine(1, "")
-        state.setLine(2, "")
-        state.setLine(3, "")
+        val side = state.getSide(Side.FRONT)
+        side.line(0, Component.text(MARKER_TEXT))
+        side.line(1, Component.empty())
+        side.line(2, Component.empty())
+        side.line(3, Component.empty())
         state.update(true, false)
     }
 
@@ -184,7 +187,7 @@ object PublicSignManager {
             return
         }
 
-        state.setLine(0, marker)
+        state.getSide(Side.FRONT).line(0, Component.text(marker))
         state.update(true, false)
     }
 

@@ -12,8 +12,10 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.block.Sign
+import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -44,12 +46,12 @@ class PublicSignListener : Listener {
             event.block.z
         )
 
-        val firstLine = (event.getLine(0) ?: "").trim()
+        val firstLine = PlainTextComponentSerializer.plainText().serialize(event.line(0) ?: Component.empty()).trim()
         if (!firstLine.equals(PublicSignManager.MARKER_TEXT, ignoreCase = true)) {
             return
         }
 
-        event.setLine(0, PublicSignManager.ENABLED_MARKER_TEXT)
+        event.line(0, Component.text(PublicSignManager.ENABLED_MARKER_TEXT))
 
         if (PublicSignManager.isRegistered(location)) {
             return
@@ -131,7 +133,7 @@ class PublicSignListener : Listener {
         val meta = book.itemMeta as? BookMeta ?: return
         meta.setTitle("PublicSign")
         meta.setAuthor("CC-System")
-        meta.pages = listOf(body.ifBlank { "(empty)" })
+        meta.pages(listOf(Component.text(body.ifBlank { "(empty)" })))
         book.itemMeta = meta
         player.openBook(book)
     }
@@ -200,7 +202,7 @@ class PublicSignListener : Listener {
         if (world != null) {
             val state = world.getBlockAt(location.x, location.y, location.z).state
             if (state is Sign) {
-                state.setLine(0, PublicSignManager.ENABLED_MARKER_TEXT)
+                state.getSide(Side.FRONT).line(0, Component.text(PublicSignManager.ENABLED_MARKER_TEXT))
                 state.update(true, false)
             }
         }

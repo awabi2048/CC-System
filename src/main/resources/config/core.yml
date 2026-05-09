@@ -11,6 +11,7 @@ features:
   music: true
   dynamic_distance: false
   shift_f_binder: true
+  player_left_click_binder: true
   disable_global_sound_events: true
   delay_command: true
   npc_message: true

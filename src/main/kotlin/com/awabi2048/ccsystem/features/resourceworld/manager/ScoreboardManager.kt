@@ -2,9 +2,11 @@ package com.awabi2048.ccsystem.features.resourceworld.manager
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
 
@@ -24,7 +26,7 @@ object ScoreboardManager {
         if (monitoringPlayers.contains(player.uniqueId)) {
             monitoringPlayers.remove(player.uniqueId)
             val manager = Bukkit.getScoreboardManager()
-            player.scoreboard = manager?.newScoreboard ?: player.scoreboard
+            player.scoreboard = manager.newScoreboard
             return "§c[CC-System] モニターをオフにしました。"
         } else {
             monitoringPlayers.add(player.uniqueId)
@@ -41,9 +43,9 @@ object ScoreboardManager {
     }
 
     private fun createScoreboard(player: Player): Scoreboard {
-        val scoreboardManager = Bukkit.getScoreboardManager() ?: return player.scoreboard
+        val scoreboardManager = Bukkit.getScoreboardManager()
         val scoreboard = scoreboardManager.newScoreboard
-        val objective = scoreboard.registerNewObjective("resource_monitor", "dummy", "§f§lResource World Monitor")
+        val objective = scoreboard.registerNewObjective("resource_monitor", Criteria.DUMMY, Component.text("§f§lResource World Monitor"))
         objective.displaySlot = DisplaySlot.SIDEBAR
 
         val separator = "§7§m――――――――――――――――――"
@@ -146,7 +148,9 @@ object ScoreboardManager {
         for (uuid in monitoringPlayers) {
             val player = Bukkit.getPlayer(uuid)
             val manager = Bukkit.getScoreboardManager()
-            player?.scoreboard = manager?.newScoreboard ?: player?.scoreboard
+            if (player != null) {
+                player.scoreboard = manager.newScoreboard
+            }
         }
         monitoringPlayers.clear()
     }
