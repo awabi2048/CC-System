@@ -7,7 +7,7 @@
 
     <groupId>com.awabi2048</groupId>
     <artifactId>CC-System</artifactId>
-    <version>v1.1.0</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <name>CC-System</name>
@@ -43,6 +43,12 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -84,9 +90,17 @@
                     </execution>
                     <execution>
                         <id>default-testCompile</id>
-                        <phase>none</phase>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
