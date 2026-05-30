@@ -67,6 +67,20 @@ interface CCSystemAPI {
 
     fun unregisterI18nSource(sourceId: String)
 
+    fun createLoreSeparator(lines: Collection<String> = emptyList()): String
+
+    fun createLoreSeparatorComponent(lines: Collection<Component> = emptyList()): Component
+
+    fun createLoreDataLine(label: String, value: Any?, valueColor: String = "§e"): String
+
+    fun createLoreSubDataLine(label: String, value: Any?): String
+
+    fun createLoreActionLine(operation: String, action: String): String
+
+    fun createLoreWarningLine(content: String): String
+
+    fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component>
+
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 
     /**

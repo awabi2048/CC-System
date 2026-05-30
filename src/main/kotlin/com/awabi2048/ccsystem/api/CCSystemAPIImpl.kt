@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.gui.LoreFormatter
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -127,6 +128,34 @@ internal class CCSystemAPIImpl : CCSystemAPI {
 
     override fun unregisterI18nSource(sourceId: String) {
         LanguageManager.getUnified().unregisterSource(sourceId)
+    }
+
+    override fun createLoreSeparator(lines: Collection<String>): String {
+        return LoreFormatter.separator(lines)
+    }
+
+    override fun createLoreSeparatorComponent(lines: Collection<Component>): Component {
+        return LoreFormatter.separatorComponent(lines)
+    }
+
+    override fun createLoreDataLine(label: String, value: Any?, valueColor: String): String {
+        return LoreFormatter.dataLine(label, value, valueColor)
+    }
+
+    override fun createLoreSubDataLine(label: String, value: Any?): String {
+        return LoreFormatter.subDataLine(label, value)
+    }
+
+    override fun createLoreActionLine(operation: String, action: String): String {
+        return LoreFormatter.actionLine(operation, action)
+    }
+
+    override fun createLoreWarningLine(content: String): String {
+        return LoreFormatter.warningLine(content)
+    }
+
+    override fun buildLore(lines: List<String>, closingSeparator: Boolean): List<Component> {
+        return LoreFormatter.buildLore(lines, closingSeparator)
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
