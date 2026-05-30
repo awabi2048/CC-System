@@ -71,13 +71,17 @@ interface CCSystemAPI {
 
     fun createLoreSeparatorComponent(lines: Collection<Component> = emptyList()): Component
 
-    fun createLoreDataLine(label: String, value: Any?, valueColor: String = "§e"): String
+    fun createLoreDataLine(label: String, value: Any?, valueColor: String = "§7"): String
 
     fun createLoreSubDataLine(label: String, value: Any?): String
 
     fun createLoreActionLine(operation: String, action: String): String
 
     fun createLoreWarningLine(content: String): String
+
+    fun createLoreSingleActionLine(actionText: String): String
+
+    fun createLoreTextLine(text: String): String
 
     fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component>
 

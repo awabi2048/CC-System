@@ -38,6 +38,14 @@ object LoreFormatter {
         return "§c§n* $content"
     }
 
+    fun singleActionLine(actionText: String): String {
+        return "§e§n$actionText"
+    }
+
+    fun textLine(text: String): String {
+        return "§7$text"
+    }
+
     fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component> {
         val normalized = lines.map { it.trim() }.filter { it.isNotEmpty() }
         if (normalized.isEmpty()) return emptyList()
