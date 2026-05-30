@@ -20,6 +20,12 @@ gui:
       - §cAre you sure you want to reset?
       - §7Expansion level will be reset and points refunded.
       - §7World border will return to initial size.
+    reset_expansion_spawn_unsafe:
+      title: Warning
+      lore:
+      - §cThe spawn location is not safe after reset.
+      - §7Players outside the new border may be moved into blocks.
+      - §eDo you still want to continue this reset?
     delete_1:
       title: Delete Confirm (1/2)
       lore:
