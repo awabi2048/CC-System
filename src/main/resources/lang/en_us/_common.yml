@@ -42,3 +42,27 @@ update_day_done: '§aUpdate-day process completed. PublicSign: %public_sign_coun
 command_player_only: §cThis command can only be executed by players.
 player_not_found: §cPlayer %player% not found.
 player_only_command: §cThis command can only be executed by players.
+gui:
+  common:
+    confirm: Execute
+    cancel: Cancel
+    back: Back to Settings
+    return: Back
+    return_desc: Return to the previous menu
+    confirm_desc: Execute
+    cancel_desc: Cancel
+    confirm_action: Confirmation of operation
+    confirm_warning: This action involves important changes!
+    confirmation: Confirmation
+    next_page: Next Page
+    prev_page: Prev Page
+    page_info: Page {page}/{total_pages}
+    page_shift_next: Shift + Click Jump 5 pages forward
+    page_shift_prev: Shift + Click Jump 5 pages back
+    status_display: 'Status: {color}{status}'
+lore:
+  action_single: Click to {action}
+  click:
+    left: Left-Click
+    right: Right-Click
+    shift_right: Shift + Right-Click

@@ -42,3 +42,27 @@ update_day_done: '§a日付更新処理が完了しました。PublicSign: %publ
 command_player_only: §cこのコマンドはプレイヤーのみ実行可能です。
 player_not_found: §cプレイヤー %player% は見つかりません。
 player_only_command: §cこのコマンドはプレイヤーのみ実行可能です。
+gui:
+  common:
+    confirm: 実行する
+    cancel: キャンセル
+    back: 戻る
+    return: 戻る
+    return_desc: 前のメニューに戻る
+    confirm_desc: 実行します
+    cancel_desc: 中断します
+    confirm_action: 操作の確認
+    confirm_warning: この操作は重要な変更を伴います！
+    confirmation: 確認
+    next_page: 次のページへ
+    prev_page: 前のページへ
+    page_info: ページ {page}/{total_pages}
+    page_shift_next: Shift + クリック 5ページ進む
+    page_shift_prev: Shift + クリック 5ページ戻る
+    status_display: 'ステータス: {color}{status}'
+lore:
+  action_single: クリックして{action}
+  click:
+    left: 左クリック
+    right: 右クリック
+    shift_right: Shift + 右クリック

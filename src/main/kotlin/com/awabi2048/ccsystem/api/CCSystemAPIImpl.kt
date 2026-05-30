@@ -154,6 +154,14 @@ internal class CCSystemAPIImpl : CCSystemAPI {
         return LoreFormatter.warningLine(content)
     }
 
+    override fun createLoreSingleActionLine(actionText: String): String {
+        return LoreFormatter.singleActionLine(actionText)
+    }
+
+    override fun createLoreTextLine(text: String): String {
+        return LoreFormatter.textLine(text)
+    }
+
     override fun buildLore(lines: List<String>, closingSeparator: Boolean): List<Component> {
         return LoreFormatter.buildLore(lines, closingSeparator)
     }
