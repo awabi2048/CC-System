@@ -1,8 +1,5 @@
 gui:
   common:
-    page_info: §f§l| §7Page §a{page}§7/{total_pages}
-    page_shift_next: §e§l| §eShift + Click§7 Jump 5 pages forward
-    page_shift_prev: §e§l| §eShift + Click§7 Jump 5 pages back
     world_item_name: §f【§a{world}§f】
     world_item_name_simple: §f「§a{world}§f」
     world_desc: §f{description}

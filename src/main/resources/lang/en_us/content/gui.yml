@@ -1,9 +1,7 @@
 gui:
   common:
     close: §cこのメニューを閉じます
-    next_page: §7次のページに進みます
     previous_page: §7前のページに戻ります
-    confirm: §7このオプションで確定します
   npc:
     oage_shrine:
       title:
