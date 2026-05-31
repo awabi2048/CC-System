@@ -1,0 +1,12 @@
+chanpon:
+  member_lore:
+    last_online_label: "最終オンライン"
+    online: "オンライン"
+    tool_permission_title: "ツールの使用権限"
+    none: "なし"
+    click_edit_operation: "左クリック"
+    click_edit_action: "ツールの使用権限を変更する"
+    transfer_owner_operation: "Shift+左クリック"
+    transfer_owner_action: "オーナー権限を移譲"
+    remove_member_operation: "Shift+右クリック"
+    remove_member_action: "メンバーを削除"
