@@ -1,0 +1,76 @@
+chanpon:
+  submission:
+    common:
+      "on": "§eオン"
+      "off": "§7オフ"
+    creation:
+      display: "§e本番用ワールドに設定する"
+      lore:
+        description: "§7提出用のワールドとして扱います"
+        delete_guard: "§c本番用ワールドは削除できません"
+        state: "§7状態: {state}"
+    production:
+      display: "§e本番用ワールドに設定する"
+      lore:
+        - "§e❙ クリック §7このワールドを§e本番用ワールド§7に変更します"
+        - "§c※ 本番用ワールドは複数持つことができます"
+    state:
+      unsubmitted: "§6未提出"
+      submitted: "§a提出済み"
+      completed: "§b完成"
+    submission:
+      lore:
+        unsubmitted:
+          - "§e❙ クリック §7提出済みにする"
+          - "§7"
+          - "§c※ 提出済みにすると、ブロックの設置／破壊などワールドへの干渉ができなくなります！"
+          - "§c取り消すこともできますが、その場合は再度提出し直す必要があります"
+        submitted:
+          - "§e❙ クリック §7提出を取り消す"
+          - "§7"
+          - "§c※ 取り消し後、もう一度提出の操作を行わないと、提出扱いになりません！"
+        completed:
+          - "§a運営スタッフに、完成済みとしてチェックされました"
+          - "§7(これ以降の取り消しは原則的に行えません)"
+    error:
+      display: "§c提出状態エラー"
+      lore:
+        - "§7MWM-Chanpon 側のワールドデータに提出状態がありません。"
+        - "§c後方互換は行わないため、操作できません。"
+    message:
+      production_set: "§aこのワールドを本番用ワールドに設定しました。"
+      submitted: "§aワールドを提出済みにしました。"
+      cancelled: "§e提出を取り消しました。"
+      state_error: "§c提出状態データが存在しないか不正です。"
+      state_changed: "§c提出状態が変更されているため、操作を中止しました。"
+      cancelled_confirmation: "§7操作をキャンセルしました。"
+    confirm:
+      set_production:
+        title: "§0本番用ワールドに設定"
+        display: "§e本番用ワールドに設定する"
+        lore:
+          - "§7このワールドを§e本番用ワールド§7に変更します。"
+          - "§7"
+          - "§c※ 本番用ワールドは複数持つことができます。"
+      submit:
+        title: "§0提出確認"
+        display: "§a提出済みにする"
+        lore:
+          - "§7このワールドを§e提出済み§7に変更します。"
+          - "§7"
+          - "§c※ 取り消す場合は、再度提出し直す必要があります。"
+      cancel_submission:
+        title: "§0提出取り消し確認"
+        display: "§e提出を取り消す"
+        lore:
+          - "§7このワールドの提出を取り消します。"
+          - "§c※ 取り消し後、もう一度提出しないと提出扱いになりません。"
+      button:
+        confirm:
+          display: "§a決定"
+          lore:
+            - "§7クリックで操作を実行します。"
+        cancel:
+          display: "§cキャンセル"
+          lore:
+            - "§7クリックで操作を中止します。"
