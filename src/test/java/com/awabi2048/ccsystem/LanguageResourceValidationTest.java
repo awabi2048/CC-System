@@ -23,7 +23,46 @@ import static org.junit.jupiter.api.Assertions.fail;
 class LanguageResourceValidationTest {
     @Test
     void languageResourcesStayComplete() throws IOException {
-        LanguageResourceValidator.validate(Path.of("src/main/resources/lang"), List.of());
+        LanguageResourceValidator.validate(
+            Path.of("src/main/resources/lang"),
+            List.of(
+                "chanpon.submission.common.on",
+                "chanpon.submission.common.off",
+                "chanpon.submission.creation.display",
+                "chanpon.submission.creation.lore.description",
+                "chanpon.submission.creation.lore.delete_guard",
+                "chanpon.submission.creation.lore.state",
+                "chanpon.submission.production.display",
+                "chanpon.submission.production.lore",
+                "chanpon.submission.state.unsubmitted",
+                "chanpon.submission.state.submitted",
+                "chanpon.submission.state.completed",
+                "chanpon.submission.submission.lore.unsubmitted",
+                "chanpon.submission.submission.lore.submitted",
+                "chanpon.submission.submission.lore.completed",
+                "chanpon.submission.error.display",
+                "chanpon.submission.error.lore",
+                "chanpon.submission.message.production_set",
+                "chanpon.submission.message.submitted",
+                "chanpon.submission.message.cancelled",
+                "chanpon.submission.message.state_error",
+                "chanpon.submission.message.state_changed",
+                "chanpon.submission.message.cancelled_confirmation",
+                "chanpon.submission.confirm.set_production.title",
+                "chanpon.submission.confirm.set_production.display",
+                "chanpon.submission.confirm.set_production.lore",
+                "chanpon.submission.confirm.submit.title",
+                "chanpon.submission.confirm.submit.display",
+                "chanpon.submission.confirm.submit.lore",
+                "chanpon.submission.confirm.cancel_submission.title",
+                "chanpon.submission.confirm.cancel_submission.display",
+                "chanpon.submission.confirm.cancel_submission.lore",
+                "chanpon.submission.confirm.button.confirm.display",
+                "chanpon.submission.confirm.button.confirm.lore",
+                "chanpon.submission.confirm.button.cancel.display",
+                "chanpon.submission.confirm.button.cancel.lore"
+            )
+        );
     }
 
     private static final class LanguageResourceValidator {
@@ -82,9 +121,10 @@ class LanguageResourceValidationTest {
             try (var localeDirs = Files.list(langRoot)) {
                 for (Path localeDir : localeDirs.filter(Files::isDirectory).sorted().toList()) {
                     Map<String, Map<String, Object>> files = new LinkedHashMap<>();
-                    try (var ymlFiles = Files.list(localeDir)) {
+                    try (var ymlFiles = Files.walk(localeDir)) {
                         for (Path file : ymlFiles.filter(Files::isRegularFile).filter(LanguageResourceValidator::isYaml).sorted().toList()) {
-                            files.put(file.getFileName().toString(), readYaml(file));
+                            String relativeName = localeDir.relativize(file).toString().replace('\\', '/');
+                            files.put(relativeName, readYaml(file));
                         }
                     }
                     locales.put(localeDir.getFileName().toString().toLowerCase(), files);

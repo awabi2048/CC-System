@@ -1,0 +1,76 @@
+chanpon:
+  submission:
+    common:
+      "on": "§eOn"
+      "off": "§7Off"
+    creation:
+      display: "§eSet as production world"
+      lore:
+        description: "§7Treats this world as a submission world."
+        delete_guard: "§cProduction worlds cannot be deleted."
+        state: "§7State: {state}"
+    production:
+      display: "§eSet as production world"
+      lore:
+        - "§e❙ Click §7Change this world to a §eproduction world§7."
+        - "§c※ You can have multiple production worlds."
+    state:
+      unsubmitted: "§6Unsubmitted"
+      submitted: "§aSubmitted"
+      completed: "§bCompleted"
+    submission:
+      lore:
+        unsubmitted:
+          - "§e❙ Click §7Mark as submitted"
+          - "§7"
+          - "§c※ Once submitted, world interaction such as placing or breaking blocks will be blocked."
+          - "§cYou can cancel submission, but you must submit again afterward."
+        submitted:
+          - "§e❙ Click §7Cancel submission"
+          - "§7"
+          - "§c※ After cancellation, this world will not count as submitted until you submit again."
+        completed:
+          - "§aStaff has checked this world as completed."
+          - "§7(Cancellation is generally unavailable after this point.)"
+    error:
+      display: "§cSubmission state error"
+      lore:
+        - "§7MWM-Chanpon world data does not contain a submission state."
+        - "§cBackward compatibility is intentionally not applied, so this cannot be operated."
+    message:
+      production_set: "§aThis world is now a production world."
+      submitted: "§aThe world has been marked as submitted."
+      cancelled: "§eSubmission has been cancelled."
+      state_error: "§cSubmission state data is missing or invalid."
+      state_changed: "§cThe submission state changed, so the operation was cancelled."
+      cancelled_confirmation: "§7Operation cancelled."
+    confirm:
+      set_production:
+        title: "§0Set Production World"
+        display: "§eSet as production world"
+        lore:
+          - "§7Change this world to a §eproduction world§7."
+          - "§7"
+          - "§c※ You can have multiple production worlds."
+      submit:
+        title: "§0Confirm Submission"
+        display: "§aMark as submitted"
+        lore:
+          - "§7Change this world to §esubmitted§7."
+          - "§7"
+          - "§c※ If cancelled later, this world must be submitted again."
+      cancel_submission:
+        title: "§0Cancel Submission"
+        display: "§eCancel submission"
+        lore:
+          - "§7Cancel this world's submission."
+          - "§c※ After cancellation, this world will not count as submitted until you submit again."
+      button:
+        confirm:
+          display: "§aConfirm"
+          lore:
+            - "§7Click to run this operation."
+        cancel:
+          display: "§cCancel"
+          lore:
+            - "§7Click to stop this operation."
