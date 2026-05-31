@@ -47,6 +47,7 @@ messages:
   invite_same_world_error: §c{player}さんはすでに同じワールドにいるため、招待できません
   invite_busy_error: §c{player}さんは現在招待を受け付けていません
   invite_member_error: §c{player}さんはワールドメンバーになっているため、招待できません
+  invite_self_error: §c自分自身を招待することはできません。
   member_invite_already_sent: §cそのプレイヤーには既にメンバー招待を送信しています
   invite_accepted_self: §aワールド【{world}】のメンバーになりました！
   invite_accepted_sender: §e{player} §fさんがワールド【§a{world}§f】のメンバー招待を承諾しました
@@ -117,6 +118,7 @@ messages:
     unliked: §cLikeを取り消しました。
   tour_sign:
     placed: §aTour看板を設置しました！
+    bound: §aツアーに看板を紐付けました！
   tour:
     available: §eこのワールドではツアーを開始できます。§bツアーを開く
     none_available: §7このワールドでは現在ツアーを開始できません。
@@ -127,6 +129,7 @@ messages:
     stopped_world_change: §eワールドを離れたため、進行中のツアーを終了しました。
     cancelled_edited: §e進行中のツアー内容が変更されたため、ツアーをキャンセルしました。
     cancelled_deleted: §e進行中のツアーが削除されたため、ツアーをキャンセルしました。
+    waypoint_pick: §e経由点を設置したいブロックを右クリックしてください
   expand_direction_prompt: §a拡張したい方角（北西・北東・南西・南東）を向いて左クリックしてください
   expand_direction_prompt_bedrock: §a拡張したい方角（北西・北東・南西・南東）を向いてクリックしてください
   expand_direction_selected: '§a指定した方角: {direction}'
@@ -176,6 +179,11 @@ messages:
   world_loading: §aワールドをロード中です...
   evacuated: §cワールドがアンロードされたため、スポーン地点へ移動しました。
   no_in_myworld: §cマイワールド内に滞在している必要があります。
+  admin_portal_teleport: §a管理用ポータルでテレポートしました
+  admin_portal_removed: §a管理用ポータルを撤去しました
+  export_started: §eワールドデータのエクスポートを開始しました...
+  export_success: §aエクスポートが完了しました ({file})
+  export_failed: §cエクスポートに失敗しました
   admin_player_filter_prompt: §eフィルタリングするプレイヤー名を入力してください。
   favorite_added: §bこのワールドをお気に入りに追加しました！
   portal_removed: §aポータルを撤去しました
@@ -223,6 +231,7 @@ messages:
   world_creation_success: §aマイワールド「§a{world}§a」の作成に成功しました！
   world_unloading_evacuation: §cワールドがアンロードされたため、スポーン地点へ移動します。
   mspt_warning_chat: §c【WARNING】 §fワールド「§a{world}§f」のMSPTが§e{mspt}ms§fに達しています。§7(負荷が高い可能性があります)
+  mspt_warning_subtitle: '§cワールド「§a{world}§c」のMSPT: §e{mspt}ms'
   meet:
     busy: §c対象のプレイヤーは現在取り込み中です。
     request_accepted: §e{player}§aのワープ申請を許可しました
@@ -277,4 +286,5 @@ messages:
     bottle_fill: '§aバイオームの空気を瓶に詰めました！（バイオーム: {biome}）'
     partial_biome_applied: §a周囲のバイオームを {biome} に変更しました！
     world_seed_expanded: '§aマイワールドスロットを拡張しました！ 現在のスロット数: {slots}'
+    biome_bottle_disabled: §cバイオーム瓶の機能は現在無効化されています。
   member_request_is_owner: §cYou cannot request membership to your own world

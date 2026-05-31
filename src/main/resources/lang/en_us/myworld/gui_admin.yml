@@ -205,3 +205,5 @@ gui:
     lore:
     - §fThis world is currently archived.
     - §fDo you want to unarchive and warp?
+  archive_confirm:
+    title: §6Archive Confirmation

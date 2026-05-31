@@ -117,6 +117,7 @@ error:
     item_not_found_hand: §cItem not found in hand.
     no_permission: §cYou do not have permission to change the biome.
     world_seed_limit_reached: '§cCannot expand slots further. (Limit: {limit})'
+    biome_world_only: §cThe biome bottle can only be used inside a MyWorld.
   delete_failed: §cFailed to delete world.
   expand_failed: §cExpansion failed (World might not be loaded).
   expand_insufficient_points: '§cInsufficient points. (Required: §6🛖 §e{cost}§c)'
@@ -169,4 +170,6 @@ error:
     limit_reached: '§cNo more Tour signs can be placed in this world. (Limit: {limit})'
     title_required: §cPlease enter a name.
     not_managed_world: §cThis is not a managed MyWorld.
-    not_enough_signs: §cAt least 2 Tour signs are required to save a tour.
+    not_enough_signs: §cAt least 2 waypoints are required to save a tour.
+    waypoint_limit: §cA maximum of 28 waypoints can be set.
+    sign_no_available_tour: §cNo available tours to bind. Create a tour first.

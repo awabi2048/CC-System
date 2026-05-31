@@ -47,6 +47,7 @@ messages:
   invite_same_world_error: §c{player} is already in the same world, so they cannot be invited.
   invite_busy_error: §c{player} is currently not accepting invites.
   invite_member_error: §c{player} is already a world member, so they cannot be invited.
+  invite_self_error: §cYou cannot invite yourself.
   member_invite_already_sent: §cA member invite has already been sent to that player.
   invite_accepted_self: §aYou are now a member of world【{world}】!
   invite_accepted_sender: §e{player} §faccepted your invite to world【§a{world}§f】.
@@ -117,6 +118,7 @@ messages:
     unliked: §cLike canceled.
   tour_sign:
     placed: §aPlaced a Tour sign!
+    bound: §aTour sign bound to tour!
   tour:
     available: §eTours are available in this world. §bOpen tour
     none_available: §7There are no available tours in this world right now.
@@ -127,6 +129,7 @@ messages:
     stopped_world_change: §eYou left the world, so the active tour was stopped.
     cancelled_edited: §eThe active tour was cancelled because its route was updated.
     cancelled_deleted: §eThe active tour was cancelled because it was deleted.
+    waypoint_pick: §eRight-click a block to set the waypoint location
   expand_direction_prompt: §aLeft-click while facing the direction (NW, NE, SW, SE) you want to expand.
   expand_direction_prompt_bedrock: §aClick while facing the direction (NW, NE, SW, SE) you want to expand.
   expand_direction_selected: '§aDirection selected: {direction}'
@@ -176,6 +179,11 @@ messages:
   world_loading: §aLoading world...
   evacuated: §cWorld unloaded. Moving to spawn.
   no_in_myworld: §cYou must be in a MyWorld to do this.
+  admin_portal_teleport: §aTeleported via admin portal
+  admin_portal_removed: §aAdmin portal removed
+  export_started: §eStarting world data export...
+  export_success: §aExport completed ({file})
+  export_failed: §cExport failed
   admin_player_filter_prompt: §eType the player name to filter.
   favorite_added: §bAdded to favorites!
   portal_removed: §aPortal removed.
@@ -223,6 +231,7 @@ messages:
   world_creation_success: §a My world “§a{world}§a” was successfully created!
   world_unloading_evacuation: §c The world has been unloaded, so move to the spawn point.
   mspt_warning_chat: §c [WARNING] §f The MSPT of world "§a{world}§f" has reached §e{mspt}ms§f. §7(Load may be high)
+  mspt_warning_subtitle: '§cWorld "§a{world}§c" MSPT: §e{mspt}ms'
   meet:
     busy: §cThe target player is currently busy.
     request_accepted: §aAccepted warp request from §e{player}§a.
@@ -277,4 +286,5 @@ messages:
     bottle_fill: '§a We bottled the air of the biome! (Biome: {biome})'
     partial_biome_applied: §aThe surrounding biome has been changed to {biome}!
     world_seed_expanded: '§a My World slot has been expanded! Current number of slots: {slots}'
+    biome_bottle_disabled: §cThe biome bottle feature is currently disabled.
   member_request_is_owner: §cYou cannot request membership to your own world

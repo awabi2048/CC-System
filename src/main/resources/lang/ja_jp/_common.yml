@@ -117,6 +117,7 @@ error:
     item_not_found_hand: §cアイテムを手に持っていません。
     no_permission: §c変更する権限がありません。
     world_seed_limit_reached: '§cこれ以上スロットを拡張できません。(上限: {limit})'
+    biome_world_only: §cバイオームの瓶はマイワールド内でのみ使用できます。
   delete_failed: §cワールドの削除に失敗しました。
   expand_failed: §c拡張に失敗しました。(ワールドがロードされていない可能性があります)
   expand_insufficient_points: '§cポイントが不足しています。(必要: §6🛖 §e{cost}§c)'
@@ -169,4 +170,6 @@ error:
     limit_reached: '§cこのワールドにはこれ以上Tour看板を設置できません。(上限: {limit})'
     title_required: §c名前を入力してください。
     not_managed_world: §cここは管理対象のマイワールドではありません。
-    not_enough_signs: §cツアーを保存するにはTour看板が2個以上必要です。
+    not_enough_signs: §cツアーを保存するには中継点が2個以上必要です。
+    waypoint_limit: §c中継点は最大28個まで設定可能です。
+    sign_no_available_tour: §c紐付け可能なツアーがありません。先にツアーを作成してください。

@@ -212,9 +212,10 @@ gui:
       info:
         display: §eInfo
         lore:
-        - §7Register Tour signs to build
-        - §7a sightseeing route in this world.
-        - §7Right-click to start, Shift+right-click to edit.
+        - §7This menu lets you create world tour routes
+        - §7based on start signs you have placed.
+        - §7Set waypoints from each tour's edit screen.
+        - §7Click a start sign to begin a tour.
       edit_text:
         display: §eEdit Display Info
         lore:
@@ -244,6 +245,13 @@ gui:
         action_edit: §e§nClick to edit this tour
         action_current: §bTour in progress!
         action_start: §e§nClick to start this tour
+        action_bind: §e§nClick to bind this tour
+      add_waypoint_button: §e§nClick to add a waypoint
+      remove_waypoint_action: §e§nClick to remove
+    bind_sign_title: Select Tour
+    create_dialog:
+      title: Create New Tour
+      description: §7Enter the tour name and description
     edit_text:
       title: Edit Tour Display
       description: §7Enter the tour name and description

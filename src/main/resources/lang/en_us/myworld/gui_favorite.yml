@@ -84,3 +84,4 @@ gui:
       - §cRemove from favorites§f?
       - ''
       - If you cancel §7, it will be removed from your favorites list.
+      confirm: §aRemove Favorite
