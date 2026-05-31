@@ -14,7 +14,8 @@ object LoreFormatter {
     fun separator(lines: Collection<String>): String {
         val maxPixelWidth = lines.maxOfOrNull { displayPixelWidth(it) } ?: 0
         val sepPixelWidth = displayPixelWidth(SEPARATOR_UNIT).coerceAtLeast(1)
-        val count = ((((maxPixelWidth + sepPixelWidth - 1) / sepPixelWidth) * 3 + 1) / 2).coerceAtLeast(1)
+        val calculatedCount = ((((maxPixelWidth + sepPixelWidth - 1) / sepPixelWidth) * 3 + 1) / 2).coerceAtLeast(1)
+        val count = minOf(20, calculatedCount)
         return "§8§m" + SEPARATOR_UNIT.repeat(count)
     }
 
