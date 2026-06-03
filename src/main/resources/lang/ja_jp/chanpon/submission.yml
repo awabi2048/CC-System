@@ -6,14 +6,14 @@ chanpon:
     creation:
       display: "§e本番用ワールドに設定する"
       lore:
-        description: "§7提出用のワールドとして扱います"
-        delete_guard: "§c本番用ワールドは削除できません"
+        description: "§7提出用のワールドとして扱います。"
+        delete_guard: "§c本番用ワールドは削除できません。"
         state: "§7状態: {state}"
     production:
       display: "§e本番用ワールドに設定する"
       lore:
-        - "§e❙ クリック §7このワールドを§e本番用ワールド§7に変更します"
-        - "§c※ 本番用ワールドは複数持つことができます"
+        - "§e❙ クリック §7このワールドを§e本番用ワールド§7に変更します。"
+        - "§c※ 本番用ワールドは複数持つことができます。"
     state:
       unsubmitted: "§6未提出"
       submitted: "§a提出済み"
@@ -23,15 +23,15 @@ chanpon:
         unsubmitted:
           - "§e❙ クリック §7提出済みにする"
           - "§7"
-          - "§c※ 提出済みにすると、ブロックの設置／破壊などワールドへの干渉ができなくなります！"
-          - "§c取り消すこともできますが、その場合は再度提出し直す必要があります"
+          - "§c※ 提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"
+          - "§c取り消すこともできますが、その場合は再度提出する必要があります。"
         submitted:
           - "§e❙ クリック §7提出を取り消す"
           - "§7"
-          - "§c※ 取り消し後、もう一度提出の操作を行わないと、提出扱いになりません！"
+          - "§c※ 取り消し後、もう一度提出の操作を行わないと、提出扱いになりません。"
         completed:
-          - "§a運営スタッフに、完成済みとしてチェックされました"
-          - "§7(これ以降の取り消しは原則的に行えません)"
+          - "§a運営スタッフに、完成済みとしてチェックされました。"
+          - "§7(これ以降の取り消しは原則として行えません)"
     error:
       display: "§c提出状態エラー"
       lore:
@@ -44,6 +44,135 @@ chanpon:
       state_error: "§c提出状態データが存在しないか不正です。"
       state_changed: "§c提出状態が変更されているため、操作を中止しました。"
       cancelled_confirmation: "§7操作をキャンセルしました。"
+      deadline_closed: "§c提出は締め切られています。"
+    submitted_menu:
+      title: "§0提出済みワールド"
+      world_lore:
+        - "§7状態: {state}"
+        - "§7説明: {description}"
+      cancel:
+        display: "§e提出を取り消す"
+        lore:
+          - "§7このワールドの提出を取り消します。"
+          - "§c取り消し後は、再度提出しないと提出扱いになりません。"
+      back:
+        display: "§7戻る"
+        lore:
+          - "§7クリックで閉じます。"
+    admin_menu:
+      title: "§0完成状況の管理"
+      no_permission: "§cこのメニューを操作する権限がありません。"
+      entry:
+        display: "§a完成状況の管理"
+        lore:
+          - "§7本番用ワールドの提出状況と完成マークを管理します。"
+      prev: "§e前のページ"
+      next: "§e次のページ"
+      unknown: "不明"
+      back:
+        display: "§7戻る"
+        lore:
+          - "§7管理者メニューへ戻ります。"
+      submission_filter:
+        unsubmitted: "§6未提出"
+        submitted: "§a提出済み"
+        display: "§e提出状況フィルター"
+        lore:
+          - "§7現在: {filter}"
+          - "§eクリック §7表示対象を切り替えます。"
+      completion_filter:
+        unmarked: "§6完成マーク未"
+        completed: "§b完成マーク済み"
+        display: "§e完成済みフィルター"
+        lore:
+          - "§7現在: {filter}"
+          - "§eクリック §7表示対象を切り替えます。"
+      stats:
+        display: "§b統計情報"
+        lore:
+          - "§7提出済み: §f{submitted}§7/§f{total}"
+          - "§7完成マーク済み: §f{completed}§7/§f{submitted}"
+      close:
+        open:
+          display: "§c提出を締め切る"
+          lore:
+            - "§7クリックで提出と提出取り消しを締め切ります。"
+            - "§c一度締め切ると、このメニューからは再開できません。"
+        closed:
+          display: "§e提出締切を解除"
+          lore:
+            - "§7クリックで提出締切を解除します。"
+            - "§7解除後はプレイヤーが提出・提出取り消しを再び行えます。"
+      closed_message: "§c提出を締め切りました。"
+      reopened_message: "§e提出締切を解除しました。"
+      completed_message: "§a完成済みとしてマークしました。"
+      complete_unsubmitted: "§c未提出のワールドは完成済みにできません。"
+      world:
+        display: "§e{world}"
+        no_members: "§7なし"
+        completed_yes: "§b完成マーク済み"
+        completed_no: "§6完成マーク未"
+        action_complete: "§eホイールクリック §7完成済みとしてマーク"
+        lore:
+          - "§7オーナー: §f{owner}"
+          - "§7メンバー: {members}"
+          - "§7作成日: §f{created}"
+          - "§7提出状況: {state}"
+          - "§7完成状態: {completed}"
+          - ""
+          - "§e左クリック §7ワープ"
+          - "{middle_action}"
+    admin_list:
+      title: "§0ワールド一覧管理"
+      unknown: "不明"
+      prev: "§e前のページ"
+      next: "§e次のページ"
+      back:
+        display: "§7戻る"
+        lore:
+          - "§7管理メニューへ戻ります。"
+      visibility:
+        public: "§a公開"
+        development: "§e開発中"
+        private: "§7非公開"
+      visibility_filter:
+        all: "§fすべて"
+        public: "§a公開"
+        development: "§e開発中"
+        private: "§7非公開"
+        display: "§e公開状態フィルター"
+        lore:
+          - "§7現在: {filter}"
+          - "§eクリック §7表示対象を切り替えます。"
+      sort:
+        created_desc: "§f作成日が新しい順"
+        created_asc: "§f作成日が古い順"
+        world_size_desc: "§fワールドサイズが大きい順"
+        display: "§e並び順"
+        lore:
+          - "§7現在: {sort}"
+          - "§eクリック §7並び順を切り替えます。"
+      info:
+        display: "§b一覧情報"
+        lore:
+          - "§7表示件数: §f{count}"
+          - "§7ページ: §f{page}§7/§f{pages}"
+      world:
+        display: "§e{world}"
+        no_members: "§7なし"
+        action_copy: "§eホイールクリック §7ワールド情報をコピー"
+        action_settings: "§e右クリック §7管理設定を開く"
+        action_settings_current: "§7現在のワールドでは管理設定を開けません"
+        lore:
+          - "§7オーナー: §f{owner}"
+          - "§7メンバー: {members}"
+          - "§7作成日: §f{created}"
+          - "§7公開状態: {visibility}"
+          - "§7ワールド: §f{world_directory}"
+          - ""
+          - "§e左クリック §7ワープ"
+          - "{right_action}"
+          - "{middle_action}"
     confirm:
       set_production:
         title: "§0本番用ワールドに設定"
@@ -65,6 +194,13 @@ chanpon:
         lore:
           - "§7このワールドの提出を取り消します。"
           - "§c※ 取り消し後、もう一度提出しないと提出扱いになりません。"
+      close_submissions:
+        title: "§0提出締切確認"
+        display: "§c提出を締め切る"
+        lore:
+          - "§7全体の提出と提出取り消しを締め切ります。"
+          - "§c※ 締切後、プレイヤー側の提出操作はできなくなります。"
+          - "§7締切後も、この管理メニューから締切を解除できます。"
       button:
         confirm:
           display: "§a決定"

@@ -44,6 +44,135 @@ chanpon:
       state_error: "§cSubmission state data is missing or invalid."
       state_changed: "§cThe submission state changed, so the operation was cancelled."
       cancelled_confirmation: "§7Operation cancelled."
+      deadline_closed: "§cSubmissions are already closed."
+    submitted_menu:
+      title: "§0Submitted World"
+      world_lore:
+        - "§7State: {state}"
+        - "§7Description: {description}"
+      cancel:
+        display: "§eCancel submission"
+        lore:
+          - "§7Cancel this world's submission."
+          - "§cAfter cancellation, this world will not count as submitted until you submit again."
+      back:
+        display: "§7Back"
+        lore:
+          - "§7Click to close this menu."
+    admin_menu:
+      title: "§0Completion Status"
+      no_permission: "§cYou do not have permission to use this menu."
+      entry:
+        display: "§aManage completion status"
+        lore:
+          - "§7Manage production world submissions and completion marks."
+      prev: "§ePrevious page"
+      next: "§eNext page"
+      unknown: "Unknown"
+      back:
+        display: "§7Back"
+        lore:
+          - "§7Return to the admin menu."
+      submission_filter:
+        unsubmitted: "§6Unsubmitted"
+        submitted: "§aSubmitted"
+        display: "§eSubmission filter"
+        lore:
+          - "§7Current: {filter}"
+          - "§eClick §7Cycle visible submissions."
+      completion_filter:
+        unmarked: "§6Unmarked"
+        completed: "§bCompleted"
+        display: "§eCompletion filter"
+        lore:
+          - "§7Current: {filter}"
+          - "§eClick §7Cycle visible completion marks."
+      stats:
+        display: "§bStatistics"
+        lore:
+          - "§7Submitted: §f{submitted}§7/§f{total}"
+          - "§7Completed: §f{completed}§7/§f{submitted}"
+      close:
+        open:
+          display: "§cClose submissions"
+          lore:
+            - "§7Click to close submissions and cancellation."
+            - "§cThis menu cannot reopen submissions."
+        closed:
+          display: "§eReopen submissions"
+          lore:
+            - "§7Click to reopen submissions."
+            - "§7Players will be able to submit and cancel submission again."
+      closed_message: "§cSubmissions have been closed."
+      reopened_message: "§eSubmissions have been reopened."
+      completed_message: "§aMarked as completed."
+      complete_unsubmitted: "§cUnsubmitted worlds cannot be marked as completed."
+      world:
+        display: "§e{world}"
+        no_members: "§7None"
+        completed_yes: "§bCompleted"
+        completed_no: "§6Unmarked"
+        action_complete: "§eMiddle click §7Mark as completed"
+        lore:
+          - "§7Owner: §f{owner}"
+          - "§7Members: {members}"
+          - "§7Created: §f{created}"
+          - "§7Submission: {state}"
+          - "§7Completion: {completed}"
+          - ""
+          - "§eLeft click §7Warp"
+          - "{middle_action}"
+    admin_list:
+      title: "§0World List Management"
+      unknown: "Unknown"
+      prev: "§ePrevious page"
+      next: "§eNext page"
+      back:
+        display: "§7Back"
+        lore:
+          - "§7Return to the admin menu."
+      visibility:
+        public: "§aPublic"
+        development: "§eDevelopment"
+        private: "§7Private"
+      visibility_filter:
+        all: "§fAll"
+        public: "§aPublic"
+        development: "§eDevelopment"
+        private: "§7Private"
+        display: "§eVisibility filter"
+        lore:
+          - "§7Current: {filter}"
+          - "§eClick §7Cycle visible worlds."
+      sort:
+        created_desc: "§fNewest created"
+        created_asc: "§fOldest created"
+        world_size_desc: "§fLargest world size"
+        display: "§eSort"
+        lore:
+          - "§7Current: {sort}"
+          - "§eClick §7Cycle sort order."
+      info:
+        display: "§bList info"
+        lore:
+          - "§7Visible worlds: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
+      world:
+        display: "§e{world}"
+        no_members: "§7None"
+        action_copy: "§eMiddle click §7Copy world info"
+        action_settings: "§eRight click §7Open admin settings"
+        action_settings_current: "§7Admin settings are unavailable for the current world"
+        lore:
+          - "§7Owner: §f{owner}"
+          - "§7Members: {members}"
+          - "§7Created: §f{created}"
+          - "§7Visibility: {visibility}"
+          - "§7World: §f{world_directory}"
+          - ""
+          - "§eLeft click §7Warp"
+          - "{right_action}"
+          - "{middle_action}"
     confirm:
       set_production:
         title: "§0Set Production World"
@@ -65,6 +194,13 @@ chanpon:
         lore:
           - "§7Cancel this world's submission."
           - "§c※ After cancellation, this world will not count as submitted until you submit again."
+      close_submissions:
+        title: "§0Close Submissions"
+        display: "§cClose submissions"
+        lore:
+          - "§7Close submissions and cancellation for all worlds."
+          - "§c※ Players cannot submit or cancel submission after this."
+          - "§7You can reopen submissions from the management menu afterward."
       button:
         confirm:
           display: "§aConfirm"
