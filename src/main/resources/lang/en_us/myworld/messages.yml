@@ -263,6 +263,7 @@ messages:
   usage_stats: '§cUsage: /mwm stats <player> <field> <action> [value]'
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
   usage_give: '§cUsage: /mwm give <player> <item_id> [amount]'
+  command_disabled: '§cThis MWM command is disabled.'
   myworld_command_usage: '§cUsage: /myworld accept | deny | transfer <player> | remove_member <player>'
   myworld_command_bedrock_only: §cThis subcommand is available for Bedrock players only.
   myworld_target_not_member: §cTarget player is not a member of this world.

@@ -263,6 +263,7 @@ messages:
   usage_stats: '§c使用法: /mwm stats <プレイヤー名> <項目> <get/set/add/remove> [値]'
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'
   usage_give: '§c使用法: /mwm give <プレイヤー名> <アイテムID> [個数]'
+  command_disabled: '§cこのMWMコマンドは現在無効です。'
   myworld_command_usage: '§c使用法: /myworld accept | deny | transfer <プレイヤー> | remove_member <プレイヤー>'
   myworld_command_bedrock_only: §cこのサブコマンドは統合版プレイヤー専用です。
   myworld_target_not_member: §c対象プレイヤーはこのワールドのメンバーではありません。
