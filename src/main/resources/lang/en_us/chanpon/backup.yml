@@ -1,0 +1,159 @@
+chanpon:
+  backup:
+    common:
+      "on": "§aOn"
+      "off": "§7Off"
+      prev: "§ePrevious page"
+      next: "§eNext page"
+      back: "§7Back"
+    kind:
+      user_manual: "§aUser manual"
+      admin_manual: "§eAdmin manual"
+      scheduled: "§bScheduled"
+      restore_point: "§dRestore point"
+      pre_rollback: "§6Pre-rollback"
+    admin:
+      title: "§0Chanpon Admin Menu"
+      no_permission: "§cYou do not have permission to use this menu."
+      submission:
+        display: "§aSubmission Status"
+        lore:
+          - "§7Manage submission status and completion marks."
+      world_data:
+        display: "§eWorld Data"
+        lore:
+          - "§7Manage backups and rollbacks for production worlds."
+      automation:
+        display: "§bAutomation Settings"
+        lore:
+          - "§7Configure automatic backup and rollback."
+      export:
+        display: "§7World Data Export"
+        lore:
+          - "§8This is currently a mock."
+        mock_message: "§7This feature is currently a mock."
+      info:
+        display: "§bMWM-Chanpon"
+        lore:
+          - "§7Version: §f{version}"
+    world_data:
+      title: "§0World Data Management"
+      bulk_backup:
+        display: "§aRun Bulk Backup"
+        lore:
+          - "§7Back up all production worlds."
+      bulk_rollback:
+        display: "§cRun Bulk Rollback"
+        lore:
+          - "§7Open the whole-backup list."
+      info:
+        display: "§bList Info"
+        lore:
+          - "§7Count: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
+      world:
+        display: "§e{world}"
+        lore:
+          - "§7Owner: §f{owner}"
+          - "§7Created: §f{created}"
+          - "§7Backups: §f{backups}"
+          - ""
+          - "§eLeft click §7create backup"
+          - "§eRight click §7backup list"
+    backup_list:
+      title: "§0Backup List"
+      info:
+        display: "§bBackup Info"
+        lore:
+          - "§7Count: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
+      item:
+        display: "§eBackup {id}"
+        lore:
+          - "§7Type: {kind}"
+          - "§7Created: §f{created}"
+          - "§7Worlds: §f{worlds}"
+          - "§7Size: §f{size}"
+          - "§7Actor: §f{actor}"
+          - ""
+          - "§eLeft click §7rollback"
+          - "§eMiddle click §7delete"
+    automation:
+      title: "§0Automation Settings"
+      auto_backup:
+        display: "§bAuto backup: {state}"
+        lore:
+          - "§7Saves changed production worlds at the configured time."
+      auto_rollback:
+        display: "§cAuto rollback: {state}"
+        lore:
+          - "§7Restores the latest restore point at the configured time."
+      restore_point:
+        display: "§dCreate Restore Point"
+        lore:
+          - "§7Save all production worlds as a restore point."
+    owner_backup:
+      display: "§aBack Up World"
+      lore:
+        - "§7Create a manual backup of this production world."
+    confirm:
+      backup_world:
+        title: "§0World Backup Confirmation"
+        display: "§aCreate world backup"
+        lore:
+          - "§7Save this world's current state."
+      backup_all:
+        title: "§0Bulk Backup Confirmation"
+        display: "§aCreate bulk backup"
+        lore:
+          - "§7Save all production worlds."
+      rollback_all:
+        title: "§0Bulk Rollback Confirmation"
+        display: "§cOpen bulk rollback list"
+        lore:
+          - "§7Select a whole-backup rollback target."
+          - "§cEach backup still requires its own confirmation before execution."
+      auto_backup_toggle:
+        title: "§0Auto Backup Setting Confirmation"
+        display: "§bSet auto backup to {state}"
+        lore:
+          - "§7Change the auto backup setting."
+      auto_rollback_toggle:
+        title: "§0Auto Rollback Setting Confirmation"
+        display: "§cSet auto rollback to {state}"
+        lore:
+          - "§7Change the auto rollback setting."
+          - "§cWhen enabled, it restores the restore point at the configured time."
+      owner_backup:
+        title: "§0Backup Confirmation"
+        display: "§aCreate backup"
+        lore:
+          - "§7Save this world's current state."
+      restore:
+        title: "§0Rollback Confirmation"
+        display: "§cRun rollback"
+        lore:
+          - "§7The current state is saved before restore."
+      delete1:
+        title: "§0Backup Delete Confirmation"
+        display: "§cDelete backup"
+        lore:
+          - "§7Delete this backup."
+      delete2:
+        title: "§0Final Delete Confirmation"
+        display: "§4Really delete"
+        lore:
+          - "§cThis backup cannot be restored after deletion."
+      button:
+        confirm: "§aRun"
+        cancel: "§cCancel"
+    message:
+      backup_success: "§aBackup created."
+      backup_failed: "§cBackup failed."
+      restore_success: "§aRollback completed."
+      restore_failed: "§cRollback failed."
+      restore_recovered: "§eRollback failed; original state was recovered."
+      restore_recovery_failed: "§cRollback failed, and original state recovery also failed."
+      delete_success: "§aBackup deleted."
+      delete_failed: "§cBackup delete failed."
+      restore_point_success: "§dRestore point created."

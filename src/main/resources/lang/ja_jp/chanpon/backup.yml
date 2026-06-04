@@ -1,0 +1,159 @@
+chanpon:
+  backup:
+    common:
+      "on": "§aオン"
+      "off": "§7オフ"
+      prev: "§e前のページ"
+      next: "§e次のページ"
+      back: "§7戻る"
+    kind:
+      user_manual: "§aユーザー手動"
+      admin_manual: "§e管理者手動"
+      scheduled: "§b定時バックアップ"
+      restore_point: "§d復元ポイント"
+      pre_rollback: "§6ロールバック前退避"
+    admin:
+      title: "§0ちゃんぽん管理者メニュー"
+      no_permission: "§cこのメニューを操作する権限がありません。"
+      submission:
+        display: "§a提出状況の管理"
+        lore:
+          - "§7本番用ワールドの提出状況と完成マークを管理します。"
+      world_data:
+        display: "§eワールドデータの管理"
+        lore:
+          - "§7本番用ワールドのバックアップとロールバックを管理します。"
+      automation:
+        display: "§b自動処理の設定"
+        lore:
+          - "§7自動バックアップと自動ロールバックを設定します。"
+      export:
+        display: "§7ワールドデータのエクスポート"
+        lore:
+          - "§8現在はモックです。"
+        mock_message: "§7この機能は現在モックです。"
+      info:
+        display: "§bMWM-Chanpon"
+        lore:
+          - "§7Version: §f{version}"
+    world_data:
+      title: "§0ワールドデータの管理"
+      bulk_backup:
+        display: "§a一括バックアップの実行"
+        lore:
+          - "§7すべての本番用ワールドをバックアップします。"
+      bulk_rollback:
+        display: "§c一括ロールバックの実行"
+        lore:
+          - "§7全体バックアップ一覧を開きます。"
+      info:
+        display: "§b一覧情報"
+        lore:
+          - "§7表示件数: §f{count}"
+          - "§7ページ: §f{page}§7/§f{pages}"
+      world:
+        display: "§e{world}"
+        lore:
+          - "§7オーナー: §f{owner}"
+          - "§7作成日: §f{created}"
+          - "§7保存済みバックアップ: §f{backups}"
+          - ""
+          - "§e左クリック §7個別バックアップ"
+          - "§e右クリック §7バックアップ一覧"
+    backup_list:
+      title: "§0バックアップ一覧"
+      info:
+        display: "§bバックアップ情報"
+        lore:
+          - "§7件数: §f{count}"
+          - "§7ページ: §f{page}§7/§f{pages}"
+      item:
+        display: "§eバックアップ {id}"
+        lore:
+          - "§7種別: {kind}"
+          - "§7作成日時: §f{created}"
+          - "§7対象ワールド数: §f{worlds}"
+          - "§7サイズ: §f{size}"
+          - "§7作成者: §f{actor}"
+          - ""
+          - "§e左クリック §7ロールバック"
+          - "§eホイールクリック §7削除"
+    automation:
+      title: "§0自動処理の設定"
+      auto_backup:
+        display: "§b自動バックアップ: {state}"
+        lore:
+          - "§7configで指定した時刻に変更済み本番用ワールドを保存します。"
+      auto_rollback:
+        display: "§c自動ロールバック: {state}"
+        lore:
+          - "§7configで指定した時刻に最新の復元ポイントへ戻します。"
+      restore_point:
+        display: "§d復元ポイントを設定"
+        lore:
+          - "§7すべての本番用ワールドを復元ポイントとして保存します。"
+    owner_backup:
+      display: "§aワールドをバックアップ"
+      lore:
+        - "§7この本番用ワールドの手動バックアップを作成します。"
+    confirm:
+      backup_world:
+        title: "§0個別バックアップ確認"
+        display: "§a個別バックアップを作成"
+        lore:
+          - "§7このワールドの現在状態を保存します。"
+      backup_all:
+        title: "§0一括バックアップ確認"
+        display: "§a一括バックアップを作成"
+        lore:
+          - "§7すべての本番用ワールドの現在状態を保存します。"
+      rollback_all:
+        title: "§0一括ロールバック確認"
+        display: "§c一括ロールバック一覧を開く"
+        lore:
+          - "§7全体バックアップからロールバック対象を選択します。"
+          - "§c実行前に各バックアップごとの確認も表示されます。"
+      auto_backup_toggle:
+        title: "§0自動バックアップ設定確認"
+        display: "§b自動バックアップを{state}に変更"
+        lore:
+          - "§7自動バックアップ設定を変更します。"
+      auto_rollback_toggle:
+        title: "§0自動ロールバック設定確認"
+        display: "§c自動ロールバックを{state}に変更"
+        lore:
+          - "§7自動ロールバック設定を変更します。"
+          - "§c有効化すると、指定時刻に復元ポイントへ戻します。"
+      owner_backup:
+        title: "§0バックアップ確認"
+        display: "§aバックアップを作成"
+        lore:
+          - "§7このワールドの現在状態を保存します。"
+      restore:
+        title: "§0ロールバック確認"
+        display: "§cロールバックを実行"
+        lore:
+          - "§7実行前に現在状態を退避してから復元します。"
+      delete1:
+        title: "§0バックアップ削除確認"
+        display: "§cバックアップを削除"
+        lore:
+          - "§7このバックアップを削除します。"
+      delete2:
+        title: "§0最終削除確認"
+        display: "§4本当に削除"
+        lore:
+          - "§c削除後はこのバックアップから復元できません。"
+      button:
+        confirm: "§a実行"
+        cancel: "§cキャンセル"
+    message:
+      backup_success: "§aバックアップを作成しました。"
+      backup_failed: "§cバックアップに失敗しました。"
+      restore_success: "§aロールバックが完了しました。"
+      restore_failed: "§cロールバックに失敗しました。"
+      restore_recovered: "§eロールバックに失敗したため、実行前状態へ復旧しました。"
+      restore_recovery_failed: "§cロールバックに失敗し、実行前状態への復旧にも失敗しました。"
+      delete_success: "§aバックアップを削除しました。"
+      delete_failed: "§cバックアップの削除に失敗しました。"
+      restore_point_success: "§d復元ポイントを作成しました。"
