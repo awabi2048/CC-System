@@ -96,6 +96,29 @@ chanpon:
       display: "§aワールドをバックアップ"
       lore:
         - "§7この本番用ワールドの手動バックアップを作成します。"
+      title: "§0ワールドバックアップ管理"
+      create:
+        display: "§aバックアップを作成"
+        lore:
+          - "§7このワールドの手動バックアップを作成します。"
+      cooldown:
+        display: "§cバックアップクールダウン"
+        lore:
+          - "§7次のバックアップは §f{remaining} §7後に作成できます。"
+      info:
+        display: "§b{world}"
+        lore:
+          - "§7バックアップ数: §f{count}"
+          - "§7ページ: §f{page}§7/§f{pages}"
+      item:
+        display: "§eバックアップ {id}"
+        lore:
+          - "§7種別: {kind}"
+          - "§7作成日時: §f{created}"
+          - "§7サイズ: §f{size}"
+          - "§7作成者: §f{actor}"
+          - ""
+          - "§e左クリック §7このワールドをロールバック"
     confirm:
       backup_world:
         title: "§0個別バックアップ確認"
@@ -157,3 +180,4 @@ chanpon:
       delete_success: "§aバックアップを削除しました。"
       delete_failed: "§cバックアップの削除に失敗しました。"
       restore_point_success: "§d復元ポイントを作成しました。"
+      owner_backup_cooldown: "§c次のバックアップは §f{remaining} §c後に作成できます。"

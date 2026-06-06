@@ -93,9 +93,32 @@ chanpon:
         lore:
           - "§7Save all production worlds as a restore point."
     owner_backup:
-      display: "§aBack Up World"
+      title: "§0World Backup Management"
+      display: "§aWorld Backups"
       lore:
-        - "§7Create a manual backup of this production world."
+        - "§7Manage backups and rollbacks for this production world."
+      create:
+        display: "§aCreate Backup"
+        lore:
+          - "§7Create a manual backup of this world."
+      cooldown:
+        display: "§cBackup Cooldown"
+        lore:
+          - "§7You can create the next backup after §f{remaining}§7."
+      info:
+        display: "§b{world}"
+        lore:
+          - "§7Backups: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
+      item:
+        display: "§eBackup {id}"
+        lore:
+          - "§7Type: {kind}"
+          - "§7Created: §f{created}"
+          - "§7Size: §f{size}"
+          - "§7Actor: §f{actor}"
+          - ""
+          - "§eLeft click §7rollback this world"
     confirm:
       backup_world:
         title: "§0World Backup Confirmation"
@@ -157,3 +180,4 @@ chanpon:
       delete_success: "§aBackup deleted."
       delete_failed: "§cBackup delete failed."
       restore_point_success: "§dRestore point created."
+      owner_backup_cooldown: "§cYou can create the next backup after §f{remaining}§c."
