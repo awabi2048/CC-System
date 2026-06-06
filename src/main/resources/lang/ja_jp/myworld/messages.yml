@@ -141,6 +141,8 @@ messages:
   expand_complete: §aワールドの拡張が完了しました！ §7{level_before} §f→ §e§l{level_after} §7(残りポイント §6🛖 §e{remaining}§7)
   expansion_reset_complete: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
   expansion_reset_success: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
+  expansion_step_back_success: §aワールドボーダーを1段階戻しました。§7{level_before} §f→ §e§l{level_after}
+  expansion_step_back_unavailable: §c戻せる拡張履歴がありません。
   world_delete_start: §cワールド「{world}」を削除しています...
   world_delete_success: §aワールドを削除し、合計 §6🛖 §e{points} §aポイントを返還しました。
   world_delete_fail: §cワールドの削除に失敗しました。

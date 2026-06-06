@@ -20,6 +20,18 @@ gui:
       - §cAre you sure you want to reset?
       - §7Expansion level will be reset and points refunded.
       - §7World border will return to initial size.
+      modified_warning:
+      - §cChanges were recorded in expanded areas.
+      - §7After reset, those changes may end up outside the border.
+    step_back_expansion:
+      title: Confirm
+      lore:
+      - §cStep the world border back by one level?
+      - §7The border size and center return to the previous expansion state.
+      - §7Points will not be refunded.
+      modified_warning:
+      - §cChanges were recorded in the area being rolled back.
+      - §7After rollback, that area may end up outside the border.
     reset_expansion_spawn_unsafe:
       title: Warning
       lore:
@@ -104,6 +116,12 @@ gui:
       - §7Expands towards a specific corner
       - §7relative to your current position.
       - §e(Requires direction selection after)
+    step_back:
+      name: §eStep Back One Level
+      lore:
+      - §7Reverts the most recent expansion
+      - §7and restores the previous border size and center.
+      - §cPoints will not be refunded.
     confirm_info: §aExpansion Summary
     method: §f§l| §7Method {method}
     method_center: Center
