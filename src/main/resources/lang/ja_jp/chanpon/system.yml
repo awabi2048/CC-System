@@ -1,4 +1,137 @@
 chanpon:
+  settings:
+    common:
+      "on": "有効"
+      "off": "無効"
+      back: "§7戻る"
+      back_lore:
+        - "§eクリック §7戻る"
+    visibility:
+      public: "§a公開中"
+      development: "§e制作中"
+      private: "§7非公開"
+    publish:
+      title: "§e公開レベル: §f{level}"
+      current: "§f§l| §7現在 §e{level}"
+      public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
+      development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請経由です。"
+      private_desc: "§f§l| §7{prefix}§7非公開 §fメンバーのみ訪問できます。"
+      cycle: "§e§l| §eクリック §7切り替え"
+    expand:
+      display: "§eワールドの拡張"
+      status_available:
+        - "§f§l| §7現在 §e{current}§7/§e{max}"
+        - "§f§l| §7ボーダー §e{size} §7中心 §e{x}, {z}"
+        - ""
+        - "§e§l| §eクリック §7拡張方法を選択"
+      status_max:
+        - "§f§l| §7現在 §e{current}§7/§e{max}"
+        - "§f§l| §7ボーダー §e{size} §7中心 §e{x}, {z}"
+        - ""
+        - "§7これ以上拡張できません。"
+    expand_menu:
+      title: "ワールドの拡張"
+      center:
+        display: "§e中心から拡張"
+        lore:
+          - "§f§l| §7中心を維持して全方向へ拡張します。"
+          - ""
+          - "§e§l| §eクリック §7確認へ"
+      direction_select:
+        display: "§e方向を指定して拡張"
+        lore:
+          - "§f§l| §7メニューを閉じ、向いている方向をクリックで指定します。"
+          - ""
+          - "§e§l| §eクリック §7方向指定へ"
+      north_west:
+        display: "§e北西へ拡張"
+        lore:
+          - "§f§l| §7北西方向へ拡張します。"
+          - ""
+          - "§e§l| §eクリック §7確認へ"
+      north_east:
+        display: "§e北東へ拡張"
+        lore:
+          - "§f§l| §7北東方向へ拡張します。"
+          - ""
+          - "§e§l| §eクリック §7確認へ"
+      south_west:
+        display: "§e南西へ拡張"
+        lore:
+          - "§f§l| §7南西方向へ拡張します。"
+          - ""
+          - "§e§l| §eクリック §7確認へ"
+      south_east:
+        display: "§e南東へ拡張"
+        lore:
+          - "§f§l| §7南東方向へ拡張します。"
+          - ""
+          - "§e§l| §eクリック §7確認へ"
+    direction:
+      center: "中心"
+      north_west: "北西"
+      north_east: "北東"
+      south_west: "南西"
+      south_east: "南東"
+    step_back:
+      display: "§e1段階戻す"
+      lore:
+        - "§f§l| §7直前の拡張を取り消します。"
+        - ""
+        - "§e§l| §eクリック §7確認へ"
+      lore_modified:
+        - "§f§l| §7直前の拡張を取り消します。"
+        - "§c§l| §c拡張範囲に変更があります。"
+        - ""
+        - "§e§l| §eクリック §7確認へ"
+    modified_warning:
+      title: "拡張範囲の変更確認"
+      display: "§c拡張範囲に変更があります"
+      lore:
+        - "§f§l| §7取り消す拡張範囲に変更があります。"
+        - "§f§l| §7続行すると、その範囲の変更も失われます。"
+        - ""
+        - "§e§l| §e続行 §7最終確認へ"
+      button:
+        continue: "§e続行"
+        cancel: "§c戻る"
+    confirm:
+      button:
+        confirm: "§a確定"
+        cancel: "§cキャンセル"
+      expand:
+        title: "拡張の確認"
+        display: "§e拡張を確定する"
+        lore:
+          - "§f§l| §7方向 §e{direction}"
+          - "§f§l| §7確定後、すぐに拡張を完了します。"
+      step_back:
+        title: "拡張取り消しの確認"
+        display: "§e1段階戻す"
+        lore:
+          - "§f§l| §7直前の拡張を取り消します。"
+        lore_modified:
+          - "§f§l| §7直前の拡張を取り消します。"
+          - "§c§l| §c拡張範囲に変更があります。"
+    notification:
+      lore:
+        - "§f§l| §7現在 §e{status}"
+        - ""
+        - "§e§l| §eクリック §7切り替え"
+    info:
+      lore:
+        - "§f§l| §7説明 §f{description}"
+    mwm_action:
+      lore:
+        - "§e§l| §eクリック §7開く"
+    message:
+      expand_success: "§aワールドを拡張しました。"
+      expand_failed: "§cワールドの拡張に失敗しました。"
+      expand_max: "§cこれ以上拡張できません。"
+      direction_prompt: "§e拡張したい方向を向いてクリックしてください。"
+      direction_selected: "§a拡張方向を選択しました: §f{direction}"
+      step_back_success: "§a直前の拡張を取り消しました。"
+      step_back_failed: "§c拡張の取り消しに失敗しました。"
   publish:
     public: "§a公開中"
     development: "§e制作中"

@@ -1,4 +1,137 @@
 chanpon:
+  settings:
+    common:
+      "on": "Enabled"
+      "off": "Disabled"
+      back: "§7Back"
+      back_lore:
+        - "§eClick §7to go back"
+    visibility:
+      public: "§aPublic"
+      development: "§eDevelopment"
+      private: "§7Private"
+    publish:
+      title: "§ePublish level: §f{level}"
+      current: "§f§l| §7Current §e{level}"
+      public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
+      development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
+      private_desc: "§f§l| §7{prefix}§7Private §fOnly members can visit."
+      cycle: "§e§l| §eClick §7to cycle"
+    expand:
+      display: "§eExpand world"
+      status_available:
+        - "§f§l| §7Current §e{current}§7/§e{max}"
+        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
+        - ""
+        - "§e§l| §eClick §7to choose expansion"
+      status_max:
+        - "§f§l| §7Current §e{current}§7/§e{max}"
+        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
+        - ""
+        - "§7This world cannot be expanded further."
+    expand_menu:
+      title: "Expand world"
+      center:
+        display: "§eExpand from center"
+        lore:
+          - "§f§l| §7Expand in every direction without moving the center."
+          - ""
+          - "§e§l| §eClick §7to confirm"
+      direction_select:
+        display: "§eExpand by direction"
+        lore:
+          - "§f§l| §7Close the menu and click while facing the direction to expand."
+          - ""
+          - "§e§l| §eClick §7to choose direction"
+      north_west:
+        display: "§eExpand northwest"
+        lore:
+          - "§f§l| §7Expand toward northwest."
+          - ""
+          - "§e§l| §eClick §7to confirm"
+      north_east:
+        display: "§eExpand northeast"
+        lore:
+          - "§f§l| §7Expand toward northeast."
+          - ""
+          - "§e§l| §eClick §7to confirm"
+      south_west:
+        display: "§eExpand southwest"
+        lore:
+          - "§f§l| §7Expand toward southwest."
+          - ""
+          - "§e§l| §eClick §7to confirm"
+      south_east:
+        display: "§eExpand southeast"
+        lore:
+          - "§f§l| §7Expand toward southeast."
+          - ""
+          - "§e§l| §eClick §7to confirm"
+    direction:
+      center: "Center"
+      north_west: "Northwest"
+      north_east: "Northeast"
+      south_west: "Southwest"
+      south_east: "Southeast"
+    step_back:
+      display: "§eStep back once"
+      lore:
+        - "§f§l| §7Undo the latest expansion."
+        - ""
+        - "§e§l| §eClick §7to confirm"
+      lore_modified:
+        - "§f§l| §7Undo the latest expansion."
+        - "§c§l| §cThe expanded area has changes."
+        - ""
+        - "§e§l| §eClick §7to confirm"
+    modified_warning:
+      title: "Expansion area changed"
+      display: "§cExpanded area has changes"
+      lore:
+        - "§f§l| §7The expansion area to be undone has changes."
+        - "§f§l| §7Continuing will discard changes in that area."
+        - ""
+        - "§e§l| §eContinue §7to final confirmation"
+      button:
+        continue: "§eContinue"
+        cancel: "§cBack"
+    confirm:
+      button:
+        confirm: "§aConfirm"
+        cancel: "§cCancel"
+      expand:
+        title: "Confirm expansion"
+        display: "§eConfirm expansion"
+        lore:
+          - "§f§l| §7Direction §e{direction}"
+          - "§f§l| §7Expansion completes immediately after confirming."
+      step_back:
+        title: "Confirm step back"
+        display: "§eStep back once"
+        lore:
+          - "§f§l| §7Undo the latest expansion."
+        lore_modified:
+          - "§f§l| §7Undo the latest expansion."
+          - "§c§l| §cThe expanded area has changes."
+    notification:
+      lore:
+        - "§f§l| §7Current §e{status}"
+        - ""
+        - "§e§l| §eClick §7to toggle"
+    info:
+      lore:
+        - "§f§l| §7Description §f{description}"
+    mwm_action:
+      lore:
+        - "§e§l| §eClick §7to open"
+    message:
+      expand_success: "§aWorld expanded."
+      expand_failed: "§cWorld expansion failed."
+      expand_max: "§cThis world cannot be expanded further."
+      direction_prompt: "§eFace the direction to expand, then click."
+      direction_selected: "§aExpansion direction selected: §f{direction}"
+      step_back_success: "§aLatest expansion was undone."
+      step_back_failed: "§cFailed to undo the latest expansion."
   publish:
     public: "§aPublic"
     development: "§eDevelopment"

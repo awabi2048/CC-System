@@ -141,6 +141,8 @@ messages:
   expand_complete: '§aExpansion complete! §7{level_before} §f→ §e§l{level_after} §7(Remaining: §6🛖 §e{remaining}§7)'
   expansion_reset_complete: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
   expansion_reset_success: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
+  expansion_step_back_success: §aWorld border stepped back by one level. §7{level_before} §f→ §e§l{level_after}
+  expansion_step_back_unavailable: §cThere is no expansion history to step back.
   world_delete_start: §cDeleting world "{world}"...
   world_delete_success: §aDeleted world and refunded §6🛖 §e{points} §apoints.
   world_delete_fail: §cFailed to delete world.
