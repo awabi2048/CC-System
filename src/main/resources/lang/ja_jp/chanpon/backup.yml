@@ -36,6 +36,62 @@ chanpon:
         display: "§bMWM-Chanpon"
         lore:
           - "§7Version: §f{version}"
+    spawn_world:
+      set:
+        display: "§aこのワールドをスポーンワールドに設定する"
+        lore:
+          - "§7現在いるマイワールドを退避先スポーンワールドに設定します。"
+          - "§7バックアップや復元時の退避先として使用されます。"
+      change:
+        display: "§eスポーンワールドをこのワールドに変更する"
+        lore:
+          - "§7退避先スポーンワールドを現在いるマイワールドへ変更します。"
+      set_success: "§aスポーンワールドを設定しました。"
+      confirm:
+        title: "§0スポーンワールド設定確認"
+        center:
+          display: "§e{world} をスポーンワールドに設定"
+          lore:
+            - "§7このワールドを退避先スポーンワールドとして使用します。"
+            - "§7初回ログイン時の訪問先にもなります。"
+    linked_portal:
+      display: "§dこのワールドのワールドポータルを取得"
+      lore:
+        - "§7{world} に紐付いたワールドポータルを取得します。"
+      received: "§aワールドポータルを取得しました。"
+      failed: "§cワールドポータルの取得に失敗しました。"
+    favorite_menu:
+      title: "§0お気に入り"
+      other_worlds:
+        display: "§eほかのワールド"
+        lore:
+          - "§7このオーナーの訪問可能なワールドを表示します。"
+      list:
+        display: "§bお気に入り一覧"
+        lore:
+          - "§7お気に入り登録したワールドを表示します。"
+      toggle_add:
+        display: "§aお気に入りに追加"
+        lore:
+          - "§7このワールドをお気に入りに追加します。"
+      toggle_remove:
+        display: "§cお気に入りから削除"
+        lore:
+          - "§7このワールドをお気に入りから削除します。"
+    favorite_list:
+      title: "§0お気に入り一覧"
+    visit_list:
+      title: "§0訪問可能なワールド"
+    favorite_visit:
+      owner: "§7オーナー: §f{owner}"
+      tags: "§7タグ: §f{tags}"
+      warp: "§e左クリック §7ワープ"
+      toggle_favorite: "§e右クリック §7お気に入り追加/解除"
+      info:
+        display: "§b一覧情報"
+        lore:
+          - "§7表示件数: §f{count}"
+          - "§7ページ: §f{page}§7/§f{pages}"
     world_data:
       title: "§0ワールドデータの管理"
       bulk_backup:
