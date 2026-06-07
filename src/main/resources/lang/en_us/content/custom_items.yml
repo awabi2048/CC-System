@@ -75,6 +75,95 @@ custom_items:
       lore:
       - §7A high-concentration experience bottle containing more power than normal.
       - §7Use with right click.
+    half_drunk_daiginjo:
+      name: §6Half-Drunk Daiginjo
+      lore:
+      - §7Looks like someone snuck a sip.
+    acorn_cookie:
+      name: §eAcorn Cookie
+      lore:
+      - §7The savory aroma whets your appetite.
+      - §8§oOage-chan: "I baked it!"
+    taro_snack:
+      name: §bTaro's Snack
+      lore:
+      - §7A bone meant to become Taro's snack.
+      - §7Just the right shape, apparently.
+    decent_helmet:
+      name: §eDecent Helmet
+      lore:
+      - §fA gifted enchanted armor piece.
+      - §7Too big for Oage-chan, apparently.
+    decent_chestplate:
+      name: §eDecent Chestplate
+      lore:
+      - §fA gifted enchanted armor piece.
+      - §7Too big for Oage-chan, apparently.
+    decent_leggings:
+      name: §eDecent Leggings
+      lore:
+      - §fA gifted enchanted armor piece.
+      - §7Too big for Oage-chan, apparently.
+    decent_boots:
+      name: §eDecent Boots
+      lore:
+      - §fA gifted enchanted armor piece.
+      - §7Too big for Oage-chan, apparently.
+    ignition_logic:
+      name: §eIgnition Logic
+      lore:
+      - §7A circuit component for safely igniting fuel.
+      - §6May be useful for §7explosive devices.
+    fireproof_leggings:
+      name: §eFireproof Leggings
+      lore:
+      - §7Leggings with excellent heat resistance and insulation.
+      - §6May be useful for §7explosive devices.
+    firework_loader:
+      name: §eFirework Loader Unit
+      lore:
+      - §7A redstone mechanism specialized for loading fireworks.
+      - §6May be useful for §7explosive devices.
+    lamp_device:
+      name: §eLamp Device
+      lore:
+      - §7A simple device that lights up when switched on.
+      - §6May be useful for §7flashlight-like tools.
+    exp_generator:
+      name: §bEXP Generator
+      lore:
+      - §7A mysterious mechanism that converts §aEXP §7into power.
+      - §7How it works is a mystery.
+    dense_wind_charge:
+      name: §eDense Wind Charge
+      lore:
+      - §7A highly compressed wind charge.
+      - §6May be useful for §7wind-generating tools.
+    magic_concave_lens:
+      name: §bMagic-Infused Concave Lens
+      lore:
+      - §7A lens crafted by processing the core embedded in a giant golem.
+      - §6May be built into §7flashlight-like tools.
+    magic_convex_lens:
+      name: §bMagic-Infused Convex Lens
+      lore:
+      - §7A lens made from crystals stripped from an illusioner's staff.
+      - §6May be built into §7flashlight-like tools.
+    bronze_nozzle:
+      name: §eBronze Nozzle
+      lore:
+      - §7A high-strength nozzle that withstands extreme pressure.
+      - §6May be useful for §7wind-generating tools.
+    air_trigger:
+      name: §eAir Trigger
+      lore:
+      - §7A mechanism for efficiently transmitting pressure.
+      - §6May be useful for §7wind-generating tools.
+    decent_bow:
+      name: §bDecent Bow
+      lore:
+      - §7A bow Oage-chan received as a gift.
+      - §7Old, but possesses high potential.
   arena:
     structure_marker_tool:
       name: §6Arena Structure Marker Tool
