@@ -13,8 +13,13 @@ chanpon:
       display: "§eSet as production world"
       lore:
         - "§e❙ Click §7Change this world to a §eproduction world§7."
-        - "§c※ You can have multiple production worlds."
+        - "§c※ Each owner can have only one production world."
     state:
+      unsubmitted: "§6Unsubmitted"
+      submitted: "§aSubmitted"
+      completed: "§bCompleted"
+    progress:
+      line: "§7Progress: {state}"
       unsubmitted: "§6Unsubmitted"
       submitted: "§aSubmitted"
       completed: "§bCompleted"
@@ -25,7 +30,8 @@ chanpon:
     submission:
       lore:
         unsubmitted:
-          - "§e❙ Click §7Mark as submitted"
+          - "§e❙ Left click §7Mark as submitted"
+          - "§e❙ Right click §7Unset production world"
           - "§7"
           - "§c※ Once submitted, world interaction such as placing or breaking blocks will be blocked."
           - "§cYou can cancel submission, but you must submit again afterward."
@@ -43,6 +49,9 @@ chanpon:
         - "§cBackward compatibility is intentionally not applied, so this cannot be operated."
     message:
       production_set: "§aThis world is now a production world."
+      production_unset: "§eProduction world setting was removed."
+      production_limit: "§cEach owner can have only one production world."
+      owner_only_submit: "§cOnly the world owner can submit this world."
       submitted: "§aThe world has been marked as submitted."
       cancelled: "§eSubmission has been cancelled."
       state_error: "§cSubmission state data is missing or invalid."
@@ -79,6 +88,7 @@ chanpon:
         lore:
           - "§7Return to the admin menu."
       submission_filter:
+        all: "§fAll"
         unsubmitted: "§6Unsubmitted"
         submitted: "§aSubmitted"
         display: "§eSubmission filter"
@@ -86,6 +96,7 @@ chanpon:
           - "§7Current: {filter}"
           - "§eClick §7Cycle visible submissions."
       completion_filter:
+        all: "§fAll"
         unmarked: "§6Unmarked"
         completed: "§bCompleted"
         display: "§eCompletion filter"
@@ -112,20 +123,29 @@ chanpon:
       reopened_message: "§eSubmissions have been reopened."
       completed_message: "§aMarked as completed."
       complete_unsubmitted: "§cUnsubmitted worlds cannot be marked as completed."
+      not_production: "§cThis world is not a production world."
+      production_enabled: "§aProduction world flag enabled."
+      production_disabled: "§eProduction world flag disabled."
+      production_limit: "§cThis owner already has a production world."
       world:
         display: "§e{world}"
         no_members: "§7None"
+        production_yes: "§aProduction"
+        production_no: "§7Normal"
         completed_yes: "§bCompleted"
         completed_no: "§6Unmarked"
-        action_complete: "§eMiddle click §7Mark as completed"
+        action_complete: "§eRight click §7Mark as completed"
+        action_toggle_production: "§eMiddle click §7Toggle production flag"
         lore:
           - "§7Owner: §f{owner}"
           - "§7Members: {members}"
           - "§7Created: §f{created}"
+          - "§7Type: {production}"
           - "§7Submission: {state}"
           - "§7Completion: {completed}"
           - ""
           - "§eLeft click §7Warp"
+          - "{production_action}"
           - "{middle_action}"
     admin_list:
       title: "§0World List Management"
@@ -139,12 +159,12 @@ chanpon:
       visibility:
         public: "§aPublic"
         development: "§eDevelopment"
-        private: "§7Private"
+        private: "§7Closed"
       visibility_filter:
         all: "§fAll"
         public: "§aPublic"
         development: "§eDevelopment"
-        private: "§7Private"
+        private: "§7Closed"
         display: "§eVisibility filter"
         lore:
           - "§7Current: {filter}"
@@ -185,7 +205,19 @@ chanpon:
         lore:
           - "§7Change this world to a §eproduction world§7."
           - "§7"
-          - "§c※ You can have multiple production worlds."
+          - "§c※ Each owner can have only one production world."
+      unset_production:
+        title: "§0Unset Production World"
+        display: "§eUnset production world"
+        lore:
+          - "§7Return this world to a normal MyWorld."
+          - "§c※ Submission state and protection will no longer apply."
+      complete_unsubmitted:
+        title: "§0Complete Unsubmitted World"
+        display: "§eMark unsubmitted world as completed"
+        lore:
+          - "§7This world is unsubmitted."
+          - "§c※ It will be marked completed while still unsubmitted."
       submit:
         title: "§0Confirm Submission"
         display: "§aMark as submitted"

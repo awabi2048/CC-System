@@ -9,13 +9,13 @@ chanpon:
     visibility:
       public: "§a公開中"
       development: "§e制作中"
-      private: "§7非公開"
+      private: "§7封鎖中"
     publish:
       title: "§e公開レベル: §f{level}"
       current: "§f§l| §7現在 §e{level}"
       public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請経由です。"
-      private_desc: "§f§l| §7{prefix}§7非公開 §fメンバーのみ訪問できます。"
+      private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"
       cycle: "§e§l| §eクリック §7切り替え"
     expand:
       display: "§eワールドの拡張"
@@ -118,6 +118,37 @@ chanpon:
         - "§f§l| §7現在 §e{status}"
         - ""
         - "§e§l| §eクリック §7切り替え"
+    critical:
+      display: "§c重大な設定"
+      lore:
+        - "§f§l| §7ワールド削除などの重大操作を開きます。"
+        - ""
+        - "§e§l| §eクリック §7開く"
+      production_lore:
+        - "§f§l| §7重大な設定は表示のみです。"
+        - "§c§l| §c本番用ワールドでは利用できません。"
+      menu_title: "重大な設定"
+      delete_display: "§cワールドを削除"
+      delete_lore:
+        - "§f§l| §7このワールドを削除します。"
+        - "§c§l| §c削除後は元に戻せません。"
+        - ""
+        - "§e§l| §eクリック §7確認へ"
+      unavailable_display: "§7利用できません"
+      unavailable_lore:
+        - "§c本番用ワールドでは重大な設定を利用できません。"
+      confirm_title: "ワールド削除確認"
+      confirm_display: "§cワールドを削除しますか"
+      confirm_lore:
+        - "§f§l| §7対象 §e{world}"
+        - "§c§l| §cこの操作は取り消せません。"
+      final_title: "ワールド削除最終確認"
+      final_display: "§4本当に削除しますか"
+      final_lore:
+        - "§c最終確認です。"
+        - "§c削除したワールドは復元できません。"
+      deleted: "§aワールドを削除しました。"
+      delete_failed: "§cワールドの削除に失敗しました。"
     info:
       lore:
         - "§f§l| §7説明 §f{description}"
@@ -135,18 +166,18 @@ chanpon:
   publish:
     public: "§a公開中"
     development: "§e制作中"
-    private: "§7非公開"
+    private: "§7封鎖中"
     updated: "§a公開レベルを更新しました: §f{level}"
     item:
       title: "§e公開レベル: §f{level}"
       current: "§f§l| §7現在 §e{level}"
       public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請扱いです。"
-      private_desc: "§f§l| §7{prefix}§7非公開 §fメンバーのみ訪問できます。"
+      private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"
       left_click: "§e§l| §e左クリック §7前へ"
       right_click: "§e§l| §e右クリック §7次へ"
       cycle: "§e§l| §eクリック §7切り替え"
-      summary: "§7公開中 / 制作中 / 非公開"
+      summary: "§7公開中 / 制作中 / 封鎖中"
       line: "§f§l| §7公開レベル §e{level}"
   discovery_sort:
     title: "§e並び替え"
