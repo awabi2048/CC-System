@@ -36,6 +36,62 @@ chanpon:
         display: "§bMWM-Chanpon"
         lore:
           - "§7Version: §f{version}"
+    spawn_world:
+      set:
+        display: "§aSet this world as spawn world"
+        lore:
+          - "§7Use the current MyWorld as the fallback spawn world."
+          - "§7Players are evacuated here during backup and restore operations."
+      change:
+        display: "§eChange spawn world to this world"
+        lore:
+          - "§7Change the fallback spawn world to the current MyWorld."
+      set_success: "§aSpawn world has been set."
+      confirm:
+        title: "§0Spawn world confirmation"
+        center:
+          display: "§eSet {world} as spawn world"
+          lore:
+            - "§7This world will be used as the fallback spawn world."
+            - "§7It will also be used as the first-login visit destination."
+    linked_portal:
+      display: "§dGet this world's portal"
+      lore:
+        - "§7Receive a world portal linked to {world}."
+      received: "§aWorld portal received."
+      failed: "§cFailed to receive the world portal."
+    favorite_menu:
+      title: "§0Favorite"
+      other_worlds:
+        display: "§eOther worlds"
+        lore:
+          - "§7Show visitable worlds owned by this player."
+      list:
+        display: "§bFavorite list"
+        lore:
+          - "§7Show your favorite worlds."
+      toggle_add:
+        display: "§aAdd favorite"
+        lore:
+          - "§7Add this world to favorites."
+      toggle_remove:
+        display: "§cRemove favorite"
+        lore:
+          - "§7Remove this world from favorites."
+    favorite_list:
+      title: "§0Favorite worlds"
+    visit_list:
+      title: "§0Visitable worlds"
+    favorite_visit:
+      owner: "§7Owner: §f{owner}"
+      tags: "§7Tags: §f{tags}"
+      warp: "§eLeft click §7Warp"
+      toggle_favorite: "§eRight click §7Add/remove favorite"
+      info:
+        display: "§bList info"
+        lore:
+          - "§7Items: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
     world_data:
       title: "§0World Data Management"
       bulk_backup:
