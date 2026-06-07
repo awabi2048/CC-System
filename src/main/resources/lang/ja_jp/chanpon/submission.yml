@@ -13,11 +13,16 @@ chanpon:
       display: "§e本番用ワールドに設定する"
       lore:
         - "§e❙ クリック §7このワールドを§e本番用ワールド§7に変更します。"
-        - "§c※ 本番用ワールドは複数持つことができます。"
+        - "§c※ 本番用ワールドは1人につき1つまでです。"
     state:
       unsubmitted: "§6未提出"
       submitted: "§a提出済み"
       completed: "§b完成"
+    progress:
+      line: "§7進捗状況: {state}"
+      unsubmitted: "§6未提出"
+      submitted: "§a提出済み"
+      completed: "§b完成済み"
     protection_reason:
       submitted: "§a提出済み"
       completed: "§b完成済み"
@@ -25,7 +30,8 @@ chanpon:
     submission:
       lore:
         unsubmitted:
-          - "§e❙ クリック §7提出済みにする"
+          - "§e❙ 左クリック §7提出済みにする"
+          - "§e❙ 右クリック §7本番用ワールド設定を解除"
           - "§7"
           - "§c※ 提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"
           - "§c取り消すこともできますが、その場合は再度提出する必要があります。"
@@ -43,6 +49,9 @@ chanpon:
         - "§c後方互換は行わないため、操作できません。"
     message:
       production_set: "§aこのワールドを本番用ワールドに設定しました。"
+      production_unset: "§e本番用ワールド設定を解除しました。"
+      production_limit: "§c本番用ワールドは1人につき1つまでです。"
+      owner_only_submit: "§c提出操作はワールドのオーナーのみ実行できます。"
       submitted: "§aワールドを提出済みにしました。"
       cancelled: "§e提出を取り消しました。"
       state_error: "§c提出状態データが存在しないか不正です。"
@@ -79,6 +88,7 @@ chanpon:
         lore:
           - "§7管理者メニューへ戻ります。"
       submission_filter:
+        all: "§fすべて"
         unsubmitted: "§6未提出"
         submitted: "§a提出済み"
         display: "§e提出状況フィルター"
@@ -86,6 +96,7 @@ chanpon:
           - "§7現在: {filter}"
           - "§eクリック §7表示対象を切り替えます。"
       completion_filter:
+        all: "§fすべて"
         unmarked: "§6完成マーク未"
         completed: "§b完成マーク済み"
         display: "§e完成済みフィルター"
@@ -112,20 +123,29 @@ chanpon:
       reopened_message: "§e提出締切を解除しました。"
       completed_message: "§a完成済みとしてマークしました。"
       complete_unsubmitted: "§c未提出のワールドは完成済みにできません。"
+      not_production: "§c本番用ワールドではないため完成済みにできません。"
+      production_enabled: "§a本番用ワールドに設定しました。"
+      production_disabled: "§e本番用ワールド設定を解除しました。"
+      production_limit: "§cこのオーナーは既に本番用ワールドを持っています。"
       world:
         display: "§e{world}"
         no_members: "§7なし"
+        production_yes: "§a本番用"
+        production_no: "§7通常"
         completed_yes: "§b完成マーク済み"
         completed_no: "§6完成マーク未"
-        action_complete: "§eホイールクリック §7完成済みとしてマーク"
+        action_complete: "§e右クリック §7完成済みとしてマーク"
+        action_toggle_production: "§eホイールクリック §7本番用フラグを切り替え"
         lore:
           - "§7オーナー: §f{owner}"
           - "§7メンバー: {members}"
           - "§7作成日: §f{created}"
+          - "§7種別: {production}"
           - "§7提出状況: {state}"
           - "§7完成状態: {completed}"
           - ""
           - "§e左クリック §7ワープ"
+          - "{production_action}"
           - "{middle_action}"
     admin_list:
       title: "§0ワールド一覧管理"
@@ -139,12 +159,12 @@ chanpon:
       visibility:
         public: "§a公開"
         development: "§e開発中"
-        private: "§7非公開"
+        private: "§7封鎖中"
       visibility_filter:
         all: "§fすべて"
         public: "§a公開"
         development: "§e開発中"
-        private: "§7非公開"
+        private: "§7封鎖中"
         display: "§e公開状態フィルター"
         lore:
           - "§7現在: {filter}"
@@ -185,7 +205,19 @@ chanpon:
         lore:
           - "§7このワールドを§e本番用ワールド§7に変更します。"
           - "§7"
-          - "§c※ 本番用ワールドは複数持つことができます。"
+          - "§c※ 本番用ワールドは1人につき1つまでです。"
+      unset_production:
+        title: "§0本番用ワールド設定解除"
+        display: "§e本番用ワールド設定を解除"
+        lore:
+          - "§7このワールドを通常のマイワールドへ戻します。"
+          - "§c※ 提出状態や保護状態も利用できなくなります。"
+      complete_unsubmitted:
+        title: "§0未提出ワールドの完成確認"
+        display: "§e未提出のまま完成済みにする"
+        lore:
+          - "§7このワールドは未提出です。"
+          - "§c※ 未提出のまま完成済みにします。"
       submit:
         title: "§0提出確認"
         display: "§a提出済みにする"

@@ -30,12 +30,44 @@ chanpon:
       export:
         display: "§7World Data Export"
         lore:
-          - "§8This is currently a mock."
-        mock_message: "§7This feature is currently a mock."
+          - "§7Export production world data as a ZIP file."
       info:
         display: "§bMWM-Chanpon"
         lore:
           - "§7Version: §f{version}"
+    export_menu:
+      title: "§0World Data Export"
+      bulk:
+        display: "§aBulk Export"
+        lore:
+          - "§7Export all production worlds as a ZIP file."
+      info:
+        display: "§bExport Info"
+        lore:
+          - "§7Count: §f{count}"
+          - "§7Page: §f{page}§7/§f{pages}"
+      world:
+        display: "§e{world}"
+        lore:
+          - "§7Owner: §f{owner}"
+          - "§7Created: §f{created}"
+          - ""
+          - "§eLeft click §7export this world"
+    automation_notice:
+      backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
+      rollback_warning: "§cScheduled rollback will start in §f{remaining}§c. You will be moved to spawn before it starts."
+      backup_countdown: "Scheduled backup starts in {remaining}"
+      rollback_countdown: "Scheduled rollback starts in {remaining}"
+      backup_running: "Scheduled backup is running"
+      rollback_running: "Scheduled rollback is running"
+      backup_finished: "§aScheduled backup has finished."
+      rollback_finished: "§aScheduled rollback has finished."
+    manual_rollback:
+      announcement:
+        - "§8━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        - "§bRollback will run in {actor}'s world in {delay} seconds."
+        - "§cThe server may become unstable briefly while rollback is running."
+        - "§8━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     spawn_world:
       set:
         display: "§aSet this world as spawn world"
@@ -246,4 +278,8 @@ chanpon:
       delete_success: "§aBackup deleted."
       delete_failed: "§cBackup delete failed."
       restore_point_success: "§dRestore point created."
+      export_success: "§aWorld data export completed: §f{file}"
+      export_failed: "§cWorld data export failed."
+      manual_operation_blocked: "§cManual operation is currently unavailable around scheduled backup or rollback."
+      rollback_cooldown: "§cYou can run the next rollback after §f{remaining}§c."
       owner_backup_cooldown: "§cYou can create the next backup after §f{remaining}§c."

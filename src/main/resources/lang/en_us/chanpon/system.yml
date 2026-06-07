@@ -9,13 +9,13 @@ chanpon:
     visibility:
       public: "§aPublic"
       development: "§eDevelopment"
-      private: "§7Private"
+      private: "§7Closed"
     publish:
       title: "§ePublish level: §f{level}"
       current: "§f§l| §7Current §e{level}"
       public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
-      private_desc: "§f§l| §7{prefix}§7Private §fOnly members can visit."
+      private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
       cycle: "§e§l| §eClick §7to cycle"
     expand:
       display: "§eExpand world"
@@ -118,6 +118,37 @@ chanpon:
         - "§f§l| §7Current §e{status}"
         - ""
         - "§e§l| §eClick §7to toggle"
+    critical:
+      display: "§cCritical settings"
+      lore:
+        - "§f§l| §7Open critical actions such as world deletion."
+        - ""
+        - "§e§l| §eClick §7to open"
+      production_lore:
+        - "§f§l| §7Critical settings are display-only here."
+        - "§c§l| §cThey cannot be used for production worlds."
+      menu_title: "Critical settings"
+      delete_display: "§cDelete world"
+      delete_lore:
+        - "§f§l| §7Delete this world."
+        - "§c§l| §cThis cannot be undone."
+        - ""
+        - "§e§l| §eClick §7to confirm"
+      unavailable_display: "§7Unavailable"
+      unavailable_lore:
+        - "§cCritical settings cannot be used for production worlds."
+      confirm_title: "World deletion confirmation"
+      confirm_display: "§cDelete this world?"
+      confirm_lore:
+        - "§f§l| §7Target §e{world}"
+        - "§c§l| §cThis action cannot be undone."
+      final_title: "Final world deletion confirmation"
+      final_display: "§4Really delete this world?"
+      final_lore:
+        - "§cThis is the final confirmation."
+        - "§cDeleted worlds cannot be restored."
+      deleted: "§aWorld deleted."
+      delete_failed: "§cFailed to delete world."
     info:
       lore:
         - "§f§l| §7Description §f{description}"
@@ -135,18 +166,18 @@ chanpon:
   publish:
     public: "§aPublic"
     development: "§eDevelopment"
-    private: "§7Private"
+    private: "§7Closed"
     updated: "§aPublish level updated: §f{level}"
     item:
       title: "§ePublish level: §f{level}"
       current: "§f§l| §7Current §e{level}"
       public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses request."
-      private_desc: "§f§l| §7{prefix}§7Private §fOnly members can visit."
+      private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
       left_click: "§e§l| §eLeft click §7previous"
       right_click: "§e§l| §eRight click §7next"
       cycle: "§e§l| §eClick §7cycle"
-      summary: "§7Public / Development / Private"
+      summary: "§7Public / Development / Closed"
       line: "§f§l| §7Publish level §e{level}"
   discovery_sort:
     title: "§eSort"
