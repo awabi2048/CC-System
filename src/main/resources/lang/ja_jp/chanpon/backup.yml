@@ -68,7 +68,7 @@ chanpon:
           - "§7件数: §f{count}"
           - "§7ページ: §f{page}§7/§f{pages}"
       item:
-        display: "§eバックアップ {id}"
+        display: "§e{name}"
         lore:
           - "§7種別: {kind}"
           - "§7作成日時: §f{created}"
@@ -97,6 +97,12 @@ chanpon:
       lore:
         - "§7この本番用ワールドの手動バックアップを作成します。"
       title: "§0ワールドバックアップ管理"
+      name_input:
+        title: "§0バックアップ名"
+        body: "§7バックアップ名を入力してください。空欄の場合は既定名を使用します。"
+        label: "バックアップ名"
+        submit: "§a続ける"
+        cancel: "§cキャンセル"
       create:
         display: "§aバックアップを作成"
         lore:
@@ -111,11 +117,9 @@ chanpon:
           - "§7バックアップ数: §f{count}"
           - "§7ページ: §f{page}§7/§f{pages}"
       item:
-        display: "§eバックアップ {id}"
+        display: "§e{name}"
         lore:
-          - "§7種別: {kind}"
           - "§7作成日時: §f{created}"
-          - "§7サイズ: §f{size}"
           - "§7作成者: §f{actor}"
           - ""
           - "§e左クリック §7このワールドをロールバック"
@@ -151,7 +155,13 @@ chanpon:
         title: "§0バックアップ確認"
         display: "§aバックアップを作成"
         lore:
+          - "§7バックアップ名: §f{name}"
           - "§7このワールドの現在状態を保存します。"
+      restore_point:
+        title: "§0復元ポイント確認"
+        display: "§d復元ポイントを作成"
+        lore:
+          - "§7すべての本番用ワールドを自動ロールバック用の復元ポイントとして保存します。"
       restore:
         title: "§0ロールバック確認"
         display: "§cロールバックを実行"
