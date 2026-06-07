@@ -68,7 +68,7 @@ chanpon:
           - "§7Count: §f{count}"
           - "§7Page: §f{page}§7/§f{pages}"
       item:
-        display: "§eBackup {id}"
+        display: "§e{name}"
         lore:
           - "§7Type: {kind}"
           - "§7Created: §f{created}"
@@ -97,6 +97,12 @@ chanpon:
       display: "§aWorld Backups"
       lore:
         - "§7Manage backups and rollbacks for this production world."
+      name_input:
+        title: "§0Backup Name"
+        body: "§7Enter a backup name. Leave it empty to use the default name."
+        label: "Backup name"
+        submit: "§aContinue"
+        cancel: "§cCancel"
       create:
         display: "§aCreate Backup"
         lore:
@@ -111,11 +117,9 @@ chanpon:
           - "§7Backups: §f{count}"
           - "§7Page: §f{page}§7/§f{pages}"
       item:
-        display: "§eBackup {id}"
+        display: "§e{name}"
         lore:
-          - "§7Type: {kind}"
           - "§7Created: §f{created}"
-          - "§7Size: §f{size}"
           - "§7Actor: §f{actor}"
           - ""
           - "§eLeft click §7rollback this world"
@@ -151,7 +155,13 @@ chanpon:
         title: "§0Backup Confirmation"
         display: "§aCreate backup"
         lore:
+          - "§7Backup name: §f{name}"
           - "§7Save this world's current state."
+      restore_point:
+        title: "§0Restore Point Confirmation"
+        display: "§dCreate restore point"
+        lore:
+          - "§7Save all production worlds as an automatic rollback restore point."
       restore:
         title: "§0Rollback Confirmation"
         display: "§cRun rollback"

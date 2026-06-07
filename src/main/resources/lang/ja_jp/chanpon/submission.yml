@@ -18,6 +18,10 @@ chanpon:
       unsubmitted: "§6未提出"
       submitted: "§a提出済み"
       completed: "§b完成"
+    protection_reason:
+      submitted: "§a提出済み"
+      completed: "§b完成済み"
+      auto_rollback: "§d自動ロールバック中"
     submission:
       lore:
         unsubmitted:
@@ -46,9 +50,10 @@ chanpon:
       cancelled_confirmation: "§7操作をキャンセルしました。"
       deadline_closed: "§c提出は締め切られています。"
     submitted_menu:
-      title: "§0提出済みワールド"
+      title: "§0保護中ワールド"
       world_lore:
         - "§7状態: {state}"
+        - "§7保護理由: {reason}"
         - "§7説明: {description}"
       cancel:
         display: "§e提出を取り消す"

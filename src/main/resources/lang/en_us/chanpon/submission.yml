@@ -18,6 +18,10 @@ chanpon:
       unsubmitted: "§6Unsubmitted"
       submitted: "§aSubmitted"
       completed: "§bCompleted"
+    protection_reason:
+      submitted: "§aSubmitted"
+      completed: "§bCompleted"
+      auto_rollback: "§dAuto rollback"
     submission:
       lore:
         unsubmitted:
@@ -46,9 +50,10 @@ chanpon:
       cancelled_confirmation: "§7Operation cancelled."
       deadline_closed: "§cSubmissions are already closed."
     submitted_menu:
-      title: "§0Submitted World"
+      title: "§0Protected World"
       world_lore:
         - "§7State: {state}"
+        - "§7Protection: {reason}"
         - "§7Description: {description}"
       cancel:
         display: "§eCancel submission"
