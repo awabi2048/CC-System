@@ -23,6 +23,7 @@ messages:
   world_not_found: §c World not found.
   spawn_set_start: §aSetting spawn point for {type}. Left-click a block while facing the desired direction.
   spawn_set_start_bedrock: §aSetting spawn point for {type}. Click a block while facing the desired direction.
+  spawn_setting_started: §aSetting spawn point for {type}. Click a block while facing the desired direction.
   spawn_guest_set: §aGuest spawn point set.
   spawn_member_set: §aMember spawn point set.
   spawn_both_set: §aShared guest/member spawn point set.
@@ -85,6 +86,7 @@ messages:
   announcement_prompt: §eEnter announcement message in chat. (& for colors, 'cancel' to abort)
   announcement_set: §aAnnouncement message set!
   announcement_reset: §eAnnouncement message reset.
+  announcement_cleared: §aAnnouncement messages cleared.
   announcement_invalid_length: §cMessage is too long. (Max {max_lines} lines, {max_length} chars per line)
   announcement_blocked_string: '§cMessage contains blocked string: {string}'
   announcement_preview: §7[Preview] {message}

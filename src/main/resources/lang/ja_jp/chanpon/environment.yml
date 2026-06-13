@@ -1,0 +1,113 @@
+chanpon:
+  environment:
+    title: "§e環境設定"
+    common:
+      back: "§7戻る"
+      back_to_settings: "§7ワールド設定に戻る"
+      not_set: "§7未設定"
+    weather:
+      title: "§e天候設定"
+      display: "§e天候"
+      lore:
+        - "§f§l| §7現在 §e{current}"
+        - ""
+        - "§e§l| §eクリック §7設定"
+      clear:
+        display: "§e晴れ"
+        lore:
+          - "§f§l| §7{marker} §e晴れ"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      rain:
+        display: "§b雨"
+        lore:
+          - "§f§l| §7{marker} §b雨"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      thunder:
+        display: "§3雷雨"
+        lore:
+          - "§f§l| §7{marker} §3雷雨"
+          - ""
+          - "§e§l| §eクリック §7設定"
+    time:
+      title: "§e時刻設定"
+      display: "§e時刻"
+      lore:
+        - "§f§l| §7現在 §e{current}"
+        - ""
+        - "§e§l| §eクリック §7設定"
+      morning:
+        display: "§e朝"
+        lore:
+          - "§f§l| §7{marker} §e朝 §7(time=0)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      noon:
+        display: "§e昼"
+        lore:
+          - "§f§l| §7{marker} §e昼 §7(time=6000)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      dusk:
+        display: "§6夕暮れ"
+        lore:
+          - "§f§l| §7{marker} §6夕暮れ §7(time=12500)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      night:
+        display: "§9夜"
+        lore:
+          - "§f§l| §7{marker} §9夜 §7(time=18000)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+    gravity:
+      title: "§e重力設定"
+      display: "§e重力"
+      lore:
+        - "§f§l| §7現在 §e{current}"
+        - ""
+        - "§e§l| §eクリック §7設定"
+      earth:
+        display: "§a地球"
+        lore:
+          - "§f§l| §7{marker} §a地球 §7(gravity=0.08)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      mars:
+        display: "§6火星"
+        lore:
+          - "§f§l| §7{marker} §6火星 §7(gravity=0.02)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      moon:
+        display: "§f月"
+        lore:
+          - "§f§l| §7{marker} §f月 §7(gravity=0.01)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+    scale:
+      title: "§eプレイヤーサイズ設定"
+      display: "§eサイズ"
+      lore:
+        - "§f§l| §7現在 §e{current}"
+        - ""
+        - "§e§l| §eクリック §7設定"
+      normal:
+        display: "§a通常"
+        lore:
+          - "§f§l| §7{marker} §a通常 §7(scale=1.0)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      small:
+        display: "§d小人"
+        lore:
+          - "§f§l| §7{marker} §d小人 §7(scale=0.5)"
+          - ""
+          - "§e§l| §eクリック §7設定"
+      giant:
+        display: "§c巨人"
+        lore:
+          - "§f§l| §7{marker} §c巨人 §7(scale=2.0)"
+          - ""
+          - "§e§l| §eクリック §7設定"

@@ -164,6 +164,11 @@ custom_items:
       lore:
       - §7おあげちゃんが譲り受けた弓
       - §7古びてはいるが、高いポテンシャルを持っている
+    stopwatch:
+      name: §eストップウォッチ
+      lore:
+      - §7右クリックで計測を開始/停止します。
+      - §7手に持ってFキーで計測をリセットします。
   arena:
     structure_marker_tool:
       name: §6アリーナ構造マーカーツール
