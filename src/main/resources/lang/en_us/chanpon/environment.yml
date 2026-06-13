@@ -1,0 +1,113 @@
+chanpon:
+  environment:
+    title: "Environment Settings"
+    common:
+      back: "Back"
+      back_to_settings: "Back to World Settings"
+      not_set: "Not set"
+    weather:
+      title: "Weather Settings"
+      display: "Weather"
+      lore:
+        - "Current: {current}"
+        - ""
+        - "Click to set"
+      clear:
+        display: "Clear"
+        lore:
+          - "{marker} Clear"
+          - ""
+          - "Click to set"
+      rain:
+        display: "Rain"
+        lore:
+          - "{marker} Rain"
+          - ""
+          - "Click to set"
+      thunder:
+        display: "Thunderstorm"
+        lore:
+          - "{marker} Thunderstorm"
+          - ""
+          - "Click to set"
+    time:
+      title: "Time Settings"
+      display: "Time"
+      lore:
+        - "Current: {current}"
+        - ""
+        - "Click to set"
+      morning:
+        display: "Morning"
+        lore:
+          - "{marker} Morning (time=0)"
+          - ""
+          - "Click to set"
+      noon:
+        display: "Noon"
+        lore:
+          - "{marker} Noon (time=6000)"
+          - ""
+          - "Click to set"
+      dusk:
+        display: "Dusk"
+        lore:
+          - "{marker} Dusk (time=12500)"
+          - ""
+          - "Click to set"
+      night:
+        display: "Night"
+        lore:
+          - "{marker} Night (time=18000)"
+          - ""
+          - "Click to set"
+    gravity:
+      title: "Gravity Settings"
+      display: "Gravity"
+      lore:
+        - "Current: {current}"
+        - ""
+        - "Click to set"
+      earth:
+        display: "Earth"
+        lore:
+          - "{marker} Earth (gravity=0.08)"
+          - ""
+          - "Click to set"
+      mars:
+        display: "Mars"
+        lore:
+          - "{marker} Mars (gravity=0.02)"
+          - ""
+          - "Click to set"
+      moon:
+        display: "Moon"
+        lore:
+          - "{marker} Moon (gravity=0.01)"
+          - ""
+          - "Click to set"
+    scale:
+      title: "Player Size Settings"
+      display: "Size"
+      lore:
+        - "Current: {current}"
+        - ""
+        - "Click to set"
+      normal:
+        display: "Normal"
+        lore:
+          - "{marker} Normal (scale=1.0)"
+          - ""
+          - "Click to set"
+      small:
+        display: "Small"
+        lore:
+          - "{marker} Small (scale=0.5)"
+          - ""
+          - "Click to set"
+      giant:
+        display: "Giant"
+        lore:
+          - "{marker} Giant (scale=2.0)"
+          - ""
+          - "Click to set"

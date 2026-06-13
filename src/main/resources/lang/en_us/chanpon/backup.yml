@@ -27,6 +27,17 @@ chanpon:
         display: "§bAutomation Settings"
         lore:
           - "§7Configure automatic backup and rollback."
+      world_creation:
+        enabled:
+          display: "§aWorld creation: enabled"
+          lore:
+            - "§7Players are allowed to create worlds."
+            - "§eClick §7to disable it."
+        disabled:
+          display: "§cWorld creation: disabled"
+          lore:
+            - "§7Players cannot create new worlds."
+            - "§eClick §7to enable it."
       export:
         display: "§7World Data Export"
         lore:
@@ -133,7 +144,12 @@ chanpon:
       bulk_rollback:
         display: "§cRun Bulk Rollback"
         lore:
-          - "§7Open the whole-backup list."
+          - "Open bulk backup list."
+      annual_archive:
+        display: "Annual Update"
+        lore:
+          - "Archive completed worlds and purge others."
+          - "Full backup is created before execution."
       info:
         display: "§bList Info"
         lore:
@@ -280,6 +296,8 @@ chanpon:
       restore_point_success: "§dRestore point created."
       export_success: "§aWorld data export completed: §f{file}"
       export_failed: "§cWorld data export failed."
+      archive_locked: "§cMyWorld is unavailable while the annual update is running."
+      world_creation_no_permission: "§cYou do not have permission to create worlds."
       manual_operation_blocked: "§cManual operation is currently unavailable around scheduled backup or rollback."
       rollback_cooldown: "§cYou can run the next rollback after §f{remaining}§c."
       owner_backup_cooldown: "§cYou can create the next backup after §f{remaining}§c."

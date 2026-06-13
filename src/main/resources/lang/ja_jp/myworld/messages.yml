@@ -23,6 +23,7 @@ messages:
   world_not_found: §cワールドが見つかりませんでした。
   spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_set_start_bedrock: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
+  spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_guest_set: §aゲスト用のスポーン位置を設定しました！
   spawn_member_set: §aメンバー用のスポーン位置を設定しました！
   spawn_both_set: §aゲスト/メンバー共通のスポーン位置を設定しました！
@@ -85,6 +86,7 @@ messages:
   announcement_prompt: §7設定する案内メッセージをチャット欄に入力してください。§6exit§7と入力して編集を終了します。
   announcement_set: §a案内メッセージを設定しました！
   announcement_reset: §e案内メッセージをリセットしました。
+  announcement_cleared: §a案内メッセージを削除しました。
   announcement_invalid_length: §cメッセージが長すぎます。（{max_lines}行まで、各行{max_length}文字まで）
   announcement_blocked_string: '§c禁止文字列が含まれています: {string}'
   announcement_preview: §7«案内プレビュー» {message}

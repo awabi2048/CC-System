@@ -1,0 +1,24 @@
+chanpon:
+  archive:
+    prompt:
+      name_input: "§e年次更新アーカイブ名をチャットで入力してください。"
+      password_input: "§eアーカイブのパスワードをチャットで入力してください。"
+      cancel_hint: "§7§o[クリックでキャンセル]"
+      cancel_hover: "§cキャンセルする"
+    confirm:
+      name: "§eアーカイブ名: §f{name}§e でよろしいですか？"
+      proceed: "§a§l[続行する]"
+      proceed_hover: "§aクリックでパスワード入力へ進みます。"
+      final: "§c年次更新を実行します。§eアーカイブ名: §f{name}"
+      execute: "§4§l[実行する]"
+      execute_hover: "§cクリックで年次更新を開始します。この操作は取り消せません。"
+    error:
+      empty_name: "§c空のアーカイブ名は使用できません。"
+      wrong_password: "§cパスワードが間違っています。キャンセルしました。"
+      use_button: "§cチャットではなくボタンで操作してください。"
+      already_in_progress: "§c別のアーカイブ操作が進行中です。"
+    message:
+      executing: "§a年次更新処理を開始します..."
+      success: "§a年次更新が完了しました: §f{name}"
+      failed: "§c年次更新に失敗しました: §f{reason}"
+      cancelled: "§7年次更新をキャンセルしました。"

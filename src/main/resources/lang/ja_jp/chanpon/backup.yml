@@ -27,6 +27,17 @@ chanpon:
         display: "§b自動処理の設定"
         lore:
           - "§7自動バックアップと自動ロールバックを設定します。"
+      world_creation:
+        enabled:
+          display: "§aワールド作成: 有効"
+          lore:
+            - "§7プレイヤーのワールド作成を許可しています。"
+            - "§eクリック §7無効にします。"
+        disabled:
+          display: "§cワールド作成: 無効"
+          lore:
+            - "§7プレイヤーのワールド作成を停止しています。"
+            - "§eクリック §7有効にします。"
       export:
         display: "§7ワールドデータのエクスポート"
         lore:
@@ -134,6 +145,11 @@ chanpon:
         display: "§c一括ロールバックの実行"
         lore:
           - "§7全体バックアップ一覧を開きます。"
+      annual_archive:
+        display: "§5年次更新の実行"
+        lore:
+          - "§7完了ワールドをアーカイブし、未提出ワールドを抹消します。"
+          - "§c§l| §c実行前に全ワールドをバックアップします。"
       info:
         display: "§b一覧情報"
         lore:
@@ -280,6 +296,8 @@ chanpon:
       restore_point_success: "§d復元ポイントを作成しました。"
       export_success: "§aワールドデータをエクスポートしました: §f{file}"
       export_failed: "§cワールドデータのエクスポートに失敗しました。"
+      archive_locked: "§c年次更新処理中のため、現在マイワールドを利用できません。"
+      world_creation_no_permission: "§cワールドを作成する権限がありません。"
       manual_operation_blocked: "§c定時バックアップまたは定時ロールバックの前後のため、現在は手動操作を実行できません。"
       rollback_cooldown: "§c次のロールバックは §f{remaining} §c後に実行できます。"
       owner_backup_cooldown: "§c次のバックアップは §f{remaining} §c後に作成できます。"

@@ -164,6 +164,11 @@ custom_items:
       lore:
       - §7A bow Oage-chan received as a gift.
       - §7Old, but possesses high potential.
+    stopwatch:
+      name: §eStopwatch
+      lore:
+      - §7Right click to start or stop timing.
+      - §7Press F while holding it to reset.
   arena:
     structure_marker_tool:
       name: §6Arena Structure Marker Tool
