@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.announce.listener
 
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
@@ -312,7 +313,7 @@ class AnnounceListener : Listener {
             return
         }
 
-        event.isCancelled = true
+        event.cancelWithDebug("AnnounceListener.onInventoryClick: menu interaction")
         val clickedInventory = event.clickedInventory ?: return
 
         if (clickedInventory == event.view.topInventory) {
