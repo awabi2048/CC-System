@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -84,6 +85,8 @@ interface CCSystemAPI {
     fun createLoreTextLine(text: String): String
 
     fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component>
+
+    fun getMenuNavigationService(): MenuNavigationService
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 

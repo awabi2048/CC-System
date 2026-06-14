@@ -1,8 +1,10 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.gui.LoreFormatter
+import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -16,6 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin
  * LanguageManagerおよびChunkTaskQueueManagerをラップして他のプラグインに機能を提供します
  */
 internal class CCSystemAPIImpl : CCSystemAPI {
+    private val menuNavigationService = MenuNavigationServiceImpl()
+    
     
     override fun getPlayerLanguage(player: Player): String {
         return LanguageManager.getPlayerLanguageCode(player)
@@ -164,6 +168,10 @@ internal class CCSystemAPIImpl : CCSystemAPI {
 
     override fun buildLore(lines: List<String>, closingSeparator: Boolean): List<Component> {
         return LoreFormatter.buildLore(lines, closingSeparator)
+    }
+
+    override fun getMenuNavigationService(): MenuNavigationService {
+        return menuNavigationService
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
