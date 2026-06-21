@@ -32,6 +32,11 @@ gui:
       preview_hint: §7右クリックでプレビュー
     confirm:
       name: この内容で確定して作成
+      world_name_label: ワールド名
+      template_label: テンプレート
+      seed_label: シード値
+      generation_label: 生成方法
+      random_generation: ランダム
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7ワールド名 §a{name}
@@ -107,10 +112,8 @@ gui:
     title: ワールドの種の使用
     lore:
     - §dワールドの種§fを使用しますか？
-    - ''
     - '§7現在のマイワールドスロット: §a{current}'
     - '§7使用後のマイワールドスロット: §a{next}'
-    - ''
     - §7スロットを拡張すると、作成できる
     - §7マイワールドの数が増えます。
   announcement_dialog:

@@ -6,27 +6,6 @@ gui:
       total_count: '§7Results: §f{count}'
       page: '§7Page: §f{page} / {total_pages}'
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{uuid_line}'
-      - '{world_name_line}'
-      - '{owner_line}'
-      - '{status_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{publish_line}'
-      - '{generation_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{created_line}'
-      - '{expire_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{mspt_line}'
-      - '{world_size_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{action_warp}'
-      - '{action_settings}'
-      - '{action_archive}'
-      - '{uuid_copy_hint}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       uuid: §f§l| §7World Directory §8{uuid}
       world_name_line: §f§l| §7World §a{world}
       owner: §f§l| §7Owner {owner}{status_color}
@@ -72,11 +51,13 @@ gui:
     filter:
       archive:
         display: §eArchive Filter
+        label: Display scope
         all: All
         active: Active Only
         archived: Archived Only
       publish:
         display: §ePublish Filter
+        label: Publish level
         all: All
         public: Public Only
         friend: Limited Only
@@ -101,8 +82,11 @@ gui:
         click_right: §e§l §eRight-Click §7Set Player
       click_cycle: §e§nClick to cycle
       click_lr: §e§l| §eLeft/Right-Click §7Change
+      previous: Select previous option
+      next: Select next option
     sort:
       display: §eSort Order
+      label: Sort order
       created_desc: Created (Newest)
       created_asc: Created (Oldest)
       expire_asc: Expire Date (Soon)
@@ -116,7 +100,6 @@ gui:
       lore:
       - §7Validate and update integrity of all
       - §7world and player data.
-      - ''
       - §e§nClick to confirm
       confirm_title: Update Data Confirmation
     repair_templates:
@@ -124,30 +107,25 @@ gui:
       lore:
       - §7Detect missing template worlds and
       - §7attempt to regenerate them.
-      - ''
       - §e§nClick to confirm
       confirm_title: Repair Templates Confirmation
     create_template:
       display: §aCreate Template
       lore:
       - §7Open the Template Creation Wizard.
-      - ''
       - §e§nClick to start
     archive:
       display: §cExecute Archive
       lore:
       - §7Batch archive all expired worlds.
-      - ''
       - §e§nClick to confirm
       confirm_title: Batch Archive Confirmation
     convert:
       display: §6Convert World
       lore:
       - §7Register current world under MyWorld management.
-      - ''
       - §e§nLeft Click§7 Convert in Normal Mode
       - §7(Rename directory for standard management)
-      - ''
       - §e§nRight Click§7 Convert in Admin Mode
       - §7(Keep current structure, apply management only)
       confirm_normal: Convert Confirmation (Normal)
@@ -158,17 +136,21 @@ gui:
       - §7Remove MyWorld configuration for this world
       - §7and revert it to a normal world.
       - §7(World data is NOT deleted)
-      - ''
       - §e§nClick to confirm
       confirm_title: Unlink Confirmation
     export:
       display: §bExport World
+      unavailable_warning: The current world is not a MyWorld, so it cannot be exported.
       lore:
       - §7Export current world as ZIP archive.
-      - ''
       - §e§nClick to confirm
       confirm_title: Export Confirmation
       target_world: §f§l| §7Target World §b{world}
+    plugin_info:
+      display: §bMyWorldManager
+      lore:
+      - §7Version: {version}
+      - §7Author: {author}
     archive_world:
       confirm_title: Check archive
       target_world: §f§l| §7Target world §b{world}
@@ -179,7 +161,6 @@ gui:
       display: §aWorld List
       lore:
       - §7View and manage all worlds.
-      - ''
       - §e§nClick to open
     current_world:
       display: §bCurrent World Info
@@ -198,7 +179,6 @@ gui:
       display: §bPortal Management
       lore:
       - §7View list of placed portals.
-      - ''
       - §e§nClick to open
   unarchive_confirm:
     title: §6Unarchive Confirmation

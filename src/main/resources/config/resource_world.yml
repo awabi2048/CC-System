@@ -80,13 +80,13 @@ macros:
 resources:
   normal:
     base_name: "resource_normal"
-    default_border: 5000
+    default_border: 6000
     variations: ["a", "b", "c"]
   nether:
     base_name: "resource_nether"
-    default_border: 2500
+    default_border: 6000
     variations: ["a", "b"]
   end:
     base_name: "resource_end"
-    default_border: 3000
-    variations: ["a"]
+    default_border: 6000
+    variations: ["a", "b"]

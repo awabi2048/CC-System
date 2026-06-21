@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.config
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -211,7 +212,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun getComponent(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): Component {
-        return serializer.deserialize(getString(sourceId, player, key, placeholders)).decoration(TextDecoration.ITALIC, false)
+        return normalizeComponent(serializer.deserialize(getString(sourceId, player, key, placeholders)))
     }
 
     fun getComponentList(player: Player?, key: String): List<Component> {
@@ -224,7 +225,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
 
     fun getComponentList(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<Component> {
         return getStringList(sourceId, player, key, placeholders).map {
-            serializer.deserialize(it).decoration(TextDecoration.ITALIC, false)
+            normalizeComponent(serializer.deserialize(it))
         }
     }
 
@@ -290,7 +291,13 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun deserialize(message: String): Component {
-        return serializer.deserialize(message).decoration(TextDecoration.ITALIC, false)
+        return normalizeComponent(serializer.deserialize(message))
+    }
+
+    private fun normalizeComponent(component: Component): Component {
+        return component
+            .colorIfAbsent(NamedTextColor.WHITE)
+            .decoration(TextDecoration.ITALIC, false)
     }
 
     private fun resolveLocale(raw: String?): String {

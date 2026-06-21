@@ -97,22 +97,6 @@ gui:
   player_world:
     title: マイワールドの一覧
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{publish_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{expires_at_line}'
-      - '{expired_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_action}'
-      - '{settings_action}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7オーナー §f{owner}
       publish: §f§l| §7公開設定 §b{level}{status_color}
       favorite: §f§l| §7お気に入り §c{count}
@@ -129,7 +113,6 @@ gui:
       lore:
       - §7新しいマイワールドを作成します。
       - §7テンプレートや公開範囲を自由に設定可能です。
-      - ''
       - §e§nクリックで作成を開始
     stats_button:
       display: §e{player}

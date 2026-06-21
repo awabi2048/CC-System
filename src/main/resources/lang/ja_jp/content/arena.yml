@@ -20,6 +20,8 @@ arena:
       lift: '&dリフト'
       pedestal: '&d祭壇'
       connection: '&6接続部'
+      connection_in: '&6接続（入口）'
+      connection_out: '&b接続（出口）'
       door_block: '&e扉'
       barrier_core: '&b結界核'
       barrier_point: '&3結界起動点'

@@ -10,7 +10,6 @@ gui:
       display: §aWorld Info Settings
       lore:
       - §e§l| §eClick §aEdit world name and description together
-      - ''
       - §7Click to edit both fields in a dialog.
       lore_bedrock:
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -35,7 +34,6 @@ gui:
       lore:
       - '§7Left-Click: Set Guest Spawn'
       - '§7Right-Click: Set Member Spawn'
-      - ''
       - §eClick a block after selection
       - §eto set the location and direction.
       lore_bedrock:
@@ -84,6 +82,9 @@ gui:
       lore_empty: '  §fNone'
       lore_item: '  §6- {tag}'
       blocks:
+        description:
+        - §7Set world tags used by
+        - §7Discovery search.
         summary:
         - §f§l| §7Current tags
         - '{tags_list}'
@@ -123,6 +124,9 @@ gui:
       lore_no_border:
       - §a There are no borders in this world.
       blocks:
+        description:
+        - §7Expand the world border to increase
+        - §7the available building area.
         status_upgrade:
         - §f§l| §7Current expansion level §e§l{current}/{max}
         - §f§l| §7Cost §6🛖 §e{cost} §7({level_before} §f→ §e§l{level_after}§7)
@@ -209,6 +213,9 @@ gui:
       list_item_member: '  {name_color}{player}'
       more_members: '  §7+{remaining} total (§a{online} online§7)'
       blocks:
+        description:
+        - §7Manage players who can participate
+        - §7in this world.
         summary:
         - §f§l| §7Current number of members §b{count}
         - §f§l| §7Pending requests §e{pending_request_count}
@@ -257,7 +264,6 @@ gui:
       display: §aVisitor Management
       lore:
       - §f§l| §7Current visitors §e{count}
-      - ''
       - §e§nClick to view
       blocks:
         summary:
@@ -270,14 +276,13 @@ gui:
       'off': 'OFF'
       lore:
       - '§f§l| §7Current: {color}{status}'
-      - ''
       - §7When ON, members will be notified
       - §7when a guest visits the world.
-      - ''
       - §e§nClick to toggle
       blocks:
-        summary:
+        current:
         - '§f§l| §7Current: {color}{status}'
+        description:
         - §7When ON, members will be notified
         - §7when a guest visits the world.
       action:
@@ -287,7 +292,6 @@ gui:
       lore:
       - §7Set a message to display
       - §7to visitors upon arrival.
-      - ''
       - §e§nLeft-Click§7 Set Message
       - §e§nRight-Click§7 Reset Message
       - '{message_preview}'
@@ -301,12 +305,12 @@ gui:
       preview_header: §f§l| §e§nCurrent Message
       preview_footer: §e§nClick to edit/reset
       blocks:
-        summary_je:
+        description_je:
         - §7Set a message to display
         - §7to visitors upon arrival.
-        - '{message_preview}'
-        summary_be:
+        description_be:
         - §7Edit or reset messages from a Bedrock form menu.
+        preview:
         - '{message_preview}'
       action:
         set_message: Set message
@@ -317,7 +321,6 @@ gui:
       lore:
       - §cPerform irreversible actions
       - §clike deleting the world.
-      - ''
       - §e§nClick to view
       blocks:
         summary:
@@ -330,7 +333,6 @@ gui:
       lore:
       - §7Manage and check portals
       - §7placed within the world.
-      - ''
       - §e§nClick to view
       blocks:
         summary:
@@ -342,48 +344,44 @@ gui:
     title: Personal settings
     notification:
       display: §aVisitor notification
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7When someone visits your world
-      - §7set whether notifications are sent.
-      - ''
-      - §f§l| §7Current state {status}
-      - ''
-      - §e§nClick to toggle
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7When someone visits your world
+        - §7set whether notifications are sent.
+        current:
+        - §f§l| §7Current state {status}
+        action:
+        - §e§nClick to toggle
     language:
       display: §aLanguage settings
       format: §f{language}
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7Change the display language of menus and messages.
-      - ''
-      - '§f§l| §7Current setting: §f{language}'
-      - ''
-      - §e§nClick next
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7Change the display language of menus and messages.
+        current:
+        - '§f§l| §7Current setting: §f{language}'
+        action:
+        - §e§nClick next
     critical_settings_visibility:
       display: §aShow critical settings
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7Set whether the "Critical Settings" icon
-      - §7is shown in the world management menu.
-      - ''
-      - §f§l| §7Current setting {status}
-      - ''
-      - §e§nClick to toggle
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7Set whether the "Critical Settings" icon
+        - §7is shown in the world management menu.
+        current:
+        - §f§l| §7Current setting {status}
+        action:
+        - §e§nClick to toggle
     tour_navigation:
       display: §bWorld tour navigation
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7Switch how world tour navigation is shown.
-      - §7Messages are always displayed.
-      - ''
-      - §f§l| §7Current mode §b{status}
-      - ''
-      - §e§nClick to switch
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7Switch how world tour navigation is shown.
+        - §7Messages are always displayed.
+        current:
+        - §f§l| §7Current mode §b{status}
+        action:
+        - §e§nClick to switch
       mode:
         bossbar_only: Bossbar only
         all: All
@@ -404,6 +402,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     button:
       display: §6Personal settings
+      action: Click to open
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7Change display language, notifications, etc.
@@ -448,7 +447,6 @@ gui:
       - §cReally remove?
       - §f§l| §7Player §f{player}
       - §f§l| §7World §f{world}
-      - ''
       - §c※ They will lose access to this world.
       cancel: §aCancel
       cancel_desc: §7Back to list
@@ -494,7 +492,6 @@ gui:
       - §cReally transfer ownership?
       - §f§l| §7New Owner §f{player}
       - §f§l| §7Target World §f{world}
-      - ''
       - §c※ You will lose ownership of this world.
       cancel: §aCancel
       cancel_desc: §7Back to list

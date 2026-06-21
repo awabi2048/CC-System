@@ -62,7 +62,6 @@ chanpon:
         lore:
           - "§7オーナー: §f{owner}"
           - "§7作成日: §f{created}"
-          - ""
           - "§e左クリック §7このワールドをエクスポート"
     automation_notice:
       backup_warning: "§e定時バックアップを §f{remaining} §e後に開始します。開始前にスポーンへ退避します。"
@@ -161,7 +160,6 @@ chanpon:
           - "§7オーナー: §f{owner}"
           - "§7作成日: §f{created}"
           - "§7保存済みバックアップ: §f{backups}"
-          - ""
           - "§e左クリック §7個別バックアップ"
           - "§e右クリック §7バックアップ一覧"
     backup_list:
@@ -179,7 +177,6 @@ chanpon:
           - "§7対象ワールド数: §f{worlds}"
           - "§7サイズ: §f{size}"
           - "§7作成者: §f{actor}"
-          - ""
           - "§e左クリック §7ロールバック"
           - "§eホイールクリック §7削除"
     automation:
@@ -225,7 +222,6 @@ chanpon:
         lore:
           - "§7作成日時: §f{created}"
           - "§7作成者: §f{actor}"
-          - ""
           - "§e左クリック §7このワールドをロールバック"
     confirm:
       backup_world:

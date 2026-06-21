@@ -32,6 +32,11 @@ gui:
       preview_hint: §7Right-Click to Preview
     confirm:
       name: Confirm and Create
+      world_name_label: World name
+      template_label: Template
+      seed_label: Seed value
+      generation_label: Generation method
+      random_generation: Random
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7World name §a{name}
@@ -107,10 +112,8 @@ gui:
     title: Using world seeds
     lore:
     - Do you want to use §d world seed §f?
-    - ''
     - '§7Current My World Slot: §a{current}'
     - 'My world slot after using §7: §a{next}'
-    - ''
     - By expanding the §7 slot, you can create
     - §7 The number of My Worlds will increase.
   announcement_dialog:

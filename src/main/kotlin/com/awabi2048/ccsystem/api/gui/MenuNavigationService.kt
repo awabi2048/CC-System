@@ -1,11 +1,22 @@
 package com.awabi2048.ccsystem.api.gui
 
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+
+fun interface GuiMenuMatcher {
+    fun matches(inventory: Inventory): Boolean
+}
 
 interface MenuNavigationService {
     fun registerOpener(owner: String, id: String, opener: MenuRouteOpener)
 
     fun unregisterOwner(owner: String)
+
+    fun registerMenuMatcher(owner: String, matcher: GuiMenuMatcher)
+
+    fun closeOwnedMenus(owner: String, players: Collection<Player>): Int
+
+    fun closeAllMenus(players: Collection<Player>): Int
 
     fun clear(player: Player)
 

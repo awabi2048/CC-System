@@ -20,6 +20,8 @@ arena:
       lift: '&dLift'
       pedestal: '&dPedestal'
       connection: '&6Connection'
+      connection_in: '&6Connection In'
+      connection_out: '&bConnection Out'
       door_block: '&eDoor'
       barrier_core: '&bBarrier Core'
       barrier_point: '&3Barrier Point'

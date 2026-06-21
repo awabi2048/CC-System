@@ -17,19 +17,6 @@ gui:
       - '{tag_line}'
       - §8§m－－－－－－－－－－－－－－－－－－
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_line}'
-      - '{archived_line}'
-      - '{unfavorite_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7Owner §b{owner}{status_color}
       favorite: §f§l| §7Favorites §c{count}
       recent_visitors: §f§l| §7Recent Visitors §a{count}
@@ -58,7 +45,6 @@ gui:
         lore:
         - §7View other worlds owned by
         - §7the owner of this world.
-        - ''
         - §e§nClick to View
         - §e§nClick to View
       toggle:
@@ -75,13 +61,11 @@ gui:
         lore:
         - §7View the list of worlds you
         - §7have added to your favorites.
-        - ''
         - §e§nClick to View
     remove_confirm:
       title: Confirmation of cancellation of favorites
       lore:
       - §fWorld "§a{world}§f"
       - §cRemove from favorites§f?
-      - ''
       - If you cancel §7, it will be removed from your favorites list.
       confirm: §aRemove Favorite

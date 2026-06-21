@@ -62,7 +62,6 @@ chanpon:
         lore:
           - "§7Owner: §f{owner}"
           - "§7Created: §f{created}"
-          - ""
           - "§eLeft click §7export this world"
     automation_notice:
       backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
@@ -161,7 +160,6 @@ chanpon:
           - "§7Owner: §f{owner}"
           - "§7Created: §f{created}"
           - "§7Backups: §f{backups}"
-          - ""
           - "§eLeft click §7create backup"
           - "§eRight click §7backup list"
     backup_list:
@@ -179,7 +177,6 @@ chanpon:
           - "§7Worlds: §f{worlds}"
           - "§7Size: §f{size}"
           - "§7Actor: §f{actor}"
-          - ""
           - "§eLeft click §7rollback"
           - "§eMiddle click §7delete"
     automation:
@@ -225,7 +222,6 @@ chanpon:
         lore:
           - "§7Created: §f{created}"
           - "§7Actor: §f{actor}"
-          - ""
           - "§eLeft click §7rollback this world"
     confirm:
       backup_world:

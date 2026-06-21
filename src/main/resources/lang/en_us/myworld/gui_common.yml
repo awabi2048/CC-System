@@ -47,9 +47,9 @@ gui:
       next: §cProceed
     delete_2:
       title: Final Confirmation (2/2)
-      lore:
-      - §4§lARE YOU POSITIVE?
-      - '§c§lWARNING: This is the final step.'
+      display: §4§lFinal deletion confirmation
+      danger: Are you positive?
+      warning: Clicking will permanently delete this world!
       confirm_btn: §4§l【CONFIRM DELETE】
   critical:
     title: Critical Settings
@@ -57,9 +57,7 @@ gui:
       display: §c§nReset Expansion
       lore:
       - §f§l| §7Current level §e§l{level}
-      - ''
       - §f§l| §7Refund points §6🛖 §e{points}
-      - ''
       - §e§nClick to reset (Irreversible)
       lore_unavailable:
       - §cCannot reset (not expanded)
@@ -87,12 +85,10 @@ gui:
       lore:
       - §7Deletes the world permanently.
       - §7This action is irreversible.
-      - ''
       - §8§m-----------------------
       - '§f§l| §7Refund points: §6🛖 §e{points}'
       - §8({percent}% of total spent points returned)
       - §8§m-----------------------
-      - ''
       - §4§lClick to DELETE (Irreversible)
       lore_unavailable_slot:
       - §8§m-----------------------
@@ -208,6 +204,9 @@ gui:
   tour:
     worldmenu:
       display: §bWorld Tour
+      blocks:
+        description:
+        - §7Create and edit tours.
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7Create and edit tours.
