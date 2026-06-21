@@ -59,13 +59,22 @@ class GuiElementServiceImpl : GuiElementService {
                 is GuiNameSpec.Text -> this.name(name.text, name.style)
             }
         )
-        val lore = lore(spec.lore)
+        val nameOnlyRole = spec.role in setOf(
+            GuiElementRole.BACK,
+            GuiElementRole.CONFIRM,
+            GuiElementRole.CANCEL,
+            GuiElementRole.NAVIGATION,
+        )
+        val lore = if (nameOnlyRole) emptyList() else lore(spec.lore)
         if (lore.isNotEmpty()) {
             meta.lore(lore)
         }
-        if (spec.role != GuiElementRole.DECORATION) {
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS)
-        }
+        // GUIアイコンでは素材固有の説明を表示せず、NameとLoreだけを情報源にする。
+        meta.addItemFlags(
+            ItemFlag.HIDE_ATTRIBUTES,
+            ItemFlag.HIDE_ENCHANTS,
+            ItemFlag.HIDE_ADDITIONAL_TOOLTIP
+        )
         meta.isHideTooltip = spec.role == GuiElementRole.DECORATION
         item.itemMeta = meta
         return item
@@ -114,7 +123,7 @@ class GuiElementServiceImpl : GuiElementService {
         return item(
             GuiItemSpec(
                 material = material,
-                name = GuiNameSpec.Text(name, GuiNameStyle.DEFAULT),
+                name = GuiNameSpec.Text(name, GuiNameStyle.MUTED),
                 lore = GuiLoreSpec.None,
                 role = GuiElementRole.BACK,
                 amount = 1

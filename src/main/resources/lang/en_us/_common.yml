@@ -62,6 +62,7 @@ gui:
     status_display: 'Status: {color}{status}'
 lore:
   action_single: Click to {action}
+  action_single_with_operation: '{operation} to {action}'
   click:
     left: Left-Click
     right: Right-Click
@@ -105,7 +106,7 @@ status:
   offline: Offline
 error:
   player_only: §cThis command can only be executed by a player.
-  spotlight_not_in_myworld: §cYou must be in the target MyWorld to register it.
+  spotlight_not_in_myworld: §cYou must be in a MyWorld to register it with SPOTLIGHT!
   spotlight_not_owner: §cYou can only register worlds you own.
   spotlight_already_registered: §cThis world is already registered to SPOTLIGHT.
   spotlight_limit_reached: §cSPOTLIGHT slots are full.
@@ -169,7 +170,7 @@ error:
     no_permission: §cYou do not have permission to edit this world.
     limit_reached: '§cNo more Tour signs can be placed in this world. (Limit: {limit})'
     title_required: §cPlease enter a name.
-    not_managed_world: §cThis is not a managed MyWorld.
+    not_managed_world: §cYou must be in a MyWorld to use tours!
     not_enough_signs: §cAt least 2 waypoints are required to save a tour.
     waypoint_limit: §cA maximum of 28 waypoints can be set.
     sign_no_available_tour: §cNo available tours to bind. Create a tour first.

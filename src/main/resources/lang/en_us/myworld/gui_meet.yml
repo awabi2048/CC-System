@@ -13,7 +13,7 @@ gui:
       display: §a{player}
       current: '§f§l| §7Current Status: §e{status}'
       next: '§f§l| §7Next Status: §7{next_status}'
-      click: §e§nClick to toggle
+      action: toggle
   meet_settings:
     title: /meet settings
     status_selector:

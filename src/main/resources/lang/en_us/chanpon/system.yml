@@ -11,9 +11,9 @@ chanpon:
       development: "§eDevelopment"
       private: "§7Closed"
     publish:
-      title: "§ePublish level: §f{level}"
+      title: "§ePublish Level"
       current: "§f§l| §7Current §e{level}"
-      current_label: "Current"
+      current_label: "Current setting"
       public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
       private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."

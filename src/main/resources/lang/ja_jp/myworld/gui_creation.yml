@@ -6,6 +6,7 @@ gui:
     dialog:
       name_title: ワールド名の入力
       seed_title: シード値の入力
+      seed_required: §cシード値を入力してください
     type:
       template:
         name: テンプレートから作成
@@ -37,6 +38,22 @@ gui:
       seed_label: シード値
       generation_label: 生成方法
       random_generation: ランダム
+      spawn_location:
+        display: §eスポーン位置の調整
+        default: デフォルト
+        description: ワールドのスポーン位置を、指定した座標に変更できます
+        default_help: （入力しないか、空欄にすることでデフォルトのスポーン位置に設定し直せます）
+        current_label: 現在の設定値
+        action: クリックして設定
+        input:
+          title: スポーン位置の設定
+          help: X・Y・Zを整数で入力してください。すべて空欄にすると標準位置を使用します。
+          axis: '{axis}座標を入力してください'
+          apply: 適用
+          back: 戻る
+        error:
+          number: X・Y・Zはすべて整数で入力してください。
+          range: 座標が設定可能な範囲外です。
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7ワールド名 §a{name}

@@ -62,12 +62,16 @@ gui:
         placeholder: プレイヤー名を入力
       creation_name:
         title: ワールド名の入力
-        label: ワールド名
+        label: 作成するワールドの名前を入力してください
         placeholder: ワールド名を入力
       creation_seed:
         title: シード値の入力
-        label: シード値（空欄可）
+        label: 生成に使用するシード値を入力してください
         placeholder: シード値または文字列を入力
+      creation_spawn:
+        title: スポーン位置の設定
+        axis: '{axis} 座標（3項目とも空欄で解除）'
+        placeholder: 整数を入力
       admin_player_filter:
         title: プレイヤーフィルター
         label: 対象プレイヤー名

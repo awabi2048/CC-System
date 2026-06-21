@@ -13,7 +13,7 @@ gui:
       display: §e{player}
       current: §f§l| §7現在のステータス §e{status}
       next: §f§l| §7次のステータス §7{next_status}
-      click: §e§nクリックで切り替え
+      action: 切り替え
   meet_settings:
     title: /meet 設定
     status_selector:

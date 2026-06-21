@@ -13,6 +13,7 @@ messages:
   icon_prompt: §eClick an item in your inventory to set as icon.
   icon_changed: §aWorld icon changed to "{icon}".
   icon_cancelled: §eIcon change cancelled.
+  icon_forbidden: §cThis icon cannot be selected.
   operation_cancelled: §c operation canceled.
   insufficient_points: You don't have enough §c points.
   creation_insufficient_points: §cInsufficient points.
@@ -182,7 +183,8 @@ messages:
   portal_warp_success: §aSuccessfully moved to "{destination}" via portal.
   world_loading: §aLoading world...
   evacuated: §cWorld unloaded. Moving to spawn.
-  no_in_myworld: §cYou must be in a MyWorld to do this.
+  no_in_myworld: §cYou must be in a MyWorld to perform this action!
+  worldmenu_not_in_myworld: §cYou must be in a MyWorld to open world settings!
   admin_portal_teleport: §aTeleported via admin portal
   admin_portal_removed: §aAdmin portal removed
   export_started: §eStarting world data export...
@@ -220,7 +222,7 @@ messages:
   status_visible: §aVisible
   status_hidden: §cHidden
   wizard_start: §aStarting creation wizard.
-  wizard_name_prompt: §ePlease type the world name.
+  wizard_name_prompt: §eEnter the name of the world to create.
   wizard_seed_prompt: §ePlease type a seed value.
   creation_timeout: §cWorld creation session timed out due to inactivity.
   wizard_started_for: §aWizard started for {player}.
