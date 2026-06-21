@@ -62,12 +62,16 @@ gui:
         placeholder: Enter player name
       creation_name:
         title: Enter World Name
-        label: World Name
+        label: Enter the name of the world to create
         placeholder: Type world name
       creation_seed:
         title: Enter Seed Value
-        label: Seed (optional)
+        label: Enter the seed value to use for generation
         placeholder: Type seed or text
+      creation_spawn:
+        title: Set Spawn Location
+        axis: '{axis} coordinate (leave all three blank to clear)'
+        placeholder: Enter an integer
       admin_player_filter:
         title: Player Filter
         label: Target Player Name

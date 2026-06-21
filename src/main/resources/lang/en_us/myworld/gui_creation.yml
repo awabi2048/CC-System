@@ -6,6 +6,7 @@ gui:
     dialog:
       name_title: Enter World Name
       seed_title: Enter Seed Value
+      seed_required: §cEnter a seed value.
     type:
       template:
         name: From Template
@@ -37,6 +38,22 @@ gui:
       seed_label: Seed value
       generation_label: Generation method
       random_generation: Random
+      spawn_location:
+        display: §eAdjust Spawn Location
+        default: Default
+        description: Changes the world's spawn location to the specified coordinates.
+        default_help: (Leave all fields blank to restore the default spawn location.)
+        current_label: Current setting
+        action: Click to configure
+        input:
+          title: Set Spawn Location
+          help: Enter integer X, Y, and Z values. Leave all fields blank to use the default spawn.
+          axis: Enter the {axis} coordinate
+          apply: Apply
+          back: Back
+        error:
+          number: X, Y, and Z must all be integers.
+          range: The coordinates are outside the supported range.
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7World name §a{name}

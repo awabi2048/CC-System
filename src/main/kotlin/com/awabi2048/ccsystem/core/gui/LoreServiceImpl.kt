@@ -11,6 +11,12 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
 class LoreServiceImpl : LoreService {
+    private data class LegacyAction(
+        val operation: String,
+        val action: String,
+        val singleText: String,
+    )
+
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
     private val dataLinePattern = Regex("^\u00A77([^:\uFF1A]+)[:\uFF1A]\\s*(.*)$")
@@ -47,20 +53,51 @@ class LoreServiceImpl : LoreService {
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {
         if (lines.isEmpty()) return emptyList()
         val separator = LoreFormatter.separator(emptyList())
-        return buildList {
-            if (frame == GuiLoreFrame.TOP || frame == GuiLoreFrame.BOTH) add(LoreFormatter.component(separator))
-            lines.forEach { line -> add(LoreFormatter.component(renderLine(line, separator))) }
-            if (frame == GuiLoreFrame.BOTTOM || frame == GuiLoreFrame.BOTH) add(LoreFormatter.component(separator))
-        }.map(::normalize)
+        // 旧Loreと構造化Loreが混在しても、操作案内の総数から表示形式を一意に決める。
+        val actionCount = lines.count { line ->
+            line is GuiLoreLine.Action ||
+                line is GuiLoreLine.SingleAction ||
+                (line is GuiLoreLine.Raw && parseLegacyAction(line.line) != null)
+        }
+        val normalizedLines = lines.map { line ->
+            if (line !is GuiLoreLine.Raw) return@map line
+            val action = parseLegacyAction(line.line) ?: return@map line
+            if (actionCount == 1) {
+                GuiLoreLine.SingleAction(action.singleText)
+            } else {
+                GuiLoreLine.Action(action.operation, action.action)
+            }
+        }
+        val content = normalizedLines.map { renderLine(it, separator) }
+        val framed = buildList {
+            if ((frame == GuiLoreFrame.TOP || frame == GuiLoreFrame.BOTH) &&
+                content.firstOrNull()?.let(::isSeparator).let { it != true }
+            ) {
+                add(separator)
+            }
+            addAll(content)
+            if ((frame == GuiLoreFrame.BOTTOM || frame == GuiLoreFrame.BOTH) &&
+                content.lastOrNull()?.let(::isSeparator).let { it != true }
+            ) {
+                add(separator)
+            }
+        }
+        // 旧Loreと標準フレームが混在しても、境界に同じ線を二重表示しない。
+        return framed.fold(mutableListOf<String>()) { result, line ->
+            if (!(isSeparator(line) && result.lastOrNull()?.let(::isSeparator) == true)) {
+                result += line
+            }
+            result
+        }.map(LoreFormatter::component).map(::normalize)
+    }
+
+    private fun isSeparator(line: String): Boolean {
+        val plain = colorCodePattern.replace(line, "").trim()
+        return plain.isNotEmpty() && plain.all { it == '―' || it == '-' || it == '－' || it == '—' }
     }
 
     private fun renderAuto(lines: List<String>, frame: GuiLoreFrame): List<Component> {
         if (lines.isEmpty()) return emptyList()
-        val nonBlank = lines.filter { it.isNotBlank() }
-        val actions = nonBlank.mapNotNull(::simpleAction)
-        if (nonBlank.isNotEmpty() && actions.size == nonBlank.size && nonBlank.size == lines.size && frame == GuiLoreFrame.NONE) {
-            return actions.map(LoreFormatter::singleActionLine).map(LoreFormatter::component)
-        }
         return renderRich(
             lines.map { line ->
                 if (line.isBlank()) GuiLoreLine.Spacer else GuiLoreLine.Raw(richLine(line.trim()))
@@ -93,25 +130,27 @@ class LoreServiceImpl : LoreService {
             .replace(actionPrefixPattern, "\u00A7e\u2759 ")
     }
 
-    private fun simpleAction(line: String): String? {
+    private fun parseLegacyAction(line: String): LegacyAction? {
+        if (!line.trim().startsWith("\u00A7e", ignoreCase = true)) return null
+
         val plain = colorCodePattern.replace(line, "").trim().trimStart('|', '\u2759').trim()
-        return when {
-            plain.startsWith("クリックで") -> "クリックして${plain.removePrefix("クリックで").trim()}"
-            plain.startsWith("クリック ") -> "クリックして${plain.removePrefix("クリック").trim()}"
-            plain.startsWith("左クリック ") -> "左クリックして${plain.removePrefix("左クリック").trim()}"
-            plain.startsWith("右クリック ") -> "右クリックして${plain.removePrefix("右クリック").trim()}"
-            plain.startsWith("Shift + クリック ") -> "Shift + クリックして${plain.removePrefix("Shift + クリック").trim()}"
-            plain.startsWith("Shift + 左クリック ") -> "Shift + 左クリックして${plain.removePrefix("Shift + 左クリック").trim()}"
-            plain.startsWith("Shift + 右クリック ") -> "Shift + 右クリックして${plain.removePrefix("Shift + 右クリック").trim()}"
-            plain.startsWith("ホイールクリック ") -> "ホイールクリックして${plain.removePrefix("ホイールクリック").trim()}"
-            plain.startsWith("Click to ", ignoreCase = true) -> plain
-            plain.startsWith("Left-Click ", ignoreCase = true) -> "Left-Click to ${plain.substringAfter(' ').trim()}"
-            plain.startsWith("Left click ", ignoreCase = true) -> "Left-Click to ${plain.substringAfter(' ').trim()}"
-            plain.startsWith("Right-Click ", ignoreCase = true) -> "Right-Click to ${plain.substringAfter(' ').trim()}"
-            plain.startsWith("Right click ", ignoreCase = true) -> "Right-Click to ${plain.substringAfter(' ').trim()}"
-            plain.startsWith("Click ", ignoreCase = true) -> "Click to ${plain.substringAfter(' ').trim()}"
-            else -> null
-        }?.takeIf { it.isNotBlank() }
+        Regex("^(.*?クリック)(?:で|して|\\s+)(.+)$").matchEntire(plain)?.let { match ->
+            val operation = match.groupValues[1].trim()
+            val action = match.groupValues[2].trim()
+            if (operation.isNotEmpty() && action.isNotEmpty()) {
+                return LegacyAction(operation, action, "${operation}して${action}")
+            }
+        }
+        Regex("^(.*?[Cc]lick)(?:\\s+to)?\\s+(.+)$", RegexOption.IGNORE_CASE)
+            .matchEntire(plain)
+            ?.let { match ->
+                val operation = match.groupValues[1].trim()
+                val action = match.groupValues[2].trim()
+                if (operation.isNotEmpty() && action.isNotEmpty()) {
+                    return LegacyAction(operation, action, "$operation to $action")
+                }
+            }
+        return null
     }
 
     private fun normalize(component: Component): Component = component

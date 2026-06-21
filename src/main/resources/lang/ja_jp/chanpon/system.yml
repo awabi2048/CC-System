@@ -11,9 +11,9 @@ chanpon:
       development: "§e制作中"
       private: "§7封鎖中"
     publish:
-      title: "§e公開レベル: §f{level}"
+      title: "§e公開レベル"
       current: "§f§l| §7現在 §e{level}"
-      current_label: "現在"
+      current_label: "現在の設定"
       public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請経由です。"
       private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"

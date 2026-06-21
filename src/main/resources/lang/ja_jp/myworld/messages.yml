@@ -13,6 +13,7 @@ messages:
   icon_prompt: §eインベントリ内のアイテムをクリックして、アイコンを設定します
   icon_changed: §aワールドアイコンを「{icon}」に変更しました！
   icon_cancelled: §cアイコン設定をキャンセルしました
+  icon_forbidden: §cこのアイコンには設定できません
   operation_cancelled: §c操作をキャンセルしました。
   insufficient_points: §cポイントが不足しています。
   creation_insufficient_points: §cポイントが不足しています。
@@ -182,7 +183,8 @@ messages:
   portal_warp_success: §aポータルを介して【{destination}】へ移動しました。
   world_loading: §aワールドをロード中です...
   evacuated: §cワールドがアンロードされたため、スポーン地点へ移動しました。
-  no_in_myworld: §cマイワールド内に滞在している必要があります。
+  no_in_myworld: §cこの操作をするためには、マイワールドにいる必要があります！
+  worldmenu_not_in_myworld: §cワールド設定を開くためには、マイワールドにいる必要があります！
   admin_portal_teleport: §a管理用ポータルでテレポートしました
   admin_portal_removed: §a管理用ポータルを撤去しました
   export_started: §eワールドデータのエクスポートを開始しました...
@@ -220,7 +222,7 @@ messages:
   status_visible: §a表示中
   status_hidden: §c非表示
   wizard_start: §aワールド作成ウィザードを開始します。
-  wizard_name_prompt: §eまずは作成するワールドの名前を入力してください。
+  wizard_name_prompt: §e作成するワールドの名前を入力してください
   wizard_seed_prompt: §e生成に使用するシード値を入力してください。
   creation_timeout: §c長時間操作がなかったため、ワールド作成セッションがタイムアウトしました。
   wizard_started_for: §a{player} に対してワールド作成ウィザードを開始しました。

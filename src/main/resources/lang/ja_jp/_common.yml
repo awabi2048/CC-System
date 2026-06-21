@@ -62,6 +62,7 @@ gui:
     status_display: 'ステータス: {color}{status}'
 lore:
   action_single: クリックして{action}
+  action_single_with_operation: '{operation}して{action}'
   click:
     left: 左クリック
     right: 右クリック
@@ -105,7 +106,7 @@ status:
   offline: オフライン
 error:
   player_only: §cこのコマンドはプレイヤーのみ実行可能です。
-  spotlight_not_in_myworld: §cMyWorldワールド内にいる必要があります。
+  spotlight_not_in_myworld: §cSPOTLIGHTに登録するためには、マイワールドにいる必要があります！
   spotlight_not_owner: §cあなたはこのワールドの所有者ではありません。
   spotlight_already_registered: §cこのワールドは既にSPOTLIGHTに登録されています。
   spotlight_limit_reached: §cこれ以上SPOTLIGHTに登録できません。
@@ -169,7 +170,7 @@ error:
     no_permission: §cこのワールドを編集する権限がありません。
     limit_reached: '§cこのワールドにはこれ以上Tour看板を設置できません。(上限: {limit})'
     title_required: §c名前を入力してください。
-    not_managed_world: §cここは管理対象のマイワールドではありません。
+    not_managed_world: §cツアーを利用するためには、マイワールドにいる必要があります！
     not_enough_signs: §cツアーを保存するには中継点が2個以上必要です。
     waypoint_limit: §c中継点は最大28個まで設定可能です。
     sign_no_available_tour: §c紐付け可能なツアーがありません。先にツアーを作成してください。
