@@ -12,10 +12,7 @@ object LoreFormatter {
     private val colorCodePattern = Regex("(?i)[§&][0-9A-FK-ORX]")
 
     fun separator(lines: Collection<String>): String {
-        val maxPixelWidth = lines.maxOfOrNull { displayPixelWidth(it) } ?: 0
-        val sepPixelWidth = displayPixelWidth(SEPARATOR_UNIT).coerceAtLeast(1)
-        val calculatedCount = ((((maxPixelWidth + sepPixelWidth - 1) / sepPixelWidth) * 3 + 1) / 2).coerceAtLeast(1)
-        val count = minOf(20, calculatedCount)
+        val count = 30
         return "§8§m" + SEPARATOR_UNIT.repeat(count)
     }
 
@@ -36,7 +33,11 @@ object LoreFormatter {
     }
 
     fun warningLine(content: String): String {
-        return "§c§n* $content"
+        return "§c§n※ $content"
+    }
+
+    fun dangerLine(content: String): String {
+        return "§4§l※ $content"
     }
 
     fun singleActionLine(actionText: String): String {
@@ -47,43 +48,15 @@ object LoreFormatter {
         return "§7$text"
     }
 
-    fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component> {
-        val normalized = lines.map { it.trim() }.filter { it.isNotEmpty() }
-        if (normalized.isEmpty()) return emptyList()
-        val separator = separator(normalized)
-        return cleanup(buildList {
-            add(separator)
-            addAll(normalized)
-            if (closingSeparator) add(separator)
-        }).map(::component)
-    }
-
     fun component(line: String): Component {
         return legacy.deserialize(line).decoration(TextDecoration.ITALIC, false)
     }
 
-    private fun cleanup(lines: List<String>): List<String> {
-        val result = mutableListOf<String>()
-        var lastWasSeparator = false
-        for (line in lines) {
-            val normalized = line.trim()
-            if (normalized.isEmpty()) continue
-            val separator = isSeparator(normalized)
-            if (!separator || !lastWasSeparator) {
-                result += normalized
-            }
-            lastWasSeparator = separator
-        }
-        return result
-    }
-
-    private fun displayPixelWidth(text: String): Int {
-        return colorCodePattern.replace(text, "").sumOf { char ->
-            when {
-                char.code in 0x20..0x7E -> 6
-                char.code in 0xFF61..0xFF9F -> 6
-                else -> 12
-            }
+    fun normalizeSeparator(component: Component): Component {
+        return if (isSeparator(plain.serialize(component))) {
+            separatorComponent(emptyList())
+        } else {
+            component
         }
     }
 

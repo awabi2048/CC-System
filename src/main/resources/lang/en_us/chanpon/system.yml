@@ -13,21 +13,24 @@ chanpon:
     publish:
       title: "§ePublish level: §f{level}"
       current: "§f§l| §7Current §e{level}"
+      current_label: "Current"
       public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
       private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
       cycle: "§e§l| §eClick §7to cycle"
+      public_description: "Shown in Discovery and directly visitable."
+      development_description: "Hidden from lists; Meet uses requests."
+      private_description: "Only members can visit."
+      cycle_action: "Click to cycle"
     expand:
       display: "§eExpand world"
       status_available:
         - "§f§l| §7Current §e{current}§7/§e{max}"
         - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
-        - ""
         - "§e§l| §eClick §7to choose expansion"
       status_max:
         - "§f§l| §7Current §e{current}§7/§e{max}"
         - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
-        - ""
         - "§7This world cannot be expanded further."
     expand_menu:
       title: "Expand world"
@@ -35,37 +38,31 @@ chanpon:
         display: "§eExpand from center"
         lore:
           - "§f§l| §7Expand in every direction without moving the center."
-          - ""
           - "§e§l| §eClick §7to confirm"
       direction_select:
         display: "§eExpand by direction"
         lore:
           - "§f§l| §7Close the menu and click while facing the direction to expand."
-          - ""
           - "§e§l| §eClick §7to choose direction"
       north_west:
         display: "§eExpand northwest"
         lore:
           - "§f§l| §7Expand toward northwest."
-          - ""
           - "§e§l| §eClick §7to confirm"
       north_east:
         display: "§eExpand northeast"
         lore:
           - "§f§l| §7Expand toward northeast."
-          - ""
           - "§e§l| §eClick §7to confirm"
       south_west:
         display: "§eExpand southwest"
         lore:
           - "§f§l| §7Expand toward southwest."
-          - ""
           - "§e§l| §eClick §7to confirm"
       south_east:
         display: "§eExpand southeast"
         lore:
           - "§f§l| §7Expand toward southeast."
-          - ""
           - "§e§l| §eClick §7to confirm"
     direction:
       center: "Center"
@@ -77,12 +74,10 @@ chanpon:
       display: "§eStep back once"
       lore:
         - "§f§l| §7Undo the latest expansion."
-        - ""
         - "§e§l| §eClick §7to confirm"
       lore_modified:
         - "§f§l| §7Undo the latest expansion."
         - "§c§l| §cThe expanded area has changes."
-        - ""
         - "§e§l| §eClick §7to confirm"
     modified_warning:
       title: "Expansion area changed"
@@ -90,7 +85,6 @@ chanpon:
       lore:
         - "§f§l| §7The expansion area to be undone has changes."
         - "§f§l| §7Continuing will discard changes in that area."
-        - ""
         - "§e§l| §eContinue §7to final confirmation"
       button:
         continue: "§eContinue"
@@ -116,13 +110,13 @@ chanpon:
     notification:
       lore:
         - "§f§l| §7Current §e{status}"
-        - ""
         - "§e§l| §eClick §7to toggle"
     critical:
       display: "§cCritical settings"
+      action_lore:
+        - "§e§l| §eClick §7to open"
       lore:
         - "§f§l| §7Open critical actions such as world deletion."
-        - ""
         - "§e§l| §eClick §7to open"
       production_lore:
         - "§f§l| §7Critical settings are display-only here."
@@ -132,7 +126,6 @@ chanpon:
       delete_lore:
         - "§f§l| §7Delete this world."
         - "§c§l| §cThis cannot be undone."
-        - ""
         - "§e§l| §eClick §7to confirm"
       unavailable_display: "§7Unavailable"
       unavailable_lore:
@@ -145,8 +138,8 @@ chanpon:
       final_title: "Final world deletion confirmation"
       final_display: "§4Really delete this world?"
       final_lore:
-        - "§cThis is the final confirmation."
-        - "§cDeleted worlds cannot be restored."
+        - "This is the final confirmation."
+        - "Deleted worlds cannot be restored."
       deleted: "§aWorld deleted."
       delete_failed: "§cFailed to delete world."
     info:

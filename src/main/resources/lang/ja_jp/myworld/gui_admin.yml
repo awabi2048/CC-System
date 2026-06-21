@@ -6,27 +6,6 @@ gui:
       total_count: §f§l| §7検索結果 §b{count}件
       page: '§7表示中: §a{page}§7/{total_pages} ページ'
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{uuid_line}'
-      - '{world_name_line}'
-      - '{owner_line}'
-      - '{status_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{publish_line}'
-      - '{generation_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{created_line}'
-      - '{expire_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{mspt_line}'
-      - '{world_size_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{action_warp}'
-      - '{action_settings}'
-      - '{action_archive}'
-      - '{uuid_copy_hint}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       uuid: §f§l| §7ワールドディレクトリ §8{uuid}
       world_name_line: §f§l| §7ワールド名 §a{world}
       owner: §f§l| §7オーナー {owner}{status_color}
@@ -72,11 +51,13 @@ gui:
     filter:
       archive:
         display: §eアーカイブフィルター
+        label: 表示対象
         all: すべて表示
         active: アクティブのみ
         archived: アーカイブのみ
       publish:
         display: §e公開レベルフィルター
+        label: 公開レベル
         all: すべて表示
         public: 公開のみ
         friend: 限定公開のみ
@@ -101,8 +82,11 @@ gui:
         click_right: §e§l| §e右クリック §7プレイヤーを設定
       click_cycle: §e§nクリックで切り替え
       click_lr: §e§l| §e左/右クリック §7変更
+      previous: 前の項目へ変更
+      next: 次の項目へ変更
     sort:
       display: §eソート方法
+      label: 並び順
       created_desc: §a作成日（新しい順）
       created_asc: §a作成日（古い順）
       expire_asc: §aアーカイブ予定（近い順）
@@ -174,6 +158,7 @@ gui:
       confirm_title: 紐づけ解除の確認
     export:
       display: §bワールドのエクスポート
+      unavailable_warning: 現在のワールドはマイワールドではないため、エクスポートできません。
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7現在のワールドをZIP形式でエクスポートします。
@@ -182,6 +167,11 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       confirm_title: エクスポート確認
       target_world: §f§l| §7対象ワールド §b{world}
+    plugin_info:
+      display: §bMyWorldManager
+      lore:
+      - §7Version: {version}
+      - §7Author: {author}
     archive_world:
       confirm_title: アーカイブの確認
       target_world: §f§l| §7対象ワールド §b{world}

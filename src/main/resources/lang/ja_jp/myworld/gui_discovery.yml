@@ -2,31 +2,6 @@ gui:
   discovery:
     title: ワールドディスカバリー
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7オーナー {owner}{status_color}
-      - §f§l| §7お気に入り §c{favorites}
-      - §f§l| §7最近の来訪者 §a{visitors}
-      - '{tags}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_hint}'
-      - '{preview_hint}'
-      - '{member_request_hint}'
-      - '{favorite_hint}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7オーナー {owner}{status_color}
-      - §f§l| §7お気に入り §c{favorites}
-      - §f§l| §7最近の来訪者 §a{visitors}
-      - '{tags}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_hint}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7オーナー {owner}{status_color}
       tag: §f§l| §7タグ §e{tags}
       favorite: §f§l| §7お気に入り §c{count}
@@ -61,6 +36,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     sort:
       display: §a並び替え方法の選択
+      label: 並び順
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7{current_prefix} §f{sort_name}
@@ -81,6 +57,11 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       name: §a並び替え方法の選択
       click: §e§nクリックで切り替え
+      action:
+        previous: 前の並び順へ変更
+        next: 次の並び順へ変更
+        edit_operation: Shift + 左クリック
+        edit_spotlight: SPOTLIGHTの説明文を編集
       type:
         hot: §cHOT
         new: §aNEW
@@ -106,6 +87,7 @@ gui:
       click_reset: §e§l| §e右クリック §7選択を解除
     tag_filter:
       name: タグフィルター
+      label: 選択中のタグ
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7選択中 §6{tag}
@@ -131,6 +113,9 @@ gui:
       click_left: §e§l| §e左クリック §7フィルターを切り替え
       click_right: §e§l| §e右クリック §7フィルターを解除
       click_bedrock: §e§l| §eクリック §7フィルターを切り替え
+      action:
+        next: 次のタグへ変更
+        clear: フィルターを解除
     spotlight_description_dialog:
       title: SPOTLIGHT説明文の編集
       body: SPOTLIGHTソート中に表示する説明文を入力してください（最大{max}文字）。空欄でデフォルトに戻せます。
@@ -166,6 +151,5 @@ gui:
     lore:
     - §fワールド「§a{world}§f」を
     - §6SPOTLIGHT§fに登録しますか？
-    - ''
     - §7登録するとディスカバリーメニューの最上位に
     - §7優先的に表示されるようになります。

@@ -30,7 +30,6 @@ gui:
     lore:
     - §fSend a §dmember request§f to
     - §fthe owner of "§a{world}§f"?
-    - ''
     - §7If the owner approves, you will become a member.
   member_request_owner_confirm:
     title: Member Request Approval
@@ -39,7 +38,6 @@ gui:
     lore:
     - §fApprove the §dmember request§f from
     - §fplayer "§a{player}§f"?
-    - ''
     - §7If approved, they will become a member of this world.
   member_invite_accept_confirm:
     title: Member Invite Confirmation
@@ -48,5 +46,4 @@ gui:
     lore:
     - §fAccept the §dmember invite§f from
     - §fplayer "§a{player}§f"?
-    - ''
     - '§7Target world: §a{world}'

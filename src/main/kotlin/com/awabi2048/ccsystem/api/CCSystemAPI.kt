@@ -1,5 +1,7 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
@@ -68,23 +70,9 @@ interface CCSystemAPI {
 
     fun unregisterI18nSource(sourceId: String)
 
-    fun createLoreSeparator(lines: Collection<String> = emptyList()): String
+    fun getGuiElementService(): GuiElementService
 
-    fun createLoreSeparatorComponent(lines: Collection<Component> = emptyList()): Component
-
-    fun createLoreDataLine(label: String, value: Any?, valueColor: String = "§7"): String
-
-    fun createLoreSubDataLine(label: String, value: Any?): String
-
-    fun createLoreActionLine(operation: String, action: String): String
-
-    fun createLoreWarningLine(content: String): String
-
-    fun createLoreSingleActionLine(actionText: String): String
-
-    fun createLoreTextLine(text: String): String
-
-    fun buildLore(lines: List<String>, closingSeparator: Boolean = true): List<Component>
+    fun getLoreService(): LoreService
 
     fun getMenuNavigationService(): MenuNavigationService
 

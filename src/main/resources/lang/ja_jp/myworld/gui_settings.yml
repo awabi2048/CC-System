@@ -90,6 +90,9 @@ gui:
       lore_empty: '  §fなし'
       lore_item: '  §6・{tag}'
       blocks:
+        description:
+        - §7ディスカバリー検索で使われる
+        - §7ワールドタグを設定します。
         summary:
         - §f§l| §7設定中のタグ
         - '{tags_list}'
@@ -129,6 +132,9 @@ gui:
       lore_no_border:
       - §aこのワールドにボーダーはありません。
       blocks:
+        description:
+        - §7ワールドのボーダーを拡張し、
+        - §7建築可能範囲を広げます。
         status_upgrade:
         - §f§l| §7現在の拡張レベル §e§l{current}/{max}
         - §f§l| §7コスト §6🛖 §e{cost} §7({level_before} §f→ §e§l{level_after}§7)
@@ -215,6 +221,9 @@ gui:
       list_item_member: '  {name_color}{player}'
       more_members: '  §7+{remaining}人 (§a{online}人オンライン§7)'
       blocks:
+        description:
+        - §7このワールドに参加できる
+        - §7プレイヤーを管理します。
         summary:
         - §f§l| §7現在のメンバー数 §b{count}人
         - §f§l| §7参加申請中 §e{pending_request_count}件
@@ -288,8 +297,9 @@ gui:
       - §e§nクリックで切り替え
       - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
-        summary:
+        current:
         - §f§l| §7現在の設定 {color}{status}
+        description:
         - §7オンの場合、メンバー以外の訪問者が
         - §7来た際にメンバー全員に通知します
         - §7個人設定からオフにすることもできます
@@ -316,12 +326,12 @@ gui:
       preview_header: §f§l| §7現在の案内メッセージ
       preview_footer: §e§nクリックして編集・リセット
       blocks:
-        summary_je:
+        description_je:
         - §7訪問者に向けて表示する
         - §7案内メッセージを設定します。
-        - '{message_preview}'
-        summary_be:
+        description_be:
         - §7案内メッセージの編集・リセットを行います
+        preview:
         - '{message_preview}'
       action:
         set_message: メッセージを設定
@@ -361,48 +371,44 @@ gui:
     title: 個人設定
     notification:
       display: §a訪問者の通知
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7誰かがあなたのワールドを訪れたときに
-      - §7通知を送信するかどうかを設定します。
-      - ''
-      - §f§l| §7現在の状態 {status}
-      - ''
-      - §e§nクリックで切り替え
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7誰かがあなたのワールドを訪れたときに
+        - §7通知を送信するかどうかを設定します。
+        current:
+        - §f§l| §7現在の状態 {status}
+        action:
+        - §e§nクリックで切り替え
     language:
       display: §a言語設定
       format: §f{language}
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7メニューやメッセージの表示言語を変更します。
-      - ''
-      - '§f§l| §7現在の設定: §f{language}'
-      - ''
-      - §e§nクリックで次へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7メニューやメッセージの表示言語を変更します。
+        current:
+        - '§f§l| §7現在の設定: §f{language}'
+        action:
+        - §e§nクリックで次へ
     critical_settings_visibility:
       display: §a重大な設定の表示
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7ワールド管理メニュー内の
-      - §7「重大な設定」アイコンを表示するか設定します。
-      - ''
-      - §f§l| §7現在の設定 {status}
-      - ''
-      - §e§nクリックで切り替え
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7ワールド管理メニュー内の
+        - §7「重大な設定」アイコンを表示するか設定します。
+        current:
+        - §f§l| §7現在の設定 {status}
+        action:
+        - §e§nクリックで切り替え
     tour_navigation:
       display: §bワールドツアーのナビゲーション
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7ワールドツアー中のナビ表示方法を切り替えます。
-      - §7メッセージは常に表示されます。
-      - ''
-      - §f§l| §7現在の設定 §b{status}
-      - ''
-      - §e§nクリックで切り替え
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        description:
+        - §7ワールドツアー中のナビ表示方法を切り替えます。
+        - §7メッセージは常に表示されます。
+        current:
+        - §f§l| §7現在の設定 §b{status}
+        action:
+        - §e§nクリックで切り替え
       mode:
         bossbar_only: ボスバーのみ
         all: すべて
@@ -423,6 +429,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     button:
       display: §6個人設定
+      action: クリックして開く
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7表示言語や通知などを変更します。

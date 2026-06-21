@@ -6,7 +6,6 @@ gui:
       name: §aToggle Floating Text
       lore:
       - '§fCurrent setting: {status}'
-      - ''
       - §e§nClick to toggle
     destination_label: '§7Destination: '
     color:
@@ -14,7 +13,6 @@ gui:
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7Current color {color}
-      - ''
       - §7« {prev_color}
       - §7{next_color} »
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -83,6 +81,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     sort:
       display: §e Sorting method
+      label: Sort order
       created_desc: Installation date (newest first)
       created_asc: Installation date (oldest first)
   invite:
@@ -95,18 +94,6 @@ gui:
       placeholder: Enter player name
     title: '{player}''s world'
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_line}'
-      - '{fav_action_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7Owner §b{owner}{status_color}
       tag: §f§l| §7tag §b{tags}
       favorite: §f§l| §7Favorite §c{count}

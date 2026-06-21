@@ -17,19 +17,6 @@ gui:
       - '{tag_line}'
       - §8§m－－－－－－－－－－－－－－－－－－
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_line}'
-      - '{archived_line}'
-      - '{unfavorite_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7オーナー §b{owner}{status_color}
       favorite: §f§l| §7お気に入り §c{count}
       recent_visitors: §f§l| §7最近の来訪者 §a{count}
@@ -56,10 +43,8 @@ gui:
       other_worlds:
         name: §aこのプレイヤーのほかのワールド
         lore:
-        - ''
         - §7このワールドのオーナーが所有する
         - §7ほかのワールド一覧を表示します。
-        - ''
         - §e§nクリックで表示
       toggle:
         name_add: §bお気に入りに追加
@@ -75,13 +60,11 @@ gui:
         lore:
         - §7あなたが登録したお気に入りワールドの
         - §7一覧を表示します。
-        - ''
         - §e§nクリックで表示
     remove_confirm:
       title: お気に入り解除の確認
       lore:
       - §fワールド「§a{world}§f」を
       - §cお気に入りから解除§fしますか？
-      - ''
       - §7解除すると、お気に入りリストから削除されます。
       confirm: §aお気に入り解除

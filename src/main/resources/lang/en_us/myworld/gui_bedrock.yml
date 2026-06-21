@@ -97,22 +97,6 @@ gui:
   player_world:
     title: My world list
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{publish_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{expires_at_line}'
-      - '{expired_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_action}'
-      - '{settings_action}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7Owner §f{owner}
       publish: §f§l| §7Public setting §b{level}{status_color}
       favorite: §f§l| §7Favorite §c{count}
@@ -129,7 +113,6 @@ gui:
       lore:
       - §7 Create a new My World.
       - §7You can freely set the template and disclosure range.
-      - ''
       - §e§nClick to start creating
     stats_button:
       display: §e{player}

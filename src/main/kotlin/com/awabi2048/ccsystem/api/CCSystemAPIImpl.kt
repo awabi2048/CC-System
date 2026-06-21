@@ -1,9 +1,12 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.core.gui.LoreFormatter
+import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
+import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
@@ -19,6 +22,8 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 internal class CCSystemAPIImpl : CCSystemAPI {
     private val menuNavigationService = MenuNavigationServiceImpl()
+    private val guiElementService = GuiElementServiceImpl()
+    private val loreService = LoreServiceImpl()
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -134,40 +139,12 @@ internal class CCSystemAPIImpl : CCSystemAPI {
         LanguageManager.getUnified().unregisterSource(sourceId)
     }
 
-    override fun createLoreSeparator(lines: Collection<String>): String {
-        return LoreFormatter.separator(lines)
+    override fun getGuiElementService(): GuiElementService {
+        return guiElementService
     }
 
-    override fun createLoreSeparatorComponent(lines: Collection<Component>): Component {
-        return LoreFormatter.separatorComponent(lines)
-    }
-
-    override fun createLoreDataLine(label: String, value: Any?, valueColor: String): String {
-        return LoreFormatter.dataLine(label, value, valueColor)
-    }
-
-    override fun createLoreSubDataLine(label: String, value: Any?): String {
-        return LoreFormatter.subDataLine(label, value)
-    }
-
-    override fun createLoreActionLine(operation: String, action: String): String {
-        return LoreFormatter.actionLine(operation, action)
-    }
-
-    override fun createLoreWarningLine(content: String): String {
-        return LoreFormatter.warningLine(content)
-    }
-
-    override fun createLoreSingleActionLine(actionText: String): String {
-        return LoreFormatter.singleActionLine(actionText)
-    }
-
-    override fun createLoreTextLine(text: String): String {
-        return LoreFormatter.textLine(text)
-    }
-
-    override fun buildLore(lines: List<String>, closingSeparator: Boolean): List<Component> {
-        return LoreFormatter.buildLore(lines, closingSeparator)
+    override fun getLoreService(): LoreService {
+        return loreService
     }
 
     override fun getMenuNavigationService(): MenuNavigationService {

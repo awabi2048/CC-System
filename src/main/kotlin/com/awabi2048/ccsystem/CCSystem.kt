@@ -348,6 +348,9 @@ class CCSystem : JavaPlugin() {
         
         // API初期化
         _api = CCSystemAPIImpl()
+        _api.getMenuNavigationService().registerMenuMatcher("cc-system") { inventory ->
+            inventory.holder?.javaClass?.name?.startsWith("com.awabi2048.ccsystem") == true
+        }
         
         // 設定読み込み
         ensureDefaultFiles()
@@ -394,6 +397,7 @@ class CCSystem : JavaPlugin() {
     }
 
     override fun onDisable() {
+        _api.getMenuNavigationService().closeAllMenus(server.onlinePlayers)
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()
         shutdownFeatureRuntime()

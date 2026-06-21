@@ -71,12 +71,17 @@ object WorldManager {
 
         // 1. 既存の資源ワールドを削除（削除前マクロを実行）
         if (existingWorldName != null) {
-            MacroManager.executeBeforeDelete(existingWorldName)
-            object : BukkitRunnable() {
-                override fun run() {
-                    deleteThenCreateResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
-                }
-            }.runTaskLater(CCSystem.instance, ConfigManager.getMacroBeforeDeleteWaitAfterTicks())
+            // LuckPerms の保存完了後に削除へ進み、旧ワールド名のコンテキストを残さない。
+            ResourceWorldPermissionPolicy.clear(existingWorldName).whenComplete { _, _ ->
+                Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
+                    MacroManager.executeBeforeDelete(existingWorldName)
+                    object : BukkitRunnable() {
+                        override fun run() {
+                            deleteThenCreateResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
+                        }
+                    }.runTaskLater(CCSystem.instance, ConfigManager.getMacroBeforeDeleteWaitAfterTicks())
+                })
+            }
         } else {
             createResourceWorld(resourceConfig, type, variation, customBorderSize, customDifficulty)
         }
@@ -159,6 +164,7 @@ object WorldManager {
         logger.info(consoleMsg)
 
         createScaffold(world, spawnLoc)
+        ResourceWorldPermissionPolicy.apply(world)
         MacroManager.executeAfterGeneration(worldName, borderSize)
         startPregeneration(world, borderSize)
         return true

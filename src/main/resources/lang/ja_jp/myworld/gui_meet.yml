@@ -30,7 +30,6 @@ gui:
     lore:
     - §fワールド「§a{world}§f」のオーナーに
     - §dメンバー参加申請§fを送信しますか？
-    - ''
     - §7オーナーが承認すると、メンバーとして参加できます。
   member_request_owner_confirm:
     title: メンバー参加申請の承認
@@ -39,7 +38,6 @@ gui:
     lore:
     - §fプレイヤー「§a{player}§f」からの
     - §dメンバー参加申請§fを承認しますか？
-    - ''
     - §7承認すると、このプレイヤーはワールドのメンバーになります。
   member_invite_accept_confirm:
     title: メンバー招待の確認
@@ -48,5 +46,4 @@ gui:
     lore:
     - §fプレイヤー「§a{player}§f」からの
     - §dメンバー招待§fを承諾しますか？
-    - ''
     - '§7対象ワールド: §a{world}'

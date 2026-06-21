@@ -6,7 +6,6 @@ gui:
       name: §a浮遊テキストの表示
       lore:
       - '§f現在の設定: {status}'
-      - ''
       - §e§nクリックで切り替え
     destination_label: '§7行き先 '
     color:
@@ -14,7 +13,6 @@ gui:
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7現在の色 {color}
-      - ''
       - §7« {prev_color}
       - §7{next_color} »
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -83,6 +81,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     sort:
       display: §e並び替え方法
+      label: 並び順
       created_desc: 設置日（新しい順）
       created_asc: 設置日（古い順）
   invite:
@@ -95,18 +94,6 @@ gui:
       placeholder: プレイヤー名を入力
     title: '{player}のワールド'
     world_item:
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{warp_line}'
-      - '{fav_action_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       owner: §f§l| §7オーナー §b{owner}{status_color}
       tag: §f§l| §7タグ §b{tags}
       favorite: §f§l| §7お気に入り §c{count}
