@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
@@ -71,6 +72,8 @@ interface CCSystemAPI {
     fun unregisterI18nSource(sourceId: String)
 
     fun getGuiElementService(): GuiElementService
+
+    fun getGuiLayoutService(): GuiLayoutService
 
     fun getLoreService(): LoreService
 
