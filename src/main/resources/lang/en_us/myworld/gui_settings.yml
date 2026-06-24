@@ -164,6 +164,7 @@ gui:
         open: View
     publish:
       display: §6Change Publish Level
+      current_label: Current setting
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7Current setting {current_color}{current_level}

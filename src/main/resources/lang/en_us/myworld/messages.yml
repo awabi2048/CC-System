@@ -7,7 +7,10 @@ messages:
   unlink_not_myworld: §cThis world is not a MyWorld.
   world_desc_prompt: §ePlease type the world description in chat.
   world_name_change: §aWorld name changed.
-  world_name_invalid: §cName must be 3-16 characters.
+  world_name_blank: §cPlease enter a world name.
+  world_name_too_long: §cWorld name must be {max} characters or fewer.
+  world_name_blocked: §cThe world name contains a forbidden string.
+  world_name_symbol: §cThe world name contains a forbidden symbol.
   world_desc_change: §aDescription changed.
   publish_updated: '§aPublish updated: {level}'
   icon_prompt: §eClick an item in your inventory to set as icon.
