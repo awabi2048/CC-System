@@ -172,6 +172,7 @@ gui:
         open: 表示
     publish:
       display: §6公開レベルの変更
+      current_label: 現在の設定
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7現在の設定 {current_color}{current_level}

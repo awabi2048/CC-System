@@ -1,11 +1,13 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
+import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
@@ -23,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin
 internal class CCSystemAPIImpl : CCSystemAPI {
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val guiElementService = GuiElementServiceImpl()
+    private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     
     
@@ -141,6 +144,10 @@ internal class CCSystemAPIImpl : CCSystemAPI {
 
     override fun getGuiElementService(): GuiElementService {
         return guiElementService
+    }
+
+    override fun getGuiLayoutService(): GuiLayoutService {
+        return guiLayoutService
     }
 
     override fun getLoreService(): LoreService {

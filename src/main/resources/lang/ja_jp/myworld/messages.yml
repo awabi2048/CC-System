@@ -7,7 +7,10 @@ messages:
   unlink_not_myworld: §cこのワールドはマイワールドではありません。
   world_desc_prompt: §eワールド説明文を入力してください
   world_name_change: §aワールド名を変更しました！
-  world_name_invalid: §cワールド名は3〜16文字で入力してください
+  world_name_blank: §cワールド名を入力してください
+  world_name_too_long: §cワールド名は{max}文字以下で入力してください
+  world_name_blocked: §cワールド名に使用できない文字列が含まれています。
+  world_name_symbol: §cワールド名に使用できない記号が含まれています。
   world_desc_change: §aワールド説明を変更しました！
   publish_updated: '§a公開設定を更新しました: {level}'
   icon_prompt: §eインベントリ内のアイテムをクリックして、アイコンを設定します
