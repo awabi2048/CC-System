@@ -18,5 +18,11 @@ interface GuiLayoutService {
 
     fun confirmation45(): GuiConfirmationLayout
 
+    fun pagedList54(): GuiPagedListLayout
+
+    fun settings54(): GuiSettingsLayout
+
+    fun threeChoice45(): GuiThreeChoiceLayout
+
     fun applyStandardFrame(inventory: Inventory)
 }

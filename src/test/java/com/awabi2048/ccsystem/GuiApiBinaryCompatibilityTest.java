@@ -5,6 +5,10 @@ import com.awabi2048.ccsystem.api.gui.GuiFrameSpec;
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine;
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec;
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec;
+import com.awabi2048.ccsystem.api.gui.GuiConfirmationLayout;
+import com.awabi2048.ccsystem.api.gui.GuiPagedListLayout;
+import com.awabi2048.ccsystem.api.gui.GuiSettingsLayout;
+import com.awabi2048.ccsystem.api.gui.GuiThreeChoiceLayout;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,7 +24,11 @@ class GuiApiBinaryCompatibilityTest {
             GuiNameSpec.Text.class,
             GuiLoreSpec.Auto.class,
             GuiLoreSpec.Rich.class,
-            GuiLoreLine.Data.class
+            GuiLoreLine.Data.class,
+            GuiConfirmationLayout.class,
+            GuiPagedListLayout.class,
+            GuiSettingsLayout.class,
+            GuiThreeChoiceLayout.class
         );
 
         for (Class<?> model : models) {
