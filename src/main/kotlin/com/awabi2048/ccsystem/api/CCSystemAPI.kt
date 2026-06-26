@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -78,6 +79,8 @@ interface CCSystemAPI {
     fun getLoreService(): LoreService
 
     fun getMenuNavigationService(): MenuNavigationService
+
+    fun getMenuSoundService(): MenuSoundService
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 

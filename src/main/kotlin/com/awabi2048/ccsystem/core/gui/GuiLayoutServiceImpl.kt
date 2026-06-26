@@ -9,6 +9,9 @@ import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
+import com.awabi2048.ccsystem.api.gui.GuiPagedListLayout
+import com.awabi2048.ccsystem.api.gui.GuiSettingsLayout
+import com.awabi2048.ccsystem.api.gui.GuiThreeChoiceLayout
 import org.bukkit.Material
 import org.bukkit.inventory.Inventory
 
@@ -48,6 +51,35 @@ class GuiLayoutServiceImpl(
             previewSlot = 22,
             confirmSlot = 20,
             cancelSlot = 24
+        )
+    }
+
+    override fun pagedList54(): GuiPagedListLayout {
+        return GuiPagedListLayout(
+            size = size54(),
+            previousPageSlot = 0,
+            nextPageSlot = 8,
+            backSlot = footerLeftSlot54(),
+            infoSlot = footerCenterSlot54(),
+            itemSlots = (9..44).toList()
+        )
+    }
+
+    override fun settings54(): GuiSettingsLayout {
+        return GuiSettingsLayout(
+            size = size54(),
+            backSlot = footerLeftSlot54(),
+            infoSlot = footerCenterSlot54()
+        )
+    }
+
+    override fun threeChoice45(): GuiThreeChoiceLayout {
+        return GuiThreeChoiceLayout(
+            size = size45(),
+            leftSlot = 20,
+            centerSlot = 22,
+            rightSlot = 24,
+            backSlot = backSlot45()
         )
     }
 

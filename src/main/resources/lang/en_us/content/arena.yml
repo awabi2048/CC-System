@@ -283,7 +283,6 @@ arena:
       confirm_title: §8Mob Drop Exchange - Confirm
       confirm_ok: §aExchange
       confirm_cancel: §cCancel
-    separator: §8§m――――――――――――――――――――
     coming_soon: §7Coming Soon!
     license_card:
       title: §bLicense Card
