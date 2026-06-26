@@ -4,12 +4,14 @@ import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -27,6 +29,7 @@ internal class CCSystemAPIImpl : CCSystemAPI {
     private val guiElementService = GuiElementServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
+    private val menuSoundService = MenuSoundServiceImpl()
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -156,6 +159,10 @@ internal class CCSystemAPIImpl : CCSystemAPI {
 
     override fun getMenuNavigationService(): MenuNavigationService {
         return menuNavigationService
+    }
+
+    override fun getMenuSoundService(): MenuSoundService {
+        return menuSoundService
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────

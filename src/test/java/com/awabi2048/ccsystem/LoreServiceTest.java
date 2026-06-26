@@ -23,7 +23,7 @@ class LoreServiceTest {
     }
 
     @Test
-    void richLorePreservesModuleSpecifiedLayoutExactly() {
+    void richLoreCompressesRedundantSpacersWithoutChangingContentOrder() {
         List<Component> rendered = new LoreServiceImpl().render(
             new GuiLoreSpec.Rich(
                 List.of(
@@ -39,13 +39,12 @@ class LoreServiceTest {
         );
 
         List<String> lines = plain(rendered);
-        assertEquals(6, lines.size());
+        assertEquals(5, lines.size());
         assertEquals("説明", lines.get(0));
         assertEquals("", lines.get(1));
-        assertEquals("", lines.get(2));
-        assertTrue(lines.get(3).endsWith("現在値 3"));
-        assertEquals(30, lines.get(4).codePointCount(0, lines.get(4).length()));
-        assertTrue(lines.get(5).endsWith("左クリック 変更"));
+        assertTrue(lines.get(2).endsWith("現在値 3"));
+        assertEquals(30, lines.get(3).codePointCount(0, lines.get(3).length()));
+        assertTrue(lines.get(4).endsWith("左クリック 変更"));
     }
 
     @Test

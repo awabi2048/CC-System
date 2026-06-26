@@ -83,13 +83,31 @@ class LoreServiceImpl : LoreService {
             }
         }
         // 旧Loreと標準フレームが混在しても、境界に同じ線を二重表示しない。
-        return framed.fold(mutableListOf<String>()) { result, line ->
-            if (!(isSeparator(line) && result.lastOrNull()?.let(::isSeparator) == true)) {
-                result += line
+        // また、行数が可変のLoreで余分な空行(Spacer)が連続・先頭末尾に残らないよう圧縮する。
+        val compressed = mutableListOf<String>()
+        framed.forEachIndexed { index, line ->
+            val previous = compressed.lastOrNull()
+            when {
+                // 連続する Separator は1つに纏める
+                isSeparator(line) && previous?.let(::isSeparator) == true -> Unit
+                // 連続する Spacer(空行) は1つに纏める
+                isSpacer(line) && previous?.let(::isSpacer) == true -> Unit
+                // Separator の直後/直前の Spacer は区切り線で代用できるため省く
+                isSpacer(line) && (previous?.let(::isSeparator) == true || isSeparatorAt(framed, index + 1)) -> Unit
+                else -> compressed += line
             }
-            result
-        }.map(LoreFormatter::component).map(::normalize)
+        }
+        // 先頭・末尾に残った Spacer を削除（枠線として意味をなさない空行）
+        return compressed.dropWhile(::isSpacer).dropLastWhile(::isSpacer)
+            .map(LoreFormatter::component).map(::normalize)
     }
+
+    private fun isSeparatorAt(lines: List<String>, index: Int): Boolean {
+        if (index !in lines.indices) return false
+        return isSeparator(lines[index])
+    }
+
+    private fun isSpacer(line: String): Boolean = line.isEmpty()
 
     private fun isSeparator(line: String): Boolean {
         val plain = colorCodePattern.replace(line, "").trim()
