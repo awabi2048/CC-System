@@ -1,4 +1,5 @@
 messages:
+  world_name_duplicate: §c同じ名前のワールドをすでに所有しています。
   world_name_prompt: §eワールド名を入力してください
   chat_input_cancel_hint: §7(キャンセルするにはチャットで §e{word} §7と入力してください)
   wizard_cancel_word: §7(キャンセルするにはチャットで §e{word} §7と入力してください)
@@ -199,6 +200,7 @@ messages:
   portal_bind_success: §aこのポータルを「{destination}」に紐づけました
   portal_unbind_success: §eポータルの紐づけを解除しました
   portal_place_success: §aワールドポータルを設置しました
+  portal_pick_success: §aこのワールドポータルをアイテムとして取得しました。
   portal_broken: §eワールドポータルが破壊されました
   error.portal_place_in_world_gate: §cワールドゲートの内部にはワールドポータルを設置できません。
   world_gate_bind_success: §aこのワールドゲートを「{destination}」に紐づけました

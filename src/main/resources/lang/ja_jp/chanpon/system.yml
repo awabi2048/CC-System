@@ -7,14 +7,14 @@ chanpon:
       back_lore:
         - "§eクリック §7戻る"
     visibility:
-      public: "§a公開中"
+      public: "§a開放中"
       development: "§e制作中"
       private: "§7封鎖中"
     publish:
       title: "§e公開レベル"
       current: "§f§l| §7現在 §e{level}"
       current_label: "現在の設定"
-      public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
+      public_desc: "§f§l| §7{prefix}§a開放中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請経由です。"
       private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"
       cycle: "§e§l| §eクリック §7切り替え"
@@ -121,6 +121,8 @@ chanpon:
       production_lore:
         - "§f§l| §7重大な設定は表示のみです。"
         - "§c§l| §c本番用ワールドでは利用できません。"
+      disabled_lore:
+        - "§c§l| §cユーザー設定で重大な設定が非表示になっています。"
       menu_title: "重大な設定"
       delete_display: "§cワールドを削除"
       delete_lore:
@@ -130,6 +132,7 @@ chanpon:
       unavailable_display: "§7利用できません"
       unavailable_lore:
         - "§c本番用ワールドでは重大な設定を利用できません。"
+      unavailable_message: "§cこのワールドでは重大な設定を利用できません。"
       confirm_title: "ワールド削除確認"
       confirm_display: "§cワールドを削除しますか"
       confirm_lore:
@@ -157,21 +160,25 @@ chanpon:
       step_back_success: "§a直前の拡張を取り消しました。"
       step_back_failed: "§c拡張の取り消しに失敗しました。"
   publish:
-    public: "§a公開中"
+    public: "§a開放中"
     development: "§e制作中"
     private: "§7封鎖中"
     updated: "§a公開レベルを更新しました: §f{level}"
     item:
       title: "§e公開レベル: §f{level}"
       current: "§f§l| §7現在 §e{level}"
-      public_desc: "§f§l| §7{prefix}§a公開中 §fDiscoveryに表示し、通常訪問できます。"
+      public_desc: "§f§l| §7{prefix}§a開放中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請扱いです。"
       private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"
       left_click: "§e§l| §e左クリック §7前へ"
       right_click: "§e§l| §e右クリック §7次へ"
       cycle: "§e§l| §eクリック §7切り替え"
-      summary: "§7公開中 / 制作中 / 封鎖中"
+      summary: "§7開放中 / 制作中 / 封鎖中"
       line: "§f§l| §7公開レベル §e{level}"
+  portal:
+    public_only: "§cポータルは開放中のワールドにのみ通行できます。"
+    meet_hint: "§e代わりに /meet で、ワールドメンバーに許可を求められます。"
+
   discovery_sort:
     title: "§e並び替え"
     current: "§f§l| §7現在 §e{sort}"

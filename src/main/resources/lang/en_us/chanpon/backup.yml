@@ -14,6 +14,7 @@ chanpon:
       pre_rollback: "§6Pre-rollback"
     admin:
       title: "§0Chanpon Admin Menu"
+      provider_display: "§bMWM-Chanpon"
       no_permission: "§cYou do not have permission to use this menu."
       submission:
         display: "§aSubmission Status"
@@ -46,6 +47,11 @@ chanpon:
         display: "§bMWM-Chanpon"
         lore:
           - "§7Version: §f{version}"
+      switch_mwm:
+        display: "§bMyWorldManager"
+        lore:
+          - "§7Switch to the MyWorldManager admin menu."
+          - "§eClick §7to switch"
     export_menu:
       title: "§0World Data Export"
       bulk:

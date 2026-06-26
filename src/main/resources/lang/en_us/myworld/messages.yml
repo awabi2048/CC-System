@@ -1,4 +1,5 @@
 messages:
+  world_name_duplicate: §cYou already have a world with that name.
   world_name_prompt: §ePlease type the world name in chat.
   chat_input_cancel_hint: §7(Type §e{word} §7in chat to cancel)
   wizard_cancel_word: §7(Type §e{word} §7in chat to cancel)
@@ -199,6 +200,7 @@ messages:
   portal_bind_success: §aPortal bound to "{destination}".
   portal_unbind_success: §ePortal binding removed.
   portal_place_success: §aWorld portal placed successfully.
+  portal_pick_success: §aCopied this world portal as an item.
   portal_broken: §eWorld portal has been broken.
   error.portal_place_in_world_gate: §cYou cannot place a world portal inside a world gate.
   world_gate_bind_success: §aWorld gate bound to "{destination}".

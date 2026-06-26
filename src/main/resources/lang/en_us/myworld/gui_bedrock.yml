@@ -118,6 +118,9 @@ gui:
       - §7 Create a new My World.
       - §7You can freely set the template and disclosure range.
       - §e§nClick to start creating
+    creation_unavailable:
+      period_disabled: §cWorld creation is currently closed.
+      no_slot: §cNo world slots are available.
     stats_button:
       display: §e{player}
       lore:

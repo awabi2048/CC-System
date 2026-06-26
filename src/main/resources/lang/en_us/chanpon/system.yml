@@ -7,14 +7,14 @@ chanpon:
       back_lore:
         - "§eClick §7to go back"
     visibility:
-      public: "§aPublic"
+      public: "§aOpen"
       development: "§eDevelopment"
       private: "§7Closed"
     publish:
       title: "§ePublish Level"
       current: "§f§l| §7Current §e{level}"
       current_label: "Current setting"
-      public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
+      public_desc: "§f§l| §7{prefix}§aOpen §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
       private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
       cycle: "§e§l| §eClick §7to cycle"
@@ -121,6 +121,8 @@ chanpon:
       production_lore:
         - "§f§l| §7Critical settings are display-only here."
         - "§c§l| §cThey cannot be used for production worlds."
+      disabled_lore:
+        - "§c§l| §cCritical settings are hidden in your user settings."
       menu_title: "Critical settings"
       delete_display: "§cDelete world"
       delete_lore:
@@ -130,6 +132,7 @@ chanpon:
       unavailable_display: "§7Unavailable"
       unavailable_lore:
         - "§cCritical settings cannot be used for production worlds."
+      unavailable_message: "§cCritical settings are not available for this world."
       confirm_title: "World deletion confirmation"
       confirm_display: "§cDelete this world?"
       confirm_lore:
@@ -157,21 +160,24 @@ chanpon:
       step_back_success: "§aLatest expansion was undone."
       step_back_failed: "§cFailed to undo the latest expansion."
   publish:
-    public: "§aPublic"
+    public: "§aOpen"
     development: "§eDevelopment"
     private: "§7Closed"
     updated: "§aPublish level updated: §f{level}"
     item:
       title: "§ePublish level: §f{level}"
       current: "§f§l| §7Current §e{level}"
-      public_desc: "§f§l| §7{prefix}§aPublic §fShown in Discovery and directly visitable."
+      public_desc: "§f§l| §7{prefix}§aOpen §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses request."
       private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
       left_click: "§e§l| §eLeft click §7previous"
       right_click: "§e§l| §eRight click §7next"
       cycle: "§e§l| §eClick §7cycle"
-      summary: "§7Public / Development / Closed"
+      summary: "§7Open / Development / Closed"
       line: "§f§l| §7Publish level §e{level}"
+  portal:
+    public_only: "§cPortals can only be used for Open worlds."
+    meet_hint: "§eUse /meet to ask world members for permission instead."
   discovery_sort:
     title: "§eSort"
     current: "§f§l| §7Current §e{sort}"

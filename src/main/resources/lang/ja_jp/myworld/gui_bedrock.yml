@@ -118,6 +118,9 @@ gui:
       - §7新しいマイワールドを作成します。
       - §7テンプレートや公開範囲を自由に設定可能です。
       - §e§nクリックで作成を開始
+    creation_unavailable:
+      period_disabled: §c現在はワールド作成期間外です
+      no_slot: §cワールドスロットに空きがありません
     stats_button:
       display: §e{player}
       lore:

@@ -14,6 +14,7 @@ chanpon:
       pre_rollback: "§6ロールバック前退避"
     admin:
       title: "§0ちゃんぽん管理者メニュー"
+      provider_display: "§bMWM-Chanpon"
       no_permission: "§cこのメニューを操作する権限がありません。"
       submission:
         display: "§a提出状況の管理"
@@ -46,6 +47,11 @@ chanpon:
         display: "§bMWM-Chanpon"
         lore:
           - "§7Version: §f{version}"
+      switch_mwm:
+        display: "§bMyWorldManager"
+        lore:
+          - "§7MyWorldManagerの管理メニューへ切り替えます。"
+          - "§eクリック §7切り替え"
     export_menu:
       title: "§0ワールドデータのエクスポート"
       bulk:

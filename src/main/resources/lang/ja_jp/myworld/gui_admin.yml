@@ -172,6 +172,11 @@ gui:
       lore:
       - §7Version: {version}
       - §7Author: {author}
+    menu_switch:
+      display: §b管理メニュー
+      lore:
+      - §7{next}へ切り替えます。
+      - §eクリック §7切り替え
     archive_world:
       confirm_title: アーカイブの確認
       target_world: §f§l| §7対象ワールド §b{world}

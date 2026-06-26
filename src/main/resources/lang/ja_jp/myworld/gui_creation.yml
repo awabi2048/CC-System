@@ -26,6 +26,7 @@ gui:
       insufficient: §cポイントが足りません。(§6🛖 §e{shortage}不足)
     insufficient: §cポイントが足りません。(§6🛖 §e{shortage}不足)
     limit_reached: '§cワールド作成数の上限に達しています。(現在: {current}/{max})'
+    period_disabled: §c現在はワールド作成期間外です
     limit_reached_total: §cサーバー全体のワールド作成数が上限（{max}）に達しています。
     command_limit_reached_total: §c[Warning] サーバー全体のワールド作成数が上限（{max}）に達しているため、作成できません。
     command_limit_reached: '§c[Warning] 対象プレイヤー（{player}）のワールド作成数が上限に達しているため、作成できません。(現在: {current}/{max})'

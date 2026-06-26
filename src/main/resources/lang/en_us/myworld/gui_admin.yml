@@ -151,6 +151,11 @@ gui:
       lore:
       - §7Version: {version}
       - §7Author: {author}
+    menu_switch:
+      display: §bAdmin Menu
+      lore:
+      - §7Switch to {next}.
+      - §eClick §7to switch
     archive_world:
       confirm_title: Check archive
       target_world: §f§l| §7Target world §b{world}

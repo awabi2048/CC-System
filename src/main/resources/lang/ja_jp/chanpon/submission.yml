@@ -31,7 +31,6 @@ chanpon:
       lore:
         unsubmitted:
           - "§e❙ 左クリック §7提出済みにする"
-          - "§e❙ 右クリック §7本番用ワールド設定を解除"
           - "§7"
           - "§c※ 提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"
           - "§c取り消すこともできますが、その場合は再度提出する必要があります。"
@@ -103,6 +102,12 @@ chanpon:
         lore:
           - "§7現在: {filter}"
           - "§eクリック §7表示対象を切り替えます。"
+      sort:
+        created_desc: "§f作成日が新しい順"
+        created_asc: "§f作成日が古い順"
+        name_asc: "§fワールド名順"
+        display: "§e並び順"
+      filter_cycle_action: "クリックで切り替え"
       stats:
         display: "§b統計情報"
         lore:
@@ -156,12 +161,12 @@ chanpon:
         lore:
           - "§7管理メニューへ戻ります。"
       visibility:
-        public: "§a公開"
+        public: "§a開放中"
         development: "§e開発中"
         private: "§7封鎖中"
       visibility_filter:
         all: "§fすべて"
-        public: "§a公開"
+        public: "§a開放中"
         development: "§e開発中"
         private: "§7封鎖中"
         display: "§e公開状態フィルター"

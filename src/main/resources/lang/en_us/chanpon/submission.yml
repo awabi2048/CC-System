@@ -31,7 +31,6 @@ chanpon:
       lore:
         unsubmitted:
           - "§e❙ Left click §7Mark as submitted"
-          - "§e❙ Right click §7Unset production world"
           - "§7"
           - "§c※ Once submitted, world interaction such as placing or breaking blocks will be blocked."
           - "§cYou can cancel submission, but you must submit again afterward."
@@ -103,6 +102,12 @@ chanpon:
         lore:
           - "§7Current: {filter}"
           - "§eClick §7Cycle visible completion marks."
+      sort:
+        created_desc: "§fCreated: newest"
+        created_asc: "§fCreated: oldest"
+        name_asc: "§fWorld name: A-Z"
+        display: "§eSort"
+      filter_cycle_action: "Click to cycle"
       stats:
         display: "§bStatistics"
         lore:
@@ -156,12 +161,12 @@ chanpon:
         lore:
           - "§7Return to the admin menu."
       visibility:
-        public: "§aPublic"
+        public: "§aOpen"
         development: "§eDevelopment"
         private: "§7Closed"
       visibility_filter:
         all: "§fAll"
-        public: "§aPublic"
+        public: "§aOpen"
         development: "§eDevelopment"
         private: "§7Closed"
         display: "§eVisibility filter"
