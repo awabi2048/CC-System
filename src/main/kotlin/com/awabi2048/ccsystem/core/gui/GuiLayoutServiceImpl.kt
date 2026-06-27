@@ -4,7 +4,9 @@ import com.awabi2048.ccsystem.api.gui.GuiConfirmationLayout
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiFrameSection
 import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
+import com.awabi2048.ccsystem.api.gui.GuiFreeLayout
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
+import com.awabi2048.ccsystem.api.gui.GuiLayoutStyle
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
@@ -80,6 +82,22 @@ class GuiLayoutServiceImpl(
             centerSlot = 22,
             rightSlot = 24,
             backSlot = backSlot45()
+        )
+    }
+
+    override fun free45(): GuiFreeLayout {
+        return GuiFreeLayout(
+            size = size45(),
+            backSlot = backSlot45(),
+            style = GuiLayoutStyle.FREE_45
+        )
+    }
+
+    override fun free54(): GuiFreeLayout {
+        return GuiFreeLayout(
+            size = size54(),
+            backSlot = backSlot54(),
+            style = GuiLayoutStyle.FREE_54
         )
     }
 

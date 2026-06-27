@@ -24,5 +24,9 @@ interface GuiLayoutService {
 
     fun threeChoice45(): GuiThreeChoiceLayout
 
+    fun free45(): GuiFreeLayout
+
+    fun free54(): GuiFreeLayout
+
     fun applyStandardFrame(inventory: Inventory)
 }
