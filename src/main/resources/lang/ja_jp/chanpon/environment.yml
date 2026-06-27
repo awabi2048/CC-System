@@ -5,7 +5,13 @@ chanpon:
       back: "§7戻る"
       back_to_settings: "§7ワールド設定に戻る"
       not_set: "§7未設定"
+      current_label: "現在"
+      action_next: "クリックして切り替え"
+      action_prev: "クリックして切り替え"
+      action_custom_time: "クリックして切り替え"
+      must_be_in_world_warning: "§c※ この設定を変更するには、ワールド内にいる必要があります！"
     weather:
+      description: "天候を固定するか、通常の天候変化に戻すかを設定します。"
       title: "§e天候設定"
       display: "§e天候"
       lore:
@@ -27,6 +33,7 @@ chanpon:
           - "§f§l| §7{marker} §3雷雨"
           - "§e§l| §eクリック §7設定"
     time:
+      description: "時刻を固定するか、通常の時間経過に戻すかを設定します。"
       title: "§e時刻設定"
       display: "§e時刻"
       lore:
@@ -52,7 +59,15 @@ chanpon:
         lore:
           - "§f§l| §7{marker} §9夜 §7(time=18000)"
           - "§e§l| §eクリック §7設定"
+      custom:
+        display: "カスタム ({time})"
+        title: "時刻を指定"
+        body: "0から23999のtick値、またはHH:mm形式で入力してください。"
+        label: "時刻"
+        apply: "適用"
+        invalid: "0-23999、またはHH:mm形式で入力してください。"
     gravity:
+      description: "ワールド内のエンティティに適用される重力を設定します。"
       title: "§e重力設定"
       display: "§e重力"
       lore:
@@ -73,7 +88,16 @@ chanpon:
         lore:
           - "§f§l| §7{marker} §f月 §7(gravity=0.01)"
           - "§e§l| §eクリック §7設定"
+    flight:
+      description: "クリエイティブ以外のゲームモードで飛行を許可するかを設定します。"
+      display: "フライを許可"
+      enabled: "許可"
+      disabled: "不許可"
+      lore:
+        - "現在: {current}"
+        - "クリックで切り替え"
     scale:
+      description: "ワールド内でのプレイヤーサイズを設定します。"
       title: "§eプレイヤーサイズ設定"
       display: "§eサイズ"
       lore:

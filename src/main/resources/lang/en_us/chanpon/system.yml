@@ -1,6 +1,7 @@
 chanpon:
   settings:
     common:
+      must_be_in_world_warning: "§c* You must be in this world to change this setting!"
       "on": "Enabled"
       "off": "Disabled"
       back: "§7Back"

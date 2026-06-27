@@ -182,6 +182,10 @@ custom_items:
       name: §6アリーナリフト設置ツール
       lore:
       - §7リフトマーカー専用ツール
+    mechanic_marker_tool:
+      name: §6アリーナギミックマーカーツール
+      lore:
+      - §7テーマ固有ギミック用マーカーを設置します
     limit_breaking_sharpness_t1:
       name: '§d限界突破触媒: ダメージ増加 T1'
       lore:

@@ -6,8 +6,8 @@ arena:
     removed: '&b[Marker] {mode} §fマーカーを削除しました。'
     usage:
       place: '&e右クリック(ブロック)§7 クリック面の外側にマーカーを設置'
-      delete: '&eShift + 右クリック§7 視線上のマーカーを削除'
-      switch: '&eFキー§7 次のモードへ変更'
+      delete: '&eFキー§7 視線上のマーカーを削除'
+      switch: '&eShift + ホットバースクロール§7 前後のモードへ変更'
     modes:
       mob: '&cモブ'
       entrance: '&a入口'
@@ -25,6 +25,13 @@ arena:
       door_block: '&e扉'
       barrier_core: '&b結界核'
       barrier_point: '&3結界起動点'
+      nether_track_path_left: '&cネザー: トロッコ経路L'
+      nether_track_path_right: '&cネザー: トロッコ経路R'
+      nether_magma_vent: '&6ネザー: マグマ噴出口'
+      ocean_geyser: '&b海底神殿: 間欠泉'
+      ocean_whirlpool: '&3海底神殿: 渦潮'
+      natura_stalactite: '&7繁茂洞窟: 鍾乳石'
+      natura_mist: '&a繁茂洞窟: 霧'
     tutorial_step_number_assigned: §b[Marker] §fチュートリアル途中マーカー番号 §e{index} §fを設定しました。
   messages:
     command:

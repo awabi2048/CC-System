@@ -6,8 +6,8 @@ arena:
     removed: '&b[Marker] {mode} §fmarker removed.'
     usage:
       place: '&eRight click block§7 to place a marker on the outside of the face'
-      delete: '&eShift + right click§7 to remove the marker in your line of sight'
-      switch: '&eF key§7 to switch to the next mode'
+      delete: '&eF key§7 to remove the marker in your line of sight'
+      switch: '&eShift + hotbar scroll§7 to switch to the previous/next mode'
     modes:
       mob: '&cMob'
       entrance: '&aEntrance'
@@ -25,6 +25,13 @@ arena:
       door_block: '&eDoor'
       barrier_core: '&bBarrier Core'
       barrier_point: '&3Barrier Point'
+      nether_track_path_left: '&cNether: Minecart Path L'
+      nether_track_path_right: '&cNether: Minecart Path R'
+      nether_magma_vent: '&6Nether: Magma Vent'
+      ocean_geyser: '&bOcean Monument: Geyser'
+      ocean_whirlpool: '&3Ocean Monument: Whirlpool'
+      natura_stalactite: '&7Lush Cave: Stalactite'
+      natura_mist: '&aLush Cave: Mist'
     tutorial_step_number_assigned: §b[Marker] §fAssigned tutorial step marker number §e{index}§f.
   messages:
     command:

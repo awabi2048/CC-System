@@ -182,6 +182,10 @@ custom_items:
       name: §6Arena Lift Placement Tool
       lore:
       - §7Tool dedicated to lift markers
+    mechanic_marker_tool:
+      name: §6Arena Mechanic Marker Tool
+      lore:
+      - §7Places markers for theme-specific arena mechanics
     limit_breaking_sharpness_t1:
       name: '§dLimit Break Catalyst: Sharpness T1'
       lore:

@@ -2,7 +2,7 @@ gui:
   settings:
     title: ワールド設定({world})
     common:
-      must_be_in_world: この設定を変更するにはワールド内にいる必要があります
+      must_be_in_world: §cこの設定を変更するにはワールド内にいる必要があります
     click:
       left: 左クリック
       right: 右クリック

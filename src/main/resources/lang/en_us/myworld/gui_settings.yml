@@ -2,7 +2,7 @@ gui:
   settings:
     title: 'World Settings: {world}'
     common:
-      must_be_in_world: You must be in this world to change this setting.
+      must_be_in_world: §cYou must be in this world to change this setting.
     click:
       left: Left-Click
       right: Right-Click

@@ -37,8 +37,19 @@ gui:
       world_name_label: World name
       template_label: Template
       seed_label: Seed value
+      dimension_label: Dimension
       generation_label: Generation method
       random_generation: Random
+      dimension:
+        display: Select Dimension
+        description: Choose the dimension used when generating this seed world.
+        current_label: Current dimension
+        action_next: Left-click to select the next dimension
+        action_prev: Right-click to select the previous dimension
+        options:
+          normal: Overworld
+          nether: Nether
+          the_end: The End
       spawn_location:
         display: §eAdjust Spawn Location
         default: Default
@@ -67,6 +78,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       template_line: §f§l| §7Template §f{template}
       seed_line: §f§l| §7 Seed value §f{seed}
+      dimension_line: 'Dimension: {dimension}'
       name_label: World Name
       type_label: Creation Type
       cost_label: Cost

@@ -5,12 +5,19 @@ chanpon:
       back: "Back"
       back_to_settings: "Back to World Settings"
       not_set: "Not set"
+      current_label: "Current"
+      action_next: "Click to toggle"
+      action_prev: "Click to toggle"
+      action_custom_time: "Click to toggle"
+      must_be_in_world_warning: "§c* You must be in this world to change this setting!"
     weather:
+      description: "Choose fixed weather, or return to normal weather changes."
       title: "Weather Settings"
       display: "Weather"
       lore:
         - "Current: {current}"
-        - "Click to set"
+        - "Left-click: next"
+        - "Right-click: previous"
       clear:
         display: "Clear"
         lore:
@@ -27,11 +34,21 @@ chanpon:
           - "{marker} Thunderstorm"
           - "Click to set"
     time:
+      description: "Choose fixed time, or return to normal time progression."
       title: "Time Settings"
       display: "Time"
       lore:
         - "Current: {current}"
-        - "Click to set"
+        - "Left-click: next"
+        - "Right-click: previous"
+        - "Shift-left-click: custom time"
+      custom:
+        display: "Custom ({time})"
+        title: "Custom Time"
+        body: "Enter a tick value from 0 to 23999, or HH:mm."
+        label: "Time"
+        apply: "Apply"
+        invalid: "Enter 0-23999 or HH:mm."
       morning:
         display: "Morning"
         lore:
@@ -53,11 +70,13 @@ chanpon:
           - "{marker} Night (time=18000)"
           - "Click to set"
     gravity:
+      description: "Sets the gravity applied to entities inside this world."
       title: "Gravity Settings"
       display: "Gravity"
       lore:
         - "Current: {current}"
-        - "Click to set"
+        - "Left-click: next"
+        - "Right-click: previous"
       earth:
         display: "Earth"
         lore:
@@ -74,11 +93,13 @@ chanpon:
           - "{marker} Moon (gravity=0.01)"
           - "Click to set"
     scale:
+      description: "Sets the player size used inside this world."
       title: "Player Size Settings"
       display: "Size"
       lore:
         - "Current: {current}"
-        - "Click to set"
+        - "Left-click: next"
+        - "Right-click: previous"
       normal:
         display: "Normal"
         lore:
@@ -94,3 +115,11 @@ chanpon:
         lore:
           - "{marker} Giant (scale=2.0)"
           - "Click to set"
+    flight:
+      description: "Allows flight for game modes other than Creative."
+      display: "Allow Flight"
+      enabled: "Allowed"
+      disabled: "Not allowed"
+      lore:
+        - "Current: {current}"
+        - "Click to toggle"

@@ -37,8 +37,19 @@ gui:
       world_name_label: ワールド名
       template_label: テンプレート
       seed_label: シード値
+      dimension_label: ディメンション
       generation_label: 生成方法
       random_generation: ランダム
+      dimension:
+        display: ディメンションを選択
+        description: シード値から生成するワールドのディメンションを選択します。
+        current_label: 現在のディメンション
+        action_next: 左クリックで次へ
+        action_prev: 右クリックで前へ
+        options:
+          normal: オーバーワールド
+          nether: ネザー
+          the_end: エンド
       spawn_location:
         display: §eスポーン位置の調整
         default: デフォルト
@@ -67,6 +78,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       template_line: §f§l| §7テンプレート §f{template}
       seed_line: §f§l| §7シード値 §f{seed}
+      dimension_line: 'ディメンション: {dimension}'
       name_label: ワールド名
       type_label: 作成方法
       cost_label: 消費ポイント
