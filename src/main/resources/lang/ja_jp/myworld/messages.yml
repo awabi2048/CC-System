@@ -37,6 +37,16 @@ messages:
   member_invite_input: §e招待したいプレイヤーのIDを入力してください
   member_force_add_input: §c強制追加モードです。追加したいプレイヤーのIDを入力してください
   visit_target_input: §e訪問したいプレイヤーのIDを入力してください
+  visit_request_sent: §e{owner} §7さんに「§f{world}§7」への訪問許可を求めました。承諾されるまでお待ちください。
+  visit_request_received: §e{player} §7さんが「§f{world}§7」への訪問を希望しています。§e/myworld §7で承諾できます。
+  visit_request_accepted: §a{owner} §fさんが訪問を許可しました。「§f{world}§f」へワープします。
+  visit_request_accepted_by_target: §a{player} §fさんの訪問を許可し、「§f{world}§f」へ案内しました。
+  visit_request_denied: §c{owner} §fさんは訪問を拒否しました。
+  visit_request_denied_by_target: §c{player} §fさんへの訪問を拒否しました。
+  visit_request_target_offline: §c対象のプレイヤーがオフラインのため、訪問許可を送信できませんでした。
+  visit_request_no_respondent: §cワールドオーナー・メンバーがいずれもオンラインではないため、訪問許可を送信できませんでした。
+  visit_request_expired: §c訪問許可のリクエストがタイムアウトしました。
+  visit_request_already_pending: §c既に訪問許可をリクエスト中です。承諾を待ってください。
   visitworld_query_input: §e検索したいワールド名のキーワードを入力してください
   visitworld_query_empty: §c検索キーワードを入力してください。
   visitworld_no_result: §c「{query}」に一致する公開ワールドが見つかりませんでした。
@@ -145,7 +155,7 @@ messages:
   expand_confirm_hover: §7ポイントを消費して拡張を実行します
   expand_retry_button: §c§l【方角を選び直す】
   expand_retry_hover: §7ボーダープレビューを消去し、方角を選択し直します
-  expand_complete: §aワールドの拡張が完了しました！ §7{level_before} §f→ §e§l{level_after} §7(残りポイント §6🛖 §e{remaining}§7)
+  expand_complete: §aワールドの拡張が完了しました！ §7{level_before} §f→ §e§l{level_after}
   expansion_reset_complete: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
   expansion_reset_success: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
   expansion_step_back_success: §aワールドボーダーを1段階戻しました。§7{level_before} §f→ §e§l{level_after}
@@ -263,13 +273,6 @@ messages:
   stats_remove_error: '§cエラー: 減算後の値が負になります。（現在の値: {value}）'
   give_success: §a{player} に {item} を {amount}個 付与しました。
   give_inventory_full: §e{player} のインベントリが満杯だったため、{item} を {amount}個 足元にドロップしました。
-  migration_file_not_found: §c移行元のファイル ({file}) が見つかりませんでした。
-  migration_error: '§cエラー: {error} の移行に失敗しました。'
-  migration_success: '§a移行が完了しました。項目数: {count}'
-  migration_archive_start: '§e{count}件のワールドがアーカイブ対象です。処理を開始します（推定: {eta}秒）'
-  migration_archive_progress: '§7アーカイブ進捗: {current}/{total} - {world}'
-  migration_archive_complete: §aアーカイブ処理が完了しました（{count}件）
-  migration_folder_not_found: '§c[Error] ワールドフォルダが見つからないためスキップしました: {path} (ID: {id})'
   usage_create: '§c使用法: /mwm create <プレイヤー名>'
   usage_stats: '§c使用法: /mwm stats <プレイヤー名> <項目> <get/set/add/remove> [値]'
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'

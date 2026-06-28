@@ -177,8 +177,11 @@ chanpon:
       summary: "§7開放中 / 制作中 / 封鎖中"
       line: "§f§l| §7公開レベル §e{level}"
   portal:
-    public_only: "§cポータルは開放中のワールドにのみ通行できます。"
-    meet_hint: "§e代わりに /meet で、ワールドメンバーに許可を求められます。"
+    development:
+      - "§cこのワールドは制作中のため通行できません。"
+      - "§e/visit {owner} {world} §7で、ワールドオーナーに許可を求められます。"
+    locked:
+      - "§cこのワールドは現在封鎖中のため通行できません。"
 
   discovery_sort:
     title: "§e並び替え"

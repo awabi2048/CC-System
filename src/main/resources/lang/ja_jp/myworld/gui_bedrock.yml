@@ -119,8 +119,21 @@ gui:
       - §7テンプレートや公開範囲を自由に設定可能です。
       - §e§nクリックで作成を開始
     creation_unavailable:
-      period_disabled: §c現在はワールド作成期間外です
-      no_slot: §cワールドスロットに空きがありません
+      period_disabled:
+        display: §c現在はワールド作成期間外です
+        lore:
+        - §7現在は運営によりワールド作成期間外です。
+        - §7作成期間の再開までしばらくお待ちください。
+      no_slot:
+        display: §cワールドスロットに空きがありません
+        lore:
+        - §7マイワールドの作成枠がすべて使用中です。
+        - §7不要になったワールドを削除するか、「ワールドの種」で枠を追加してください。
+      no_permission:
+        display: §cワールドを作成する権限がありません
+        lore:
+        - §7このアカウントではワールドを作成できません。
+        - §7作成権限が必要です。
     stats_button:
       display: §e{player}
       lore:

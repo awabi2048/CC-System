@@ -177,8 +177,11 @@ chanpon:
       summary: "§7Open / Development / Closed"
       line: "§f§l| §7Publish level §e{level}"
   portal:
-    public_only: "§cPortals can only be used for Open worlds."
-    meet_hint: "§eUse /meet to ask world members for permission instead."
+    development:
+      - "§cThis world is under construction and cannot be entered."
+      - "§eUse /visit {owner} {world} §7to ask the world owner for permission."
+    locked:
+      - "§cThis world is currently locked and cannot be entered."
   discovery_sort:
     title: "§eSort"
     current: "§f§l| §7Current §e{sort}"

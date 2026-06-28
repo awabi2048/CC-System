@@ -108,7 +108,7 @@ chanpon:
           display: "§cClose submissions"
           lore:
             - "§7Click to close submissions and cancellation."
-            - "§cThis menu cannot reopen submissions."
+            - "§7You can reopen submissions from this menu at any time."
         closed:
           display: "§eReopen submissions"
           lore:

@@ -103,8 +103,16 @@ class MusicListener : Listener {
                     stopMusic(player)
                     return@Runnable
                 }
-                
+
                 currentSounds[player.uniqueId] = soundId
+
+                // 独自BGMを再生している間は、バニラの music カテゴリ（レコード・ディスク再生等）を停止し続ける。
+                // これにより独自BGMとバニラBGMが重ならない。
+                try {
+                    player.stopSound(SoundCategory.MUSIC)
+                } catch (e: NoSuchMethodError) {
+                    // フォールバック不可
+                }
 
                 // BGMとして再生するため、SoundCategory.RECORDSを使用し、位置はプレイヤーの現在地
                 try {

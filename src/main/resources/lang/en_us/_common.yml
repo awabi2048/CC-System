@@ -136,7 +136,6 @@ error:
   invite_world_not_found: §cWorld data not found.
   load_failed: §cFailed to load world.
   max_expansion_reached: §cWorld is already at max level.
-  migration_disabled: §cMigration command is disabled. Set '{config_key}' to true in config.yml.
   no_portals_found: §cNo portals found.
   player_not_found: §cPlayer not found.
   portal_bind_invalid_publish: §cOnly Public or Limited worlds can be bound.
