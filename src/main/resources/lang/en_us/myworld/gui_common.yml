@@ -229,8 +229,8 @@ gui:
       info:
         display: §eInfo
         lore:
-        - §7This menu lets you create world tour routes
-        - §7based on start signs you have placed.
+        - §7The target world appears in the header center.
+        - §7Tours are listed from the upper-left.
         - §7Set waypoints from each tour's edit screen.
         - §7Click a start sign to begin a tour.
       edit_text:
