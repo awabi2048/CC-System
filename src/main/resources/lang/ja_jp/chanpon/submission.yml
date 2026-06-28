@@ -86,22 +86,12 @@ chanpon:
         display: "§7戻る"
         lore:
           - "§7管理者メニューへ戻ります。"
-      submission_filter:
+      progress_filter:
         all: "§fすべて"
         unsubmitted: "§6未提出"
-        submitted: "§a提出済み"
-        display: "§e提出状況フィルター"
-        lore:
-          - "§7現在: {filter}"
-          - "§eクリック §7表示対象を切り替えます。"
-      completion_filter:
-        all: "§fすべて"
-        unmarked: "§6完成マーク未"
+        submitted: "§a提出済み（完成マーク未）"
         completed: "§b完成マーク済み"
-        display: "§e完成済みフィルター"
-        lore:
-          - "§7現在: {filter}"
-          - "§eクリック §7表示対象を切り替えます。"
+        display: "§e進捗状況フィルター"
       sort:
         created_desc: "§f作成日が新しい順"
         created_asc: "§f作成日が古い順"

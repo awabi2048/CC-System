@@ -86,22 +86,12 @@ chanpon:
         display: "§7Back"
         lore:
           - "§7Return to the admin menu."
-      submission_filter:
+      progress_filter:
         all: "§fAll"
         unsubmitted: "§6Unsubmitted"
-        submitted: "§aSubmitted"
-        display: "§eSubmission filter"
-        lore:
-          - "§7Current: {filter}"
-          - "§eClick §7Cycle visible submissions."
-      completion_filter:
-        all: "§fAll"
-        unmarked: "§6Unmarked"
+        submitted: "§aSubmitted (unmarked)"
         completed: "§bCompleted"
-        display: "§eCompletion filter"
-        lore:
-          - "§7Current: {filter}"
-          - "§eClick §7Cycle visible completion marks."
+        display: "§eProgress filter"
       sort:
         created_desc: "§fCreated: newest"
         created_asc: "§fCreated: oldest"

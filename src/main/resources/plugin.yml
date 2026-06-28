@@ -2,7 +2,7 @@ name: CC-System
 version: 1.2.0
 author: awabi2048
 main: com.awabi2048.ccsystem.CCSystem
-api-version: 1.20
+api-version: 1.21
 description: CrafterCrossingMiscとResourceWorldManagerを統合したプラグイン
 softdepend:
   - CMI

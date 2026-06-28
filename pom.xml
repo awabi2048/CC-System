@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>CC-System</name>
-    <description>Paper 1.21.8 Plugin</description>
+    <description>Paper 1.21.11 Plugin</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -9,7 +9,7 @@ chanpon:
       action_next: "クリックして切り替え"
       action_prev: "クリックして切り替え"
       action_custom_time: "クリックして切り替え"
-      must_be_in_world_warning: "§c※ この設定を変更するには、ワールド内にいる必要があります！"
+      must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
     weather:
       description: "天候を固定するか、通常の天候変化に戻すかを設定します。"
       title: "§e天候設定"

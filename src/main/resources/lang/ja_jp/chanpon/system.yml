@@ -1,7 +1,7 @@
 chanpon:
   settings:
     common:
-      must_be_in_world_warning: "§c※ この設定を変更するには、ワールド内にいる必要があります！"
+      must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
       "on": "有効"
       "off": "無効"
       back: "§7戻る"

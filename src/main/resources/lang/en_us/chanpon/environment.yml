@@ -9,7 +9,7 @@ chanpon:
       action_next: "Click to toggle"
       action_prev: "Click to toggle"
       action_custom_time: "Click to toggle"
-      must_be_in_world_warning: "§c* You must be in this world to change this setting!"
+      must_be_in_world_warning: "You must be in this world to change this setting!"
     weather:
       description: "Choose fixed weather, or return to normal weather changes."
       title: "Weather Settings"

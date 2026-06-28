@@ -106,8 +106,8 @@ gui:
       favorite: §f§l| §7お気に入り §c{count}
       recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
       tag: §f§l| §7タグ §e{tags}
-      warp: §e§l| §e左クリック §7このワールドへワープ
-      warp_bedrock: §e§l| §eクリック §7このワールドへワープ
+      warp: §e§nクリックしてこのワールドにワープ
+      warp_bedrock: §e§nクリックしてこのワールドにワープ
       settings: §e§l| §e右クリック §7ワールド設定を開く
       settings_bedrock: §7ワールド設定は /worldmenu から開けます
       expired: §c§nこのワールドはアーカイブされています
