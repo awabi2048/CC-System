@@ -9,6 +9,7 @@ import io.papermc.paper.registry.RegistryKey
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -33,6 +34,9 @@ class MenuSoundServiceImpl : MenuSoundService {
     )
 
     override fun onMenuOpen(player: Player, menuId: String?) {
+        // 開封音は「閉じた状態からメニューを開く」瞬間だけに限定する。
+        // GUI間の戻る/ページ送り/再描画ではクリック音だけを残し、チェスト開封音の連続再生を避ける。
+        if (player.openInventory.topInventory.type != InventoryType.CRAFTING) return
         val sound = (menuId?.let { resolveOpenSound(it) }) ?: defaultOpenSound
         playSound(player, sound)
     }
