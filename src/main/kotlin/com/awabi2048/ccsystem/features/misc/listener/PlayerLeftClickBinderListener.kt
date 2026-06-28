@@ -14,6 +14,6 @@ class PlayerLeftClickBinderListener : Listener {
             return
         }
 
-        BinderCommandExecutor.execute(event.player, ConfigManager.getPlayerLeftClickBinderCommands())
+        BinderCommandExecutor.execute(event.player, ConfigManager.getPlayerLeftClickBinderCommands(), event.target)
     }
 }
