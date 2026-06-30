@@ -123,3 +123,7 @@ chanpon:
       lore:
         - "Current: {current}"
         - "Click to toggle"
+      notification:
+        enabled: "§aFlight is allowed in this world."
+        disabled: "§cFlight is not allowed in this world."
+        restored_default: "§7You left the world, so your flight setting has been restored."

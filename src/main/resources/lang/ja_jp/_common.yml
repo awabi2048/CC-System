@@ -136,7 +136,6 @@ error:
   invite_world_not_found: §cワールドデータが見つかりませんでした
   load_failed: §cワールドのロードに失敗しました。
   max_expansion_reached: §cこのワールドは既に最大レベルです。
-  migration_disabled: §c移行コマンドが無効です。config.ymlの「{config_key}」をtrueに設定してください。
   no_portals_found: §cポータルが見つかりませんでした。
   player_not_found: §cプレイヤーが見つかりませんでした。
   portal_bind_invalid_publish: §c公開か限定公開のワールドのみ紐づけ可能です。

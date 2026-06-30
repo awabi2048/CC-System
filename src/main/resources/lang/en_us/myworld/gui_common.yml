@@ -135,6 +135,7 @@ gui:
       member_invite: Member Invite
       member_request: Membership Request
       meet_request: Warp Request
+      visit_request: Visit Request
     item:
       name: §e{player} §7({type})
       type_line: §f§l| §7Type §e{type}

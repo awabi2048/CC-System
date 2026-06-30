@@ -147,6 +147,7 @@ gui:
       member_invite: メンバー招待
       member_request: 参加申請
       meet_request: ワープ申請
+      visit_request: 訪問許可申請
     item:
       name: §e{player} §7({type})
       type_line: §f§l| §7種別 §e{type}

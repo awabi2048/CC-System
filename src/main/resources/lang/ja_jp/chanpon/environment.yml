@@ -96,6 +96,10 @@ chanpon:
       lore:
         - "現在: {current}"
         - "クリックで切り替え"
+      notification:
+        enabled: "§aこのワールドではフライが許可されています。"
+        disabled: "§cこのワールドではフライが許可されていません。"
+        restored_default: "§7ワールドから抜けたため、フライ設定を元に戻しました。"
     scale:
       description: "ワールド内でのプレイヤーサイズを設定します。"
       title: "§eプレイヤーサイズ設定"

@@ -37,6 +37,16 @@ messages:
   member_invite_input: §eType the player ID to invite.
   member_force_add_input: §cForce add mode. Type the player ID to add immediately.
   visit_target_input: §eType the player ID to visit.
+  visit_request_sent: §eYou asked §7{owner} §7for permission to visit "§f{world}§7". Please wait for approval.
+  visit_request_received: §e{player} §7wants to visit "§f{world}§7". Accept with §e/myworld§7.
+  visit_request_accepted: §a{owner} §fapproved your visit. Warping to "§f{world}§f".
+  visit_request_accepted_by_target: §aYou approved §f{player}§f's visit and guided them to "§f{world}§f".
+  visit_request_denied: §c{owner} §fdenied your visit.
+  visit_request_denied_by_target: §cYou denied §f{player}§f's visit.
+  visit_request_target_offline: §cThe target player is offline, so the visit request could not be sent.
+  visit_request_no_respondent: §cNo world owner or member is online, so the visit request could not be sent.
+  visit_request_expired: §cThe visit request has timed out.
+  visit_request_already_pending: §cYou already have a pending visit request. Please wait for approval.
   visitworld_query_input: §eType a keyword for the world name you want to search.
   visitworld_query_empty: §cPlease enter a search keyword.
   visitworld_no_result: §cNo public world matched "{query}".
@@ -145,7 +155,7 @@ messages:
   expand_confirm_hover: §7Spend points and execute expansion
   expand_retry_button: §c§l[Retry Selection]
   expand_retry_hover: §7Clear the preview and pick a direction again
-  expand_complete: '§aExpansion complete! §7{level_before} §f→ §e§l{level_after} §7(Remaining: §6🛖 §e{remaining}§7)'
+  expand_complete: '§aExpansion complete! §7{level_before} §f→ §e§l{level_after}'
   expansion_reset_complete: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
   expansion_reset_success: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
   expansion_step_back_success: §aWorld border stepped back by one level. §7{level_before} §f→ §e§l{level_after}
@@ -263,13 +273,6 @@ messages:
   stats_remove_error: '§cError: Resulting value would be negative. (Current: {value})'
   give_success: §aGave {amount}x {item} to {player}.
   give_inventory_full: §e{player}'s inventory was full, so {amount}x {item} was dropped at their feet.
-  migration_file_not_found: §cSource file ({file}) not found.
-  migration_error: '§cError: Migration failed for {error}.'
-  migration_success: §aMigration successful. Migrated {count} items.
-  migration_archive_start: '§e{count} worlds need archiving. Starting process (ETA: {eta}s)'
-  migration_archive_progress: '§7Archive progress: {current}/{total} - {world}'
-  migration_archive_complete: §aArchive complete ({count} worlds)
-  migration_folder_not_found: '§c[Error] World folder not found, skipping: {path} (ID: {id})'
   usage_create: '§cUsage: /mwm create <player>'
   usage_stats: '§cUsage: /mwm stats <player> <field> <action> [value]'
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
