@@ -112,6 +112,8 @@ messages:
   env_biome_changed: §aバイオームを「{biome}」に変更しました
   env_cost_paid: §6🛖 §e{cost} §aポイントを消費しました。{remaining_info}
   env_cost_paid_remaining: '(残り: §6🛖 §e{remaining})'
+  env_flight_enabled: §aこのワールドでは飛行できます。
+  env_flight_disabled: §cこのワールドでは飛行できません。
   creation_start: §aワールドを作成しています...
   creation_seed_prompt: §a生成に使用するシード値をチャットに入力してください。
   wizard_input_mode_ended: §e入力モードを終了しました。

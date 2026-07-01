@@ -112,6 +112,8 @@ messages:
   env_biome_changed: Changed §a biome to "{biome}"
   env_cost_paid: §6🛖 §e{cost} §a points were spent. {remaining_info}
   env_cost_paid_remaining: '(Remaining: §6🛖 §e{remaining})'
+  env_flight_enabled: §aFlight is now available in this world.
+  env_flight_disabled: §cFlight is disabled in this world.
   creation_start: §a Creating world...
   creation_seed_prompt: Please enter the seed value to be used for §a generation in the chat.
   wizard_input_mode_ended: §e Exited input mode.
