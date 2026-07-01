@@ -117,6 +117,7 @@ chanpon:
       closed_message: "§cSubmissions have been closed."
       reopened_message: "§eSubmissions have been reopened."
       completed_message: "§aMarked as completed."
+      unmarked_message: "§eRemoved the completion mark; restored to submitted."
       complete_unsubmitted: "§cUnsubmitted worlds cannot be marked as completed."
       not_production: "§cThis world is not a production world."
       production_enabled: "§aProduction world flag enabled."

@@ -199,3 +199,5 @@ chanpon:
     core_unavailable: "§cMyWorldManager is not available."
     no_templates: "§cNo MyWorld templates are available."
     player_not_found: "§cPlayer not found: {player}"
+  message:
+    protected_world: "§cThis world is protected because it has been submitted/marked as completed. Only public level, visit notifications, and portal acquisition can be changed."
