@@ -117,6 +117,7 @@ chanpon:
       closed_message: "§c提出を締め切りました。"
       reopened_message: "§e提出締切を解除しました。"
       completed_message: "§a完成済みとしてマークしました。"
+      unmarked_message: "§e完成マークを解除し、提出済みに戻しました。"
       complete_unsubmitted: "§c未提出のワールドは完成済みにできません。"
       not_production: "§c本番用ワールドではないため完成済みにできません。"
       production_enabled: "§a本番用ワールドに設定しました。"
