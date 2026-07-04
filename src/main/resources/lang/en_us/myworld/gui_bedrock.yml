@@ -114,6 +114,7 @@ gui:
       expires_at: §f§l| §7Days until archive §f{days} days §8(archived to {date})
     creation_button:
       display: §a§lCreate a new My World
+      action: Start world creation
       lore:
       - §7 Create a new My World.
       - §7You can freely set the template and disclosure range.

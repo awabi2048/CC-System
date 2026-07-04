@@ -114,6 +114,7 @@ gui:
       expires_at: §f§l| §7アーカイブまでの日数 §f{days}日 §8({date} にアーカイブ)
     creation_button:
       display: §a§lマイワールドを新規作成
+      action: ワールド作成を開始
       lore:
       - §7新しいマイワールドを作成します。
       - §7テンプレートや公開範囲を自由に設定可能です。
