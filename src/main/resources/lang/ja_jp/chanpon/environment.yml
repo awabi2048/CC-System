@@ -7,6 +7,7 @@ chanpon:
       not_set: "§7未設定"
       current_label: "現在"
       action_next: "切り替え"
+      action_previous: "前へ戻る"
       action_set: "設定"
       shift_left: "Shift+左クリック"
       must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"

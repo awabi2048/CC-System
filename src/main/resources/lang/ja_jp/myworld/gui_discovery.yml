@@ -95,15 +95,17 @@ gui:
       no_selection: 設定なし
       all: すべて
       click_left: §e❙ §e左クリック §7フィルターを切り替え
-      click_right: §e❙ §e右クリック §7フィルターを解除
+      click_right: §e❙ §e右クリック §7前へ戻る
       action:
         next: 次のタグへ変更
+        previous: 前のタグへ変更
         clear: フィルターを解除
     special_filter:
       name: 特殊フィルター
       label: 選択中の条件
       action:
         next: 次の条件へ変更
+        previous: 前の条件へ変更
         clear: フィルターを解除
       type:
         none: なし

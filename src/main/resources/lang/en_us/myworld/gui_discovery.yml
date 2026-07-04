@@ -95,15 +95,17 @@ gui:
       no_selection: No selection
       all: All
       click_left: §e§l| §eLeft-Click §7Cycle filter
-      click_right: §e§l| §eRight-Click §7Clear filter
+      click_right: §e§l| §eRight-Click §7Previous
       action:
         next: Select next tag
+        previous: Select previous tag
         clear: Clear filter
     special_filter:
       name: Special Filter
       label: Selected condition
       action:
         next: Select next condition
+        previous: Select previous condition
         clear: Clear filter
       type:
         none: None

@@ -89,7 +89,9 @@ chanpon:
         created_asc: "§fCreated: oldest"
         name_asc: "§fWorld name: A-Z"
         display: "§eSort"
-      filter_cycle_action: "Cycle"
+      cycle:
+        next: "Select next option"
+        previous: "Select previous option"
       stats:
         display: "§bStatistics"
         lore:
@@ -152,6 +154,9 @@ chanpon:
         display: "§eVisibility filter"
         label: "Current"
         action: "Cycle visible worlds"
+      cycle:
+        next: "Select next option"
+        previous: "Select previous option"
       sort:
         created_desc: "§fNewest created"
         created_asc: "§fOldest created"

@@ -356,6 +356,9 @@ gui:
         open: 表示
   user_settings:
     title: 個人設定
+    cycle_action:
+      next: 次の項目へ変更
+      previous: 前の項目へ変更
     notification:
       display: §a訪問者の通知
       blocks:

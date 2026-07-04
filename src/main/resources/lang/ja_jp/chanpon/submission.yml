@@ -89,7 +89,9 @@ chanpon:
         created_asc: "§f作成日が古い順"
         name_asc: "§fワールド名順"
         display: "§e並び順"
-      filter_cycle_action: "切り替え"
+      cycle:
+        next: "次の項目へ変更"
+        previous: "前の項目へ変更"
       stats:
         display: "§b統計情報"
         lore:
@@ -152,6 +154,9 @@ chanpon:
         display: "§e公開状態フィルター"
         label: "現在"
         action: "表示対象を切り替え"
+      cycle:
+        next: "次の項目へ変更"
+        previous: "前の項目へ変更"
       sort:
         created_desc: "§f作成日が新しい順"
         created_asc: "§f作成日が古い順"

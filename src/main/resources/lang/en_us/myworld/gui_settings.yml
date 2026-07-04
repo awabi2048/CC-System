@@ -329,6 +329,9 @@ gui:
         open: View
   user_settings:
     title: Personal settings
+    cycle_action:
+      next: Select next option
+      previous: Select previous option
     notification:
       display: §aVisitor notification
       blocks:
