@@ -202,12 +202,5 @@ chanpon:
     spotlight_line: "§7- §dSpotlight"
     random_line: "§7- §bRandom"
     cycle: "§e§l| §eClick §7cycle"
-  command:
-    player_only: "§cThis command can only be used by a player."
-    no_permission: "§cYou do not have permission."
-    usage_create: "§cUsage: /mwm create <player>"
-    core_unavailable: "§cMyWorldManager is not available."
-    no_templates: "§cNo MyWorld templates are available."
-    player_not_found: "§cPlayer not found: {player}"
   message:
     protected_world: "§cThis world is protected because it has been submitted/marked as completed. Only public level, visit notifications, and portal acquisition can be changed."

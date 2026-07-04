@@ -203,12 +203,5 @@ chanpon:
     spotlight_line: "§7- §dスポットライト"
     random_line: "§7- §bランダム"
     cycle: "§e§l| §eクリック §7切り替え"
-  command:
-    player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
-    no_permission: "§c権限がありません。"
-    usage_create: "§c使い方: /mwm create <プレイヤー名>"
-    core_unavailable: "§cMyWorldManagerを利用できません。"
-    no_templates: "§cMyWorldテンプレートがありません。"
-    player_not_found: "§cプレイヤーが見つかりません: {player}"
   message:
     protected_world: "§cこのワールドは提出済み/完成済みのため保護されています。公開レベル・訪問通知・ポータル取得以外の設定は変更できません。"
