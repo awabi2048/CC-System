@@ -68,7 +68,8 @@ gui:
       - §f§l| §7現在の拡張レベル §e§l{level}
       - §f§l| §7返還されるポイント §6🛖 §e{points}
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックして初期化を実行（この操作は取り消せません）
+      - §e§nクリックして初期化を実行
+      - §c※この操作は取り消せません
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_unavailable:
       - §cまた拡張されていないため、初期化できません
@@ -80,8 +81,7 @@ gui:
       - §7アーカイブされたワールドはプレイヤーが
       - §7アクセスできなくなりますが、データは保持されます。
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックして実行
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 実行
       lore_cooldown:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7ワールドをアーカイブします。
@@ -101,7 +101,8 @@ gui:
       - '§f§l| §7返還されるポイント: §6🛖 §e{points}'
       - §8(消費したポイントのうち、{percent}%が返還されます)
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §4§lクリックして削除を実行（この操作は取り消せません）
+      - §c§nクリックして削除を実行
+      - §c※この操作は取り消せません
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_unavailable_slot:
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -157,10 +158,8 @@ gui:
       status_online: §aオンライン
       status_offline: §cオフライン
       action_review: §7承諾/辞退画面を開く
-      action_cancel_java: §e§l| §e左クリック §7招待を取り消す
-      action_cancel_bedrock: §e§l| §eクリック §7招待を取り消す
-      action_review_request_java: §e§l| §e左クリック §7申請内容を確認する
-      action_review_request_bedrock: §e§l| §eクリック §7申請内容を確認する
+      action_cancel: 招待を取り消す
+      action_review_request: 申請内容を確認
     empty:
       name: §7未処理の通知はありません
       lore:
@@ -235,10 +234,12 @@ gui:
       add_sign_button: §e§nクリックで経由地点を追加
       add_sign_action: §e§nクリックで追加
       remove_sign_action: §e§nクリックで削除
+      action_open: §e§nクリックで開く
       create:
         display: §bツアーを新規作成
         description: §7新しいツアーを作成します
         action: §e§nクリックで作成
+        action_open: §e§nクリックで開く
       info:
         display: §eInfo
         lore:
@@ -249,8 +250,8 @@ gui:
       edit_text:
         display: §e表示情報を変更
         lore:
-        - §e§l| §e左クリック §7名前と説明を変更
-        - §e§l| §e右クリック §7アイコンを変更
+        - §e§l| §e左クリック §7名前と説明を編集
+        - §e§l| §e右クリック §7アイコンを編集
       save:
         display: §a保存
         action: §e§nクリックで保存
@@ -262,7 +263,7 @@ gui:
         confirm: §a削除する
         warning: §c元に戻せません
         cancel: §cキャンセル
-        cancel_action: §eクリックで戻る
+        cancel_action: §e§nクリックで戻る
         body_line1: §cこのツアーを削除します。
         body_line2: §7この操作は元に戻せません。
       discard_new:
@@ -272,10 +273,10 @@ gui:
       tour_item:
         visitors_none: §f§l| §7訪問者 §7まだいません
         visitors_count: §f§l| §7訪問者 §a{count}人
-        action_edit: §e§nクリックでこのツアーを編集
+        action_edit: §e§nクリックでツアーを編集
         action_current: §bツアー中！
-        action_start: §e§nクリックでこのツアーを開始
-        action_bind: §e§nクリックでこのツアーに紐付け
+        action_start: §e§nクリックでツアーを開始
+        action_bind: §e§nクリックでツアーに紐付け
       add_waypoint_button: §e§nクリックで経由点を追加
       remove_waypoint_action: §e§nクリックで削除
     bind_sign_title: ツアーを選択

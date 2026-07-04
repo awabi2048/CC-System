@@ -106,9 +106,9 @@ gui:
       favorite: §f§l| §7お気に入り §c{count}
       recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
       tag: §f§l| §7タグ §e{tags}
-      warp: §e§nクリックしてこのワールドにワープ
-      warp_bedrock: §e§nクリックしてこのワールドにワープ
-      settings: §e§l| §e右クリック §7ワールド設定を開く
+      warp: このワールドへワープ
+      warp_bedrock: このワールドへワープ
+      settings: ワールド設定を開く
       settings_bedrock: §7ワールド設定は /worldmenu から開けます
       expired: §c§nこのワールドはアーカイブされています
       expires_at: §f§l| §7アーカイブまでの日数 §f{days}日 §8({date} にアーカイブ)
@@ -117,7 +117,7 @@ gui:
       lore:
       - §7新しいマイワールドを作成します。
       - §7テンプレートや公開範囲を自由に設定可能です。
-      - §e§nクリックで作成を開始
+      - §e§nクリックで開始
     creation_unavailable:
       period_disabled:
         display: §c現在はワールド作成期間外です
@@ -147,7 +147,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7未処理の招待/申請 §e{pending_count}件
       - §f§l| §7最新受信日時 §b{latest_pending_at}
-      - §e§nクリックで招待/申請一覧を開く
+      - §e§nクリックで開く
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_bypass:
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -159,5 +159,5 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7未処理の招待/申請 §e{pending_count}件
       - §f§l| §7最新受信日時 §b{latest_pending_at}
-      - §e§nクリックで招待/申請一覧を開く
+      - §e§nクリックで開く
       - §8§m－－－－－－－－－－－－－－－－－－

@@ -19,7 +19,7 @@ chanpon:
       submitted: "§aSubmitted"
       completed: "§bCompleted"
     progress:
-      line: "§7Progress: {state}"
+      line: "§f§l| §7Progress §e{state}"
       unsubmitted: "§6Unsubmitted"
       submitted: "§aSubmitted"
       completed: "§bCompleted"
@@ -33,11 +33,9 @@ chanpon:
           - "§e❙ Left click §7Mark as submitted"
           - "§7"
           - "§c※ Once submitted, world interaction such as placing or breaking blocks will be blocked."
-          - "§cYou can cancel submission, but you must submit again afterward."
         submitted:
-          - "§e❙ Click §7Cancel submission"
-          - "§7"
-          - "§c※ After cancellation, this world will not count as submitted until you submit again."
+          - "§aSubmitted."
+          - "§cSubmission cannot be cancelled."
         completed:
           - "§aStaff has checked this world as completed."
           - "§7(Cancellation is generally unavailable after this point.)"
@@ -52,7 +50,6 @@ chanpon:
       production_limit: "§cEach owner can have only one production world."
       owner_only_submit: "§cOnly the world owner can submit this world."
       submitted: "§aThe world has been marked as submitted."
-      cancelled: "§eSubmission has been cancelled."
       state_error: "§cSubmission state data is missing or invalid."
       state_changed: "§cThe submission state changed, so the operation was cancelled."
       cancelled_confirmation: "§7Operation cancelled."
@@ -63,11 +60,6 @@ chanpon:
         - "§7State: {state}"
         - "§7Protection: {reason}"
         - "§7Description: {description}"
-      cancel:
-        display: "§eCancel submission"
-        lore:
-          - "§7Cancel this world's submission."
-          - "§cAfter cancellation, this world will not count as submitted until you submit again."
       back:
         display: "§7Back"
         lore:
@@ -107,13 +99,13 @@ chanpon:
         open:
           display: "§cClose submissions"
           lore:
-            - "§7Click to close submissions and cancellation."
+            - "§7Click to close submissions."
             - "§7You can reopen submissions from this menu at any time."
         closed:
           display: "§eReopen submissions"
           lore:
             - "§7Click to reopen submissions."
-            - "§7Players will be able to submit and cancel submission again."
+            - "§7Players will be able to submit again."
       closed_message: "§cSubmissions have been closed."
       reopened_message: "§eSubmissions have been reopened."
       completed_message: "§aMarked as completed."
@@ -217,20 +209,12 @@ chanpon:
         display: "§aMark as submitted"
         lore:
           - "§7Change this world to §esubmitted§7."
-          - "§7"
-          - "§c※ If cancelled later, this world must be submitted again."
-      cancel_submission:
-        title: "§0Cancel Submission"
-        display: "§eCancel submission"
-        lore:
-          - "§7Cancel this world's submission."
-          - "§c※ After cancellation, this world will not count as submitted until you submit again."
       close_submissions:
         title: "§0Close Submissions"
         display: "§cClose submissions"
         lore:
-          - "§7Close submissions and cancellation for all worlds."
-          - "§c※ Players cannot submit or cancel submission after this."
+          - "§7Close submissions for all worlds."
+          - "§c※ Players cannot submit after this."
           - "§7You can reopen submissions from the management menu afterward."
       button:
         confirm:

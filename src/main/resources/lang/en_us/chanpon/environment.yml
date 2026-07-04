@@ -9,6 +9,7 @@ chanpon:
       action_next: "Click to toggle"
       action_prev: "Click to toggle"
       action_custom_time: "Click to toggle"
+      shift_left: "Shift+Left-Click"
       must_be_in_world_warning: "You must be in this world to change this setting!"
     weather:
       description: "Choose fixed weather, or return to normal weather changes."
@@ -127,3 +128,28 @@ chanpon:
         enabled: "§aFlight is allowed in this world."
         disabled: "§cFlight is not allowed in this world."
         restored_default: "§7You left the world, so your flight setting has been restored."
+    protection:
+      display: "Build Access"
+      description: "Sets who may build in this world."
+      password_change_action: "Change password"
+      password_missing_warning: "No password is set. Players cannot be added until one is set."
+      password_set_title: "Set Build Access Password"
+      password_set_body: "Enter a password of at least 4 characters."
+      password_title: "Build Access Password"
+      password_body: "Enter the correct password to become a member of this world."
+      password_label: "Password"
+      password_apply: "Set"
+      password_submit: "Add"
+      password_too_short: "§cEnter at least 4 characters."
+      password_updated: "§aBuild access password updated."
+      password_not_configured: "§cNo build access password has been set for this world."
+      password_invalid: "§cIncorrect password."
+      password_success: "§aPassword accepted. You have been added as a member."
+      owner_only:
+        display: "Owner only"
+      members:
+        display: "Members only"
+      password:
+        display: "Password"
+      public:
+        display: "Everyone"

@@ -1,4 +1,19 @@
 chanpon:
+  player_world:
+    easy_creation:
+      action: "§e§l| §e右クリック §7ワールドのかんたん作成"
+      start: "§aワールドのかんたん作成を開始します。"
+      name_title: "ワールドのかんたん作成"
+      name_body: "ワールド名を入力してください。"
+      name_label: "ワールド名"
+      name_required: "ワールド名を入力してください。"
+      next: "次へ"
+      cancel: "キャンセル"
+      confirm_title: "作成内容の確認"
+      confirm_body: "ワールド「{world}」を作成します。"
+      confirm_template: "テンプレート: ボイド / 中央4x4足場"
+      create: "作成"
+      back: "戻る"
   settings:
     common:
       must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
@@ -25,13 +40,8 @@ chanpon:
       cycle_action: "クリックして切り替え"
     expand:
       display: "§eワールドの拡張"
-      status_available:
-        - "§f§l| §7現在 §e{current}§7/§e{max}"
-        - "§f§l| §7ボーダー §e{size} §7中心 §e{x}, {z}"
-        - "§e§l| §eクリック §7拡張方法を選択"
+      status_available: []
       status_max:
-        - "§f§l| §7現在 §e{current}§7/§e{max}"
-        - "§f§l| §7ボーダー §e{size} §7中心 §e{x}, {z}"
         - "§7これ以上拡張できません。"
     expand_menu:
       title: "ワールドの拡張"
@@ -171,8 +181,8 @@ chanpon:
       public_desc: "§f§l| §7{prefix}§a開放中 §fDiscoveryに表示し、通常訪問できます。"
       development_desc: "§f§l| §7{prefix}§e制作中 §f一覧には表示せず、Meetは申請扱いです。"
       private_desc: "§f§l| §7{prefix}§7封鎖中 §fメンバーのみ訪問できます。"
-      left_click: "§e§l| §e左クリック §7前へ"
-      right_click: "§e§l| §e右クリック §7次へ"
+      left_click: "§e§l| §e左クリック §7次へ"
+      right_click: "§e§l| §e右クリック §7前へ"
       cycle: "§e§l| §eクリック §7切り替え"
       summary: "§7開放中 / 制作中 / 封鎖中"
       line: "§f§l| §7公開レベル §e{level}"

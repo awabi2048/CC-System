@@ -6,29 +6,21 @@ gui:
       tag: §f§l| §7タグ §e{tags}
       favorite: §f§l| §7お気に入り §c{count}
       recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
-      warp: §e§l| §e左クリック §7このワールドへワープ
-      preview: §e§l| §e右クリック §7プレビューを表示
-      warp_hint: §e§l| §e左クリック §7このワールドへワープ
-      warp_hint_bedrock: §e§l| §eクリック §7このワールドへワープ
-      preview_hint: §e§l| §e右クリック §7プレビューを表示
-      member_request_hint: §e§l| §eShift + 左クリック §7参加申請を表示
-      favorite_hint_add: §e§l| §eShift + 右クリック §7お気に入りに追加
-      favorite_hint_remove: §e§l| §eShift + 右クリック §7お気に入りを解除
-      favorite_toggle: §e§l| §eShift + 右クリック §7お気に入りを切り替える
-      fav_add: §e§l| §e右クリック §7お気に入りに追加
-      fav_remove: §e§l| §e右クリック §7お気に入りを解除
-      spotlight_remove: §e§l| §eShift + 右クリック §7SPOTLIGHTから削除する
+      warp_hint: §e❙ §e左クリック §7このワールドへワープ
+      preview_hint: §e❙ §e右クリック §7プレビューを表示
+      member_request_hint: §e❙ §eShift+左クリック §7参加申請を表示
+      favorite_hint_add: §e❙ §eShift+右クリック §7お気に入りに追加
+      favorite_hint_remove: §e❙ §eShift+右クリック §7お気に入りを解除
+      favorite_toggle: §e❙ §eShift+右クリック §7お気に入りを切り替える
+      fav_add: §e❙ §e右クリック §7お気に入りに追加
+      fav_remove: §e❙ §e右クリック §7お気に入りを解除
+      spotlight_remove: §e❙ §eShift+右クリック §7SPOTLIGHTから削除
     spotlight_empty:
       name: §7« 未登録のSPOTLIGHT »
       lore_admin:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7現在このスロットにはワールドが登録されていません。
-      - §e§l| §e左クリック §7現在のマイワールドを登録
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_admin_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7現在このスロットにはワールドが登録されていません。
-      - §e§l| §eクリック §7現在のマイワールドを登録
+      - §e❙ §e左クリック §7現在のマイワールドを登録
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_visitor:
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -44,7 +36,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - '{sort_list}'
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切り替え
+      - §e§nクリックで切替
       lore_spotlight_admin:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7選択中 §6{sort_name}
@@ -52,15 +44,15 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - '{sort_list}'
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左右クリック §7ソートを切り替え
-      - §e§l| §eShift + 左クリック §7SPOTLIGHTの説明文を編集
+      - §e❙ §e左右クリック §7ソートを切り替え
+      - §e❙ §eShift+左クリック §7SPOTLIGHTの説明文を編集
       - §8§m－－－－－－－－－－－－－－－－－－
       name: §a並び替え方法の選択
-      click: §e§nクリックで切り替え
+      click: §e§nクリックで切替
       action:
         previous: 前の並び順へ変更
         next: 次の並び順へ変更
-        edit_operation: Shift + 左クリック
+        edit_operation: Shift+左クリック
         edit_spotlight: SPOTLIGHTの説明文を編集
       type:
         hot: §cHOT
@@ -76,15 +68,15 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - '{tag_list}'
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左クリック §7次へ進む
-      - §e§l| §e右クリック §7選択を解除
+      - §e❙ §e左クリック §7次へ進む
+      - §e❙ §e右クリック §7選択を解除
       - §8§m－－－－－－－－－－－－－－－－－－
       current: §f§l| 選択中のタグ §6{tag}
       none: §fなし
       active: §a» {tag}
       inactive: §8- {tag}
-      click_next: §e§l| §e左クリック §7次へ進む
-      click_reset: §e§l| §e右クリック §7選択を解除
+      click_next: §e❙ §e左クリック §7次へ進む
+      click_reset: §e❙ §e右クリック §7選択を解除
     tag_filter:
       name: タグフィルター
       label: 選択中のタグ
@@ -97,25 +89,25 @@ gui:
       - '{click_left}'
       - '{click_right}'
       - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7選択中 §6{tag}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{tag_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{click_left}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       current_prefix: 選択中
       active: '§e» '
       inactive: '§7  '
       no_selection: 設定なし
       all: すべて
-      click_left: §e§l| §e左クリック §7フィルターを切り替え
-      click_right: §e§l| §e右クリック §7フィルターを解除
-      click_bedrock: §e§l| §eクリック §7フィルターを切り替え
+      click_left: §e❙ §e左クリック §7フィルターを切り替え
+      click_right: §e❙ §e右クリック §7フィルターを解除
       action:
         next: 次のタグへ変更
         clear: フィルターを解除
+    special_filter:
+      name: 特殊フィルター
+      label: 選択中の条件
+      action:
+        next: 次の条件へ変更
+        clear: フィルターを解除
+      type:
+        none: なし
+        unvisited: 訪れたことがないワールド
     spotlight_description_dialog:
       title: SPOTLIGHT説明文の編集
       body: SPOTLIGHTソート中に表示する説明文を入力してください（最大{max}文字）。空欄でデフォルトに戻せます。

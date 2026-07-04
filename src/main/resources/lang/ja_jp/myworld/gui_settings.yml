@@ -10,14 +10,9 @@ gui:
       display: §aワールド情報の設定
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §eクリック §7ワールド名と説明文をまとめて編集
+      - §e§nクリックで名前と説明を編集
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7クリック後、ダイアログでまとめて編集します
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックしてフォームを開く
-      - §7ワールド名と説明文をまとめて編集します
       - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary_je:
@@ -36,8 +31,8 @@ gui:
         both: ゲスト/メンバー共通
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左クリック §7ゲスト用スポーン地点を設定
-      - §e§l| §e右クリック §7メンバー用スポーン地点を設定
+      - §e❙ §e左クリック §7ゲスト用スポーン地点を設定
+      - §e❙ §e右クリック §7メンバー用スポーン地点を設定
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7クリック後、設定したい地点のブロックを
       - §7クリックして決定します。
@@ -180,8 +175,8 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - '{level_list}'
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左クリック §7前のページへ移動
-      - §e§l| §e右クリック §7次のページへ移動
+      - §e❙ §e左クリック §7前のページへ移動
+      - §e❙ §e右クリック §7次のページへ移動
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_bedrock:
       - §8§m－－－－－－－－－－－－－－－－－－
@@ -233,15 +228,6 @@ gui:
         - '{member_list}'
       action:
         open_list: 一覧を表示
-      actions:
-        promote: §e§l| §e左クリック §7モデレーターに変更する
-        demote: §e§l| §e右クリック §7メンバーに変更する
-        remove: §e§l| §eShift + 左クリック §7メンバーから削除する
-        transfer: §e§l| §eShift + 右クリック §7オーナー権限を移譲する
-      lore_actions_bedrock:
-      - §e§l| §eClick §7Change role to §b{next_role}
-      - §e§l| §eUse /myworld command §7for remove/transfer
-      - §8§m－－－－－－－－－－－－－－－－－－
     main_info:
       name: §f【§a{world}§f】
       lore:
@@ -295,7 +281,7 @@ gui:
       - §7来た際にメンバー全員に通知します
       - §7個人設定からオフにすることもできます
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切り替え
+      - §e§nクリックで切替
       - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         current:
@@ -313,8 +299,8 @@ gui:
       - §7訪問者に向けて表示する
       - §7案内メッセージを設定します。
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左クリック §7メッセージを設定
-      - §e§l| §e右クリック §7設定をリセット
+      - §e❙ §e左クリック §7メッセージを設定
+      - §e❙ §e右クリック §7設定をリセット
       - '{message_preview}'
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_bedrock:
@@ -379,7 +365,7 @@ gui:
         current:
         - §f§l| §7現在の状態 {status}
         action:
-        - §e§nクリックで切り替え
+        - §e§nクリックで切替
     language:
       display: §a言語設定
       format: §f{language}
@@ -399,7 +385,7 @@ gui:
         current:
         - §f§l| §7現在の設定 {status}
         action:
-        - §e§nクリックで切り替え
+        - §e§nクリックで切替
     tour_navigation:
       display: §bワールドツアーのナビゲーション
       blocks:
@@ -409,7 +395,7 @@ gui:
         current:
         - §f§l| §7現在の設定 §b{status}
         action:
-        - §e§nクリックで切り替え
+        - §e§nクリックで切替
       mode:
         bossbar_only: ボスバーのみ
         all: すべて
@@ -426,7 +412,7 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7現在の状態 {status}
       - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切り替え
+      - §e§nクリックで切替
       - §8§m－－－－－－－－－－－－－－－－－－
     button:
       display: §6個人設定
@@ -451,8 +437,8 @@ gui:
     weather:
       display: §b天候の設定
       current: '§f§l| §7現在の天候: §b{weather}'
-      click_cycle: §e§l| §e左クリック §7切り替える
-      click_confirm: §e§l| §e右クリック §7確定してポイントを消費
+      click_cycle: §e❙ §e左クリック §7切り替える
+      click_confirm: §e❙ §e右クリック §7確定してポイントを消費
       cost: §f§l| §7必要ポイント §6🛖 §e{cost}
       desc: §7設定した天候で固定されます。
     biome:
@@ -467,8 +453,8 @@ gui:
     invite:
       name: §aメンバーを招待
       desc: §7クリックした後、名前を入力して招待します
-      click_normal: §e§l| §eクリック §7通常モードで実行
-      click_force: §e§l| §eShift + クリック §7強制追加モードで実行
+      click_normal: §e❙ §eクリック §7通常モードで実行
+      click_force: §e❙ §eShift+クリック §7強制追加モードで実行
     remove_confirm:
       title: 確認
       lore:
@@ -491,13 +477,13 @@ gui:
       - §f§l| §7権限 §f{role}
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_actions:
-      - §e§l| §e左クリック §7権限を{next_role}に変更する
-      - §e§l| §eShift + 左クリック §7オーナー権限を譲渡
-      - §e§l| §eShift + 右クリック §7ワールドメンバーから削除
+      - §e❙ §e左クリック §7権限を{next_role}に変更する
+      - §e❙ §eShift+左クリック §7オーナー権限を譲渡
+      - §e❙ §eShift+右クリック §7ワールドメンバーから削除
       - §8§m－－－－－－－－－－－－－－－－－－
       lore_actions_bedrock:
-      - §e§l| §eクリック §7権限を{next_role}に変更する
-      - §e§l| §eクリック §7削除/譲渡は /myworld コマンドを使用
+      - §e❙ §eクリック §7権限を{next_role}に変更する
+      - §e❙ §eクリック §7削除/譲渡は /myworld コマンドを使用
       - §8§m－－－－－－－－－－－－－－－－－－
     pending_item:
       name: §e{player} §7(招待中)
@@ -548,4 +534,4 @@ gui:
     title: ワールドタグの編集
     status_active: §a有効
     status_inactive: §c無効
-    click_toggle: §e§nクリックで切り替え
+    click_toggle: §e§nクリックで切替

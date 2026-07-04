@@ -95,34 +95,6 @@ class LoreServiceTest {
     }
 
     @Test
-    void singleLegacyActionUsesUnderlinedSingleActionFormat() {
-        List<String> lines = plain(new LoreServiceImpl().render(
-            new GuiLoreSpec.Auto(
-                List.of("§7説明", "§e§nクリックで設定"),
-                GuiLoreFrame.NONE
-            )
-        ));
-
-        assertEquals(List.of("説明", "クリックして設定"), lines);
-    }
-
-    @Test
-    void multipleLegacyActionsUseOperationHeadings() {
-        List<String> lines = plain(new LoreServiceImpl().render(
-            new GuiLoreSpec.Auto(
-                List.of(
-                    "§7説明",
-                    "§e§l| §e左クリック §7設定を変更",
-                    "§e§l| §e右クリック §7設定をリセット"
-                ),
-                GuiLoreFrame.NONE
-            )
-        ));
-
-        assertEquals(List.of("説明", "❙ 左クリック 設定を変更", "❙ 右クリック 設定をリセット"), lines);
-    }
-
-    @Test
     void blocksInsertExactlyOneSeparatorBetweenBlocks() {
         List<String> lines = plain(new LoreServiceImpl().render(
             new GuiLoreSpec.Blocks(

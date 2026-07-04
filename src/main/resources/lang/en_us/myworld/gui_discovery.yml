@@ -6,10 +6,7 @@ gui:
       tag: §f§l| §7Tags §e{tags}
       favorite: §f§l| §7Favorites §c{count}
       recent_visitors: §f§l| §7Recent Visitors §a{count}
-      warp: §e§l| §eLeft-Click §7Warp to this world
       warp_hint: §e§l| §eLeft-Click §7Warp to this world
-      warp_hint_bedrock: §e§l| §eClick §7Warp to this world
-      preview: §e§l| §eRight-Click §7Show preview
       preview_hint: §e§l| §eRight-Click §7Show preview
       member_request_hint: §e§l| §eShift + Left-Click §7Request Membership
       favorite_hint_add: §e§l| §eShift + Right-Click §7Add to favorites
@@ -24,10 +21,6 @@ gui:
       - §7This slot is currently vacant.
       - §7Click to view the world you are currently in.
       - Register with §6SPOTLIGHT§7.
-      - §e§nClick to register
-      lore_admin_bedrock:
-      - §7This slot is currently vacant.
-      - §7Register your current world to §6SPOTLIGHT§7.
       - §e§nClick to register
       lore_visitor:
       - §7This slot is currently vacant.
@@ -96,14 +89,6 @@ gui:
       - '{click_left}'
       - '{click_right}'
       - §8§m-----------------------
-      lore_bedrock:
-      - §8§m-----------------------
-      - §f§l| §7Selected §6{tag}
-      - §8§m-----------------------
-      - '{tag_list}'
-      - §8§m-----------------------
-      - '{click_left}'
-      - §8§m-----------------------
       current_prefix: Selected
       active: '§e» '
       inactive: '§7  '
@@ -111,10 +96,18 @@ gui:
       all: All
       click_left: §e§l| §eLeft-Click §7Cycle filter
       click_right: §e§l| §eRight-Click §7Clear filter
-      click_bedrock: §e§l| §eClick §7Cycle filter
       action:
         next: Select next tag
         clear: Clear filter
+    special_filter:
+      name: Special Filter
+      label: Selected condition
+      action:
+        next: Select next condition
+        clear: Clear filter
+      type:
+        none: None
+        unvisited: Unvisited worlds
     spotlight_description_dialog:
       title: Edit SPOTLIGHT Description
       body: Enter the description shown while SPOTLIGHT sort is selected (max {max} chars). Leave empty to restore default.

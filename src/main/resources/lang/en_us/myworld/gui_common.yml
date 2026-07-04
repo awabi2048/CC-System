@@ -69,8 +69,7 @@ gui:
       - §7Archived worlds cannot be accessed by players,
       - §7but data is preserved.
       - §8§m-----------------------
-      - §e§nClick to archive
-      - §8§m-----------------------
+      action: Execute
       lore_cooldown:
       - §8§m-----------------------
       - §7Archives the world.
@@ -145,10 +144,8 @@ gui:
       status_online: §aOnline
       status_offline: §cOffline
       action_review: §7Open accept/deny screen
-      action_cancel_java: §e§l| §eLeft click §7to cancel invite
-      action_cancel_bedrock: §e§l| §eClick §7to cancel invite
-      action_review_request_java: §e§l| §eLeft click §7to review the request
-      action_review_request_bedrock: §e§l| §eClick §7to review the request
+      action_cancel: Cancel invite
+      action_review_request: Review request
     empty:
       name: §7No pending entries
       lore:
@@ -223,10 +220,12 @@ gui:
       add_sign_button: §e§nClick to add a waypoint
       add_sign_action: §e§nClick to add
       remove_sign_action: §e§nClick to remove
+      action_open: §e§nClick to open
       create:
         display: §bCreate New Tour
         description: §7Create a new tour.
         action: §e§nClick to create
+        action_open: §e§nClick to open
       info:
         display: §eInfo
         lore:

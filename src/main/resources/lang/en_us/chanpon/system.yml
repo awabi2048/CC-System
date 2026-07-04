@@ -1,4 +1,19 @@
 chanpon:
+  player_world:
+    easy_creation:
+      action: "§e§l| §eRight-Click §7Easy world creation"
+      start: "§aStarting easy world creation."
+      name_title: "Easy World Creation"
+      name_body: "Enter a world name."
+      name_label: "World name"
+      name_required: "Enter a world name."
+      next: "Next"
+      cancel: "Cancel"
+      confirm_title: "Confirm Creation"
+      confirm_body: "Create world \"{world}\"."
+      confirm_template: "Template: void / central 4x4 scaffold"
+      create: "Create"
+      back: "Back"
   settings:
     common:
       must_be_in_world_warning: "You must be in this world to change this setting!"
@@ -25,13 +40,8 @@ chanpon:
       cycle_action: "Click to cycle"
     expand:
       display: "§eExpand world"
-      status_available:
-        - "§f§l| §7Current §e{current}§7/§e{max}"
-        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
-        - "§e§l| §eClick §7to choose expansion"
+      status_available: []
       status_max:
-        - "§f§l| §7Current §e{current}§7/§e{max}"
-        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
         - "§7This world cannot be expanded further."
     expand_menu:
       title: "Expand world"
@@ -171,8 +181,8 @@ chanpon:
       public_desc: "§f§l| §7{prefix}§aOpen §fShown in Discovery and directly visitable."
       development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses request."
       private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
-      left_click: "§e§l| §eLeft click §7previous"
-      right_click: "§e§l| §eRight click §7next"
+      left_click: "§e§l| §eLeft click §7next"
+      right_click: "§e§l| §eRight click §7previous"
       cycle: "§e§l| §eClick §7cycle"
       summary: "§7Open / Development / Closed"
       line: "§f§l| §7Publish level §e{level}"

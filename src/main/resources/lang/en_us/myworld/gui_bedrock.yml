@@ -106,9 +106,9 @@ gui:
       favorite: §f§l| §7Favorite §c{count}
       recent_visitors: §f§l| §7Recently visited players §a{count} people
       tag: §f§l| §7tag §e{tags}
-      warp: §e§nClick to warp to this world
-      warp_bedrock: §e§nClick to warp to this world
-      settings: §e§l| §eRight click §7Open world settings
+      warp: Warp to this world
+      warp_bedrock: Warp to this world
+      settings: Open world settings
       settings_bedrock: §7Open world settings from /worldmenu
       expired: §c§nThis world has been archived
       expires_at: §f§l| §7Days until archive §f{days} days §8(archived to {date})
