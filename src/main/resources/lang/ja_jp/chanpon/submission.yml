@@ -3,6 +3,7 @@ chanpon:
     common:
       "on": "§eオン"
       "off": "§7オフ"
+      middle_click: "ホイールクリック"
     creation:
       display: "§e本番用ワールドに設定する"
       lore:
@@ -12,14 +13,14 @@ chanpon:
     production:
       display: "§e本番用ワールドに設定する"
       lore:
-        - "§e❙ クリック §7このワールドを§e本番用ワールド§7に変更します。"
-        - "§c※ 本番用ワールドは1人につき1つまでです。"
+        action: "本番用ワールドに変更"
+        limit_warning: "本番用ワールドは1人につき1つまでです。"
     state:
       unsubmitted: "§6未提出"
       submitted: "§a提出済み"
       completed: "§b完成"
     progress:
-      line: "§f§l| §7進捗状況 §e{state}"
+      label: "進捗状況"
       unsubmitted: "§6未提出"
       submitted: "§a提出済み"
       completed: "§b完成済み"
@@ -30,15 +31,14 @@ chanpon:
     submission:
       lore:
         unsubmitted:
-          - "§e❙ 左クリック §7提出済みにする"
-          - "§7"
-          - "§c※ 提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"
+          action: "提出済みにする"
+          warning: "提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"
         submitted:
-          - "§a提出済みです。"
-          - "§c提出後は取り消せません。"
+          description: "提出済みです。"
+          warning: "提出後は取り消せません。"
         completed:
-          - "§a運営スタッフに、完成済みとしてチェックされました。"
-          - "§7(これ以降の取り消しは原則として行えません)"
+          description: "運営スタッフに、完成済みとしてチェックされました。"
+          warning: "これ以降の取り消しは原則として行えません。"
     error:
       display: "§c提出状態エラー"
       lore:
@@ -63,7 +63,7 @@ chanpon:
       back:
         display: "§7戻る"
         lore:
-          - "§7クリックで閉じます。"
+          - "§7閉じます。"
     admin_menu:
       title: "§0完成状況の管理"
       no_permission: "§cこのメニューを操作する権限がありません。"
@@ -89,7 +89,7 @@ chanpon:
         created_asc: "§f作成日が古い順"
         name_asc: "§fワールド名順"
         display: "§e並び順"
-      filter_cycle_action: "クリックで切り替え"
+      filter_cycle_action: "切り替え"
       stats:
         display: "§b統計情報"
         lore:
@@ -99,12 +99,12 @@ chanpon:
         open:
           display: "§c提出を締め切る"
           lore:
-            - "§7クリックで提出を締め切ります。"
+            - "§7提出を締め切ります。"
             - "§7締め切りはいつでもこのメニューから再開できます。"
         closed:
           display: "§e提出締切を解除"
           lore:
-            - "§7クリックで提出締切を解除します。"
+            - "§7提出締切を解除します。"
             - "§7解除後はプレイヤーが提出を再び行えます。"
       closed_message: "§c提出を締め切りました。"
       reopened_message: "§e提出締切を解除しました。"
@@ -122,18 +122,15 @@ chanpon:
         production_no: "§7通常"
         completed_yes: "§b完成マーク済み"
         completed_no: "§6完成マーク未"
-        action_complete: "§e右クリック §7完成済みとしてマーク"
-        action_toggle_production: "§eホイールクリック §7本番用フラグを切り替え"
-        lore:
-          - "§7オーナー: §f{owner}"
-          - "§7メンバー: {members}"
-          - "§7作成日: §f{created}"
-          - "§7種別: {production}"
-          - "§7提出状況: {state}"
-          - "§7完成状態: {completed}"
-          - "§e左クリック §7ワープ"
-          - "{production_action}"
-          - "{middle_action}"
+        owner_label: "オーナー"
+        members_label: "メンバー"
+        created_label: "作成日"
+        production_label: "種別"
+        state_label: "提出状況"
+        completed_label: "完成状態"
+        action_warp: "ワープ"
+        action_complete: "完成状態を切り替え"
+        action_toggle_production: "本番用フラグを切り替え"
     admin_list:
       title: "§0ワールド一覧管理"
       unknown: "不明"
@@ -153,17 +150,15 @@ chanpon:
         development: "§e開発中"
         private: "§7封鎖中"
         display: "§e公開状態フィルター"
-        lore:
-          - "§7現在: {filter}"
-          - "§eクリック §7表示対象を切り替えます。"
+        label: "現在"
+        action: "表示対象を切り替え"
       sort:
         created_desc: "§f作成日が新しい順"
         created_asc: "§f作成日が古い順"
         world_size_desc: "§fワールドサイズが大きい順"
         display: "§e並び順"
-        lore:
-          - "§7現在: {sort}"
-          - "§eクリック §7並び順を切り替えます。"
+        label: "現在"
+        action: "並び順を切り替え"
       info:
         display: "§b一覧情報"
         lore:
@@ -172,18 +167,15 @@ chanpon:
       world:
         display: "§e{world}"
         no_members: "§7なし"
-        action_copy: "§eホイールクリック §7ワールド情報をコピー"
-        action_settings: "§e右クリック §7管理設定を開く"
+        owner_label: "オーナー"
+        members_label: "メンバー"
+        created_label: "作成日"
+        visibility_label: "公開状態"
+        directory_label: "ワールド"
+        action_warp: "ワープ"
+        action_copy: "ワールド情報をコピー"
+        action_settings: "管理設定を開く"
         action_settings_current: "§7現在のワールドでは管理設定を開けません"
-        lore:
-          - "§7オーナー: §f{owner}"
-          - "§7メンバー: {members}"
-          - "§7作成日: §f{created}"
-          - "§7公開状態: {visibility}"
-          - "§7ワールド: §f{world_directory}"
-          - "§e左クリック §7ワープ"
-          - "{right_action}"
-          - "{middle_action}"
     confirm:
       set_production:
         title: "§0本番用ワールドに設定"
@@ -220,8 +212,8 @@ chanpon:
         confirm:
           display: "§a決定"
           lore:
-            - "§7クリックで操作を実行します。"
+            - "§7操作を実行します。"
         cancel:
           display: "§cキャンセル"
           lore:
-            - "§7クリックで操作を中止します。"
+            - "§7操作を中止します。"

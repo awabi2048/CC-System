@@ -13,10 +13,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 class LoreServiceImpl : LoreService {
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
-    private val dataLinePattern = Regex("^\u00A77([^:\uFF1A]+)[:\uFF1A]\\s*(.*)$")
-    private val richDataPrefixPattern = Regex("^\u00A7f\u00A7l\\|\\s*")
-    private val richActionPrefixPattern = Regex("^\u00A7e\u00A7l\\|\\s*")
-    private val actionPrefixPattern = Regex("^\u00A7e\u2759\\s*")
 
     override fun render(spec: GuiLoreSpec): List<Component> {
         return when (spec) {
@@ -97,7 +93,7 @@ class LoreServiceImpl : LoreService {
         if (lines.isEmpty()) return emptyList()
         return renderRich(
             lines.map { line ->
-                if (line.isBlank()) GuiLoreLine.Spacer else GuiLoreLine.Raw(richLine(line.trim()))
+                if (line.isBlank()) GuiLoreLine.Spacer else GuiLoreLine.Raw(line.trim())
             },
             frame
         )
@@ -114,17 +110,6 @@ class LoreServiceImpl : LoreService {
         is GuiLoreLine.SubData -> LoreFormatter.subDataLine(line.label, line.value)
         is GuiLoreLine.Text -> LoreFormatter.textLine(line.text)
         is GuiLoreLine.Warning -> LoreFormatter.warningLine(line.content)
-    }
-
-    private fun richLine(line: String): String {
-        dataLinePattern.matchEntire(line)?.let { match ->
-            val (label, value) = match.destructured
-            return LoreFormatter.dataLine(label.trim(), value.trim(), "\u00A7f")
-        }
-        return line
-            .replace(richDataPrefixPattern, "\u00A7f\u2759 ")
-            .replace(richActionPrefixPattern, "\u00A7e\u2759 ")
-            .replace(actionPrefixPattern, "\u00A7e\u2759 ")
     }
 
     private fun normalize(component: Component): Component = component
