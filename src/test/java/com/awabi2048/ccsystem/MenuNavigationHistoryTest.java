@@ -74,6 +74,19 @@ class MenuNavigationHistoryTest {
         assertEquals(List.of(mwmRoute), history.snapshot(playerId));
     }
 
+    @Test
+    void snapshotKeepsBreadcrumbOrderFromRootToCurrent() {
+        var playerId = UUID.randomUUID();
+        var history = new MenuNavigationHistory();
+        var root = route("mwm", "player_world", Map.of("page", "0"));
+        var dialogSource = route("mwm", "creation_dialog_source", Map.of());
+
+        history.push(playerId, root);
+        history.push(playerId, dialogSource);
+
+        assertEquals(List.of(root, dialogSource), history.snapshot(playerId));
+    }
+
     private static MenuRoute route(String owner, String id, Map<String, String> payload) {
         return new MenuRoute(owner, id, payload);
     }

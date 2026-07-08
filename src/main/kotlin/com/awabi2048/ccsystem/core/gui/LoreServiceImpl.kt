@@ -103,7 +103,7 @@ class LoreServiceImpl : LoreService {
         GuiLoreLine.Spacer -> ""
         GuiLoreLine.Separator -> separator
         is GuiLoreLine.Action -> LoreFormatter.actionLine(line.operation, line.action)
-        is GuiLoreLine.SingleAction -> LoreFormatter.singleActionLine(line.action)
+        is GuiLoreLine.SingleAction -> LoreFormatter.singleActionLine(line.resolvedText)
         is GuiLoreLine.Danger -> LoreFormatter.dangerLine(line.content)
         is GuiLoreLine.Data -> LoreFormatter.dataLine(line.label, line.value, line.valueColor)
         is GuiLoreLine.Raw -> line.line
