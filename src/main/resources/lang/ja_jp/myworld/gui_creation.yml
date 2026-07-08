@@ -44,8 +44,7 @@ gui:
         display: ディメンションを選択
         description: シード値から生成するワールドのディメンションを選択します。
         current_label: 現在のディメンション
-        action_next: 左クリックで次へ
-        action_prev: 右クリックで前へ
+        action: 切替
         options:
           normal: オーバーワールド
           nether: ネザー
@@ -56,7 +55,7 @@ gui:
         description: ワールドのスポーン位置を、指定した座標に変更できます
         default_help: （入力しないか、空欄にすることでデフォルトのスポーン位置に設定し直せます）
         current_label: 現在の設定値
-        action: クリックして設定
+        action: 設定
         input:
           title: スポーン位置の設定
           help: X・Y・Zを整数で入力してください。すべて空欄にすると標準位置を使用します。

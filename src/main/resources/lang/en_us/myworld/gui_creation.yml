@@ -44,8 +44,7 @@ gui:
         display: Select Dimension
         description: Choose the dimension used when generating this seed world.
         current_label: Current dimension
-        action_next: Left-click to select the next dimension
-        action_prev: Right-click to select the previous dimension
+        action: Switch
         options:
           normal: Overworld
           nether: Nether
@@ -56,7 +55,7 @@ gui:
         description: Changes the world's spawn location to the specified coordinates.
         default_help: (Leave all fields blank to restore the default spawn location.)
         current_label: Current setting
-        action: Click to configure
+        action: configure
         input:
           title: Set Spawn Location
           help: Enter integer X, Y, and Z values. Leave all fields blank to use the default spawn.

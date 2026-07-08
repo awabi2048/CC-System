@@ -22,10 +22,6 @@ class GuiElementServiceImpl : GuiElementService {
     private val loreService = LoreServiceImpl()
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
-    private val dataLinePattern = Regex("^\u00A77([^:\uFF1A]+)[:\uFF1A]\\s*(.*)$")
-    private val richDataPrefixPattern = Regex("^\u00A7f\u00A7l\\|\\s*")
-    private val richActionPrefixPattern = Regex("^\u00A7e\u00A7l\\|\\s*")
-    private val actionPrefixPattern = Regex("^\u00A7e\u2759\\s*")
 
     override fun component(raw: String): Component {
         return normalizeComponent(legacy.deserialize(raw))

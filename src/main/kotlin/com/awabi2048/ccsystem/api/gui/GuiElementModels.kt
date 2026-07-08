@@ -40,7 +40,11 @@ sealed interface GuiLoreLine {
     data class Data(val label: String, val value: Any?, val valueColor: String) : GuiLoreLine
     data class SubData(val label: String, val value: Any?) : GuiLoreLine
     data class Action(val operation: String, val action: String) : GuiLoreLine
-    data class SingleAction(val action: String) : GuiLoreLine
+    data class SingleAction(
+        val operation: String,
+        val action: String,
+        val resolvedText: String
+    ) : GuiLoreLine
     data class Warning(val content: String) : GuiLoreLine
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine

@@ -192,6 +192,11 @@ messages:
   admin_convert_success_normal: §aディレクトリが標準形式にリネームされ、通常のマイワールド管理が適用されます。
   admin_convert_success_admin: §a設定ファイルのみ生成されました。管理用ワールドとして扱われます。
   warp_success: §aワールド【{world}】にワープしました。
+  worldwarp_usage: "§c使い方 /worldwarp <6桁のワールドID>"
+  worldwarp_id_too_short: §cワールドIDは6桁の数字で指定してください。
+  worldwarp_not_found: §c指定されたIDのワールドが見つかりませんでした。
+  worldwarp_ambiguous: §c指定されたIDに一致するワールドが複数あります。管理者に確認してください。
+  worldwarp_access_denied: §cこのワールドにはワープできません。
   warp_invite_success: §a招待されたワールドにワープしました。
   warp_generic: §aワールドにワープしました。
   admin_warp_success: §aワールド【{world}】にワープしました。

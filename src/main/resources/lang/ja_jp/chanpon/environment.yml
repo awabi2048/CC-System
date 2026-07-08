@@ -6,119 +6,102 @@ chanpon:
       back_to_settings: "§7ワールド設定に戻る"
       not_set: "§7未設定"
       current_label: "現在"
-      action_next: "クリックして切り替え"
-      action_prev: "クリックして切り替え"
-      action_custom_time: "クリックして切り替え"
+      action_next: "切り替え"
+      action_previous: "前へ戻る"
+      action_set: "設定"
+      shift_left: "Shift+左クリック"
       must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
     weather:
       description: "天候を固定するか、通常の天候変化に戻すかを設定します。"
       title: "§e天候設定"
       display: "§e天候"
-      lore:
-        - "§f§l| §7現在 §e{current}"
-        - "§e§l| §eクリック §7設定"
       clear:
         display: "§e晴れ"
-        lore:
-          - "§f§l| §7{marker} §e晴れ"
-          - "§e§l| §eクリック §7設定"
       rain:
         display: "§b雨"
-        lore:
-          - "§f§l| §7{marker} §b雨"
-          - "§e§l| §eクリック §7設定"
       thunder:
         display: "§3雷雨"
-        lore:
-          - "§f§l| §7{marker} §3雷雨"
-          - "§e§l| §eクリック §7設定"
     time:
       description: "時刻を固定するか、通常の時間経過に戻すかを設定します。"
       title: "§e時刻設定"
       display: "§e時刻"
-      lore:
-        - "§f§l| §7現在 §e{current}"
-        - "§e§l| §eクリック §7設定"
       morning:
         display: "§e朝"
-        lore:
-          - "§f§l| §7{marker} §e朝 §7(time=0)"
-          - "§e§l| §eクリック §7設定"
+        value: "time=0"
       noon:
         display: "§e昼"
-        lore:
-          - "§f§l| §7{marker} §e昼 §7(time=6000)"
-          - "§e§l| §eクリック §7設定"
+        value: "time=6000"
       dusk:
         display: "§6夕暮れ"
-        lore:
-          - "§f§l| §7{marker} §6夕暮れ §7(time=12500)"
-          - "§e§l| §eクリック §7設定"
+        value: "time=12500"
       night:
         display: "§9夜"
-        lore:
-          - "§f§l| §7{marker} §9夜 §7(time=18000)"
-          - "§e§l| §eクリック §7設定"
+        value: "time=18000"
       custom:
         display: "カスタム ({time})"
         title: "時刻を指定"
         body: "0から23999のtick値、またはHH:mm形式で入力してください。"
         label: "時刻"
+        action: "時刻指定"
         apply: "適用"
         invalid: "0-23999、またはHH:mm形式で入力してください。"
     gravity:
       description: "ワールド内のエンティティに適用される重力を設定します。"
       title: "§e重力設定"
       display: "§e重力"
-      lore:
-        - "§f§l| §7現在 §e{current}"
-        - "§e§l| §eクリック §7設定"
       earth:
         display: "§a地球"
-        lore:
-          - "§f§l| §7{marker} §a地球 §7(gravity=0.08)"
-          - "§e§l| §eクリック §7設定"
+        value: "gravity=0.08"
       mars:
         display: "§6火星"
-        lore:
-          - "§f§l| §7{marker} §6火星 §7(gravity=0.02)"
-          - "§e§l| §eクリック §7設定"
+        value: "gravity=0.02"
       moon:
         display: "§f月"
-        lore:
-          - "§f§l| §7{marker} §f月 §7(gravity=0.01)"
-          - "§e§l| §eクリック §7設定"
+        value: "gravity=0.01"
     flight:
       description: "クリエイティブ以外のゲームモードで飛行を許可するかを設定します。"
       display: "フライを許可"
       enabled: "許可"
       disabled: "不許可"
-      lore:
-        - "現在: {current}"
-        - "クリックで切り替え"
       notification:
         enabled: "§aこのワールドではフライが許可されています。"
         disabled: "§cこのワールドではフライが許可されていません。"
         restored_default: "§7ワールドから抜けたため、フライ設定を元に戻しました。"
+    protection:
+      display: "§e建築許可"
+      description: "ほかのプレイヤーがこのワールドで建築できる条件を設定します。"
+      password_change_action: "パスワード変更"
+      password_missing_warning: "パスワードが未設定です。設定するまで追加できません。"
+      password_set_title: "建築許可パスワードを設定"
+      password_set_body: "4文字以上のパスワードを入力してください。"
+      password_title: "建築許可パスワード"
+      password_body: "正しいパスワードを入力すると、このワールドのメンバーに追加されます。"
+      password_label: "パスワード"
+      password_apply: "設定"
+      password_submit: "追加"
+      password_too_short: "§cパスワードは4文字以上で入力してください。"
+      password_updated: "§a建築許可パスワードを更新しました。"
+      password_not_configured: "§cこのワールドの建築許可パスワードは未設定です。"
+      password_invalid: "§cパスワードが違います。"
+      password_success: "§aパスワードを確認しました。メンバーに追加されました。"
+      owner_only:
+        display: "§cオーナーのみ"
+      members:
+        display: "§eメンバーのみ"
+      password:
+        display: "§dパスワード付き"
+      public:
+        display: "§a誰でも"
     scale:
       description: "ワールド内でのプレイヤーサイズを設定します。"
       title: "§eプレイヤーサイズ設定"
       display: "§eサイズ"
-      lore:
-        - "§f§l| §7現在 §e{current}"
-        - "§e§l| §eクリック §7設定"
       normal:
         display: "§a通常"
-        lore:
-          - "§f§l| §7{marker} §a通常 §7(scale=1.0)"
-          - "§e§l| §eクリック §7設定"
+        value: "scale=1.0"
       small:
         display: "§d小人"
-        lore:
-          - "§f§l| §7{marker} §d小人 §7(scale=0.5)"
-          - "§e§l| §eクリック §7設定"
+        value: "scale=0.5"
       giant:
         display: "§c巨人"
-        lore:
-          - "§f§l| §7{marker} §c巨人 §7(scale=2.0)"
-          - "§e§l| §eクリック §7設定"
+        value: "scale=2.0"

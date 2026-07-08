@@ -6,6 +6,7 @@ chanpon:
       prev: "§e前のページ"
       next: "§e次のページ"
       back: "§7戻る"
+      middle_click: "ホイールクリック"
     kind:
       user_manual: "§aユーザー手動"
       admin_manual: "§e管理者手動"
@@ -31,14 +32,12 @@ chanpon:
       world_creation:
         enabled:
           display: "§aワールド作成: 有効"
-          lore:
-            - "§7プレイヤーのワールド作成を許可しています。"
-            - "§eクリック §7無効にします。"
+          description: "プレイヤーのワールド作成を許可しています。"
+          action: "無効にする"
         disabled:
           display: "§cワールド作成: 無効"
-          lore:
-            - "§7プレイヤーのワールド作成を停止しています。"
-            - "§eクリック §7有効にします。"
+          description: "プレイヤーのワールド作成を停止しています。"
+          action: "有効にする"
       export:
         display: "§7ワールドデータのエクスポート"
         lore:
@@ -49,15 +48,14 @@ chanpon:
           - "§7Version: §f{version}"
       switch_mwm:
         display: "§bMyWorldManager"
-        lore:
-          - "§7MyWorldManagerの管理メニューへ切り替えます。"
-          - "§eクリック §7切り替え"
+        description: "MyWorldManagerの管理メニューへ切り替えます。"
+        action: "切り替え"
     export_menu:
       title: "§0ワールドデータのエクスポート"
       bulk:
         display: "§a一括エクスポート"
-        lore:
-          - "§7すべての本番用ワールドをZIPとして出力します。"
+        description: "すべての本番用ワールドをZIPとして出力します。"
+        action: "一括エクスポート"
       info:
         display: "§bエクスポート情報"
         lore:
@@ -65,10 +63,9 @@ chanpon:
           - "§7ページ: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
-        lore:
-          - "§7オーナー: §f{owner}"
-          - "§7作成日: §f{created}"
-          - "§e左クリック §7このワールドをエクスポート"
+        owner_label: "オーナー"
+        created_label: "作成日"
+        action: "このワールドをエクスポート"
     automation_notice:
       backup_warning: "§e定時バックアップを §f{remaining} §e後に開始します。開始前にスポーンへ退避します。"
       rollback_warning: "§c定時ロールバックを §f{remaining} §c後に開始します。開始前にスポーンへ退避します。"
@@ -133,8 +130,8 @@ chanpon:
     favorite_visit:
       owner: "§7オーナー: §f{owner}"
       tags: "§7タグ: §f{tags}"
-      warp: "§e左クリック §7ワープ"
-      toggle_favorite: "§e右クリック §7お気に入り追加/解除"
+      warp: "ワープ"
+      toggle_favorite: "お気に入り追加/解除"
       info:
         display: "§b一覧情報"
         lore:
@@ -144,17 +141,14 @@ chanpon:
       title: "§0ワールドデータの管理"
       bulk_backup:
         display: "§a一括バックアップの実行"
-        lore:
-          - "§7すべての本番用ワールドをバックアップします。"
+        description: "すべての本番用ワールドをバックアップします。"
       bulk_rollback:
         display: "§c一括ロールバックの実行"
-        lore:
-          - "§7全体バックアップ一覧を開きます。"
+        description: "全体バックアップ一覧を開きます。"
       annual_archive:
         display: "§5年次更新の実行"
-        lore:
-          - "§7完了ワールドをアーカイブし、未提出ワールドを抹消します。"
-          - "§c§l| §c実行前に全ワールドをバックアップします。"
+        description: "完了ワールドをアーカイブし、未提出ワールドを抹消します。"
+        warning: "実行前に全ワールドをバックアップします。"
       info:
         display: "§b一覧情報"
         lore:
@@ -162,12 +156,11 @@ chanpon:
           - "§7ページ: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
-        lore:
-          - "§7オーナー: §f{owner}"
-          - "§7作成日: §f{created}"
-          - "§7保存済みバックアップ: §f{backups}"
-          - "§e左クリック §7個別バックアップ"
-          - "§e右クリック §7バックアップ一覧"
+        owner_label: "オーナー"
+        created_label: "作成日"
+        backups_label: "保存済みバックアップ"
+        backup_action: "個別バックアップ"
+        list_action: "バックアップ一覧"
     backup_list:
       title: "§0バックアップ一覧"
       info:
@@ -177,14 +170,13 @@ chanpon:
           - "§7ページ: §f{page}§7/§f{pages}"
       item:
         display: "§e{name}"
-        lore:
-          - "§7種別: {kind}"
-          - "§7作成日時: §f{created}"
-          - "§7対象ワールド数: §f{worlds}"
-          - "§7サイズ: §f{size}"
-          - "§7作成者: §f{actor}"
-          - "§e左クリック §7ロールバック"
-          - "§eホイールクリック §7削除"
+        kind_label: "種別"
+        created_label: "作成日時"
+        worlds_label: "対象ワールド数"
+        size_label: "サイズ"
+        actor_label: "作成者"
+        rollback_action: "ロールバック"
+        delete_action: "削除"
     automation:
       title: "§0自動処理の設定"
       auto_backup:
@@ -201,8 +193,8 @@ chanpon:
           - "§7すべての本番用ワールドを復元ポイントとして保存します。"
     owner_backup:
       display: "§aワールドをバックアップ"
-      lore:
-        - "§7この本番用ワールドの手動バックアップを作成します。"
+      description: "この本番用ワールドの手動バックアップを作成します。"
+      action: "バックアップ管理"
       title: "§0ワールドバックアップ管理"
       name_input:
         title: "§0バックアップ名"
@@ -212,12 +204,11 @@ chanpon:
         cancel: "§cキャンセル"
       create:
         display: "§aバックアップを作成"
-        lore:
-          - "§7このワールドの手動バックアップを作成します。"
+        description: "このワールドの手動バックアップを作成します。"
+        action: "作成"
       cooldown:
         display: "§cバックアップクールダウン"
-        lore:
-          - "§7次のバックアップは §f{remaining} §7後に作成できます。"
+        description: "次のバックアップは {remaining} 後に作成できます。"
       info:
         display: "§b{world}"
         lore:
@@ -225,10 +216,9 @@ chanpon:
           - "§7ページ: §f{page}§7/§f{pages}"
       item:
         display: "§e{name}"
-        lore:
-          - "§7作成日時: §f{created}"
-          - "§7作成者: §f{actor}"
-          - "§e左クリック §7このワールドをロールバック"
+        created_label: "作成日時"
+        actor_label: "作成者"
+        rollback_action: "このワールドをロールバック"
     confirm:
       backup_world:
         title: "§0個別バックアップ確認"

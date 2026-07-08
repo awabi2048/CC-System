@@ -192,6 +192,11 @@ messages:
   admin_convert_success_normal: The §a directory will be renamed to standard format and normal My World management will be applied.
   admin_convert_success_admin: Only the §a configuration file was generated. It is treated as an administrative world.
   warp_success: §aWarped to world "{world}".
+  worldwarp_usage: "§cUsage: /worldwarp <6-digit-world-id>"
+  worldwarp_id_too_short: §cWorld ID must be 6 digits.
+  worldwarp_not_found: §cNo world matched that ID.
+  worldwarp_ambiguous: §cMultiple worlds matched that ID. Ask an administrator to resolve it.
+  worldwarp_access_denied: §cYou cannot warp to this world.
   warp_invite_success: §aWarped to the invited world.
   warp_generic: §aWarped to world.
   admin_warp_success: §a§l[Admin] §aWarped to world "{world}".

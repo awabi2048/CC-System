@@ -67,6 +67,10 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         return history.popPrevious(player.uniqueId) { route -> open(player, route) } != null
     }
 
+    override fun breadcrumbs(player: Player): List<MenuRoute> {
+        return history.snapshot(player.uniqueId)
+    }
+
     private fun closeMatchingMenus(
         players: Collection<Player>,
         matches: (org.bukkit.inventory.Inventory) -> Boolean

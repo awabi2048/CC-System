@@ -3,6 +3,7 @@ chanpon:
     common:
       "on": "§eOn"
       "off": "§7Off"
+      middle_click: "Middle-Click"
     creation:
       display: "§eSet as production world"
       lore:
@@ -12,14 +13,14 @@ chanpon:
     production:
       display: "§eSet as production world"
       lore:
-        - "§e❙ Click §7Change this world to a §eproduction world§7."
-        - "§c※ Each owner can have only one production world."
+        action: "Set as production world"
+        limit_warning: "Each owner can have only one production world."
     state:
       unsubmitted: "§6Unsubmitted"
       submitted: "§aSubmitted"
       completed: "§bCompleted"
     progress:
-      line: "§7Progress: {state}"
+      label: "Progress"
       unsubmitted: "§6Unsubmitted"
       submitted: "§aSubmitted"
       completed: "§bCompleted"
@@ -30,17 +31,14 @@ chanpon:
     submission:
       lore:
         unsubmitted:
-          - "§e❙ Left click §7Mark as submitted"
-          - "§7"
-          - "§c※ Once submitted, world interaction such as placing or breaking blocks will be blocked."
-          - "§cYou can cancel submission, but you must submit again afterward."
+          action: "Mark as submitted"
+          warning: "Once submitted, world interaction such as placing or breaking blocks will be blocked."
         submitted:
-          - "§e❙ Click §7Cancel submission"
-          - "§7"
-          - "§c※ After cancellation, this world will not count as submitted until you submit again."
+          description: "Submitted."
+          warning: "Submission cannot be cancelled."
         completed:
-          - "§aStaff has checked this world as completed."
-          - "§7(Cancellation is generally unavailable after this point.)"
+          description: "Staff has checked this world as completed."
+          warning: "Cancellation is generally unavailable after this point."
     error:
       display: "§cSubmission state error"
       lore:
@@ -52,7 +50,6 @@ chanpon:
       production_limit: "§cEach owner can have only one production world."
       owner_only_submit: "§cOnly the world owner can submit this world."
       submitted: "§aThe world has been marked as submitted."
-      cancelled: "§eSubmission has been cancelled."
       state_error: "§cSubmission state data is missing or invalid."
       state_changed: "§cThe submission state changed, so the operation was cancelled."
       cancelled_confirmation: "§7Operation cancelled."
@@ -63,15 +60,10 @@ chanpon:
         - "§7State: {state}"
         - "§7Protection: {reason}"
         - "§7Description: {description}"
-      cancel:
-        display: "§eCancel submission"
-        lore:
-          - "§7Cancel this world's submission."
-          - "§cAfter cancellation, this world will not count as submitted until you submit again."
       back:
         display: "§7Back"
         lore:
-          - "§7Click to close this menu."
+          - "§7Close this menu."
     admin_menu:
       title: "§0Completion Status"
       no_permission: "§cYou do not have permission to use this menu."
@@ -97,7 +89,9 @@ chanpon:
         created_asc: "§fCreated: oldest"
         name_asc: "§fWorld name: A-Z"
         display: "§eSort"
-      filter_cycle_action: "Click to cycle"
+      cycle:
+        next: "Select next option"
+        previous: "Select previous option"
       stats:
         display: "§bStatistics"
         lore:
@@ -107,13 +101,13 @@ chanpon:
         open:
           display: "§cClose submissions"
           lore:
-            - "§7Click to close submissions and cancellation."
+            - "§7Close submissions."
             - "§7You can reopen submissions from this menu at any time."
         closed:
           display: "§eReopen submissions"
           lore:
-            - "§7Click to reopen submissions."
-            - "§7Players will be able to submit and cancel submission again."
+            - "§7Reopen submissions."
+            - "§7Players will be able to submit again."
       closed_message: "§cSubmissions have been closed."
       reopened_message: "§eSubmissions have been reopened."
       completed_message: "§aMarked as completed."
@@ -130,18 +124,15 @@ chanpon:
         production_no: "§7Normal"
         completed_yes: "§bCompleted"
         completed_no: "§6Unmarked"
-        action_complete: "§eRight click §7Mark as completed"
-        action_toggle_production: "§eMiddle click §7Toggle production flag"
-        lore:
-          - "§7Owner: §f{owner}"
-          - "§7Members: {members}"
-          - "§7Created: §f{created}"
-          - "§7Type: {production}"
-          - "§7Submission: {state}"
-          - "§7Completion: {completed}"
-          - "§eLeft click §7Warp"
-          - "{production_action}"
-          - "{middle_action}"
+        owner_label: "Owner"
+        members_label: "Members"
+        created_label: "Created"
+        production_label: "Type"
+        state_label: "Submission"
+        completed_label: "Completion"
+        action_warp: "Warp"
+        action_complete: "Toggle completion"
+        action_toggle_production: "Toggle production flag"
     admin_list:
       title: "§0World List Management"
       unknown: "Unknown"
@@ -161,17 +152,18 @@ chanpon:
         development: "§eDevelopment"
         private: "§7Closed"
         display: "§eVisibility filter"
-        lore:
-          - "§7Current: {filter}"
-          - "§eClick §7Cycle visible worlds."
+        label: "Current"
+        action: "Cycle visible worlds"
+      cycle:
+        next: "Select next option"
+        previous: "Select previous option"
       sort:
         created_desc: "§fNewest created"
         created_asc: "§fOldest created"
         world_size_desc: "§fLargest world size"
         display: "§eSort"
-        lore:
-          - "§7Current: {sort}"
-          - "§eClick §7Cycle sort order."
+        label: "Current"
+        action: "Cycle sort order"
       info:
         display: "§bList info"
         lore:
@@ -180,18 +172,15 @@ chanpon:
       world:
         display: "§e{world}"
         no_members: "§7None"
-        action_copy: "§eMiddle click §7Copy world info"
-        action_settings: "§eRight click §7Open admin settings"
+        owner_label: "Owner"
+        members_label: "Members"
+        created_label: "Created"
+        visibility_label: "Visibility"
+        directory_label: "World"
+        action_warp: "Warp"
+        action_copy: "Copy world info"
+        action_settings: "Open admin settings"
         action_settings_current: "§7Admin settings are unavailable for the current world"
-        lore:
-          - "§7Owner: §f{owner}"
-          - "§7Members: {members}"
-          - "§7Created: §f{created}"
-          - "§7Visibility: {visibility}"
-          - "§7World: §f{world_directory}"
-          - "§eLeft click §7Warp"
-          - "{right_action}"
-          - "{middle_action}"
     confirm:
       set_production:
         title: "§0Set Production World"
@@ -217,27 +206,19 @@ chanpon:
         display: "§aMark as submitted"
         lore:
           - "§7Change this world to §esubmitted§7."
-          - "§7"
-          - "§c※ If cancelled later, this world must be submitted again."
-      cancel_submission:
-        title: "§0Cancel Submission"
-        display: "§eCancel submission"
-        lore:
-          - "§7Cancel this world's submission."
-          - "§c※ After cancellation, this world will not count as submitted until you submit again."
       close_submissions:
         title: "§0Close Submissions"
         display: "§cClose submissions"
         lore:
-          - "§7Close submissions and cancellation for all worlds."
-          - "§c※ Players cannot submit or cancel submission after this."
+          - "§7Close submissions for all worlds."
+          - "§c※ Players cannot submit after this."
           - "§7You can reopen submissions from the management menu afterward."
       button:
         confirm:
           display: "§aConfirm"
           lore:
-            - "§7Click to run this operation."
+            - "§7Run this operation."
         cancel:
           display: "§cCancel"
           lore:
-            - "§7Click to stop this operation."
+            - "§7Stop this operation."

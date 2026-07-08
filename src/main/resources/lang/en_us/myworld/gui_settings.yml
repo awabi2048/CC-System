@@ -11,11 +11,6 @@ gui:
       lore:
       - §e§l| §eClick §aEdit world name and description together
       - §7Click to edit both fields in a dialog.
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to open form
-      - §7Edit world name and description together.
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary_je:
         - §7Click to edit both fields in a dialog.
@@ -225,15 +220,6 @@ gui:
         - '{member_list}'
       action:
         open_list: View member list
-      actions:
-        promote: §e§l| §eLeft-Click §7Change to moderator
-        demote: §e§l| §eRight-Click §7Change to member
-        remove: §e§l| §eShift + Left-Click §7Remove member
-        transfer: §e§l| §eShift + Right-Click §7Transfer ownership
-      lore_actions_bedrock:
-      - §e§l| §eClick §7Change role to §b{next_role}
-      - §e§l| §eUse /myworld command §7for remove/transfer
-      - §8§m－－－－－－－－－－－－－－－－－－
     main_info:
       name: §f【§a{world}§f】
       lore:
@@ -343,6 +329,9 @@ gui:
         open: View
   user_settings:
     title: Personal settings
+    cycle_action:
+      next: Select next option
+      previous: Select previous option
     notification:
       display: §aVisitor notification
       blocks:

@@ -61,9 +61,9 @@ gui:
     page_shift_prev: Shift + クリック 5ページ戻る
     status_display: 'ステータス: {color}{status}'
 lore:
-  action_single: クリックして{action}
-  action_single_with_operation: '{operation}して{action}'
+  action_single_with_operation: '{operation}で{action}'
   click:
+    any: クリック
     left: 左クリック
     right: 右クリック
     shift_right: Shift + 右クリック

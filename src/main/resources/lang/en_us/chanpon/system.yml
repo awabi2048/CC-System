@@ -1,70 +1,68 @@
 chanpon:
+  player_world:
+    easy_creation:
+      action: "Easy world creation"
+      start: "§aStarting easy world creation."
+      name_title: "Easy World Creation"
+      name_body: "Enter a world name."
+      name_label: "World name"
+      name_required: "Enter a world name."
+      next: "Next"
+      cancel: "Cancel"
+      confirm_title: "Confirm Creation"
+      confirm_body: "Create world \"{world}\"."
+      confirm_template: "Template: void / central 4x4 scaffold"
+      create: "Create"
+      back: "Back"
   settings:
     common:
       must_be_in_world_warning: "You must be in this world to change this setting!"
       "on": "Enabled"
       "off": "Disabled"
       back: "§7Back"
-      back_lore:
-        - "§eClick §7to go back"
     visibility:
       public: "§aOpen"
       development: "§eDevelopment"
       private: "§7Closed"
     publish:
       title: "§ePublish Level"
-      current: "§f§l| §7Current §e{level}"
       current_label: "Current setting"
-      public_desc: "§f§l| §7{prefix}§aOpen §fShown in Discovery and directly visitable."
-      development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses requests."
-      private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
-      cycle: "§e§l| §eClick §7to cycle"
       public_description: "Shown in Discovery and directly visitable."
       development_description: "Hidden from lists; Meet uses requests."
       private_description: "Only members can visit."
-      cycle_action: "Click to cycle"
+      cycle_next_action: "Select next option"
+      cycle_previous_action: "Select previous option"
     expand:
       display: "§eExpand world"
-      status_available:
-        - "§f§l| §7Current §e{current}§7/§e{max}"
-        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
-        - "§e§l| §eClick §7to choose expansion"
+      status_available: []
       status_max:
-        - "§f§l| §7Current §e{current}§7/§e{max}"
-        - "§f§l| §7Border §e{size} §7center §e{x}, {z}"
         - "§7This world cannot be expanded further."
     expand_menu:
       title: "Expand world"
       center:
         display: "§eExpand from center"
-        lore:
-          - "§f§l| §7Expand in every direction without moving the center."
-          - "§e§l| §eClick §7to confirm"
+        description: "Expand in every direction without moving the center."
+        action: "Confirm"
       direction_select:
         display: "§eExpand by direction"
-        lore:
-          - "§f§l| §7Close the menu and click while facing the direction to expand."
-          - "§e§l| §eClick §7to choose direction"
+        description: "Close the menu and click while facing the direction to expand."
+        action: "Choose direction"
       north_west:
         display: "§eExpand northwest"
-        lore:
-          - "§f§l| §7Expand toward northwest."
-          - "§e§l| §eClick §7to confirm"
+        description: "Expand toward northwest."
+        action: "Confirm"
       north_east:
         display: "§eExpand northeast"
-        lore:
-          - "§f§l| §7Expand toward northeast."
-          - "§e§l| §eClick §7to confirm"
+        description: "Expand toward northeast."
+        action: "Confirm"
       south_west:
         display: "§eExpand southwest"
-        lore:
-          - "§f§l| §7Expand toward southwest."
-          - "§e§l| §eClick §7to confirm"
+        description: "Expand toward southwest."
+        action: "Confirm"
       south_east:
         display: "§eExpand southeast"
-        lore:
-          - "§f§l| §7Expand toward southeast."
-          - "§e§l| §eClick §7to confirm"
+        description: "Expand toward southeast."
+        action: "Confirm"
     direction:
       center: "Center"
       north_west: "Northwest"
@@ -73,20 +71,15 @@ chanpon:
       south_east: "Southeast"
     step_back:
       display: "§eStep back once"
-      lore:
-        - "§f§l| §7Undo the latest expansion."
-        - "§e§l| §eClick §7to confirm"
-      lore_modified:
-        - "§f§l| §7Undo the latest expansion."
-        - "§c§l| §cThe expanded area has changes."
-        - "§e§l| §eClick §7to confirm"
+      description: "Undo the latest expansion."
+      modified_warning: "The expanded area has changes."
+      action: "Confirm"
     modified_warning:
       title: "Expansion area changed"
       display: "§cExpanded area has changes"
-      lore:
-        - "§f§l| §7The expansion area to be undone has changes."
-        - "§f§l| §7Continuing will discard changes in that area."
-        - "§e§l| §eContinue §7to final confirmation"
+      description: "The expansion area to be undone has changes."
+      consequence: "Continuing will discard changes in that area."
+      action: "Final confirmation"
       button:
         continue: "§eContinue"
         cancel: "§cBack"
@@ -97,61 +90,44 @@ chanpon:
       expand:
         title: "Confirm expansion"
         display: "§eConfirm expansion"
-        lore:
-          - "§f§l| §7Direction §e{direction}"
-          - "§f§l| §7Expansion completes immediately after confirming."
+        direction_label: "Direction"
+        description: "Expansion completes immediately after confirming."
       step_back:
         title: "Confirm step back"
         display: "§eStep back once"
-        lore:
-          - "§f§l| §7Undo the latest expansion."
-        lore_modified:
-          - "§f§l| §7Undo the latest expansion."
-          - "§c§l| §cThe expanded area has changes."
+        description: "Undo the latest expansion."
+        modified_warning: "The expanded area has changes."
     notification:
-      lore:
-        - "§f§l| §7Current §e{status}"
-        - "§e§l| §eClick §7to toggle"
+      current_label: "Current"
+      action: "Toggle"
     critical:
       display: "§cCritical settings"
-      action_lore:
-        - "§e§l| §eClick §7to open"
-      lore:
-        - "§f§l| §7Open critical actions such as world deletion."
-        - "§e§l| §eClick §7to open"
-      production_lore:
-        - "§f§l| §7Critical settings are display-only here."
-        - "§c§l| §cThey cannot be used for production worlds."
-      disabled_lore:
-        - "§c§l| §cCritical settings are hidden in your user settings."
+      action: "Open"
+      production_warning: "They cannot be used for production worlds."
+      disabled_warning: "Critical settings are hidden in your user settings."
       menu_title: "Critical settings"
       delete_display: "§cDelete world"
-      delete_lore:
-        - "§f§l| §7Delete this world."
-        - "§c§l| §cThis cannot be undone."
-        - "§e§l| §eClick §7to confirm"
+      delete_description: "Delete this world."
+      delete_danger: "This cannot be undone."
+      delete_action: "Confirm"
       unavailable_display: "§7Unavailable"
       unavailable_lore:
         - "§cCritical settings cannot be used for production worlds."
       unavailable_message: "§cCritical settings are not available for this world."
       confirm_title: "World deletion confirmation"
       confirm_display: "§cDelete this world?"
-      confirm_lore:
-        - "§f§l| §7Target §e{world}"
-        - "§c§l| §cThis action cannot be undone."
+      confirm_target_label: "Target"
+      confirm_danger: "This action cannot be undone."
       final_title: "Final world deletion confirmation"
       final_display: "§4Really delete this world?"
-      final_lore:
-        - "This is the final confirmation."
-        - "Deleted worlds cannot be restored."
+      final_description: "This is the final confirmation."
+      final_danger: "Deleted worlds cannot be restored."
       deleted: "§aWorld deleted."
       delete_failed: "§cFailed to delete world."
     info:
-      lore:
-        - "§f§l| §7Description §f{description}"
+      description_label: "Description"
     mwm_action:
-      lore:
-        - "§e§l| §eClick §7to open"
+      action: "Open"
     message:
       expand_success: "§aWorld expanded."
       expand_failed: "§cWorld expansion failed."
@@ -165,39 +141,11 @@ chanpon:
     development: "§eDevelopment"
     private: "§7Closed"
     updated: "§aPublish level updated: §f{level}"
-    item:
-      title: "§ePublish level: §f{level}"
-      current: "§f§l| §7Current §e{level}"
-      public_desc: "§f§l| §7{prefix}§aOpen §fShown in Discovery and directly visitable."
-      development_desc: "§f§l| §7{prefix}§eDevelopment §fHidden from lists; Meet uses request."
-      private_desc: "§f§l| §7{prefix}§7Closed §fOnly members can visit."
-      left_click: "§e§l| §eLeft click §7previous"
-      right_click: "§e§l| §eRight click §7next"
-      cycle: "§e§l| §eClick §7cycle"
-      summary: "§7Open / Development / Closed"
-      line: "§f§l| §7Publish level §e{level}"
   portal:
     development:
       - "§cThis world is under construction and cannot be entered."
       - "§eUse /visit {owner} {world} §7to ask the world owner for permission."
     locked:
       - "§cThis world is currently locked and cannot be entered."
-  discovery_sort:
-    title: "§eSort"
-    current: "§f§l| §7Current §e{sort}"
-    new: "New"
-    spotlight: "Spotlight"
-    random: "Random"
-    new_line: "§7- §aNew"
-    spotlight_line: "§7- §dSpotlight"
-    random_line: "§7- §bRandom"
-    cycle: "§e§l| §eClick §7cycle"
-  command:
-    player_only: "§cThis command can only be used by a player."
-    no_permission: "§cYou do not have permission."
-    usage_create: "§cUsage: /mwm create <player>"
-    core_unavailable: "§cMyWorldManager is not available."
-    no_templates: "§cNo MyWorld templates are available."
-    player_not_found: "§cPlayer not found: {player}"
   message:
     protected_world: "§cThis world is protected because it has been submitted/marked as completed. Only public level, visit notifications, and portal acquisition can be changed."

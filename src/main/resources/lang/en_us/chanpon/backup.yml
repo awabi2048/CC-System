@@ -6,6 +6,7 @@ chanpon:
       prev: "§ePrevious page"
       next: "§eNext page"
       back: "§7Back"
+      middle_click: "Middle-Click"
     kind:
       user_manual: "§aUser manual"
       admin_manual: "§eAdmin manual"
@@ -31,14 +32,12 @@ chanpon:
       world_creation:
         enabled:
           display: "§aWorld creation: enabled"
-          lore:
-            - "§7Players are allowed to create worlds."
-            - "§eClick §7to disable it."
+          description: "Players are allowed to create worlds."
+          action: "Disable"
         disabled:
           display: "§cWorld creation: disabled"
-          lore:
-            - "§7Players cannot create new worlds."
-            - "§eClick §7to enable it."
+          description: "Players cannot create new worlds."
+          action: "Enable"
       export:
         display: "§7World Data Export"
         lore:
@@ -49,15 +48,14 @@ chanpon:
           - "§7Version: §f{version}"
       switch_mwm:
         display: "§bMyWorldManager"
-        lore:
-          - "§7Switch to the MyWorldManager admin menu."
-          - "§eClick §7to switch"
+        description: "Switch to the MyWorldManager admin menu."
+        action: "Switch"
     export_menu:
       title: "§0World Data Export"
       bulk:
         display: "§aBulk Export"
-        lore:
-          - "§7Export all production worlds as a ZIP file."
+        description: "Export all production worlds as a ZIP file."
+        action: "Bulk export"
       info:
         display: "§bExport Info"
         lore:
@@ -65,10 +63,9 @@ chanpon:
           - "§7Page: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
-        lore:
-          - "§7Owner: §f{owner}"
-          - "§7Created: §f{created}"
-          - "§eLeft click §7export this world"
+        owner_label: "Owner"
+        created_label: "Created"
+        action: "Export this world"
     automation_notice:
       backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
       rollback_warning: "§cScheduled rollback will start in §f{remaining}§c. You will be moved to spawn before it starts."
@@ -133,8 +130,8 @@ chanpon:
     favorite_visit:
       owner: "§7Owner: §f{owner}"
       tags: "§7Tags: §f{tags}"
-      warp: "§eLeft click §7Warp"
-      toggle_favorite: "§eRight click §7Add/remove favorite"
+      warp: "Warp"
+      toggle_favorite: "Add/remove favorite"
       info:
         display: "§bList info"
         lore:
@@ -144,17 +141,14 @@ chanpon:
       title: "§0World Data Management"
       bulk_backup:
         display: "§aRun Bulk Backup"
-        lore:
-          - "§7Back up all production worlds."
+        description: "Back up all production worlds."
       bulk_rollback:
         display: "§cRun Bulk Rollback"
-        lore:
-          - "Open bulk backup list."
+        description: "Open bulk backup list."
       annual_archive:
         display: "Annual Update"
-        lore:
-          - "Archive completed worlds and purge others."
-          - "Full backup is created before execution."
+        description: "Archive completed worlds and purge others."
+        warning: "Full backup is created before execution."
       info:
         display: "§bList Info"
         lore:
@@ -162,12 +156,11 @@ chanpon:
           - "§7Page: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
-        lore:
-          - "§7Owner: §f{owner}"
-          - "§7Created: §f{created}"
-          - "§7Backups: §f{backups}"
-          - "§eLeft click §7create backup"
-          - "§eRight click §7backup list"
+        owner_label: "Owner"
+        created_label: "Created"
+        backups_label: "Backups"
+        backup_action: "Create backup"
+        list_action: "Backup list"
     backup_list:
       title: "§0Backup List"
       info:
@@ -177,14 +170,13 @@ chanpon:
           - "§7Page: §f{page}§7/§f{pages}"
       item:
         display: "§e{name}"
-        lore:
-          - "§7Type: {kind}"
-          - "§7Created: §f{created}"
-          - "§7Worlds: §f{worlds}"
-          - "§7Size: §f{size}"
-          - "§7Actor: §f{actor}"
-          - "§eLeft click §7rollback"
-          - "§eMiddle click §7delete"
+        kind_label: "Kind"
+        created_label: "Created"
+        worlds_label: "Worlds"
+        size_label: "Size"
+        actor_label: "Actor"
+        rollback_action: "Rollback"
+        delete_action: "Delete"
     automation:
       title: "§0Automation Settings"
       auto_backup:
@@ -202,8 +194,8 @@ chanpon:
     owner_backup:
       title: "§0World Backup Management"
       display: "§aWorld Backups"
-      lore:
-        - "§7Manage backups and rollbacks for this production world."
+      description: "Manage backups and rollbacks for this production world."
+      action: "Backup management"
       name_input:
         title: "§0Backup Name"
         body: "§7Enter a backup name. Leave it empty to use the default name."
@@ -212,12 +204,11 @@ chanpon:
         cancel: "§cCancel"
       create:
         display: "§aCreate Backup"
-        lore:
-          - "§7Create a manual backup of this world."
+        description: "Create a manual backup of this world."
+        action: "Create"
       cooldown:
         display: "§cBackup Cooldown"
-        lore:
-          - "§7You can create the next backup after §f{remaining}§7."
+        description: "You can create the next backup after {remaining}."
       info:
         display: "§b{world}"
         lore:
@@ -225,10 +216,9 @@ chanpon:
           - "§7Page: §f{page}§7/§f{pages}"
       item:
         display: "§e{name}"
-        lore:
-          - "§7Created: §f{created}"
-          - "§7Actor: §f{actor}"
-          - "§eLeft click §7rollback this world"
+        created_label: "Created"
+        actor_label: "Actor"
+        rollback_action: "Rollback this world"
     confirm:
       backup_world:
         title: "§0World Backup Confirmation"
