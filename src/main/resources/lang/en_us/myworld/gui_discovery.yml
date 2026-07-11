@@ -6,53 +6,27 @@ gui:
       tag: §f§l| §7Tags §e{tags}
       favorite: §f§l| §7Favorites §c{count}
       recent_visitors: §f§l| §7Recent Visitors §a{count}
-      warp_hint: §e§l| §eLeft-Click §7Warp to this world
-      preview_hint: §e§l| §eRight-Click §7Show preview
-      member_request_hint: §e§l| §eShift + Left-Click §7Request Membership
-      favorite_hint_add: §e§l| §eShift + Right-Click §7Add to favorites
-      favorite_hint_remove: §e§l| §eShift + Right-Click §7Remove from favorites
-      favorite_toggle: §e§l| §eShift + Right-Click §7Toggle favorite
-      fav_add: §e§l| §eRight-Click §7Add to favorites
-      fav_remove: §e§l| §eRight-Click §7Remove from favorites
-      spotlight_remove: §e§l| §eShift + Right-Click §7Remove from SPOTLIGHT
+      warp_hint: Warp to this world
+      preview_hint: Show preview
+      member_request_hint: Show membership request
+      favorite_hint_add: Add to favorites
+      favorite_hint_remove: Remove from favorites
+      favorite_toggle: Toggle favorite
+      fav_add: Add to favorites
+      fav_remove: Remove from favorites
+      spotlight_remove: Remove from SPOTLIGHT
     spotlight_empty:
       name: §7[Empty slot]
-      lore_admin:
-      - §7This slot is currently vacant.
-      - §7Click to view the world you are currently in.
-      - Register with §6SPOTLIGHT§7.
-      - §e§nClick to register
-      lore_visitor:
-      - §7This slot is currently vacant.
-      - New recommended worlds managed by §7
-      - Please wait for §7 to appear!
+      description: This slot is currently vacant.
+      action:
+        register: Register the current MyWorld
     sort:
       display: §aSelecting the sorting method
       label: Sort order
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7{current_prefix} §f{sort_name}
-      - '  §f{sort_desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{sort_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to toggle
-      lore_spotlight_admin:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Selected §6{sort_name}
-      - '  §f{sort_desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{sort_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §eLeft/Right-Click §7Switch sort order
-      - §e§l| §eShift + Left-Click §7Edit SPOTLIGHT description
-      - §8§m－－－－－－－－－－－－－－－－－－
       name: §aSelect Sort Order
-      click: §e§nClick to cycle
       action:
         previous: Select previous sort order
         next: Select next sort order
-        edit_operation: Shift + Left-Click
         edit_spotlight: Edit SPOTLIGHT description
       type:
         hot: Popular
@@ -60,42 +34,11 @@ gui:
         favorites: Favorites
         spotlight: Spotlight
         random: Random
-    tag_select:
-      display: §aSelect Tag
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| Selected tag §6{tag}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{tag_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §eLeft-Click §7Go to the next option
-      - §e§l| §eRight-Click §7Clear the selection
-      - §8§m－－－－－－－－－－－－－－－－－－
-      current: §f§l| Current Tag §6{tag}
-      none: §fNone
-      active: §a» {tag}
-      inactive: §8- {tag}
-      click_next: §e§nLeft-Click §7Next
-      click_reset: §e§nRight-Click §7Reset
     tag_filter:
       name: Tag Filter
       label: Selected tag
-      lore:
-      - §8§m-----------------------
-      - §f§l| §7Selected §6{tag}
-      - §8§m-----------------------
-      - '{tag_list}'
-      - §8§m-----------------------
-      - '{click_left}'
-      - '{click_right}'
-      - §8§m-----------------------
-      current_prefix: Selected
-      active: '§e» '
-      inactive: '§7  '
       no_selection: No selection
       all: All
-      click_left: §e§l| §eLeft-Click §7Cycle filter
-      click_right: §e§l| §eRight-Click §7Previous
       action:
         next: Select next tag
         previous: Select previous tag

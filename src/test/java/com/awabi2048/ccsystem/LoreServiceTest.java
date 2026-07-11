@@ -82,6 +82,30 @@ class LoreServiceTest {
     }
 
     @Test
+    void richLoreKeepsExplicitSeparatorAsTheOnlyIntermediateRule() {
+        List<String> lines = plain(new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(
+                List.of(
+                    new GuiLoreLine.Text("上段"),
+                    GuiLoreLine.Separator.INSTANCE,
+                    GuiLoreLine.Separator.INSTANCE,
+                    GuiLoreLine.Spacer.INSTANCE,
+                    GuiLoreLine.Spacer.INSTANCE,
+                    new GuiLoreLine.Text("下段")
+                ),
+                GuiLoreFrame.BOTH
+            )
+        ));
+
+        assertEquals(5, lines.size());
+        assertEquals(30, lines.get(0).codePointCount(0, lines.get(0).length()));
+        assertEquals("上段", lines.get(1));
+        assertEquals(30, lines.get(2).codePointCount(0, lines.get(2).length()));
+        assertEquals("下段", lines.get(3));
+        assertEquals(30, lines.get(4).codePointCount(0, lines.get(4).length()));
+    }
+
+    @Test
     void legacyBoundarySeparatorsAreNotDuplicatedByStandardFrame() {
         List<String> lines = plain(new LoreServiceImpl().render(
             new GuiLoreSpec.Auto(
@@ -95,7 +119,7 @@ class LoreServiceTest {
     }
 
     @Test
-    void blocksInsertExactlyOneSeparatorBetweenBlocks() {
+    void blocksUseOuterSeparatorsAndSingleSpacerBetweenBlocks() {
         List<String> lines = plain(new LoreServiceImpl().render(
             new GuiLoreSpec.Blocks(
                 List.of(
@@ -109,9 +133,9 @@ class LoreServiceTest {
         assertEquals(7, lines.size());
         assertEquals(30, lines.get(0).codePointCount(0, lines.get(0).length()));
         assertEquals("説明", lines.get(1));
-        assertEquals(30, lines.get(2).codePointCount(0, lines.get(2).length()));
+        assertEquals("", lines.get(2));
         assertTrue(lines.get(3).endsWith("現在値 3"));
-        assertEquals(30, lines.get(4).codePointCount(0, lines.get(4).length()));
+        assertEquals("", lines.get(4));
         assertTrue(lines.get(5).endsWith("左クリック 変更"));
         assertEquals(30, lines.get(6).codePointCount(0, lines.get(6).length()));
     }

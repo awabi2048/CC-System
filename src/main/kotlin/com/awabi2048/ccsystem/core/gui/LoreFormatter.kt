@@ -44,6 +44,17 @@ object LoreFormatter {
         return "§e§n$actionText"
     }
 
+    fun optionLine(
+        label: String,
+        selected: Boolean,
+        selectedColor: String,
+        inactiveColor: String
+    ): String {
+        val marker = if (selected) "§a\u00BB" else "§8\u30FB"
+        val color = if (selected) selectedColor else inactiveColor
+        return "$marker $color$label"
+    }
+
     fun textLine(text: String): String {
         return "§7$text"
     }

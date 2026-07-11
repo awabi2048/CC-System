@@ -45,6 +45,12 @@ sealed interface GuiLoreLine {
         val action: String,
         val resolvedText: String
     ) : GuiLoreLine
+    data class Option(
+        val label: String,
+        val selected: Boolean,
+        val selectedColor: String,
+        val inactiveColor: String
+    ) : GuiLoreLine
     data class Warning(val content: String) : GuiLoreLine
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
@@ -94,6 +100,43 @@ data class GuiItemSpec(
     val lore: GuiLoreSpec,
     val role: GuiElementRole,
     val amount: Int
+)
+
+data class GuiMenuIconAction(
+    val operation: String,
+    val action: String,
+    val resolvedText: String?,
+    val enabled: Boolean
+)
+
+data class GuiMenuIconData(
+    val label: String,
+    val value: Any?,
+    val valueColor: String
+)
+
+data class GuiMenuIconOption(
+    val label: String,
+    val selected: Boolean,
+    val selectedColor: String,
+    val inactiveColor: String
+)
+
+/**
+ * メニュー画面は表示情報だけを渡し、区切り・Lore行・グリントはCC-Systemが組み立てる。
+ */
+data class GuiMenuIconSpec(
+    val material: Material,
+    val name: GuiNameSpec,
+    val role: GuiElementRole,
+    val amount: Int,
+    val description: List<String>,
+    val data: List<GuiMenuIconData>,
+    val options: List<GuiMenuIconOption>,
+    val warnings: List<String>,
+    val dangers: List<String>,
+    val actions: List<GuiMenuIconAction>,
+    val glint: Boolean?
 )
 
 sealed interface GuiFrameSection {

@@ -7,22 +7,13 @@ gui:
       current_world: §f§l| §7Current World §f{world}
       current_world_same: §f§l| §7Current World §6{world} §7(same world)
       status: §f§l| §7Status §e{status}
-      click_visit: §e§l| §eClick §7Warp to this world
-      click_request: §e§l| §eClick §7Send warp request
+      click_visit: Warp to this world
+      click_request: Send warp request
     status_button:
       display: §a{player}
       current: '§f§l| §7Current Status: §e{status}'
       next: '§f§l| §7Next Status: §7{next_status}'
       action: toggle
-  meet_settings:
-    title: /meet settings
-    status_selector:
-      display: §aStatus settings
-      current: §f§l| §7Current status §e{status}
-      active_prefix: '§6» '
-      inactive_prefix: '  '
-      desc_header: §f§l| §fDescription
-      click_cycle: §e§nClick to toggle
   member_request_confirm:
     title: Member Request Confirmation
     confirm: §aSend Request

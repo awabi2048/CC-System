@@ -64,8 +64,12 @@ lore:
   action_single_with_operation: '{operation} to {action}'
   click:
     any: Click
+    middle: Middle-Click
     left: Left-Click
     right: Right-Click
+    left_right: Left/Right-Click
+    shift_any: Shift + Click
+    shift_left: Shift + Left-Click
     shift_right: Shift + Right-Click
 general:
   prefix: '§7[§aMyWorldManager§7] '

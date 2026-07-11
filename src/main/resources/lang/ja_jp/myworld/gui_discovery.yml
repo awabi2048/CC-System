@@ -6,53 +6,27 @@ gui:
       tag: §f§l| §7タグ §e{tags}
       favorite: §f§l| §7お気に入り §c{count}
       recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
-      warp_hint: §e❙ §e左クリック §7このワールドへワープ
-      preview_hint: §e❙ §e右クリック §7プレビューを表示
-      member_request_hint: §e❙ §eShift+左クリック §7参加申請を表示
-      favorite_hint_add: §e❙ §eShift+右クリック §7お気に入りに追加
-      favorite_hint_remove: §e❙ §eShift+右クリック §7お気に入りを解除
-      favorite_toggle: §e❙ §eShift+右クリック §7お気に入りを切り替える
-      fav_add: §e❙ §e右クリック §7お気に入りに追加
-      fav_remove: §e❙ §e右クリック §7お気に入りを解除
-      spotlight_remove: §e❙ §eShift+右クリック §7SPOTLIGHTから削除
+      warp_hint: このワールドへワープ
+      preview_hint: プレビューを表示
+      member_request_hint: 参加申請を表示
+      favorite_hint_add: お気に入りに追加
+      favorite_hint_remove: お気に入りを解除
+      favorite_toggle: お気に入りを切り替え
+      fav_add: お気に入りに追加
+      fav_remove: お気に入りを解除
+      spotlight_remove: SPOTLIGHTから削除
     spotlight_empty:
       name: §7« 未登録のSPOTLIGHT »
-      lore_admin:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7現在このスロットにはワールドが登録されていません。
-      - §e❙ §e左クリック §7現在のマイワールドを登録
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_visitor:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7現在このスロットにはワールドが登録されていません。
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description: 現在このスロットにはワールドが登録されていません。
+      action:
+        register: 現在のマイワールドを登録
     sort:
       display: §a並び替え方法の選択
       label: 並び順
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7{current_prefix} §f{sort_name}
-      - '  §f{sort_desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{sort_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切替
-      lore_spotlight_admin:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7選択中 §6{sort_name}
-      - '  §f{sort_desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{sort_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e❙ §e左右クリック §7ソートを切り替え
-      - §e❙ §eShift+左クリック §7SPOTLIGHTの説明文を編集
-      - §8§m－－－－－－－－－－－－－－－－－－
       name: §a並び替え方法の選択
-      click: §e§nクリックで切替
       action:
         previous: 前の並び順へ変更
         next: 次の並び順へ変更
-        edit_operation: Shift+左クリック
         edit_spotlight: SPOTLIGHTの説明文を編集
       type:
         hot: §cHOT
@@ -60,42 +34,11 @@ gui:
         favorites: §eFAVORITES
         spotlight: §6SPOTLIGHT
         random: §bRANDOM
-    tag_select:
-      display: §aタグの選択
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| 選択中のタグ §6{tag}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{tag_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e❙ §e左クリック §7次へ進む
-      - §e❙ §e右クリック §7選択を解除
-      - §8§m－－－－－－－－－－－－－－－－－－
-      current: §f§l| 選択中のタグ §6{tag}
-      none: §fなし
-      active: §a» {tag}
-      inactive: §8- {tag}
-      click_next: §e❙ §e左クリック §7次へ進む
-      click_reset: §e❙ §e右クリック §7選択を解除
     tag_filter:
       name: タグフィルター
       label: 選択中のタグ
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7選択中 §6{tag}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{tag_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{click_left}'
-      - '{click_right}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      current_prefix: 選択中
-      active: '§e» '
-      inactive: '§7  '
       no_selection: 設定なし
       all: すべて
-      click_left: §e❙ §e左クリック §7フィルターを切り替え
-      click_right: §e❙ §e右クリック §7前へ戻る
       action:
         next: 次のタグへ変更
         previous: 前のタグへ変更

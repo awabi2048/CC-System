@@ -19,6 +19,8 @@ tutorial_rank:
       - "§7チュートリアルランクは完了です。職業を選ぶ準備ができました。"
       - "§7職業メニューは別導線から開いてください。"
   task:
+    nether_locked: "§cReach Pioneer before entering the Nether."
+    end_locked: "§cReach Adventurer before entering the End."
     no_requirement: "このランクの到達条件はありません"
     system_not_initialized: "タスク定義が初期化されていません"
     page_hint: "フッターの矢印でページを移動できます"

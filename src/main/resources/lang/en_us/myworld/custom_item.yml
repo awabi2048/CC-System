@@ -22,19 +22,13 @@ custom_item:
     - §8§m-----------------------
   world_seed:
     name: §dWorld Seed
-    lore:
-    - §8§m－－－－－－－－－－－－－－－－－－
+    description:
     - By using §7, §bMy World Slot§7
     - §7 can be extended by one!
-    - §8§m－－－－－－－－－－－－－－－－－－
-    - §e§l| §eUsed by right click
-    - §8§m－－－－－－－－－－－－－－－－－－
+    action: Use
   tour_sign:
     name: §bTour Sign
-    lore:
-    - §8§m－－－－－－－－－－－－－－－－－－
+    description:
     - §7A sign used as a world tour marker.
     - §7Can be placed in your MyWorld.
-    - §8§m－－－－－－－－－－－－－－－－－－
-    - §e§l| §eRight-click to place
-    - §8§m－－－－－－－－－－－－－－－－－－
+    action: Place

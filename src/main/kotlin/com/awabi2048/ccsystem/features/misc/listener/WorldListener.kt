@@ -2,7 +2,7 @@ package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
-import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.world.WorldLoadEvent
@@ -21,7 +21,7 @@ class WorldListener : Listener {
 
         // globalSoundEvents ゲームルールを false に設定
         val world = event.world
-        world.setGameRule(GameRule.GLOBAL_SOUND_EVENTS, false)
+        world.setGameRule(GameRules.GLOBAL_SOUND_EVENTS, false)
         
         CCSystem.instance.logger.info("Set globalSoundEvents to false for world: ${world.name}")
     }

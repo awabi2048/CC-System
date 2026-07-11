@@ -64,8 +64,12 @@ lore:
   action_single_with_operation: '{operation}で{action}'
   click:
     any: クリック
+    middle: ホイールクリック
     left: 左クリック
     right: 右クリック
+    left_right: 左右クリック
+    shift_any: Shift + クリック
+    shift_left: Shift + 左クリック
     shift_right: Shift + 右クリック
 general:
   prefix: '§7[§aMyWorldManager§7] '

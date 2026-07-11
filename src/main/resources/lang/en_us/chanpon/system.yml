@@ -33,12 +33,12 @@ chanpon:
       cycle_next_action: "Select next option"
       cycle_previous_action: "Select previous option"
     expand:
-      display: "§eExpand world"
+      display: "§eExpand world border"
       status_available: []
       status_max:
         - "§7This world cannot be expanded further."
     expand_menu:
-      title: "Expand world"
+      title: "Expand world border"
       center:
         display: "§eExpand from center"
         description: "Expand in every direction without moving the center."

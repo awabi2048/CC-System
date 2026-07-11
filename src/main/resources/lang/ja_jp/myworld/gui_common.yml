@@ -63,14 +63,11 @@ gui:
     title: 重大な設定
     reset_expansion:
       display: §c§nワールド拡張を初期化
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §f§l| §7現在の拡張レベル §e§l{level}
       - §f§l| §7返還されるポイント §6🛖 §e{points}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックして初期化を実行
-      - §c※この操作は取り消せません
-      - §8§m－－－－－－－－－－－－－－－－－－
+      warning: この操作は取り消せません
+      action: 初期化を実行
       lore_unavailable:
       - §cまた拡張されていないため、初期化できません
     archive_world:
@@ -93,17 +90,12 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     delete_world:
       display: §4§l§nワールドを削除
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7ワールドを完全に削除します。
-      - §7この操作は取り消せません。
-      - §8§m－－－－－－－－－－－－－－－－－－
       - '§f§l| §7返還されるポイント: §6🛖 §e{points}'
       - §8(消費したポイントのうち、{percent}%が返還されます)
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §c§nクリックして削除を実行
-      - §c※この操作は取り消せません
-      - §8§m－－－－－－－－－－－－－－－－－－
+      warning: この操作は取り消せません
+      action: 削除を実行
       lore_unavailable_slot:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §7ワールドを完全に削除します。
@@ -219,11 +211,8 @@ gui:
       blocks:
         description:
         - §7ツアーの作成・編集を行います。
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7ツアーの作成・編集を行います。
-      - §e§nクリックで開く
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action:
+        open: ツアー管理を開く
     menu:
       visitor_title: ツアー一覧
       start_selection_title: 起点ツアー選択
@@ -231,15 +220,15 @@ gui:
       single_edit_title: 'ツアー編集: {tour}'
       add_sign_title: 看板を追加
       back: §7戻る
-      add_sign_button: §e§nクリックで経由地点を追加
-      add_sign_action: §e§nクリックで追加
-      remove_sign_action: §e§nクリックで削除
-      action_open: §e§nクリックで開く
+      add_sign_button: 経由地点を追加
+      add_sign_action: 経由地点を追加
+      remove_sign_action: 経由地点を削除
+      action_open: 開く
       create:
         display: §bツアーを新規作成
         description: §7新しいツアーを作成します
-        action: §e§nクリックで作成
-        action_open: §e§nクリックで開く
+        action: ツアーを作成
+        action_open: ツアーを開く
       info:
         display: §eInfo
         lore:
@@ -249,21 +238,21 @@ gui:
         - §7スタート看板をクリックすることで、ツアーを開始できます。
       edit_text:
         display: §e表示情報を変更
-        lore:
-        - §e§l| §e左クリック §7名前と説明を編集
-        - §e§l| §e右クリック §7アイコンを編集
+        action:
+          text: 名前と説明を編集
+          icon: アイコンを編集
       save:
         display: §a保存
-        action: §e§nクリックで保存
+        action: ツアーを保存
       delete:
         display: §cツアーを削除
-        action: §e§nクリックで実行
+        action: ツアーを削除
       delete_confirm:
         title: ツアー削除確認
         confirm: §a削除する
         warning: §c元に戻せません
         cancel: §cキャンセル
-        cancel_action: §e§nクリックで戻る
+        cancel_action: 戻る
         body_line1: §cこのツアーを削除します。
         body_line2: §7この操作は元に戻せません。
       discard_new:
@@ -273,12 +262,12 @@ gui:
       tour_item:
         visitors_none: §f§l| §7訪問者 §7まだいません
         visitors_count: §f§l| §7訪問者 §a{count}人
-        action_edit: §e§nクリックでツアーを編集
+        action_edit: ツアーを編集
         action_current: §bツアー中！
-        action_start: §e§nクリックでツアーを開始
-        action_bind: §e§nクリックでツアーに紐付け
-      add_waypoint_button: §e§nクリックで経由点を追加
-      remove_waypoint_action: §e§nクリックで削除
+        action_start: ツアーを開始
+        action_bind: ツアーに紐付け
+      add_waypoint_button: 経由点を追加
+      remove_waypoint_action: 経由点を削除
     bind_sign_title: ツアーを選択
     create_dialog:
       title: ツアーを新規作成

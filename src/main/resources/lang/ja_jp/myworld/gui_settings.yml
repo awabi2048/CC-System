@@ -8,17 +8,9 @@ gui:
       right: 右クリック
     info:
       display: §aワールド情報の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで名前と説明を編集
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7クリック後、ダイアログでまとめて編集します
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
-        summary_je:
+        summary:
         - §7クリック後、ダイアログでまとめて編集します
-        summary_be:
-        - §7ワールド名と説明文をまとめて編集します
       action:
         open_editor: ワールド情報を編集
       dialog:
@@ -29,28 +21,10 @@ gui:
         guest: ゲスト用
         member: メンバー用
         both: ゲスト/メンバー共通
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e❙ §e左クリック §7ゲスト用スポーン地点を設定
-      - §e❙ §e右クリック §7メンバー用スポーン地点を設定
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7クリック後、設定したい地点のブロックを
-      - §7クリックして決定します。
-      - §e※設定時のプレイヤーの向きが保存されます
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで設定を開始
-      - §7クリックした地点をゲスト/メンバー両方に設定します
-      - §e※設定時のプレイヤーの向きが保存されます
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
-        description_je:
+        description:
         - §7クリック後、設定したい地点のブロックを
         - §7クリックして決定します。
-        - §e※設定時のプレイヤーの向きが保存されます
-        description_be:
-        - §7クリックした地点をゲスト/メンバー両方に設定します
         - §e※設定時のプレイヤーの向きが保存されます
       action:
         set_guest: ゲスト用スポーン地点を設定
@@ -60,11 +34,6 @@ gui:
       must_be_in_world_lore: §c※この設定を変更するにはワールド内にいる必要があります
     icon:
       display: §aワールドアイコンの変更
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7クリックした後、インベントリ内のアイテムを
-      - §7クリックしてアイコンを設定します
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         current:
         - §f§l| §7現在のアイコン {current_icon}
@@ -75,13 +44,6 @@ gui:
         start_selection: アイコンを設定
     tags:
       display: §aワールドタグの設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7設定中のタグ
-      - '{tags_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックしてタグを編集
-      - §8§m－－－－－－－－－－－－－－－－－－
       lore_empty: '  §fなし'
       lore_item: '  §6・{tag}'
       blocks:
@@ -115,15 +77,9 @@ gui:
       - §f§l| §7現在の拡張レベル §e§l{current}/{max}
       - §f§l| §cこれ以上拡張できません！
       - §8§m－－－－－－－－－－－－－－－－－－
-      lore_open_menu_hint_je:
-      - §e§l| §e左クリック §7ボーダー拡張メニューを開く
-      lore_open_menu_hint_be:
-      - §e§l| §eクリック §7ボーダー拡張メニューを開く
       lore_border_info:
       - '§f§l| §7現在のボーダー中心 §fX: §e{x} §7/ §fZ: §e{z}'
       - §f§l| §7現在のボーダーサイズ §e{size}
-      lore_teleport_hint:
-      - §e§l| §e右クリック §7ボーダー中心の地表へテレポート
       lore_no_border:
       - §aこのワールドにボーダーはありません。
       blocks:
@@ -147,18 +103,10 @@ gui:
         - '§f§l| §7現在のボーダー中心 §fX: §e{x} §7/ §fZ: §e{z}'
         - §f§l| §7現在のボーダーサイズ §e{size}
       action:
-        open_menu_je: ボーダー拡張メニューを開く
-        open_menu_be: ボーダー拡張メニューを開く
+        open_menu: ボーダー拡張メニューを開く
         teleport_center: ボーダー中心の地表へテレポート
     environment:
       display: §aワールド環境の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7ワールドのバイオーム、天気、重力を
-      - §7変更することができます。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで表示
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary:
         - §7ワールドのバイオーム、天気、重力を
@@ -168,25 +116,6 @@ gui:
     publish:
       display: §6公開レベルの変更
       current_label: 現在の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在の設定 {current_color}{current_level}
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{level_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e❙ §e左クリック §7前のページへ移動
-      - §e❙ §e右クリック §7次のページへ移動
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在の設定 {current_color}{current_level}
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{level_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで次の公開レベルへ
-      - §8§m－－－－－－－－－－－－－－－－－－
       active_prefix: '§6» '
       inactive_prefix: '  '
       blocks:
@@ -198,18 +127,8 @@ gui:
       action:
         previous: 前のページへ移動
         next: 次のページへ移動
-        cycle_bedrock: 次の公開レベルへ
     member:
       display: §6メンバーの管理
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在のメンバー数 §b{count}人
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §bメンバーの一覧
-      - '{member_list}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで一覧を表示
-      - §8§m－－－－－－－－－－－－－－－－－－
       role_owner: オーナー
       role_moderator: モデレーター
       role_member: メンバー
@@ -258,12 +177,6 @@ gui:
       - §8§m－－－－－－－－－－－－－－－－－－
     visitors:
       display: §a訪問中のプレイヤー一覧
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在ワールドを訪れているプレイヤー §e{count}人
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで一覧を表示
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary:
         - §f§l| §7現在ワールドを訪れているプレイヤー §e{count}人
@@ -273,66 +186,29 @@ gui:
       display: §a訪問通知の切り替え
       'on': オン
       'off': オフ
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在の設定 {color}{status}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7オンの場合、メンバー以外の訪問者が
-      - §7来た際にメンバー全員に通知します
-      - §7個人設定からオフにすることもできます
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切替
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
-        current:
-        - §f§l| §7現在の設定 {color}{status}
+        current_label: 現在の設定
         description:
-        - §7オンの場合、メンバー以外の訪問者が
-        - §7来た際にメンバー全員に通知します
-        - §7個人設定からオフにすることもできます
+        - オンの場合、メンバー以外の訪問者が
+        - 来た際にメンバー全員に通知します
+        - 個人設定からオフにすることもできます
       action:
         toggle: 切り替え
     announcement:
       display: §aプレイヤー案内の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7訪問者に向けて表示する
-      - §7案内メッセージを設定します。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e❙ §e左クリック §7メッセージを設定
-      - §e❙ §e右クリック §7設定をリセット
-      - '{message_preview}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bedrock:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7案内メッセージの編集・リセットを行います
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで操作メニューを開く
-      - '{message_preview}'
-      - §8§m－－－－－－－－－－－－－－－－－－
       preview_header: §f§l| §7現在の案内メッセージ
-      preview_footer: §e§nクリックして編集・リセット
       blocks:
-        description_je:
+        description:
         - §7訪問者に向けて表示する
         - §7案内メッセージを設定します。
-        description_be:
-        - §7案内メッセージの編集・リセットを行います
         preview:
         - '{message_preview}'
       action:
         set_message: メッセージを設定
         reset_message: 設定をリセット
-        open_menu_bedrock: 操作メニューを開く
+        open_menu: 操作メニューを開く
     critical:
       display: §c§n重大な設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §cワールドの削除や、拡張の初期化など
-      - §c取り返しのつかない操作を行います。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで表示
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary:
         - §cワールドの削除や、拡張の初期化など
@@ -341,13 +217,6 @@ gui:
         open: 表示
     portals:
       display: §b設置済みポータルの管理
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7ワールド内に設置されているポータルを
-      - §7一括で管理・確認します。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで表示
-      - §8§m－－－－－－－－－－－－－－－－－－
       blocks:
         summary:
         - §7ワールド内に設置されているポータルを
@@ -359,72 +228,41 @@ gui:
     cycle_action:
       next: 次の項目へ変更
       previous: 前の項目へ変更
+      toggle: 切り替え
     notification:
       display: §a訪問者の通知
       blocks:
         description:
-        - §7誰かがあなたのワールドを訪れたときに
-        - §7通知を送信するかどうかを設定します。
-        current:
-        - §f§l| §7現在の状態 {status}
-        action:
-        - §e§nクリックで切替
+        - 誰かがあなたのワールドを訪れたときに
+        - 通知を送信するかどうかを設定します。
+        current_label: 現在の状態
     language:
       display: §a言語設定
       format: §f{language}
       blocks:
         description:
-        - §7メニューやメッセージの表示言語を変更します。
-        current:
-        - '§f§l| §7現在の設定: §f{language}'
-        action:
-        - §e§nクリックで次へ
+        - メニューやメッセージの表示言語を変更します。
+        current_label: 現在の設定
     critical_settings_visibility:
       display: §a重大な設定の表示
       blocks:
         description:
-        - §7ワールド管理メニュー内の
-        - §7「重大な設定」アイコンを表示するか設定します。
-        current:
-        - §f§l| §7現在の設定 {status}
-        action:
-        - §e§nクリックで切替
+        - ワールド管理メニュー内の
+        - 「重大な設定」アイコンを表示するか設定します。
+        current_label: 現在の設定
     tour_navigation:
       display: §bワールドツアーのナビゲーション
       blocks:
         description:
-        - §7ワールドツアー中のナビ表示方法を切り替えます。
-        - §7メッセージは常に表示されます。
-        current:
-        - §f§l| §7現在の設定 §b{status}
-        action:
-        - §e§nクリックで切替
+        - ワールドツアー中のナビ表示方法を切り替えます。
+        - メッセージは常に表示されます。
       mode:
         bossbar_only: ボスバーのみ
         all: すべて
         none: なし
-    beta_features:
-      display: §eベータ機能（実験的機能）
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7開発中の機能を有効化します。
-      - §7現在は、従来のチャット入力の代わりに
-      - §7新しいダイアログ入力を使用します。
-      - §c※ 1.21.8より古いクライアントでは動作しないため、
-      - §c将来的にサポート終了予定です！
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7現在の状態 {status}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで切替
-      - §8§m－－－－－－－－－－－－－－－－－－
     button:
       display: §6個人設定
-      action: クリックして開く
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7表示言語や通知などを変更します。
-      - §e§nクリックで開く
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 個人設定を開く
   environment:
     title: 環境設定
     gravity:
@@ -440,10 +278,11 @@ gui:
     weather:
       display: §b天候の設定
       current: '§f§l| §7現在の天候: §b{weather}'
-      click_cycle: §e❙ §e左クリック §7切り替える
-      click_confirm: §e❙ §e右クリック §7確定してポイントを消費
       cost: §f§l| §7必要ポイント §6🛖 §e{cost}
       desc: §7設定した天候で固定されます。
+      action:
+        cycle: 天候を切り替え
+        confirm: 確定してポイントを消費
     biome:
       display: §aバイオームの設定
       current: '§f§l| §7現在のバイオーム: §a{biome}'
@@ -456,8 +295,9 @@ gui:
     invite:
       name: §aメンバーを招待
       desc: §7クリックした後、名前を入力して招待します
-      click_normal: §e❙ §eクリック §7通常モードで実行
-      click_force: §e❙ §eShift+クリック §7強制追加モードで実行
+      action:
+        normal: 招待
+        force: 強制追加
     remove_confirm:
       title: 確認
       lore:
@@ -474,26 +314,21 @@ gui:
       confirm_desc: §7このプレイヤーをワールドメンバーから削除します
     item:
       last_online_label: 最終オンライン
+      online_label: §aオンライン
       lore_info:
       - §8§m－－－－－－－－－－－－－－－－－－
       - '{last_online}'
       - §f§l| §7権限 §f{role}
       - §8§m－－－－－－－－－－－－－－－－－－
-      lore_actions:
-      - §e❙ §e左クリック §7権限を{next_role}に変更する
-      - §e❙ §eShift+左クリック §7オーナー権限を譲渡
-      - §e❙ §eShift+右クリック §7ワールドメンバーから削除
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_actions_bedrock:
-      - §e❙ §eクリック §7権限を{next_role}に変更する
-      - §e❙ §eクリック §7削除/譲渡は /myworld コマンドを使用
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action:
+        change_role: 権限を{next_role}に変更
+        transfer_owner: オーナー権限を譲渡
+        remove_member: ワールドメンバーから削除
     pending_item:
       name: §e{player} §7(招待中)
       status_online: §e招待中 §7(§aオンライン§7)
       status_offline: §e招待中 §7(§cオフライン§7)
-      click_java: §7招待を取り消す
-      click_bedrock: §7招待を取り消す
+      click: §7招待を取り消す
       lore:
       - §8§m－－－－－－－－－－－－－－－－－－
       - §f§l| §7状態 {status}
@@ -531,10 +366,4 @@ gui:
       confirm: §cキックする
       confirm_desc: §7このプレイヤーをワールドから追い出します
     item:
-      kick: §e§nクリックでキックする
-      kick_bedrock: §e§nクリックでキックする
-  tag_editor:
-    title: ワールドタグの編集
-    status_active: §a有効
-    status_inactive: §c無効
-    click_toggle: §e§nクリックで切替
+      kick: キック

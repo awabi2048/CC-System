@@ -5,8 +5,8 @@ kantan_commander_clean:
       close: "閉じる"
     programs:
       title: "Kantan Commander: プログラム"
-      action_get: "左クリックでディスクを受け取る"
-      action_edit: "右クリックで編集する"
+      action_get: "ディスクを受け取る"
+      action_edit: "編集する"
     editor:
       title: "Kantan Commander: {name}"
       summary: "内容"
@@ -14,19 +14,19 @@ kantan_commander_clean:
       test: "テスト実行"
       trigger: "トリガー: {trigger}"
       save: "保存"
-      action_edit: "左クリックで編集"
-      action_delete: "右クリックで削除"
+      action_edit: "編集する"
+      action_delete: "削除する"
     type:
       title: "コマンド追加"
     params:
       title: "{type}: パラメータ"
-      action_cycle: "クリックで値を切り替え"
+      action_cycle: "値を切り替える"
   item:
     commands: "コマンド数"
     owner: "作成者"
     trigger: "トリガー"
-    action_edit: "右クリックで編集"
-    action_place: "Shift + 右クリックで設置"
+    action_edit: "編集する"
+    action_place: "設置する"
   trigger:
     redstone_rising: "レッドストーンON"
     redstone_edge: "レッドストーン変化"
@@ -76,3 +76,4 @@ kantan_commander_clean:
     saved: "保存しました。"
     reloaded: "設定を再読み込みしました。"
     max_commands: "コマンド数の上限です。最大: {max}"
+    no_placement_access: "この設置済みディスクを操作する権限がありません。"

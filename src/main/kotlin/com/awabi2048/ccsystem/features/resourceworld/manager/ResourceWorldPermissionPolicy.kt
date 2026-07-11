@@ -9,7 +9,7 @@ import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion
 import java.util.concurrent.CompletableFuture
 import net.luckperms.api.LuckPerms
 import net.luckperms.api.node.types.PermissionNode
-import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.World
 
 /** 資源ワールド固有の権限を一括管理し、旧ワールドのコンテキストを残さない。 */
@@ -17,7 +17,7 @@ object ResourceWorldPermissionPolicy {
     private val plugin: CCSystem get() = CCSystem.instance
 
     fun apply(world: World): CompletableFuture<Void> {
-        world.setGameRule(GameRule.GLOBAL_SOUND_EVENTS, false)
+        world.setGameRule(GameRules.GLOBAL_SOUND_EVENTS, false)
         applyWorldGuardDefaults(world)
         return mutateLuckPerms(world.name, add = true)
     }

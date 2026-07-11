@@ -55,10 +55,11 @@ gui:
     title: Critical Settings
     reset_expansion:
       display: §c§nReset Expansion
-      lore:
+      description:
       - §f§l| §7Current level §e§l{level}
       - §f§l| §7Refund points §6🛖 §e{points}
-      - §e§nClick to reset (Irreversible)
+      warning: This action cannot be undone
+      action: Reset expansion
       lore_unavailable:
       - §cCannot reset (not expanded)
     archive_world:
@@ -81,14 +82,12 @@ gui:
       - §8§m-----------------------
     delete_world:
       display: §4§l§nDelete World
-      lore:
+      description:
       - §7Deletes the world permanently.
-      - §7This action is irreversible.
-      - §8§m-----------------------
       - '§f§l| §7Refund points: §6🛖 §e{points}'
       - §8({percent}% of total spent points returned)
-      - §8§m-----------------------
-      - §4§lClick to DELETE (Irreversible)
+      warning: This action cannot be undone
+      action: Delete world
       lore_unavailable_slot:
       - §8§m-----------------------
       - §7Deletes the world permanently.
@@ -205,11 +204,8 @@ gui:
       blocks:
         description:
         - §7Create and edit tours.
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7Create and edit tours.
-      - §e§nClick to open
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action:
+        open: Open tour management
     menu:
       visitor_title: Tour List
       start_selection_title: Select Start Tour
@@ -217,15 +213,15 @@ gui:
       single_edit_title: 'Edit Tour: {tour}'
       add_sign_title: Add Signs
       back: §7Back
-      add_sign_button: §e§nClick to add a waypoint
-      add_sign_action: §e§nClick to add
-      remove_sign_action: §e§nClick to remove
-      action_open: §e§nClick to open
+      add_sign_button: Add waypoint
+      add_sign_action: Add waypoint
+      remove_sign_action: Remove waypoint
+      action_open: Open
       create:
         display: §bCreate New Tour
         description: §7Create a new tour.
-        action: §e§nClick to create
-        action_open: §e§nClick to open
+        action: Create tour
+        action_open: Open tour
       info:
         display: §eInfo
         lore:
@@ -235,21 +231,21 @@ gui:
         - §7Click a start sign to begin a tour.
       edit_text:
         display: §eEdit Display Info
-        lore:
-        - §e§l| §eLeft-click §7Edit name and description
-        - §e§l| §eRight-click §7Change icon
+        action:
+          text: Edit name and description
+          icon: Change icon
       save:
         display: §aSave
-        action: §e§nClick to save
+        action: Save tour
       delete:
         display: §cDelete Tour
-        action: §e§nClick to run
+        action: Delete tour
       delete_confirm:
         title: Confirm Tour Deletion
         confirm: §aDelete
         warning: §cThis cannot be undone
         cancel: §cCancel
-        cancel_action: §eClick to go back
+        cancel_action: Go back
         body_line1: §cThis tour will be deleted.
         body_line2: §7This action cannot be undone.
       discard_new:
@@ -259,12 +255,12 @@ gui:
       tour_item:
         visitors_none: §f§l| §7Visitors §7none yet
         visitors_count: §f§l| §7Visitors §a{count}
-        action_edit: §e§nClick to edit this tour
+        action_edit: Edit this tour
         action_current: §bTour in progress!
-        action_start: §e§nClick to start this tour
-        action_bind: §e§nClick to bind this tour
-      add_waypoint_button: §e§nClick to add a waypoint
-      remove_waypoint_action: §e§nClick to remove
+        action_start: Start this tour
+        action_bind: Bind this tour
+      add_waypoint_button: Add waypoint
+      remove_waypoint_action: Remove waypoint
     bind_sign_title: Select Tour
     create_dialog:
       title: Create New Tour

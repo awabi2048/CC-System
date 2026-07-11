@@ -107,18 +107,15 @@ gui:
       recent_visitors: §f§l| §7Recently visited players §a{count} people
       tag: §f§l| §7tag §e{tags}
       warp: Warp to this world
-      warp_bedrock: Warp to this world
       settings: Open world settings
-      settings_bedrock: §7Open world settings from /worldmenu
       expired: §c§nThis world has been archived
       expires_at: §f§l| §7Days until archive §f{days} days §8(archived to {date})
     creation_button:
       display: §a§lCreate a new My World
       action: Start world creation
-      lore:
+      description:
       - §7 Create a new My World.
       - §7You can freely set the template and disclosure range.
-      - §e§nClick to start creating
     creation_unavailable:
       period_disabled:
         display: §cWorld creation is currently closed.
@@ -137,28 +134,19 @@ gui:
         - §7Creation permission is required.
     stats_button:
       display: §e{player}
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7World Point §6{icon} {point}
-      - §7These points can be used to create a new My World, expand it, etc.
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7 World Slot §a§l{current_occupied}§7/{unlocked}
-      - §7This is the number of slots that can be used to create a new My World.
-      - §7 Can be released by using "World Seed"
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Pending invites/requests §e{pending_count}
-      - §f§l| §7Latest received §b{latest_pending_at}
-      - §e§nClick to open the pending list
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_bypass:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7World Point §6{icon} {point}
-      - §7These points can be used to create a new My World, expand it, etc.
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7 World Count §a§l{current_occupied}
-      - §7You have permission to bypass world count limits.
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Pending invites/requests §e{pending_count}
-      - §f§l| §7Latest received §b{latest_pending_at}
-      - §e§nClick to open the pending list
-      - §8§m－－－－－－－－－－－－－－－－－－
+      blocks:
+        points:
+        - §f§l| §7World Point §6{icon} {point}
+        - §7These points can be used to create a new My World, expand it, etc.
+        slots:
+        - §f§l| §7World Slot §a§l{current_occupied}§7/{unlocked}
+        - §7This is the number of slots that can be used to create a new My World.
+        - §7Can be unlocked by using a World Seed.
+        slots_bypass:
+        - §f§l| §7World Count §a§l{current_occupied}
+        - §7You have permission to bypass world count limits.
+        pending:
+        - §f§l| §7Pending invites/requests §e{pending_count}
+        - §f§l| §7Latest received §b{latest_pending_at}
+      action:
+        open_pending: Open pending invites and requests

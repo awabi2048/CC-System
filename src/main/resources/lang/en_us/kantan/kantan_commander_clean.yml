@@ -5,8 +5,8 @@ kantan_commander_clean:
       close: "Close"
     programs:
       title: "Kantan Commander: Programs"
-      action_get: "Left click to receive the disk"
-      action_edit: "Right click to edit"
+      action_get: "Receive the disk"
+      action_edit: "Edit"
     editor:
       title: "Kantan Commander: {name}"
       summary: "Summary"
@@ -14,19 +14,19 @@ kantan_commander_clean:
       test: "Test Run"
       trigger: "Trigger: {trigger}"
       save: "Save"
-      action_edit: "Left click to edit"
-      action_delete: "Right click to delete"
+      action_edit: "Edit"
+      action_delete: "Delete"
     type:
       title: "Add Command"
     params:
       title: "{type}: Parameters"
-      action_cycle: "Click to cycle the value"
+      action_cycle: "Cycle the value"
   item:
     commands: "Commands"
     owner: "Owner"
     trigger: "Trigger"
-    action_edit: "Right click to edit"
-    action_place: "Shift + right click to place"
+    action_edit: "Edit"
+    action_place: "Place"
   trigger:
     redstone_rising: "Redstone On"
     redstone_edge: "Redstone Change"
@@ -76,3 +76,4 @@ kantan_commander_clean:
     saved: "Saved."
     reloaded: "Reloaded configuration."
     max_commands: "Command limit reached. Max: {max}"
+    no_placement_access: "You do not have permission to manage this placed disk."
