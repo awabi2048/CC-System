@@ -27,7 +27,6 @@ messages:
   creation_failed: §c creation failed.
   world_not_found: §c World not found.
   spawn_set_start: §aSetting spawn point for {type}. Left-click a block while facing the desired direction.
-  spawn_set_start_bedrock: §aSetting spawn point for {type}. Click a block while facing the desired direction.
   spawn_setting_started: §aSetting spawn point for {type}. Click a block while facing the desired direction.
   spawn_guest_set: §aGuest spawn point set.
   spawn_member_set: §aMember spawn point set.
@@ -150,7 +149,6 @@ messages:
     cancelled_deleted: §eThe active tour was cancelled because it was deleted.
     waypoint_pick: §eRight-click a block to set the waypoint location
   expand_direction_prompt: §aLeft-click while facing the direction (NW, NE, SW, SE) you want to expand.
-  expand_direction_prompt_bedrock: §aClick while facing the direction (NW, NE, SW, SE) you want to expand.
   expand_direction_selected: '§aDirection selected: {direction}'
   expand_confirm_chat: §aPreviewing world border. Confirm expansion with these details?
   expand_confirm_button: §a§l[Confirm Expansion]

@@ -38,7 +38,7 @@ import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import java.io.File
-import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import java.util.jar.JarFile
@@ -253,7 +253,7 @@ class CCSystem : JavaPlugin() {
 
     private fun applyGlobalSoundEventsRuleToLoadedWorlds() {
         for (world in server.worlds) {
-            world.setGameRule(GameRule.GLOBAL_SOUND_EVENTS, false)
+            world.setGameRule(GameRules.GLOBAL_SOUND_EVENTS, false)
         }
     }
 

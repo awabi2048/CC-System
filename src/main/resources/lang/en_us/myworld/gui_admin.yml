@@ -44,10 +44,10 @@ gui:
       world_size_measuring: §f§l| §7World Size §8(Measuring...)
       world_size_unavailable: §f§l| §7World Size §cUnavailable
       world_size_archived_suffix: §8 (Archived)
-      action_archive: §e§l| §eShift + Right-Click §7Toggle archive
-      action_settings: §e§l| §eRight-Click §7Open world settings
-      action_warp: §e§l| §eLeft-Click §7Warp to this world
-      uuid_copy_hint: §e§l| §eMiddle-Click §7Output to chat and copy directory name
+      action_archive: Toggle archive
+      action_settings: Open world settings
+      action_warp: Warp to this world
+      uuid_copy_hint: Output to chat and copy directory name
     filter:
       archive:
         display: §eArchive Filter
@@ -70,18 +70,17 @@ gui:
         - §f§l| §7Filter type §f{type}
         - §f§l| §7Target player §b{player}
         - §8§m－－－－－－－－－－－－－－－－－－
-        - §e§l| §eLeft-Click §7Change type
-        - §e§l| §eRight-Click §7Set player
+        - Change type
+        - Set player
         - §8§m－－－－－－－－－－－－－－－－－－
         none: No Filter
         owner: Owner Worlds
         member: Member Worlds
         current_type: §f§l §7Filter Type §f{type}
         current_player: §f§l §7Target Player §b{player}
-        click_left: §e§l §eLeft-Click §7Change Filter Type
-        click_right: §e§l §eRight-Click §7Set Player
-      click_cycle: §e§nClick to cycle
-      click_lr: §e§l| §eLeft/Right-Click §7Change
+        click_left: Change filter type
+        click_right: Set player
+      click_lr: Change
       previous: Select previous option
       next: Select next option
     sort:
@@ -100,34 +99,35 @@ gui:
       lore:
       - §7Validate and update integrity of all
       - §7world and player data.
-      - §e§nClick to confirm
+      action: Open confirmation
       confirm_title: Update Data Confirmation
     repair_templates:
       display: §eRepair Templates
       lore:
       - §7Detect missing template worlds and
       - §7attempt to regenerate them.
-      - §e§nClick to confirm
+      action: Open confirmation
       confirm_title: Repair Templates Confirmation
     create_template:
       display: §aCreate Template
       lore:
       - §7Open the Template Creation Wizard.
-      - §e§nClick to start
+      action: Start template creation
     archive:
       display: §cExecute Archive
       lore:
       - §7Batch archive all expired worlds.
-      - §e§nClick to confirm
+      action: Open confirmation
       confirm_title: Batch Archive Confirmation
     convert:
       display: §6Convert World
       lore:
       - §7Register current world under MyWorld management.
-      - §e§nLeft Click§7 Convert in Normal Mode
       - §7(Rename directory for standard management)
-      - §e§nRight Click§7 Convert in Admin Mode
       - §7(Keep current structure, apply management only)
+      action:
+        normal: Convert in Normal Mode
+        admin: Convert in Admin Mode
       confirm_normal: Convert Confirmation (Normal)
       confirm_admin: Convert Confirmation (Admin)
     unlink:
@@ -136,14 +136,14 @@ gui:
       - §7Remove MyWorld configuration for this world
       - §7and revert it to a normal world.
       - §7(World data is NOT deleted)
-      - §e§nClick to confirm
+      action: Open confirmation
       confirm_title: Unlink Confirmation
     export:
       display: §bExport World
       unavailable_warning: The current world is not a MyWorld, so it cannot be exported.
       lore:
       - §7Export current world as ZIP archive.
-      - §e§nClick to confirm
+      action: Open confirmation
       confirm_title: Export Confirmation
       target_world: §f§l| §7Target World §b{world}
     plugin_info:
@@ -155,7 +155,7 @@ gui:
       display: §bAdmin Menu
       lore:
       - §7Switch to {next}.
-      - §eClick §7to switch
+      action: Switch admin menu
     archive_world:
       confirm_title: Check archive
       target_world: §f§l| §7Target world §b{world}
@@ -166,7 +166,7 @@ gui:
       display: §aWorld List
       lore:
       - §7View and manage all worlds.
-      - §e§nClick to open
+      action: Open world list
     current_world:
       display: §bCurrent World Info
       lore:
@@ -184,7 +184,7 @@ gui:
       display: §bPortal Management
       lore:
       - §7View list of placed portals.
-      - §e§nClick to open
+      action: Open portal management
   unarchive_confirm:
     title: §6Unarchive Confirmation
     lore:

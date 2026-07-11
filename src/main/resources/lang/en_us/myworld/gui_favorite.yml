@@ -21,11 +21,9 @@ gui:
       favorite: §f§l| §7Favorites §c{count}
       recent_visitors: §f§l| §7Recent Visitors §a{count}
       tag: §f§l| §7Tags §e{tags}
-      warp: §e§l| §eLeft click §7Warp to this world
-      warp_bedrock: §e§l| §eClick §7Warp to this world
-      unfavorite: §e§l| §eShift + Right-Click §7Remove from favorites
+      warp: Warp to this world
+      unfavorite: Remove from favorites
       archived_label: §c§l[ARCHIVED]
-      unfavorite_archived: §e§nClick to remove from favorites
     info:
       display: §fStatistics
       lore:
@@ -45,8 +43,7 @@ gui:
         lore:
         - §7View other worlds owned by
         - §7the owner of this world.
-        - §e§nClick to View
-        - §e§nClick to View
+        action: View other worlds
       toggle:
         name_add: §bAdd to Favorites
         name_remove: §cRemove from Favorites
@@ -55,13 +52,13 @@ gui:
         lore_remove: §7Remove this world from your favorites.
         lore_restricted_owner: §cYou cannot favorite your own world.
         lore_restricted_not_managed: §cThis location cannot be favorited.
-        click: §e§nClick to toggle
+        action: Toggle favorite
       list:
         name: §dView Favorite List
         lore:
         - §7View the list of worlds you
         - §7have added to your favorites.
-        - §e§nClick to View
+        action: View favorite worlds
     remove_confirm:
       title: Confirmation of cancellation of favorites
       lore:

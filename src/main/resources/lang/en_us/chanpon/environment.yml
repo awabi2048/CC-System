@@ -9,6 +9,7 @@ chanpon:
       action_next: "Toggle"
       action_previous: "Previous"
       action_set: "Set"
+      left_right_click: "Left/Right-Click"
       shift_left: "Shift+Left-Click"
       must_be_in_world_warning: "You must be in this world to change this setting!"
     weather:

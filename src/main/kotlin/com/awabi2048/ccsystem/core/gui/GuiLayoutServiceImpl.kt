@@ -12,6 +12,8 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiPagedListLayout
+import com.awabi2048.ccsystem.api.gui.GuiSevenColumnListLayout
+import com.awabi2048.ccsystem.api.gui.GuiSevenColumnPage
 import com.awabi2048.ccsystem.api.gui.GuiSettingsLayout
 import com.awabi2048.ccsystem.api.gui.GuiThreeChoiceLayout
 import org.bukkit.Material
@@ -64,6 +66,59 @@ class GuiLayoutServiceImpl(
             backSlot = footerLeftSlot54(),
             infoSlot = footerCenterSlot54(),
             itemSlots = (9..44).toList()
+        )
+    }
+
+    override fun sevenColumnList(itemCount: Int): GuiSevenColumnListLayout {
+        val contentCount = itemCount.coerceAtLeast(1)
+        val size: Int
+        val contentRows: List<Int>
+        when {
+            contentCount <= 7 -> {
+                size = size45()
+                contentRows = listOf(2)
+            }
+            contentCount <= 14 -> {
+                size = size54()
+                contentRows = listOf(2, 3)
+            }
+            contentCount <= 21 -> {
+                size = size45()
+                contentRows = listOf(1, 2, 3)
+            }
+            else -> {
+                size = size54()
+                contentRows = listOf(1, 2, 3, 4)
+            }
+        }
+        val itemSlots = contentRows.flatMap { row ->
+            (1..7).map { col -> row * 9 + col }
+        }
+        val footerStart = size - 9
+        return GuiSevenColumnListLayout(
+            size = size,
+            itemSlots = itemSlots,
+            previousPageSlot = footerStart + 1,
+            nextPageSlot = footerStart + 7,
+            backSlot = footerStart,
+            actionSlot = footerStart + 4,
+            itemsPerPage = itemSlots.size
+        )
+    }
+
+    override fun sevenColumnPage(totalItemCount: Int, requestedPage: Int): GuiSevenColumnPage {
+        val normalizedTotal = totalItemCount.coerceAtLeast(0)
+        val maxItemsPerPage = 28
+        val totalPages = ((normalizedTotal + maxItemsPerPage - 1) / maxItemsPerPage).coerceAtLeast(1)
+        val page = requestedPage.coerceIn(0, totalPages - 1)
+        val startIndex = page * maxItemsPerPage
+        val itemCount = (normalizedTotal - startIndex).coerceIn(0, maxItemsPerPage)
+        return GuiSevenColumnPage(
+            layout = sevenColumnList(itemCount),
+            page = page,
+            totalPages = totalPages,
+            startIndex = startIndex,
+            itemCount = itemCount
         )
     }
 

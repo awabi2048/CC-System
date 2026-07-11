@@ -20,6 +20,10 @@ interface GuiLayoutService {
 
     fun pagedList54(): GuiPagedListLayout
 
+    fun sevenColumnList(itemCount: Int): GuiSevenColumnListLayout
+
+    fun sevenColumnPage(totalItemCount: Int, requestedPage: Int): GuiSevenColumnPage
+
     fun settings54(): GuiSettingsLayout
 
     fun threeChoice45(): GuiThreeChoiceLayout

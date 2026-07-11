@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import net.kyori.adventure.text.Component
@@ -73,6 +74,22 @@ class GuiElementServiceImpl : GuiElementService {
         )
         meta.isHideTooltip = spec.role == GuiElementRole.DECORATION
         item.itemMeta = meta
+        return item
+    }
+
+    override fun menuIcon(spec: GuiMenuIconSpec): ItemStack {
+        val item = item(
+            GuiItemSpec(
+                material = spec.material,
+                name = spec.name,
+                lore = GuiMenuIconLoreFactory.build(spec),
+                role = spec.role,
+                amount = spec.amount
+            )
+        )
+        spec.glint?.let { enabled ->
+            item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
+        }
         return item
     }
 

@@ -7,8 +7,14 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec;
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec;
 import com.awabi2048.ccsystem.api.gui.GuiConfirmationLayout;
 import com.awabi2048.ccsystem.api.gui.GuiPagedListLayout;
+import com.awabi2048.ccsystem.api.gui.GuiSevenColumnListLayout;
+import com.awabi2048.ccsystem.api.gui.GuiSevenColumnPage;
 import com.awabi2048.ccsystem.api.gui.GuiSettingsLayout;
 import com.awabi2048.ccsystem.api.gui.GuiThreeChoiceLayout;
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconAction;
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconData;
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconOption;
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -25,8 +31,16 @@ class GuiApiBinaryCompatibilityTest {
             GuiLoreSpec.Auto.class,
             GuiLoreSpec.Rich.class,
             GuiLoreLine.Data.class,
+            GuiLoreLine.SingleAction.class,
+            GuiLoreLine.Option.class,
+            GuiMenuIconAction.class,
+            GuiMenuIconData.class,
+            GuiMenuIconOption.class,
+            GuiMenuIconSpec.class,
             GuiConfirmationLayout.class,
             GuiPagedListLayout.class,
+            GuiSevenColumnListLayout.class,
+            GuiSevenColumnPage.class,
             GuiSettingsLayout.class,
             GuiThreeChoiceLayout.class
         );

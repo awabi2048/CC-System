@@ -31,7 +31,8 @@ gui:
     command_limit_reached_total: §c[Warning] The number of worlds created on the entire server has reached the upper limit ({max}), so it cannot be created.
     command_limit_reached: '§c[Warning] The target player ({player}) cannot create a world because the number of worlds he can create has reached the upper limit. (Currently: {current}/{max})'
     template_item:
-      preview_hint: §7Right-Click to Preview
+      action:
+        preview: Show preview
     confirm:
       name: Confirm and Create
       world_name_label: World name
@@ -92,51 +93,36 @@ gui:
     title: Template Creation Wizard
     name_input:
       display: §eSet Template Name/ID
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7 Set the display name and ID of the template.
       - §fName {name}
       - ' §fID {id}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to configure
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: Configure
     desc_input:
       display: §eSet Template Description
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7 Set the template description.
       - §7Current settings
       - '{desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to configure
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: Configure
     icon_select:
       display: §eSelect Template Icon
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7 Set the template icon.
       - §7Current settings {icon}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to configure
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: Configure
     origin_set:
       display: §eSet Origin Location
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7Set the origin that is the reference point for the spawn point and offset.
       - §7Current settings {origin}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to configure
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: Configure
     save_confirm:
       display: §6Save and Register Template
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7 Save the template with the current settings.
-      - §c *Existing files will be overwritten.
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nClick to run
-      - §8§m－－－－－－－－－－－－－－－－－－
+      warning: Existing files will be overwritten.
+      action: Save and register
   world_seed_confirm:
     title: Using world seeds
     lore:

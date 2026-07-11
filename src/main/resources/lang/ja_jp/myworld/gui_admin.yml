@@ -44,10 +44,10 @@ gui:
       world_size_measuring: §f§l| §7ワールドサイズ §8(計測中...)
       world_size_unavailable: §f§l| §7ワールドサイズ §c取得不可
       world_size_archived_suffix: ' §8(アーカイブ中)'
-      action_archive: §e§l| §eShift+右クリック §7アーカイブ状態を切り替え
-      action_settings: §e§l| §e右クリック §7ワールド設定を開く
-      action_warp: §e§l| §e左クリック §7このワールドへワープ
-      uuid_copy_hint: §e§l| §eホイールクリック §7ディレクトリ名をコピー
+      action_archive: アーカイブ状態を切り替え
+      action_settings: ワールド設定を開く
+      action_warp: このワールドへワープ
+      uuid_copy_hint: ディレクトリ名をコピー
     filter:
       archive:
         display: §eアーカイブフィルター
@@ -70,18 +70,17 @@ gui:
         - §f§l| §7フィルタータイプ §f{type}
         - §f§l| §7対象プレイヤー §b{player}
         - §8§m－－－－－－－－－－－－－－－－－－
-        - §e§l| §e左クリック §7タイプを変更
-        - §e§l| §e右クリック §7プレイヤーを設定
+        - タイプを変更
+        - プレイヤーを設定
         - §8§m－－－－－－－－－－－－－－－－－－
         none: フィルターなし
         owner: オーナーのワールド
         member: メンバーのワールド
         current_type: §f§l| §7フィルタータイプ §f{type}
         current_player: §f§l| §7対象プレイヤー §b{player}
-        click_left: §e§l| §e左クリック §7タイプを変更
-        click_right: §e§l| §e右クリック §7プレイヤーを設定
-      click_cycle: §e§nクリックで切替
-      click_lr: §e§l| §e左/右クリック §7変更
+        click_left: タイプを変更
+        click_right: プレイヤーを設定
+      click_lr: 変更
       previous: 前の項目へ変更
       next: 次の項目へ変更
     sort:
@@ -98,73 +97,53 @@ gui:
     update_data:
       display: §eデータ更新
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7全ワールド・プレイヤーデータの整合性を確認し、
       - §7修復・更新を行います。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで確認へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 確認を開く
       confirm_title: データ更新の確認
     repair_templates:
       display: §eテンプレート修復
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7欠損しているテンプレートワールドを検出し、
       - §7再生成を試みます。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで確認へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 確認を開く
       confirm_title: テンプレート修復の確認
     create_template:
       display: §aテンプレート作成
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7テンプレート作成ウィザードを開きます。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで開始
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: テンプレート作成を開始
     archive:
       display: §cアーカイブ実行
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7期限切れのワールドを一括アーカイブします。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで確認へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 確認を開く
       confirm_title: 一括アーカイブの確認
     convert:
       display: §6ワールド変換
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7現在のワールドをMyWorld管理下に登録します。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§l| §e左クリック §7Normalモードで変換
       - §7(ディレクトリをリネームして標準管理)
-      - §e§l| §e右クリック §7Adminモードで変換
       - §7(現在の構成を維持して管理のみ適用)
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action:
+        normal: Normalモードで変換
+        admin: Adminモードで変換
       confirm_normal: 変換確認 (Normal)
       confirm_admin: 変換確認 (Admin)
     unlink:
       display: §c紐づけ解除
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7現在のワールドのマイワールド設定を削除し、
       - §7通常のワールドに戻します。
       - §7(ワールドデータ自体は削除されません)
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで確認へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 確認を開く
       confirm_title: 紐づけ解除の確認
     export:
       display: §bワールドのエクスポート
       unavailable_warning: 現在のワールドはマイワールドではないため、エクスポートできません。
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7現在のワールドをZIP形式でエクスポートします。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで確認へ
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 確認を開く
       confirm_title: エクスポート確認
       target_world: §f§l| §7対象ワールド §b{world}
     plugin_info:
@@ -176,7 +155,7 @@ gui:
       display: §b管理メニュー
       lore:
       - §7{next}へ切り替えます。
-      - §e§nクリックで切替
+      action: 管理メニューを切り替え
     archive_world:
       confirm_title: アーカイブの確認
       target_world: §f§l| §7対象ワールド §b{world}
@@ -186,11 +165,8 @@ gui:
     info:
       display: §aワールド一覧
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7全ワールドの一覧を表示・管理します。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで開く
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: ワールド一覧を開く
     current_world:
       display: §b現在のワールド情報
       lore:
@@ -207,11 +183,8 @@ gui:
     portals:
       display: §bポータル管理
       lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
       - §7設置済みポータルの一覧を表示します。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで開く
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: ポータル管理を開く
   unarchive_confirm:
     title: §6アーカイブ解除の確認
     lore:

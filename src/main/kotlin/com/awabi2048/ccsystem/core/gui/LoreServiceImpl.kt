@@ -8,10 +8,8 @@ import com.awabi2048.ccsystem.api.gui.LoreService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
 class LoreServiceImpl : LoreService {
-    private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
 
     override fun render(spec: GuiLoreSpec): List<Component> {
@@ -30,14 +28,13 @@ class LoreServiceImpl : LoreService {
 
     private fun renderBlocks(blocks: List<GuiLoreBlock>): List<Component> {
         val lines = buildList {
-            add(GuiLoreLine.Separator)
             blocks.forEachIndexed { index, block ->
-                if (index > 0) add(GuiLoreLine.Separator)
+                // Blocks の境界は情報のまとまりを保つ空行とし、中間の区切り線は明示指定だけに任せる。
+                if (index > 0) add(GuiLoreLine.Spacer)
                 addAll(block.lines)
             }
-            add(GuiLoreLine.Separator)
         }
-        return renderRich(lines, GuiLoreFrame.NONE)
+        return renderRich(lines, GuiLoreFrame.BOTH)
     }
 
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {
@@ -104,6 +101,12 @@ class LoreServiceImpl : LoreService {
         GuiLoreLine.Separator -> separator
         is GuiLoreLine.Action -> LoreFormatter.actionLine(line.operation, line.action)
         is GuiLoreLine.SingleAction -> LoreFormatter.singleActionLine(line.resolvedText)
+        is GuiLoreLine.Option -> LoreFormatter.optionLine(
+            line.label,
+            line.selected,
+            line.selectedColor,
+            line.inactiveColor
+        )
         is GuiLoreLine.Danger -> LoreFormatter.dangerLine(line.content)
         is GuiLoreLine.Data -> LoreFormatter.dataLine(line.label, line.value, line.valueColor)
         is GuiLoreLine.Raw -> line.line

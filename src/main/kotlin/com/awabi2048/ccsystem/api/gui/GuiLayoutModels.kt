@@ -7,6 +7,7 @@ package com.awabi2048.ccsystem.api.gui
 enum class GuiLayoutStyle {
     CONFIRMATION_45,
     PAGED_LIST_54,
+    SEVEN_COLUMN_LIST,
     SETTINGS_54,
     THREE_CHOICE_45,
     FREE_45,
@@ -34,6 +35,27 @@ data class GuiPagedListLayout(
 ) {
     val style: GuiLayoutStyle = GuiLayoutStyle.PAGED_LIST_54
 }
+
+/** 7列の人物・ワールド一覧は左右1枠を余白にし、件数が増えた時だけ本文行を拡張する。 */
+data class GuiSevenColumnListLayout(
+    val size: Int,
+    val itemSlots: List<Int>,
+    val previousPageSlot: Int,
+    val nextPageSlot: Int,
+    val backSlot: Int,
+    val actionSlot: Int,
+    val itemsPerPage: Int
+) {
+    val style: GuiLayoutStyle = GuiLayoutStyle.SEVEN_COLUMN_LIST
+}
+
+data class GuiSevenColumnPage(
+    val layout: GuiSevenColumnListLayout,
+    val page: Int,
+    val totalPages: Int,
+    val startIndex: Int,
+    val itemCount: Int
+)
 
 /** 54-slot settings menus use a shared footer while keeping feature-specific body slots local. */
 data class GuiSettingsLayout(

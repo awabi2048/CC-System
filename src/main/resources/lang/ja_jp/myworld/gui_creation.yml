@@ -31,7 +31,8 @@ gui:
     command_limit_reached_total: §c[Warning] サーバー全体のワールド作成数が上限（{max}）に達しているため、作成できません。
     command_limit_reached: '§c[Warning] 対象プレイヤー（{player}）のワールド作成数が上限に達しているため、作成できません。(現在: {current}/{max})'
     template_item:
-      preview_hint: §7右クリックでプレビュー
+      action:
+        preview: プレビューを表示
     confirm:
       name: この内容で確定して作成
       world_name_label: ワールド名
@@ -44,7 +45,7 @@ gui:
         display: ディメンションを選択
         description: シード値から生成するワールドのディメンションを選択します。
         current_label: 現在のディメンション
-        action: 切替
+        action: 切り替え
         options:
           normal: オーバーワールド
           nether: ネザー
@@ -92,51 +93,36 @@ gui:
     title: テンプレート作成ウィザード
     name_input:
       display: §eテンプレート名・IDの設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7テンプレートの表示名とIDを設定します。
       - ' §f名前 {name}'
       - ' §fID {id}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで設定
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 設定
     desc_input:
       display: §eテンプレート説明文の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7テンプレートの説明文を設定します。
       - §7現在の設定
       - '{desc}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで設定
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 設定
     icon_select:
       display: §eテンプレートアイコンの選択
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7テンプレートのアイコンを設定します。
       - §7現在の設定 {icon}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで設定
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 設定
     origin_set:
       display: §e原点座標の設定
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7スポーン地点やオフセットの基準となる原点を設定します。
       - §7現在の設定 {origin}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで設定
-      - §8§m－－－－－－－－－－－－－－－－－－
+      action: 設定
     save_confirm:
       display: §6テンプレートを保存・登録
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
+      description:
       - §7現在の設定でテンプレートを保存します。
-      - §c※既存のファイルは上書きされます。
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §e§nクリックで実行
-      - §8§m－－－－－－－－－－－－－－－－－－
+      warning: 既存のファイルは上書きされます。
+      action: 保存・登録
   world_seed_confirm:
     title: ワールドの種の使用
     lore:

@@ -27,7 +27,6 @@ messages:
   creation_failed: §c作成に失敗しました。
   world_not_found: §cワールドが見つかりませんでした。
   spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
-  spawn_set_start_bedrock: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_guest_set: §aゲスト用のスポーン位置を設定しました！
   spawn_member_set: §aメンバー用のスポーン位置を設定しました！
@@ -150,7 +149,6 @@ messages:
     cancelled_deleted: §e進行中のツアーが削除されたため、ツアーをキャンセルしました。
     waypoint_pick: §e経由点を設置したいブロックを右クリックしてください
   expand_direction_prompt: §a拡張したい方角（北西・北東・南西・南東）を向いて左クリックしてください
-  expand_direction_prompt_bedrock: §a拡張したい方角（北西・北東・南西・南東）を向いてクリックしてください
   expand_direction_selected: '§a指定した方角: {direction}'
   expand_confirm_chat: §a変更後のワールドボーダーのプレビューを表示しています。この内容で拡張しますか？
   expand_confirm_button: §a§l【拡張を確定する】
