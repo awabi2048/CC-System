@@ -296,3 +296,16 @@ skill:
     skill3:
       name: 型は手の内に
       description: 建てる道具の奥行きが さらに増していく
+  fisher:
+    initial:
+      name: 水辺の一投
+      description: 水面を読み 釣り人としての一歩を踏み出す
+    patient_cast:
+      name: 待つ者の余裕
+      description: アタリを捉えられる時間が20%長くなる
+    deep_water:
+      name: 深みを読む
+      description: 魚の抵抗を15%抑え 釣り合いを保ちやすくなる
+    master_angler:
+      name: 釣り上げる一瞬
+      description: 魚との格闘時間が15%短くなる

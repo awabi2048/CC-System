@@ -23,7 +23,7 @@ tutorial_rank:
     end_locked: "§cReach Adventurer before entering the End."
     no_requirement: "このランクの到達条件はありません"
     system_not_initialized: "タスク定義が初期化されていません"
-    page_hint: "フッターの矢印でページを移動できます"
+    page_hint: "View the full path from Newbie to Attainer on one screen"
     page_previous: "前のページへ"
     page_next: "次のページへ"
     page_arrow_hint: "クリックでページを移動"

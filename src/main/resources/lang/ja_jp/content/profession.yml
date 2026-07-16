@@ -27,7 +27,7 @@ profession:
     name: 大工
     description: 建築で経験値を得る職業
   fisher:
-    name: 釣り師
+    name: 釣り人
     description: 釣り場の条件を読み、釣果を釣り上げて経験値を得る職業
   level_up: §a{profession}がレベルアップしました！ §eLv.{old} -> Lv.{new} §7(+{gained})
   new_unlock: '新しく習得可能なスキルがあります（{count}個）: {skills} [クリックしてスキルツリーを開く]'

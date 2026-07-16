@@ -23,7 +23,7 @@ tutorial_rank:
     end_locked: "§cエンドへ行くには、先にAdventurerへ到達してください。"
     no_requirement: "このランクの到達条件はありません"
     system_not_initialized: "タスク定義が初期化されていません"
-    page_hint: "フッターの矢印でページを移動できます"
+    page_hint: "NewbieからAttainerまでの進行を1画面で確認できます"
     page_previous: "前のページへ"
     page_next: "次のページへ"
     page_arrow_hint: "クリックでページを移動"

@@ -58,7 +58,7 @@ fishing:
       water: "水場"
       weather: "天候"
       time: "時間帯"
-      level: "釣り師レベル"
+      level: "釣り人レベル"
       bait: "必要なエサ"
       anywhere: "どこでも"
       anytime: "いつでも"

@@ -296,3 +296,16 @@ skill:
     skill3:
       name: 型は手の内に
       description: 建てる道具の奥行きが さらに増していく
+  fisher:
+    initial:
+      name: First Cast
+      description: Read the water and begin the fisher profession
+    patient_cast:
+      name: Patient Timing
+      description: Extends the hook input window by 20%
+    deep_water:
+      name: Read the Depths
+      description: Reduces fish resistance by 15%
+    master_angler:
+      name: Master Angler
+      description: Shortens the fishing fight duration by 15%
