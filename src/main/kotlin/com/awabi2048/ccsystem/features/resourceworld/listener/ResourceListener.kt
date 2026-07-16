@@ -115,11 +115,7 @@ class ResourceListener : Listener {
     }
 
     private fun isResourceWorld(world: World): Boolean {
-        for (type in listOf("normal", "nether", "end")) {
-            val config = ConfigManager.getResourceConfig(type) ?: continue
-            if (world.name.startsWith(config.baseName)) return true
-        }
-        return false
+        return ConfigManager.isResourceWorldName(world.name)
     }
 
     private fun isInScaffold(player: Player): Boolean {

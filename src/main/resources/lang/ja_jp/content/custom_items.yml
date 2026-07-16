@@ -1,4 +1,35 @@
 custom_items:
+  fishing:
+    dictionary:
+      name: "§bお魚辞典"
+      description: "釣り上げた魚の記録と獲得条件を確認できます。"
+      operation: "右クリック"
+      action: "お魚辞典を開く"
+      resolved: "右クリックでお魚辞典を開く"
+      hint_operation: "水場を左クリック"
+      hint_action: "この場で釣れる魚のヒントを確認"
+    rod_standard:
+      name: "§b遠征用の釣り竿"
+      description: "魚の動きを捉えやすいよう調整された釣り竿。"
+    bait_worm:
+      name: "§fミミズ"
+      description: "魚が食いつくまでの時間を短縮する基本のエサ。"
+    bait_lucky_worm:
+      name: "§d光るミミズ"
+      description: "希少な魚と高品質な釣果を狙いやすいエサ。"
+    bait_deep_sea_bait:
+      name: "§3深海のエサ"
+      description: "深海に潜む特殊な魚を誘い出すエサ。"
+    data:
+      power: "パワー"
+      finesse: "繊細さ"
+      durability: "耐久"
+      wait_time: "待ち時間効率"
+      rare: "希少釣果"
+      quality: "品質補正"
+      special: "特殊釣果"
+    state:
+      enabled: "有効"
   minigame:
     manager:
       name: §6ミニゲーム管理アイテム

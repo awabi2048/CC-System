@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -84,6 +85,11 @@ interface CCSystemAPI {
     fun getMenuSoundService(): MenuSoundService
 
     fun getPlayerInteractionClaimService(): PlayerInteractionClaimService
+
+    /**
+     * 指定ワールドがCC-System管理の資源ワールドか判定します。
+     */
+    fun isResourceWorld(world: World): Boolean
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
 

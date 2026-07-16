@@ -20,6 +20,7 @@ import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
 import java.io.File
 import net.kyori.adventure.text.Component
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -173,6 +174,10 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
 
     override fun getPlayerInteractionClaimService(): PlayerInteractionClaimService {
         return playerInteractionClaimService
+    }
+
+    override fun isResourceWorld(world: World): Boolean {
+        return ConfigManager.isResourceWorldName(world.name)
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────
