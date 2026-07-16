@@ -1,12 +1,15 @@
 package com.awabi2048.ccsystem.features.announce.listener
 
+import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import com.awabi2048.ccsystem.api.gui.GuiItemSpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
@@ -35,7 +38,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.Locale
@@ -46,7 +48,6 @@ import java.time.format.DateTimeFormatter
 class AnnounceListener : Listener {
     companion object {
         private const val MENU_SIZE = 54
-        private val LORE_SERVICE = LoreServiceImpl()
         private val LEGACY = LegacyComponentSerializer.legacySection()
         private val pendingIconSelection = mutableSetOf<UUID>()
 
@@ -101,22 +102,14 @@ class AnnounceListener : Listener {
             val formatter = createDateTimeFormatter(player)
             for ((index, announcement) in announcements.withIndex()) {
                 val slot = INTERIOR_SLOTS[index]
-                val item = ItemStack(announcement.icon)
-                val meta = item.itemMeta ?: continue
-
                 val titleLine = announcement.title.ifBlank {
                     LanguageManager.getRawString(player, "announce.item_default_title")
-                }
-                meta.displayName(noItalic(deserializeStyledUserText(titleLine)))
-
-                if (highlightAnnouncementIds.contains(announcement.id)) {
-                    meta.setEnchantmentGlintOverride(true)
                 }
 
                 val contentBlock = mutableListOf<GuiLoreLine>()
                 for (line in announcement.contentLines) {
                     if (line.isNotBlank()) {
-                        contentBlock.add(rawLine(deserializeStyledUserText(line)))
+                        contentBlock.add(GuiLoreLine.UserText(line))
                     }
                 }
                 val blocks = mutableListOf<GuiLoreBlock>()
@@ -124,61 +117,41 @@ class AnnounceListener : Listener {
                 if (hasManagePermission(player)) {
                     val metadataBlock = mutableListOf<GuiLoreLine>()
                     val issuedAt = formatDateTimeForDisplay(player, announcement.issuedAt, formatter)
-                    metadataBlock.add(
-                        rawLine(
-                            LanguageManager.getMessageWithoutPrefix(
-                                player,
-                                "announce.lore.issued_at",
-                                "datetime" to issuedAt
-                            )
-                        )
-                    )
+                    metadataBlock.add(GuiLoreLine.Metadata(rawText(player, "announce.lore.issued_at"), issuedAt))
                     val updatedAt = formatDateTimeForDisplay(player, announcement.updatedAt, formatter)
-                    metadataBlock.add(
-                        rawLine(
-                            LanguageManager.getMessageWithoutPrefix(
-                                player,
-                                "announce.lore.updated_at",
-                                "datetime" to updatedAt
-                            )
-                        )
-                    )
+                    metadataBlock.add(GuiLoreLine.Metadata(rawText(player, "announce.lore.updated_at"), updatedAt))
                     if (announcement.indefinite) {
-                        metadataBlock.add(
-                            rawLine(
-                                LanguageManager.getMessageWithoutPrefix(player, "announce.lore.indefinite")
-                            )
-                        )
+                        metadataBlock.add(GuiLoreLine.Metadata(
+                            rawText(player, "announce.lore.expires_at"),
+                            rawText(player, "announce.lore.indefinite")
+                        ))
                     } else {
                         val expiresAt = announcement.expiresAt
                         if (expiresAt != null) {
                             val expiresText = formatDateTimeForDisplay(player, expiresAt, formatter)
-                            metadataBlock.add(
-                                rawLine(
-                                    LanguageManager.getMessageWithoutPrefix(
-                                        player,
-                                        "announce.lore.expires_at",
-                                        "datetime" to expiresText
-                                    )
-                                )
-                            )
+                            metadataBlock.add(GuiLoreLine.Metadata(rawText(player, "announce.lore.expires_at"), expiresText))
                         }
                     }
 
                     blocks.add(GuiLoreBlock(metadataBlock))
                     blocks.add(GuiLoreBlock(listOf(
-                        rawLine(
-                            LanguageManager.getMessageWithoutPrefix(player, "announce.lore.help_left_click")
-                        ),
-                        rawLine(
-                            LanguageManager.getMessageWithoutPrefix(player, "announce.lore.help_right_click")
-                        )
+                        GuiLoreLine.Action(rawText(player, "lore.click.left"), rawText(player, "announce.lore.edit")),
+                        GuiLoreLine.Action(rawText(player, "lore.click.right"), rawText(player, "announce.lore.delete"))
                     )))
                 }
 
-                applyLoreOnlyTooltip(meta)
-                meta.lore(LORE_SERVICE.render(if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)))
-                item.itemMeta = meta
+                val item = CCSystem.getAPI().getGuiElementService().item(
+                    GuiItemSpec(
+                        material = announcement.icon,
+                        name = GuiNameSpec.Component(noItalic(deserializeStyledUserText(titleLine))),
+                        lore = if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks),
+                        role = GuiElementRole.CONTENT,
+                        amount = 1
+                    )
+                )
+                if (highlightAnnouncementIds.contains(announcement.id)) {
+                    item.editMeta { meta -> meta.setEnchantmentGlintOverride(true) }
+                }
                 inventory.setItem(slot, item)
             }
 
@@ -194,44 +167,49 @@ class AnnounceListener : Listener {
         }
 
         private fun createPane(material: Material): ItemStack {
-            val item = ItemStack(material)
-            val meta = item.itemMeta ?: return item
-            meta.displayName(noItalic(Component.text(" ")))
-            meta.setHideTooltip(true)
-            item.itemMeta = meta
-            return item
+            return CCSystem.getAPI().getGuiElementService().item(
+                GuiItemSpec(
+                    material = material,
+                    name = GuiNameSpec.Component(noItalic(Component.text(" "))),
+                    lore = GuiLoreSpec.None,
+                    role = GuiElementRole.DECORATION,
+                    amount = 1
+                )
+            )
         }
 
         private fun createMenuCommandItem(player: Player): ItemStack {
-            val item = ItemStack(Material.REDSTONE)
-            val meta = item.itemMeta ?: return item
-            meta.displayName(noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.menu_command_item_name")))
-            meta.lore(
-                LORE_SERVICE.render(
-                    GuiLoreSpec.Rich(
-                        listOf(rawLine(LanguageManager.getMessageWithoutPrefix(player, "announce.menu_command_item_lore"))),
+            return CCSystem.getAPI().getGuiElementService().item(
+                GuiItemSpec(
+                    material = Material.REDSTONE,
+                    name = GuiNameSpec.Component(
+                        noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.menu_command_item_name"))
+                    ),
+                    lore = GuiLoreSpec.Rich(
+                        listOf(singleClickLine(player, "announce.menu_command_item_lore")),
                         GuiLoreFrame.NONE
-                    )
+                    ),
+                    role = GuiElementRole.ACTION,
+                    amount = 1
                 )
             )
-            item.itemMeta = meta
-            return item
         }
 
         private fun createAddItem(player: Player): ItemStack {
-            val item = ItemStack(Material.WRITABLE_BOOK)
-            val meta = item.itemMeta ?: return item
-            meta.displayName(noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.add_item_name")))
-            meta.lore(
-                LORE_SERVICE.render(
-                    GuiLoreSpec.Rich(
-                        listOf(rawLine(LanguageManager.getMessageWithoutPrefix(player, "announce.add_item_lore"))),
+            return CCSystem.getAPI().getGuiElementService().item(
+                GuiItemSpec(
+                    material = Material.WRITABLE_BOOK,
+                    name = GuiNameSpec.Component(
+                        noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.add_item_name"))
+                    ),
+                    lore = GuiLoreSpec.Rich(
+                        listOf(singleClickLine(player, "announce.add_item_lore")),
                         GuiLoreFrame.NONE
-                    )
+                    ),
+                    role = GuiElementRole.ACTION,
+                    amount = 1
                 )
             )
-            item.itemMeta = meta
-            return item
         }
 
         private fun hasManagePermission(player: Player): Boolean {
@@ -302,18 +280,18 @@ class AnnounceListener : Listener {
                 .decoration(TextDecoration.ITALIC, false)
         }
 
-        private fun rawLine(component: Component): GuiLoreLine.Raw = GuiLoreLine.Raw(LEGACY.serialize(component))
+        private fun rawText(player: Player?, key: String): String = LanguageManager.getRawString(player, key)
 
-        private fun applyLoreOnlyTooltip(meta: org.bukkit.inventory.meta.ItemMeta) {
-            val flagsToHide = ItemFlag.values().filterNot {
-                it.name.contains("LORE") ||
-                    it.name.contains("CUSTOM_NAME") ||
-                    it.name.contains("TOOLTIP")
-            }
-            if (flagsToHide.isNotEmpty()) {
-                meta.addItemFlags(*flagsToHide.toTypedArray())
-            }
-            meta.setHideTooltip(false)
+        private fun singleClickLine(player: Player, actionKey: String): GuiLoreLine.SingleAction {
+            val operation = rawText(player, "lore.click.any")
+            val action = rawText(player, actionKey)
+            val resolved = LanguageManager.getRawString(
+                player,
+                "lore.action_single_with_operation",
+                "operation" to operation,
+                "action" to action
+            )
+            return GuiLoreLine.SingleAction(operation, action, resolved)
         }
 
         private fun playOperationSound(player: Player, sound: Sound, pitch: Float = 1.0f) {

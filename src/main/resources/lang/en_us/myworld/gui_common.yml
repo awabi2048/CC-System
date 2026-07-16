@@ -1,8 +1,18 @@
 gui:
   common:
+    action:
+      cycle: Toggle
     world_item_name: §f【§a{world}§f】
     world_item_name_simple: §f「§a{world}§f」
     world_desc: §f{description}
+    world_item:
+      world_name: World Name
+      owner: Owner
+      favorite: Favorites
+      recent_visitors: Recent visitors
+      recent_visitors_value: '{count}'
+      tags: Tags
+      publish: Visibility
   archive:
     confirm_title: Batch Archive Confirmation
     question: §cArchive this world?
@@ -16,17 +26,21 @@ gui:
   confirm:
     reset_expansion:
       title: Confirm Reset
-      lore:
-      - §cAre you sure you want to reset?
+      display: Reset Expansion Confirmation
+      question: Are you sure you want to reset?
+      description:
       - §7Expansion level will be reset and points refunded.
       - §7World border will return to initial size.
       modified_warning:
       - §cChanges were recorded in expanded areas.
       - §7After reset, those changes may end up outside the border.
+    spawn_adjustment_warning:
+      - §eSaved spawn locations outside the border will be moved to the default location after this change.
     step_back_expansion:
       title: Confirm
-      lore:
-      - §cStep the world border back by one level?
+      display: Expansion Step-Back Confirmation
+      question: Step the world border back by one level?
+      description:
       - §7The border size and center return to the previous expansion state.
       - §7Points will not be refunded.
       modified_warning:
@@ -34,16 +48,17 @@ gui:
       - §7After rollback, that area may end up outside the border.
     reset_expansion_spawn_unsafe:
       title: Warning
-      lore:
-      - §cThe spawn location is not safe after reset.
+      display: Spawn Point Warning
+      warning: The spawn location is not safe after reset
+      description:
       - §7Players outside the new border may be moved into blocks.
       - §eDo you still want to continue this reset?
     delete_1:
       title: Delete Confirm (1/2)
-      lore:
-      - §cAre you sure you want to DELETE?
-      - §7All data will be lost forever.
-      - §7※ There will be a final confirmation.
+      display: World Deletion Confirmation
+      question: Are you sure you want to delete this world?
+      warning: All world data will be lost permanently
+      next_warning: A final confirmation follows
       next: §cProceed
     delete_2:
       title: Final Confirmation (2/2)
@@ -55,47 +70,29 @@ gui:
     title: Critical Settings
     reset_expansion:
       display: §c§nReset Expansion
-      description:
-      - §f§l| §7Current level §e§l{level}
-      - §f§l| §7Refund points §6🛖 §e{points}
+      level_label: Current level
+      refund_label: Refund points 🛖
       warning: This action cannot be undone
       action: Reset expansion
-      lore_unavailable:
-      - §cCannot reset (not expanded)
+      unavailable: Cannot reset because the world has not been expanded
     archive_world:
       display: §6§nArchive World
-      lore:
-      - §8§m-----------------------
+      description:
       - §7Archives the world.
       - §7Archived worlds cannot be accessed by players,
       - §7but data is preserved.
-      - §8§m-----------------------
       action: Execute
-      lore_cooldown:
-      - §8§m-----------------------
-      - §7Archives the world.
-      - §7Archived worlds cannot be accessed by players,
-      - §7but data is preserved.
-      - §8§m-----------------------
-      - §cCannot perform until {cooldown_hours}h has passed since last action.
-      - §8(About {hours_remaining}h remaining)
-      - §8§m-----------------------
+      cooldown_warning: Cannot perform until {cooldown_hours}h has passed since the last action
+      remaining: About {hours_remaining}h remaining
     delete_world:
       display: §4§l§nDelete World
-      description:
-      - §7Deletes the world permanently.
-      - '§f§l| §7Refund points: §6🛖 §e{points}'
-      - §8({percent}% of total spent points returned)
+      description: Deletes the world permanently
+      refund_label: Refund points 🛖
+      refund_note: Returns {percent}% of the points spent
       warning: This action cannot be undone
       action: Delete world
-      lore_unavailable_slot:
-      - §8§m-----------------------
-      - §7Deletes the world permanently.
-      - §7This action is irreversible.
-      - §8§m-----------------------
-      - §cCannot execute delete with current owner slot expansion.
-      - '§f§l| §7Owner slot expansion: §e{slots}'
-      - §8§m-----------------------
+      unavailable_slot: Cannot delete with the owner's current slot expansion
+      owner_slots_label: Owner slot expansion
   expansion:
     method_title: Select Expansion Method
     confirm_title: Expansion Confirmation
@@ -117,10 +114,10 @@ gui:
       - §7and restores the previous border size and center.
       - §cPoints will not be refunded.
     confirm_info: §aExpansion Summary
-    method: §f§l| §7Method {method}
+    method_label: Method
     method_center: Center
-    method_direction: §f§l| §7Direction {direction}
-    cost: §f§l| §7Cost §6🛖 §e{cost}
+    method_direction: Direction ({direction})
+    cost_label: Cost 🛖
     warning: §eThis action is irreversible!
     execute: §aExpand World
     execute_desc: §7Spend points to expand
@@ -136,10 +133,10 @@ gui:
       visit_request: Visit Request
     item:
       name: §e{player} §7({type})
-      type_line: §f§l| §7Type §e{type}
-      world_line: §f§l| §7World §a{world}
-      status_line: §f§l| §7Status {status}
-      received_line: §f§l| §7Received §f{datetime}
+      type_label: Type
+      world_label: World
+      status_label: Status
+      received_label: Received
       status_online: §aOnline
       status_offline: §cOffline
       action_review: §7Open accept/deny screen
@@ -243,20 +240,21 @@ gui:
       delete_confirm:
         title: Confirm Tour Deletion
         confirm: §aDelete
-        warning: §cThis cannot be undone
+        warning: This cannot be undone
         cancel: §cCancel
         cancel_action: Go back
-        body_line1: §cThis tour will be deleted.
-        body_line2: §7This action cannot be undone.
+        body_line1: This tour will be deleted.
+        body_line2: This action cannot be undone.
       discard_new:
         title: Unsaved Tour
         body_line1: §cThis new tour has not been saved.
         body_line2: §7Return without saving?
       tour_item:
-        visitors_none: §f§l| §7Visitors §7none yet
-        visitors_count: §f§l| §7Visitors §a{count}
+        visitors_label: Visitors
+        visitors_none: None yet
+        visitors_count: '{count}'
         action_edit: Edit this tour
-        action_current: §bTour in progress!
+        action_current: Tour in progress
         action_start: Start this tour
         action_bind: Bind this tour
       add_waypoint_button: Add waypoint

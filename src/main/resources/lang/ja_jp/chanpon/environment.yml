@@ -10,6 +10,8 @@ chanpon:
       action_previous: "前へ戻る"
       action_set: "設定"
       left_right_click: "左右クリック"
+      left_click: "左クリック"
+      right_click: "右クリック"
       shift_left: "Shift+左クリック"
       must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
     weather:

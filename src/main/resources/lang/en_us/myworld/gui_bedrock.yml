@@ -101,15 +101,11 @@ gui:
   player_world:
     title: My world list
     world_item:
-      owner: §f§l| §7Owner §f{owner}
-      publish: §f§l| §7Public setting §b{level}{status_color}
-      favorite: §f§l| §7Favorite §c{count}
-      recent_visitors: §f§l| §7Recently visited players §a{count} people
-      tag: §f§l| §7tag §e{tags}
       warp: Warp to this world
       settings: Open world settings
-      expired: §c§nThis world has been archived
-      expires_at: §f§l| §7Days until archive §f{days} days §8(archived to {date})
+      expired: This world has been archived
+      expires_at: Archive schedule
+      expires_value: '{days} days (archived on {date})'
     creation_button:
       display: §a§lCreate a new My World
       action: Start world creation
@@ -117,11 +113,11 @@ gui:
       - §7 Create a new My World.
       - §7You can freely set the template and disclosure range.
     creation_unavailable:
-      period_disabled:
-        display: §cWorld creation is currently closed.
+      policy_denied:
+        display: §cWorld creation is currently unavailable.
         lore:
-        - §7World creation is currently closed by the administrators.
-        - §7Please wait until creation reopens.
+        - §7World creation is currently unavailable.
+        - §7Please wait until it becomes available again.
       no_slot:
         display: §cNo world slots are available.
         lore:
@@ -130,23 +126,18 @@ gui:
       no_permission:
         display: §cYou do not have permission to create worlds
         lore:
-        - §7This account cannot create worlds.
+        - §7You do not have permission to create worlds.
         - §7Creation permission is required.
     stats_button:
       display: §e{player}
-      blocks:
-        points:
-        - §f§l| §7World Point §6{icon} {point}
-        - §7These points can be used to create a new My World, expand it, etc.
-        slots:
-        - §f§l| §7World Slot §a§l{current_occupied}§7/{unlocked}
-        - §7This is the number of slots that can be used to create a new My World.
-        - §7Can be unlocked by using a World Seed.
-        slots_bypass:
-        - §f§l| §7World Count §a§l{current_occupied}
-        - §7You have permission to bypass world count limits.
-        pending:
-        - §f§l| §7Pending invites/requests §e{pending_count}
-        - §f§l| §7Latest received §b{latest_pending_at}
+      points_label: World Points
+      points_description: Points used to create and expand MyWorlds
+      slots_label: World Slots
+      world_count_label: World Count
+      slots_description: Slots available for creating new MyWorlds. Use a World Seed to add more
+      slots_bypass_description: You have permission to bypass the world limit
+      pending_label: Pending Invites and Requests
+      pending_value: '{count}'
+      latest_pending_label: Latest Received
       action:
         open_pending: Open pending invites and requests

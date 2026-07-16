@@ -2,10 +2,6 @@ gui:
   discovery:
     title: Discovery
     world_item:
-      owner: §f§l| §7Owner {owner}{status_color}
-      tag: §f§l| §7Tags §e{tags}
-      favorite: §f§l| §7Favorites §c{count}
-      recent_visitors: §f§l| §7Recent Visitors §a{count}
       warp_hint: Warp to this world
       preview_hint: Show preview
       member_request_hint: Show membership request
@@ -59,23 +55,15 @@ gui:
       input_label: Description
     stats:
       name: §fStatistics
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '§f§l| §7 Sorting order: §b{sort}'
-      - '§f§l| §7 Tag: §b{tag}'
-      - §f§l| §7Search results §b{count}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7{desc}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      sort: '§f§l| §7 Sorting order: §b{sort}'
-      tag: '§f§l| §7 Tag: §b{tag}'
-      count: §f§l| §7Search results §b{count}
+      sort_label: Sort
+      tag_label: Tag
+      count_label: Results
       desc: §7 Displaying worlds that match the conditions
     sort_info:
       hot: Sorted by recent visitors
       new: Sorted by publication date
       favorites: Sorted by number of favorites
-      spotlight: Hand-picked worlds by staff
+      spotlight: Featured worlds
       random: Daily random
     no_result: §7No worlds found matching the criteria
     spotlight_remove_confirm:

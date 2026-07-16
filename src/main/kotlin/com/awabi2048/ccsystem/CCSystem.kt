@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem
 import org.bukkit.plugin.java.JavaPlugin
 import com.awabi2048.ccsystem.api.CCSystemAPI
 import com.awabi2048.ccsystem.api.CCSystemAPIImpl
+import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
@@ -24,6 +25,7 @@ import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickTriggerListe
 import com.awabi2048.ccsystem.features.misc.listener.ShiftFBinderListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDataListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerDeathListener
+import com.awabi2048.ccsystem.features.misc.listener.GuiProtectionListener
 import com.awabi2048.ccsystem.features.misc.listener.WorldListener
 import com.awabi2048.ccsystem.features.publicsign.listener.PublicSignListener
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
@@ -334,10 +336,8 @@ class CCSystem : JavaPlugin() {
                 .filter { !it.isDirectory && it.name.startsWith("lang/") && it.name.endsWith(".yml") }
                 .forEach { entry ->
                     val target = File(dataFolder, entry.name)
-                    if (!target.exists()) {
-                        target.parentFile?.mkdirs()
-                        saveResource(entry.name, false)
-                    }
+                    target.parentFile?.mkdirs()
+                    saveResource(entry.name, true)
                 }
         }
     }
@@ -347,10 +347,11 @@ class CCSystem : JavaPlugin() {
         instance = this
         
         // API初期化
-        _api = CCSystemAPIImpl()
+        _api = CCSystemAPIImpl(dataFolder)
         _api.getMenuNavigationService().registerMenuMatcher("cc-system") { inventory ->
             inventory.holder?.javaClass?.name?.startsWith("com.awabi2048.ccsystem") == true
         }
+        _api.getMenuNavigationService().registerInventoryPolicy("cc-system", GuiInventoryPolicy())
         
         // 設定読み込み
         ensureDefaultFiles()
@@ -372,6 +373,7 @@ class CCSystem : JavaPlugin() {
         // リスナー登録
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
+        server.pluginManager.registerEvents(GuiProtectionListener(_api.getMenuNavigationService()), this)
         server.pluginManager.registerEvents(AnnounceListener(), this)
         server.pluginManager.registerEvents(announcementNotificationListener, this)
         server.pluginManager.registerEvents(PlayerLeftClickTriggerListener(), this)
@@ -397,6 +399,8 @@ class CCSystem : JavaPlugin() {
     }
 
     override fun onDisable() {
+        // 再起動前に現在画面をUUID単位で保存し、次回ログインの一回だけ復元できる状態にする。
+        _api.getMenuNavigationService().persistCurrentRoutes(server.onlinePlayers)
         _api.getMenuNavigationService().closeAllMenus(server.onlinePlayers)
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()

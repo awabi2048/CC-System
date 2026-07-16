@@ -1,24 +1,24 @@
 chanpon:
   submission:
     common:
-      "on": "§eオン"
-      "off": "§7オフ"
+      "on": オン
+      "off": オフ
       middle_click: "ホイールクリック"
     creation:
       display: "§e本番用ワールドに設定する"
       lore:
-        description: "§7提出用のワールドとして扱います。"
-        delete_guard: "§c本番用ワールドは削除できません。"
-        state: "§7状態: {state}"
+        description: 提出用のワールドとして扱います。
+        delete_guard: 本番用ワールドは削除できません。
+        state: 状態
     production:
       display: "§e本番用ワールドに設定する"
       lore:
         action: "本番用ワールドに変更"
         limit_warning: "本番用ワールドは1人につき1つまでです。"
     state:
-      unsubmitted: "§6未提出"
-      submitted: "§a提出済み"
-      completed: "§b完成"
+      unsubmitted: 未提出
+      submitted: 提出済み
+      completed: 完成
     progress:
       label: "進捗状況"
       unsubmitted: "§6未提出"
@@ -29,6 +29,7 @@ chanpon:
       completed: "§b完成済み"
       auto_rollback: "§d自動ロールバック中"
     submission:
+      display: ワールド提出
       lore:
         unsubmitted:
           action: "提出済みにする"
@@ -37,7 +38,7 @@ chanpon:
           description: "提出済みです。"
           warning: "提出後は取り消せません。"
         completed:
-          description: "運営スタッフに、完成済みとしてチェックされました。"
+          description: "完成済みとして確認されました。"
           warning: "これ以降の取り消しは原則として行えません。"
     error:
       display: "§c提出状態エラー"
@@ -56,6 +57,8 @@ chanpon:
       deadline_closed: "§c提出は締め切られています。"
     submitted_menu:
       title: "§0保護中ワールド"
+      state_label: 提出状態
+      reason_label: 保護理由
       world_lore:
         - "§7状態: {state}"
         - "§7保護理由: {reason}"

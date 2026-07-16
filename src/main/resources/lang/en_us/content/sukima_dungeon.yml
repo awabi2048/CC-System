@@ -67,14 +67,20 @@ sukima_dungeon:
   command_generator_failed: '&cDungeon generation failed.'
   common_bar: '&7&m――――――――――――――――――――――――――――――'
   marker:
-    current_mode: '&f§l| §7Current Mode §a{mode}'
+    current_mode: Current Mode
     mode_changed: '&7Placement mode changed to §a{mode}§7.'
     placed: '&b[Marker] {mode} §fmarker placed.'
     removed: '&b[Marker] {mode} §fmarker removed.'
     usage:
-      place: '&eRight click block§7 to place a marker on the outside of the face'
-      delete: '&eShift + right click§7 to remove the marker in your line of sight'
-      switch: '&eF key§7 to switch to the next mode'
+      place:
+        operation: Right-click block
+        action: Place a marker outside the clicked face
+      delete:
+        operation: Shift + right-click
+        action: Remove the marker in your line of sight
+      switch:
+        operation: F key
+        action: Switch to the next mode
     modes:
       mob: '&cMob'
       npc: '&aNPC'
@@ -82,26 +88,26 @@ sukima_dungeon:
       sprout: '&dSprout'
       spawn: '&fSpawn'
   gui_entrance_title: '&5Connect Portals'
-  gui_entrance_button: '&b&lOpen Dungeon Portal'
-  gui_entrance_button_lore:
-  - '&7Click to open a portal to the dungeon!'
-  gui_style_button: '&6Select Play Style'
-  gui_style_multi: '&f§l| §7Current Setting §eGroup'
-  gui_style_single: '&f§l| §7Current Setting §eSolo'
-  gui_style_lore: '&7Click to switch'
-  gui_size_button: '&eSelect Size'
-  gui_size_small: '&f§l| §7Current Setting §eSmall'
-  gui_size_medium: '&f§l| §7Current Setting §eMedium'
-  gui_size_large: '&f§l| §7Current Setting §eLarge'
-  gui_size_huge: '&f§l| §7Current Setting §eHuge'
-  gui_size_lore: '&7Click to switch'
-  gui_theme_button: '&dPortal Destination'
-  gui_theme_current: '&f§l| §7Current Setting §d{theme} World'
-  gui_theme_lore: '&e§nClick to change'
-  gui_info_title: '&aInfo'
-  gui_info_theme: '&f§l| §7Portal Destination §d{theme} World'
-  gui_info_size: '&f§l| §7Size §e{size}'
-  gui_info_description: '&7The world of Sukima is very unstable. As a result, portals may lead to different worlds. &7Using higher-tier bookmarks makes it easier to reach your desired world.'
+  gui_entrance_open_name: '&b&lOpen Dungeon Portal'
+  gui_entrance_open_action: Open a dungeon portal
+  gui_style_name: '&6Select Play Style'
+  gui_style_multi: Group
+  gui_style_single: Solo
+  gui_size_name: '&eSelect Size'
+  gui_size_small: Small
+  gui_size_medium: Medium
+  gui_size_large: Large
+  gui_size_huge: Huge
+  gui_theme_name: '&dPortal Destination'
+  gui_theme_world_value: '{theme} World'
+  gui_current_setting_label: Current setting
+  gui_change_action: Switch
+  gui_info_name: '&aInformation'
+  gui_info_theme_label: Portal destination
+  gui_info_size_label: Size
+  gui_info_warning:
+  - Sukima worlds are unstable, so portals may lead to a different world
+  - Higher-tier bookmarks make the requested type of world more likely
   gui_theme_error: '&cTheme not found'
   item_bookmark_name: '&d{tier} Bookmark'
   item_talisman_name: '&6Oage-chan''s Talisman'
@@ -115,9 +121,8 @@ sukima_dungeon:
   gui_talisman_confirm_title: '&0&lReally escape?'
   gui_talisman_confirm_button: '&c&lEscape'
   gui_talisman_confirm_button_lore:
-  - '&7Clicking this will make all players'
-  - '&7leave the dungeon midway.'
-  - '&c*Items are not lost, but mission fails.'
+  - All players will leave the dungeon and end the run
+  gui_talisman_confirm_action: Escape the dungeon
   gui_talisman_cancel_button: '&a&lStay'
   talisman_cannot_use_here: '&cYou cannot use the talisman here.'
   scoreboard_title: '&eSukima&6Dungeon'
@@ -184,33 +189,27 @@ sukima_dungeon:
     medium: Medium
     large: Large
     huge: Huge
-  no_permission: '&c権限がありません。'
+  no_permission: '&cYou do not have permission.'
   gui_theme_random: ???
-  gui_entrance_confirm_title: '&0&l本当に冒険に出る？'
-  gui_entrance_confirm_button: '&b&n冒険に出る'
+  gui_entrance_confirm_title: '&0&lStart the adventure?'
+  gui_entrance_confirm_button: '&b&nStart Adventure'
   gui_entrance_confirm_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&7しおりを消費して、選択した設定で'
-  - '&7ダンジョンへの扉を開きます。'
-  - '&7&m――――――――――――――――――――――――――――――'
-  gui_entrance_cancel_button: '&c戻る'
-  gui_join_title: '&5ポータルの先へ'
-  gui_join_button_ready: '&b&n入場する'
-  gui_join_button_wait: '&7生成中...'
-  gui_join_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&f§l| §7行き先 §d{theme}'
-  - '&f§l| §7サイズ §e{size}'
-  - '&7&m――――――――――――――――――――――――――――――'
-  gui_join_cancel_button: '&c閉じる'
-  gui_exit_title: '&0&l本当に帰還する？'
-  gui_exit_button: '&c&n帰還する'
+  - Consume the bookmark and open a dungeon with the selected settings
+  gui_entrance_confirm_action: Start the adventure
+  gui_entrance_cancel_button: '&cBack'
+  gui_join_title: '&5Beyond the Portal'
+  gui_join_button_ready: '&b&nEnter'
+  gui_join_button_wait: '&7Generating...'
+  gui_join_theme_label: Destination
+  gui_join_size_label: Size
+  gui_join_action: Enter
+  gui_join_cancel_button: '&cClose'
+  gui_exit_title: '&0&lReturn now?'
+  gui_exit_button: '&c&nReturn'
   gui_exit_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&7クリックすると、すべてのプレイヤーが'
-  - '&7このダンジョンから離脱し、攻略を終了します。'
-  - '&7&m――――――――――――――――――――――――――――――'
-  gui_exit_cancel_button: '&aとどまる'
+  - All players will leave the dungeon and end the run
+  gui_exit_action: Return from the dungeon
+  gui_exit_cancel_button: '&aStay'
   item_bookmark_lore:
   - '&7&m――――――――――――――――――――――――――――――'
   - §7ワールドのはざまにある§dスキマダンジョン§7への扉を開くためのしおり

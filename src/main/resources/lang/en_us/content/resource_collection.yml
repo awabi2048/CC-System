@@ -1,0 +1,7 @@
+resource_collection:
+  action:
+    harvest: "Resource harvest"
+    craft: "Resource crafting"
+  reward: "Gained {experience} {profession} experience from {action}."
+  error:
+    disabled: "Resource collection is currently disabled."

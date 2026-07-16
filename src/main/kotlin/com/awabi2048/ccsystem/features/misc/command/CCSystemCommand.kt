@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.features.clock.manager.ClockManager
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
+import com.awabi2048.ccsystem.features.lwcx.command.LwcExpansionCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -24,6 +25,8 @@ import java.time.LocalDate
  * 使用法: /cc-system <toggle|reload|update-day|rental-ticket|status|enable|disable>
  */
 class CCSystemCommand : CommandExecutor, TabCompleter {
+
+    private val lwcExpansionCommand = LwcExpansionCommand()
 
     private val manageableFeatures = listOf(
         "resource_world",
@@ -254,6 +257,9 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     )
                 }
             }
+            "lwc-expansion" -> {
+                lwcExpansionCommand.execute(sender, args.drop(1).toTypedArray())
+            }
             "enable", "disable" -> {
                 if (args.size < 2) {
                     sender.sendMessage(LanguageManager.getMessage(player, "feature_toggle_usage"))
@@ -328,6 +334,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 "status" -> "cc-system.status"
                 "enable" -> "cc-system.enable"
                 "disable" -> "cc-system.disable"
+                "lwc-expansion" -> "cc-system.lwc.expansion"
                 else -> return true
             }
         return hasPluginPermission(sender, permission)
@@ -354,7 +361,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): List<String>? {
         if (args.size == 1) {
             val subCommands =
-                listOf("toggle", "reload", "update-day", "rental-ticket", "status", "enable", "disable").filter {
+                listOf("toggle", "reload", "update-day", "rental-ticket", "status", "enable", "disable", "lwc-expansion").filter {
                     hasPermissionForSubCommand(sender, it) &&
                         when (it) {
                             "rental-ticket" -> ConfigManager.isRentalAreaEnabled()
@@ -393,7 +400,31 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         .filter { isFeatureEnabled(it) != targetEnabled }
                         .filter { it.startsWith(args[1], ignoreCase = true) }
                 }
+                "lwc-expansion" -> {
+                    if (!hasPermissionForSubCommand(sender, "lwc-expansion")) return emptyList()
+                    return listOf("world_cleanup", "remained_info_lookup", "status").filter {
+                        it.startsWith(args[1], ignoreCase = true)
+                    }
+                }
             }
+        }
+
+        if (
+            args.size == 3 &&
+            args[0].equals("lwc-expansion", ignoreCase = true) &&
+            args[1].equals("world_cleanup", ignoreCase = true) &&
+            hasPermissionForSubCommand(sender, "lwc-expansion")
+        ) {
+            return Bukkit.getWorlds().map { it.name }.filter { it.startsWith(args[2], ignoreCase = true) }
+        }
+
+        if (
+            args.size == 4 &&
+            args[0].equals("lwc-expansion", ignoreCase = true) &&
+            args[1].equals("world_cleanup", ignoreCase = true) &&
+            hasPermissionForSubCommand(sender, "lwc-expansion")
+        ) {
+            return listOf("confirm").filter { it.startsWith(args[3], ignoreCase = true) }
         }
 
         if (

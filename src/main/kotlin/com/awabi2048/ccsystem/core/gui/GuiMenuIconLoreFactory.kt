@@ -8,14 +8,15 @@ import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
 
 object GuiMenuIconLoreFactory {
     fun build(spec: GuiMenuIconSpec): GuiLoreSpec {
+        // Keep content blocks in the canonical display order; actions always terminate the Lore.
         val blocks = buildList {
-            block(spec.warnings.map(GuiLoreLine::Warning))
-            block(spec.dangers.map(GuiLoreLine::Danger))
             block(spec.description.map(GuiLoreLine::Text))
             block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.valueColor) })
             block(spec.options.map {
                 GuiLoreLine.Option(it.label, it.selected, it.selectedColor, it.inactiveColor)
             })
+            block(spec.warnings.map(GuiLoreLine::Warning))
+            block(spec.dangers.map(GuiLoreLine::Danger))
             block(actionLines(spec.actions.filter(GuiMenuIconAction::enabled)))
         }
         return if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)

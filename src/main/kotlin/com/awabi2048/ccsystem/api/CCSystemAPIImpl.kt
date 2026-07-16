@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
+import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
@@ -12,10 +13,12 @@ import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
+import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
+import java.io.File
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -24,12 +27,15 @@ import org.bukkit.plugin.java.JavaPlugin
  * CC-System APIの実装クラス
  * LanguageManagerおよびChunkTaskQueueManagerをラップして他のプラグインに機能を提供します
  */
-internal class CCSystemAPIImpl : CCSystemAPI {
-    private val menuNavigationService = MenuNavigationServiceImpl()
+internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
+    private val menuNavigationService = MenuNavigationServiceImpl(
+        File(dataFolder, "data/gui/menu_routes.yml")
+    )
     private val guiElementService = GuiElementServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     private val menuSoundService = MenuSoundServiceImpl()
+    private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -163,6 +169,10 @@ internal class CCSystemAPIImpl : CCSystemAPI {
 
     override fun getMenuSoundService(): MenuSoundService {
         return menuSoundService
+    }
+
+    override fun getPlayerInteractionClaimService(): PlayerInteractionClaimService {
+        return playerInteractionClaimService
     }
 
     // ─── チャンクタスクキューAPI ────────────────────────────────────────

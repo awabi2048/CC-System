@@ -45,6 +45,7 @@ object PlacedBlockLedgerManager {
     }
 
     fun save() {
+        if (!::config.isInitialized || !::dataFile.isInitialized) return
         val worldsPath = "worlds"
         config.set(worldsPath, null)
 

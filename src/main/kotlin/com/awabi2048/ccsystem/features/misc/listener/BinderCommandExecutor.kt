@@ -17,19 +17,21 @@ object BinderCommandExecutor {
         for (command in commands) {
             if (command.isBlank()) continue
 
-            var processedCommand = command
-                .replace("%player_name%", player.name)
-                .replace("%player_uuid%", player.uniqueId.toString())
-
-            if (target != null) {
-                processedCommand = processedCommand
-                    .replace("%target_name%", target.name)
-                    .replace("%target_uuid%", target.uniqueId.toString())
-            }
-
-            player.performCommand(processedCommand)
+            player.performCommand(renderCommand(command, player, target))
             executed = true
         }
         return executed
+    }
+
+    internal fun renderCommand(command: String, player: Player, target: Player?): String {
+        var rendered = command
+            .replace("%player_name%", player.name)
+            .replace("%player_uuid%", player.uniqueId.toString())
+        if (target != null) {
+            rendered = rendered
+                .replace("%target_name%", target.name)
+                .replace("%target_uuid%", target.uniqueId.toString())
+        }
+        return rendered
     }
 }

@@ -1,4 +1,45 @@
 custom_items:
+  minigame:
+    manager:
+      name: §6Mini-game Manager
+      lore:
+      - §7Right-click to open the game manager
+    start:
+      name: §aRace Start Marker
+      lore:
+      - §7The starting point of a race
+    checkpoint:
+      name: §bRace Checkpoint
+      lore:
+      - §7Checkpoints are passed in placement order
+    goal:
+      name: §6Race Goal Marker
+      lore:
+      - §7The goal point of a race
+    jail:
+      name: §cChase Jail Marker
+      lore:
+      - §7The destination for captured runners
+    colosseum_start:
+      name: §cColosseum Start Marker
+      lore:
+      - §7The starting point for a one-on-one match
+    endergolf_start:
+      name: §aEnder Golf Tee
+      lore:
+      - §7The start of a hole. Place tees in hole order.
+    endergolf_cup:
+      name: §6Ender Golf Cup
+      lore:
+      - §7Finish the hole by landing an ender pearl here.
+    endergolf_water_hazard:
+      name: §bEnder Golf Water Hazard
+      lore:
+      - §7Adds a penalty and sends the player back to the tee.
+    endergolf_bunker:
+      name: §eEnder Golf Bunker
+      lore:
+      - §7Adds a penalty when the pearl lands here.
   misc:
     big_light:
       name: §dBig Light
@@ -43,6 +84,46 @@ custom_items:
       - §7Stores up to 3 item types in large quantities.
       - §7Hold it and press §eShift twice§7 to open the menu.
       - §7Use §eShift + scroll§7 to change selected item.
+    storage_box_ui:
+      item_name: §6Storage Box
+      none: None
+      state:
+        on: ON
+        off: OFF
+      data:
+        stored_item: Stored item
+        count: Count
+        auto_store: Auto-store
+        stored_count: Stored count
+        current: Current
+      option:
+        selected: Currently selected
+      description:
+        registered_empty: Empty (registered as a storage target)
+      action:
+        withdraw_stack: Withdraw one stack
+        withdraw_all: Fill inventory
+        store_type: Store this item type
+        register_and_store: Register and store
+        store_all: Store matching items
+        toggle: Toggle
+      menu:
+        title: §8Storage Box
+        register:
+          name: §eSelect an item type
+          description_1: Hold an item on the cursor and click
+          description_2: a white slot to register its type
+        store_all:
+          name: §6Store All from Inventory
+        auto_store:
+          name: §bAuto-store
+        use_from_box:
+          name: §dUse Items from Storage Box
+        container_io:
+          name: §aContainer Integration
+      message:
+        box_not_found: §cThe Storage Box you were holding could not be found
+        cannot_store: §eThis item cannot be stored because the type limit was reached or it is unsupported
     boxed_daiginjo:
       name: §f箱入り大吟醸
       lore:
@@ -256,6 +337,38 @@ custom_items:
     end:
       name: エンド
   brewery:
+    garden_seed_apple:
+      name: §aApple Seeds
+      lore:
+      - §7Seeds used to grow apples in the Garden
+    garden_fruit_apple:
+      name: §cApple
+      lore:
+      - §7A brewing ingredient harvested from the Garden
+    garden_seed_blueberry:
+      name: §aBlueberry Seeds
+      lore:
+      - §7Seeds used to grow blueberries in the Garden
+    garden_fruit_blueberry:
+      name: §9Blueberry
+      lore:
+      - §7A brewing ingredient harvested from the Garden
+    garden_seed_grape:
+      name: §aGrape Seeds
+      lore:
+      - §7Seeds used to grow grapes in the Garden
+    garden_fruit_grape:
+      name: §5Grapes
+      lore:
+      - §7A brewing ingredient harvested from the Garden
+    garden_seed_strawberry:
+      name: §aStrawberry Seeds
+      lore:
+      - §7Seeds used to grow strawberries in the Garden
+    garden_fruit_strawberry:
+      name: §dStrawberry
+      lore:
+      - §7A brewing ingredient harvested from the Garden
     sample_filter:
       name: §eDistillation Filter (Prototype)
       lore:
@@ -270,7 +383,7 @@ custom_items:
       lore:
       - §7For fermentation GUI yeast slot (no effect)
   marker:
-    current_mode: '&f§l| §7現在のモード §a{mode}'
+    current_mode: Current mode
     mode_changed: '&7設置モードを §a{mode} §7に変更しました。'
     placed: '&b[Marker] {mode} §fマーカーを設置しました。'
     removed: '&b[Marker] {mode} §fマーカーを削除しました。'
@@ -493,13 +606,12 @@ custom_items:
         waiting: §cオーバーエンチャント実行
         ready_lore: §7クリックで実行
         waiting_lore: §7条件を満たすと実行できます
-    separator: §8§m――――――――――――――――――――
     coming_soon: §7Coming Soon!
     license_card:
       title: §bライセンスカード
-      current_license: §f❙ §7現在のライセンス §e{tier}
-      allowed_difficulty: §f❙ §7入場許可難易度 §c{difficulty} §7まで
-      next_header: §f❙ §7次のライセンスまで
+      current_license: Current License
+      allowed_difficulty: Allowed Difficulty
+      next_header: To Next License
       max_reached: '  §8- §a全ライセンスを解放済み'
       requirement:
         mission_clear: '  §8- §fミッションを完了する {progress}'
@@ -522,13 +634,13 @@ custom_items:
     mission:
       item_name: §a{mission}
       completed_item_name: §a§m{mission}
-      mission_title: §f❙ §7ミッション内容
-      difficulty_inline: §f❙ §7難易度 §f{difficulty}
-      memo_inline: §f❙ §7メモ §f{memo}
+      mission_title: Mission
+      difficulty_inline: Difficulty
+      memo_inline: Memo
     player:
       name_format: §6{player}
-      mob_kills: §f❙ §7倒したモブ §e{count} 体
-      barrier_restarts: §f❙ §7結界石を再起動した回数 §e{count} 回
+      mob_kills: Mobs Defeated
+      barrier_restarts: Barrier Restarts
     recruitment:
       default_mission_title: アリーナミッション
       title: §6【{missionTitle}】
@@ -628,9 +740,9 @@ custom_items:
           occupied: §cリフト使用中
           ready: §aリフト使用可
           preparing: §eリフト準備中
-        players_header: §f❙ §7参加プレイヤー
+        players_header: Players
         player_line: §7・ §b{name} {status}
-        radio_header: §f❙ §7無線
+        radio_header: Radio
         wave:
           get_ready: §7« §6Wave ◯ (Last Wave) §7» §e到着！
           normal: §7« §6Wave {wave} §7»

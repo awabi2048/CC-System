@@ -1,7 +1,7 @@
 gui:
   portal:
     title: Portal Settings
-    id_format: '§8PORTAL_ID: {id}'
+    id_label: PORTAL_ID
     toggle_text:
       name: §aToggle Floating Text
       current_label: Current setting
@@ -19,14 +19,14 @@ gui:
       action: Remove portal
   portal_item:
     name: §bWorld Portal
-    destination: §f§l| §bDestination §f§n{destination}
+    destination: Destination
     action:
       link: Link the current My World
       place: Place a World Portal
       unlink: Unlink
   world_gate_item:
     name: §3World Gate
-    destination: §f§l| §bDestination §f§n{destination}
+    destination: Destination
     action:
       link: Link the current My World
       relink: Reconfigure the link
@@ -35,9 +35,9 @@ gui:
     title: Remote portal management
     portal_item:
       name: '§b Portal: §f{id}'
-      owner: '§f§l| §7Owner: §f{owner}'
-      world: '§f§l| §7Placed world: §f{world}'
-      coordinates: '§f§l| §7Coordinates: §f{x}, {y}, {z}'
+      owner: Owner
+      world: Placed world
+      coordinates: Coordinates
       action:
         teleport: Teleport to portal location
         remove: Remove portal
@@ -56,10 +56,6 @@ gui:
       placeholder: Enter player name
     title: '{player}''s world'
     world_item:
-      owner: §f§l| §7Owner §b{owner}{status_color}
-      tag: §f§l| §7tag §b{tags}
-      favorite: §f§l| §7Favorite §c{count}
-      recent_visitors: §f§l| §7Recent Visitors §a{count}
       warp: Warp to this world
       fav_add: Add to favorites
       fav_remove: Remove from favorites
@@ -71,7 +67,7 @@ gui:
     title: 'World Search: {query}'
     info:
       name: §6Search Info
-      query: §f§l| §7Query §f{query}
-      hit: §f§l| §7Hits §a{hit}
-      shown: §f§l| §7Shown §b{shown}
-      page: §f§l| §7Page §e{current}/{total}
+      query_label: Query
+      hit_label: Results
+      shown_label: Shown
+      page_label: Page

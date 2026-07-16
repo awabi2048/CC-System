@@ -1,0 +1,181 @@
+brewery:
+  garden:
+    planted: "&a{plant}を植えました。"
+    not_mature: "&eまだ収穫できません。"
+    harvested: "&a{plant}を収穫しました。"
+  recipe:
+    wheatbeer:
+      name: "小麦ビール"
+      middle:
+        name: "若い麦汁"
+        description: "発酵を終えた麦の原液。"
+      final:
+        low:
+          name: "荒い小麦ビール"
+          description: "苦みと雑味が残る。"
+        standard:
+          name: "小麦ビール"
+          description: "麦の香りと軽い苦みが整っている。"
+        high:
+          name: "極上小麦ビール"
+          description: "きめ細かな泡と長い余韻がある。"
+    apple_cider:
+      name: "アップルサイダー"
+      middle:
+        name: "発酵りんご液"
+        description: "甘酸っぱい香りの発酵液。"
+      final:
+        low:
+          name: "酸っぱいサイダー"
+          description: "酸味が強く、後味が荒い。"
+        standard:
+          name: "アップルサイダー"
+          description: "りんごの香りと甘みが釣り合っている。"
+        high:
+          name: "黄金のアップルサイダー"
+          description: "華やかな香りと爽やかな余韻が続く。"
+    sake:
+      name: "日本酒"
+      middle:
+        name: "酒母"
+        description: "米の代わりに種を使った試験的な酒母。"
+      final:
+        low:
+          name: "ぬか臭い日本酒"
+          description: "香りに雑味が残る。"
+        standard:
+          name: "日本酒"
+          description: "穏やかな香りとすっきりした味わい。"
+        high:
+          name: "大吟醸"
+          description: "透明感のある香りと深い余韻がある。"
+    whiskey:
+      name: "ウイスキー"
+      middle:
+        name: "麦の蒸留原酒"
+        description: "刺激の強い蒸留直後の原酒。"
+      final:
+        low:
+          name: "荒削りウイスキー"
+          description: "アルコールの刺激が強い。"
+        standard:
+          name: "ウイスキー"
+          description: "樽の香りと麦のコクがある。"
+        high:
+          name: "スコッチウイスキー"
+          description: "燻香と長い余韻が調和している。"
+    rum:
+      name: "ラム"
+      middle:
+        name: "糖蜜の蒸留液"
+        description: "甘い香りが残る蒸留液。"
+      final:
+        low:
+          name: "苦いラム"
+          description: "苦みが強く飲みにくい。"
+        standard:
+          name: "スパイスラム"
+          description: "樽の香りと甘みがまとまっている。"
+        high:
+          name: "黄金のラム"
+          description: "濃厚な甘みとスパイスの余韻が続く。"
+    moonshine:
+      name: "密造酒"
+      middle:
+        name: "危険な蒸留原酒"
+        description: "刺激が強く、扱いを誤ると危険な原酒。"
+      final:
+        low:
+          name: "粗悪な密造酒"
+          description: "鼻を刺す刺激と雑味がある。"
+        standard:
+          name: "密造酒"
+          description: "強い酒だが、辛うじて味が整っている。"
+        high:
+          name: "熟成密造酒"
+          description: "危険な強さと複雑な香りを持つ。"
+  item:
+    name:
+      muddy: "§7泥状の{recipe}"
+      fermented: "§b{product}"
+      distilled: "§e{product}"
+      distilled_degraded: "§e{product}（蒸留失敗）"
+      aged: "§6{product} {stars}"
+    data:
+      recipe: "レシピ"
+      stage: "段階"
+      quality: "品質"
+      final_quality: "最終品質"
+      distill_count: "蒸留回数"
+      alcohol: "アルコール"
+      rating: "評価"
+    stage:
+      fermented: "発酵済み"
+      distilled: "蒸留済み"
+      aged: "熟成済み"
+      failed: "失敗"
+    filter:
+      name: "蒸留フィルター（試作品）"
+      description:
+        - "蒸留時間 -15%"
+        - "蒸留ごとに耐久値を1消費"
+  drink:
+    completed: "&a{recipe}を飲みました。&7酔い: &e{alcohol}%"
+  catalog:
+    title: "醸造図鑑 {page}/{pages}"
+    discovered: "&6醸造図鑑に新しく発見しました: &f{recipe}"
+  process:
+    fermentation_started: "&a発酵を開始しました。&7（レシピ: {recipe}）"
+    fermentation_stopped: "&e発酵を停止しました。"
+    distillation_started: "&a蒸留を開始しました。"
+    distillation_stopped: "&e蒸留を停止しました。"
+    bottled: "&a瓶詰めが完了しました。"
+    aged: "&a熟成が完了しました。"
+  error:
+    no_fuel: "&c燃料がないため発酵を開始できません。"
+    no_ingredients: "&c材料スロットにアイテムを入れてください。"
+    recipe_not_found: "&c一致するレシピが見つかりません。"
+    invalid_input: "&cこの工程に投入できる醸造物ではありません。"
+    no_material: "&c醸造素材がないため開始できません。"
+    skill_required: "&cこのレシピを実行するには職業レベルまたはスキルが不足しています。"
+    barrel_size: "&c樽サイズが一致しません。再設置してください。"
+    machine_locked: "&cこの設備は他のプレイヤーが使用中です。"
+    level_required: "&c必要職業レベル不足: Lv{level} が必要です。"
+    skills_required: "&c必要スキル不足: {skills}"
+    not_started: "&c発酵が開始されていません。"
+    batch_limit: "&eこのバッチは最大3本までです。"
+    single_item: "&cスタックできません。1個ずつ入れてください。"
+    barrel_type: "&cこのレシピは{types}の看板樽のみ対応です。"
+    invalid_slot: "&cこのスロットには入れられません。"
+  ui:
+    title:
+      fermentation: "§8発酵"
+      distillation: "§8蒸留"
+      aging_big: "§8熟成（大樽）"
+      aging_small: "§8熟成（小樽）"
+    action:
+      fermentation_start: "発酵開始"
+      fermentation_stop: "発酵停止"
+      distillation_start: "蒸留開始"
+      distillation_stop: "蒸留停止"
+      start: "開始"
+      stop: "停止"
+    data:
+      fire: "火力"
+      current: "現在の醸造物"
+      none: "なし"
+      step_elapsed: "工程経過"
+      session_runs: "今回の蒸留回数"
+      duration: "1回の蒸留時間"
+      items: "投入数"
+    fire:
+      high: "高"
+      medium: "中"
+      low: "低"
+      none: "未点火"
+    barrel:
+      big: "大樽"
+      small: "小樽"
+    aging_core: "熟成工程"
+  intoxication:
+    status: "&7現在の酔い: &e{alcohol}%"

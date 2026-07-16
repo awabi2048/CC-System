@@ -24,8 +24,16 @@ object LoreFormatter {
         return "§f❙ §7$label $valueColor${value ?: ""}"
     }
 
+    fun dataComponent(label: String, value: Component, valueColor: String = "§7"): Component {
+        return component("§f❙ §7$label $valueColor").append(value)
+    }
+
     fun subDataLine(label: String, value: Any?): String {
         return dataLine(label, value, "§b")
+    }
+
+    fun metadataLine(label: String, value: Any?): String {
+        return "§8$label: ${value ?: ""}"
     }
 
     fun actionLine(operation: String, action: String): String {
@@ -57,6 +65,10 @@ object LoreFormatter {
 
     fun textLine(text: String): String {
         return "§7$text"
+    }
+
+    fun styledText(text: String, color: String, italic: Boolean): Component {
+        return component("$color$text").decoration(TextDecoration.ITALIC, italic)
     }
 
     fun component(line: String): Component {

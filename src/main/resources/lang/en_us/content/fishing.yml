@@ -1,0 +1,44 @@
+fishing:
+  caught: "Caught {fish}: {weight}g / {quality}"
+  catch_item:
+    name: "§f{fish} §7({weight}g / {quality})"
+  failed: "The fish got away."
+  no_catch: "There is no catch under these conditions."
+  hooked: "A fish is on the line. Complete {count} displayed actions."
+  progress: "{current}/{required}"
+  input:
+    left: "Left click"
+    right: "Right click"
+    tap: "Tap"
+  quality:
+    common: "Common"
+    uncommon: "Uncommon"
+    rare: "Rare"
+    epic: "Epic"
+    legendary: "Legendary"
+  fishdex:
+    title: "Fishing Catalog {page}/{pages}"
+    previous: "Previous page"
+    next: "Next page"
+    close: "Close"
+    description:
+      cod: "A fish found in cold waters."
+      salmon: "A fish that swims upstream."
+      pufferfish: "A fish known for its inflated body."
+      tropical_fish: "A fish found in warm oceans."
+    total: "Total caught"
+    maximum: "Maximum weight"
+    minimum: "Minimum weight"
+    not_caught: "You have never caught this fish"
+    quality:
+      common: "Common"
+      uncommon: "Uncommon"
+      rare: "Rare"
+      epic: "Epic"
+      legendary: "Legendary"
+  catalog:
+    item:
+      cod: "Cod"
+      salmon: "Salmon"
+      pufferfish: "Pufferfish"
+      tropical_fish: "Tropical Fish"

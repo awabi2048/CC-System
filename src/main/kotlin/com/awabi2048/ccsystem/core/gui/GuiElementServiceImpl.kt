@@ -5,7 +5,6 @@ import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiFrameSection
 import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
-import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
@@ -24,38 +23,24 @@ class GuiElementServiceImpl : GuiElementService {
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
 
-    override fun component(raw: String): Component {
-        return normalizeComponent(legacy.deserialize(raw))
+    override fun title(name: GuiNameSpec): Component {
+        return renderName(name)
     }
 
     override fun name(raw: String, style: GuiNameStyle): Component {
         val normalized = raw.trim()
         val styled = if (colorCodePattern.containsMatchIn(normalized)) normalized else style.colorCode + normalized
-        return component(styled)
+        return normalizeComponent(legacy.deserialize(styled))
     }
 
     override fun lore(spec: GuiLoreSpec): List<Component> {
         return loreService.render(spec)
     }
 
-    override fun autoLore(lines: List<String>, closingSeparator: Boolean): List<Component> {
-        return loreService.render(
-            GuiLoreSpec.Auto(
-                lines,
-                if (closingSeparator) GuiLoreFrame.BOTH else GuiLoreFrame.TOP
-            )
-        )
-    }
-
     override fun item(spec: GuiItemSpec): ItemStack {
         val item = ItemStack(spec.material, spec.amount.coerceIn(1, spec.material.maxStackSize.coerceAtLeast(1)))
         val meta = item.itemMeta ?: return item
-        meta.displayName(
-            when (val name = spec.name) {
-                GuiNameSpec.Empty -> Component.empty()
-                is GuiNameSpec.Text -> this.name(name.text, name.style)
-            }
-        )
+        meta.displayName(renderName(spec.name))
         val nameOnlyRole = spec.role in setOf(
             GuiElementRole.BACK,
             GuiElementRole.CONFIRM,
@@ -73,7 +58,13 @@ class GuiElementServiceImpl : GuiElementService {
             ItemFlag.HIDE_ADDITIONAL_TOOLTIP
         )
         meta.isHideTooltip = spec.role == GuiElementRole.DECORATION
+        GuiItemMarker.mark(meta, spec.role)
         item.itemMeta = meta
+        return item
+    }
+
+    override fun mark(item: ItemStack, role: GuiElementRole): ItemStack {
+        item.editMeta { meta -> GuiItemMarker.mark(meta, role) }
         return item
     }
 
@@ -166,5 +157,11 @@ class GuiElementServiceImpl : GuiElementService {
         return component
             .colorIfAbsent(NamedTextColor.WHITE)
             .decoration(TextDecoration.ITALIC, false)
+    }
+
+    private fun renderName(name: GuiNameSpec): Component = when (name) {
+        GuiNameSpec.Empty -> Component.empty()
+        is GuiNameSpec.Text -> this.name(name.text, name.style)
+        is GuiNameSpec.Component -> normalizeComponent(name.value)
     }
 }

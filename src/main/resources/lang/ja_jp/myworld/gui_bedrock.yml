@@ -101,15 +101,11 @@ gui:
   player_world:
     title: マイワールドの一覧
     world_item:
-      owner: §f§l| §7オーナー §f{owner}
-      publish: §f§l| §7公開設定 §b{level}{status_color}
-      favorite: §f§l| §7お気に入り §c{count}
-      recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
-      tag: §f§l| §7タグ §e{tags}
       warp: このワールドへワープ
       settings: ワールド設定を開く
-      expired: §c§nこのワールドはアーカイブされています
-      expires_at: §f§l| §7アーカイブまでの日数 §f{days}日 §8({date} にアーカイブ)
+      expired: このワールドはアーカイブされています
+      expires_at: アーカイブまで
+      expires_value: '{days}日（{date} にアーカイブ）'
     creation_button:
       display: §a§lマイワールドを新規作成
       action: ワールド作成を開始
@@ -117,11 +113,11 @@ gui:
       - §7新しいマイワールドを作成します。
       - §7テンプレートや公開範囲を自由に設定可能です。
     creation_unavailable:
-      period_disabled:
-        display: §c現在はワールド作成期間外です
+      policy_denied:
+        display: §c現在はワールドを作成できません
         lore:
-        - §7現在は運営によりワールド作成期間外です。
-        - §7作成期間の再開までしばらくお待ちください。
+        - §7ワールド作成は現在利用できません。
+        - §7利用できるようになるまでお待ちください。
       no_slot:
         display: §cワールドスロットに空きがありません
         lore:
@@ -130,23 +126,18 @@ gui:
       no_permission:
         display: §cワールドを作成する権限がありません
         lore:
-        - §7このアカウントではワールドを作成できません。
+        - §7ワールドを作成する権限がありません。
         - §7作成権限が必要です。
     stats_button:
       display: §e{player}
-      blocks:
-        points:
-        - §f§l| §7ワールドポイント §6{icon} {point}
-        - §7マイワールドの新規作成や、拡張などに使えるポイントです
-        slots:
-        - §f§l| §7ワールドスロット §a§l{current_occupied}§7/{unlocked}
-        - §7新規にマイワールドを作成することができる枠数です
-        - §7「ワールドの種」を使用することで解放することができます
-        slots_bypass:
-        - §f§l| §7ワールド数 §a§l{current_occupied}
-        - §7上限を貫通する権限が付与されています
-        pending:
-        - §f§l| §7未処理の招待/申請 §e{pending_count}件
-        - §f§l| §7最新受信日時 §b{latest_pending_at}
+      points_label: ワールドポイント
+      points_description: マイワールドの新規作成や拡張に使えるポイントです
+      slots_label: ワールドスロット
+      world_count_label: ワールド数
+      slots_description: 新規にマイワールドを作成できる枠数です。「ワールドの種」で追加できます
+      slots_bypass_description: 上限を貫通する権限が付与されています
+      pending_label: 未処理の招待・申請
+      pending_value: '{count}件'
+      latest_pending_label: 最新受信日時
       action:
         open_pending: 未処理の招待・申請を開く

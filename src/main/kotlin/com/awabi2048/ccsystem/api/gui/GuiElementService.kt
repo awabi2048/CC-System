@@ -6,15 +6,16 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
 
 interface GuiElementService {
-    fun component(raw: String): Component
+    fun title(name: GuiNameSpec): Component
 
     fun name(raw: String, style: GuiNameStyle = GuiNameStyle.DEFAULT): Component
 
     fun lore(spec: GuiLoreSpec): List<Component>
 
-    fun autoLore(lines: List<String>, closingSeparator: Boolean = true): List<Component>
-
     fun item(spec: GuiItemSpec): ItemStack
+
+    /** 直接生成したアイテムの表示を変更せず、GUI保護マーカーだけを付与する。 */
+    fun mark(item: ItemStack, role: GuiElementRole = GuiElementRole.CONTENT): ItemStack
 
     fun menuIcon(spec: GuiMenuIconSpec): ItemStack
 

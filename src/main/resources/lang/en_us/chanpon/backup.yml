@@ -29,15 +29,6 @@ chanpon:
         display: "§bAutomation Settings"
         lore:
           - "§7Configure automatic backup and rollback."
-      world_creation:
-        enabled:
-          display: "§aWorld creation: enabled"
-          description: "Players are allowed to create worlds."
-          action: "Disable"
-        disabled:
-          display: "§cWorld creation: disabled"
-          description: "Players cannot create new worlds."
-          action: "Enable"
       export:
         display: "§7World Data Export"
         lore:
@@ -128,6 +119,7 @@ chanpon:
     visit_list:
       title: "§0Visitable worlds"
     favorite_visit:
+      owner_label: Owner
       owner: "§7Owner: §f{owner}"
       tags: "§7Tags: §f{tags}"
       warp: "Warp"
@@ -180,13 +172,15 @@ chanpon:
     automation:
       title: "§0Automation Settings"
       auto_backup:
-        display: "§bAuto backup: {state}"
+        display: "§bAuto backup"
         lore:
           - "§7Saves changed production worlds at the configured time."
+          - "§7Current: §f{state}"
       auto_rollback:
-        display: "§cAuto rollback: {state}"
+        display: "§cAuto rollback"
         lore:
           - "§7Restores the latest restore point at the configured time."
+          - "§7Current: §f{state}"
       restore_point:
         display: "§dCreate Restore Point"
         lore:
@@ -238,14 +232,16 @@ chanpon:
           - "§cEach backup still requires its own confirmation before execution."
       auto_backup_toggle:
         title: "§0Auto Backup Setting Confirmation"
-        display: "§bSet auto backup to {state}"
+        display: "§bChange auto backup"
         lore:
           - "§7Change the auto backup setting."
+          - "§7New state: §f{state}"
       auto_rollback_toggle:
         title: "§0Auto Rollback Setting Confirmation"
-        display: "§cSet auto rollback to {state}"
+        display: "§cChange auto rollback"
         lore:
           - "§7Change the auto rollback setting."
+          - "§7New state: §f{state}"
           - "§cWhen enabled, it restores the restore point at the configured time."
       owner_backup:
         title: "§0Backup Confirmation"

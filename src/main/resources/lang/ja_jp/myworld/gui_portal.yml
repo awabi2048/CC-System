@@ -1,7 +1,7 @@
 gui:
   portal:
     title: ポータルの設定
-    id_format: '§8PORTAL_ID: {id}'
+    id_label: PORTAL_ID
     toggle_text:
       name: §a浮遊テキストの表示
       current_label: 現在の設定
@@ -19,14 +19,14 @@ gui:
       action: ポータルを撤去
   portal_item:
     name: §bワールドポータル
-    destination: §f§l| §bリンク先 §f§n{destination}
+    destination: リンク先
     action:
       link: マイワールドをリンク
       place: ワールドポータルを設置
       unlink: リンクを解除
   world_gate_item:
     name: §3ワールドゲート
-    destination: §f§l| §bリンク先 §f§n{destination}
+    destination: リンク先
     action:
       link: マイワールドをリンク
       relink: リンク先を再設定
@@ -35,9 +35,9 @@ gui:
     title: ポータルの遠隔管理
     portal_item:
       name: '§bポータル: §f{id}'
-      owner: '§f§l| §7所有者: §f{owner}'
-      world: '§f§l| §7設置ワールド: §f{world}'
-      coordinates: '§f§l| §7座標: §f{x}, {y}, {z}'
+      owner: 所有者
+      world: 設置ワールド
+      coordinates: 座標
       action:
         teleport: ポータルの位置にテレポート
         remove: ポータルを撤去
@@ -56,10 +56,6 @@ gui:
       placeholder: プレイヤー名を入力
     title: '{player}のワールド'
     world_item:
-      owner: §f§l| §7オーナー §b{owner}{status_color}
-      tag: §f§l| §7タグ §b{tags}
-      favorite: §f§l| §7お気に入り §c{count}
-      recent_visitors: §f§l| §7最近の来訪者 §a{count}
       warp: このワールドへワープ
       fav_add: お気に入りに追加
       fav_remove: お気に入りを解除
@@ -71,7 +67,7 @@ gui:
     title: 'ワールド検索: {query}'
     info:
       name: §6検索情報
-      query: §f§l| §7検索キーワード §f{query}
-      hit: §f§l| §7ヒット件数 §a{hit}
-      shown: §f§l| §7表示件数 §b{shown}
-      page: §f§l| §7ページ §e{current}/{total}
+      query_label: 検索キーワード
+      hit_label: 検索結果
+      shown_label: 表示件数
+      page_label: ページ

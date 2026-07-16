@@ -12,6 +12,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -63,10 +64,10 @@ class LoreServiceTest {
     }
 
     @Test
-    void autoLoreWithBothFrameWrapsLinesAndPreservesBlanksAsSpacers() {
+    void richLoreWithBothFrameWrapsLinesAndPreservesBlanksAsSpacers() {
         List<Component> rendered = new LoreServiceImpl().render(
-            new GuiLoreSpec.Auto(
-                List.of("データ1", "", "データ2"),
+            new GuiLoreSpec.Rich(
+                List.of(new GuiLoreLine.Text("データ1"), GuiLoreLine.Spacer.INSTANCE, new GuiLoreLine.Text("データ2")),
                 GuiLoreFrame.BOTH
             )
         );
@@ -106,10 +107,10 @@ class LoreServiceTest {
     }
 
     @Test
-    void legacyBoundarySeparatorsAreNotDuplicatedByStandardFrame() {
+    void explicitBoundarySeparatorsAreNotDuplicatedByStandardFrame() {
         List<String> lines = plain(new LoreServiceImpl().render(
-            new GuiLoreSpec.Auto(
-                List.of("§8§m－－－－－－", "説明", "§8§m－－－－－－"),
+            new GuiLoreSpec.Rich(
+                List.of(GuiLoreLine.Separator.INSTANCE, new GuiLoreLine.Text("説明"), GuiLoreLine.Separator.INSTANCE),
                 GuiLoreFrame.BOTH
             )
         ));
@@ -151,9 +152,16 @@ class LoreServiceTest {
             IllegalArgumentException.class,
             () -> new GuiLoreBlock(List.of(GuiLoreLine.Separator.INSTANCE))
         );
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> new GuiLoreBlock(List.of(new GuiLoreLine.Raw("§8§m----------------")))
+    }
+
+    @Test
+    void componentLorePreservesAdventureEvents() {
+        Component source = Component.text("対象").hoverEvent(Component.text("詳細"));
+        List<Component> rendered = new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(List.of(new GuiLoreLine.Component(source)), GuiLoreFrame.NONE)
         );
+
+        assertEquals(1, rendered.size());
+        assertNotNull(rendered.getFirst().hoverEvent());
     }
 }

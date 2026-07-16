@@ -16,6 +16,10 @@ import java.util.UUID
  */
 class MusicListener : Listener {
 
+    internal companion object {
+        fun replayDelayAfterPlay(durationTicks: Long): Long = (durationTicks - 20L).coerceAtLeast(0L)
+    }
+
     private val musicTasks = HashMap<UUID, org.bukkit.scheduler.BukkitTask>()
     private val currentSounds = HashMap<UUID, String>()
 
@@ -60,14 +64,10 @@ class MusicListener : Listener {
         musicTasks.remove(player.uniqueId)?.cancel()
         val lastSound = currentSounds.remove(player.uniqueId)
         
-        // 念のため停止パケットも送る (RECORDSカテゴリを指定)
-        try {
-            player.stopSound(SoundCategory.RECORDS)
-            if (lastSound != null) {
-                player.stopSound(lastSound, SoundCategory.RECORDS)
-            }
-        } catch (e: NoSuchMethodError) {
-            player.stopSound("")
+        // 独自BGMはRECORDSカテゴリで再生しているため、停止時だけ同カテゴリを明示する。
+        player.stopSound(SoundCategory.RECORDS)
+        if (lastSound != null) {
+            player.stopSound(lastSound, SoundCategory.RECORDS)
         }
     }
 
@@ -94,7 +94,8 @@ class MusicListener : Listener {
         val soundId = musicSetting.sound
         val volume = musicSetting.volume
         val pitch = musicSetting.pitch
-        val duration = musicSetting.duration.toLong() // 秒
+        val durationTicks = musicSetting.duration.toLong() * 20L
+        var ticksUntilReplay = 0L
 
         val task = CCSystem.instance.server.scheduler.runTaskTimer(CCSystem.instance, Runnable {
             if (player.isOnline) {
@@ -106,26 +107,20 @@ class MusicListener : Listener {
 
                 currentSounds[player.uniqueId] = soundId
 
-                // 独自BGMを再生している間は、バニラの music カテゴリ（レコード・ディスク再生等）を停止し続ける。
-                // これにより独自BGMとバニラBGMが重ならない。
-                try {
-                    player.stopSound(SoundCategory.MUSIC)
-                } catch (e: NoSuchMethodError) {
-                    // フォールバック不可
-                }
+                // 曲の長さとは独立して、毎秒バニラの音楽カテゴリを抑止する。
+                player.stopSound(SoundCategory.MUSIC)
 
-                // BGMとして再生するため、SoundCategory.RECORDSを使用し、位置はプレイヤーの現在地
-                try {
+                if (ticksUntilReplay <= 0L) {
+                    // BGMとして再生するためRECORDSを使用し、位置はプレイヤーの現在地とする。
                     player.playSound(player.location, soundId, SoundCategory.RECORDS, volume, pitch)
-                } catch (e: NoSuchMethodError) {
-                    // 古いバージョンなどのフォールバック (引数の型を明示して曖昧さを回避)
-                    player.playSound(player.location, soundId, volume, pitch)
+                    ticksUntilReplay = replayDelayAfterPlay(durationTicks)
+                } else {
+                    ticksUntilReplay -= 20L
                 }
             } else {
-                // プレイヤーがオフラインならタスクキャンセル (念のため)
-                musicTasks.remove(player.uniqueId)?.cancel()
+                stopMusic(player)
             }
-        }, 0L, duration * 20L)
+        }, 0L, 20L)
 
         musicTasks[player.uniqueId] = task
     }

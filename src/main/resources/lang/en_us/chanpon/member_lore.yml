@@ -4,6 +4,13 @@ chanpon:
     online: "Online"
     tool_permission_title: "Tool Permissions"
     none: "None"
+    permission_menu:
+      state_label: State
+      enabled: On
+      disabled: Off
+      toggle_operation: Click
+      toggle_action: Toggle
+      toggle_resolved: Click to toggle
     click_edit_operation: "Left Click"
     click_edit_action: "Edit tool permissions"
     transfer_owner_operation: "Shift+Left Click"

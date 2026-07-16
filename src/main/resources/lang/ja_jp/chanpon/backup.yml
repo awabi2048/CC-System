@@ -29,15 +29,6 @@ chanpon:
         display: "§b自動処理の設定"
         lore:
           - "§7自動バックアップと自動ロールバックを設定します。"
-      world_creation:
-        enabled:
-          display: "§aワールド作成: 有効"
-          description: "プレイヤーのワールド作成を許可しています。"
-          action: "無効にする"
-        disabled:
-          display: "§cワールド作成: 無効"
-          description: "プレイヤーのワールド作成を停止しています。"
-          action: "有効にする"
       export:
         display: "§7ワールドデータのエクスポート"
         lore:
@@ -128,6 +119,7 @@ chanpon:
     visit_list:
       title: "§0訪問可能なワールド"
     favorite_visit:
+      owner_label: オーナー
       owner: "§7オーナー: §f{owner}"
       tags: "§7タグ: §f{tags}"
       warp: "ワープ"
@@ -180,13 +172,15 @@ chanpon:
     automation:
       title: "§0自動処理の設定"
       auto_backup:
-        display: "§b自動バックアップ: {state}"
+        display: "§b自動バックアップ"
         lore:
           - "§7configで指定した時刻に変更済み本番用ワールドを保存します。"
+          - "§7現在: §f{state}"
       auto_rollback:
-        display: "§c自動ロールバック: {state}"
+        display: "§c自動ロールバック"
         lore:
           - "§7configで指定した時刻に最新の復元ポイントへ戻します。"
+          - "§7現在: §f{state}"
       restore_point:
         display: "§d復元ポイントを設定"
         lore:
@@ -238,14 +232,16 @@ chanpon:
           - "§c実行前に各バックアップごとの確認も表示されます。"
       auto_backup_toggle:
         title: "§0自動バックアップ設定確認"
-        display: "§b自動バックアップを{state}に変更"
+        display: "§b自動バックアップを変更"
         lore:
           - "§7自動バックアップ設定を変更します。"
+          - "§7変更後: §f{state}"
       auto_rollback_toggle:
         title: "§0自動ロールバック設定確認"
-        display: "§c自動ロールバックを{state}に変更"
+        display: "§c自動ロールバックを変更"
         lore:
           - "§7自動ロールバック設定を変更します。"
+          - "§7変更後: §f{state}"
           - "§c有効化すると、指定時刻に復元ポイントへ戻します。"
       owner_backup:
         title: "§0バックアップ確認"

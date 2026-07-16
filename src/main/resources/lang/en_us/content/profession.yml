@@ -2,29 +2,49 @@ profession:
   level_up: §a{profession} leveled up! §eLv.{old} -> Lv.{new} §7(+{gained})
   new_unlock: 'New unlockable skills available ({count}): {skills} [Click to open skill tree]'
   lumberjack:
-    name: 木こり
-    description: 木を伐採して経験値を得る職業
+    name: Lumberjack
+    description: Gain profession experience by chopping wood
   brewer:
-    name: 醸造家
-    description: ポーション醸造で経験値を得る職業
+    name: Brewer
+    description: Gain profession experience by brewing drinks
   miner:
-    name: 鉱夫
-    description: 鉱石採掘で経験値を得る職業
+    name: Miner
+    description: Gain profession experience by mining ores
   cook:
-    name: 料理人
-    description: 料理を作って経験値を得る職業
+    name: Cook
+    description: Gain profession experience by cooking meals
   swordsman:
-    name: 剣士
-    description: モンスター討伐で経験値を得る職業
+    name: Swordsman
+    description: Gain profession experience by defeating monsters
   warrior:
-    name: 戦士
-    description: 近接戦闘で経験値を得る職業
+    name: Warrior
+    description: Gain profession experience through combat
   farmer:
-    name: 農家
-    description: 作物の収穫で経験値を得る職業
+    name: Farmer
+    description: Gain profession experience by harvesting crops
   gardener:
-    name: 庭師
-    description: 装飾的なブロック設置で経験値を得る職業
+    name: Gardener
+    description: Gain profession experience through gardening
   carpenter:
-    name: 大工
-    description: 建築で経験値を得る職業
+    name: Carpenter
+    description: A profession that gains experience by building structures
+  fisher:
+    name: Fisher
+    description: Read fishing conditions, catch fish, and gain profession experience
+
+active_skill:
+  selector:
+    display: Toggle mode
+    no_targets: No skills can be toggled
+    targets: 'Toggleable skills:'
+    enabled: Enabled
+    disabled: Disabled
+    mode: Toggle mode
+    left_click: Left-Click
+    right_click: Right-Click
+    select_action: Change selected skill
+    mode_action: Change toggle mode
+release:
+  profession_unavailable: This profession is not currently available.
+  profession_unavailable_lore: It is still being prepared for release.
+  skill_unavailable: Profession skills are not currently available.

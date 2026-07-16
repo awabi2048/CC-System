@@ -1,0 +1,7 @@
+resource_collection:
+  action:
+    harvest: "資源採取"
+    craft: "資源クラフト"
+  reward: "{action}により{profession}の経験値を{experience}獲得しました"
+  error:
+    disabled: "資源収集機能は現在無効です"

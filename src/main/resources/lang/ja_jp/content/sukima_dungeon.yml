@@ -68,14 +68,20 @@ sukima_dungeon:
   command_generator_failed: '&cダンジョンの生成に失敗しました。'
   common_bar: '&7&m――――――――――――――――――――――――――――――'
   marker:
-    current_mode: '&f§l| §7現在のモード §a{mode}'
+    current_mode: 現在のモード
     mode_changed: '&7設置モードを §a{mode} §7に変更しました。'
     placed: '&b[Marker] {mode} §fマーカーを設置しました。'
     removed: '&b[Marker] {mode} §fマーカーを削除しました。'
     usage:
-      place: '&e右クリック(ブロック)§7 クリック面の外側にマーカーを設置'
-      delete: '&eShift + 右クリック§7 視線上のマーカーを削除'
-      switch: '&eFキー§7 次のモードへ変更'
+      place:
+        operation: 右クリック（ブロック）
+        action: クリック面の外側にマーカーを設置
+      delete:
+        operation: Shift + 右クリック
+        action: 視線上のマーカーを削除
+      switch:
+        operation: Fキー
+        action: 次のモードへ変更
     modes:
       mob: '&cモブ'
       npc: '&aNPC'
@@ -83,26 +89,26 @@ sukima_dungeon:
       sprout: '&d芽'
       spawn: '&fスポーン'
   gui_entrance_title: '&5ポータルをつなげる'
-  gui_entrance_button: '&b&lダンジョンへのポータルを開く'
-  gui_entrance_button_lore:
-  - '&7クリックしてダンジョンへのポータルを開きます！'
-  gui_style_button: '&6プレイスタイルの選択'
-  gui_style_multi: '&f§l| §7現在の設定 §eみんなで'
-  gui_style_single: '&f§l| §7現在の設定 §eひとりで'
-  gui_style_lore: '&7クリックして切り替えます'
-  gui_size_button: '&eサイズの選択'
-  gui_size_small: '&f§l| §7現在の設定 §e小'
-  gui_size_medium: '&f§l| §7現在の設定 §e中'
-  gui_size_large: '&f§l| §7現在の設定 §e大'
-  gui_size_huge: '&f§l| §7現在の設定 §e極大'
-  gui_size_lore: '&7クリックして切り替えます'
-  gui_theme_button: '&dポータルの接続先'
-  gui_theme_current: '&f§l| §7現在の設定 §d{theme}'
-  gui_theme_lore: '&e§nクリックして変更'
-  gui_info_title: '&aInfo'
-  gui_info_theme: '&f§l| §7ポータルの接続先 §d{theme}'
-  gui_info_size: '&f§l| §7サイズ §e{size}'
-  gui_info_description: '&7スキマの世界は非常に不安定です。そのため、ポータルが別の世界に繋がってしまうことがあります。&7より上位のしおりを使用すると、望んだ傾向の世界に行きやすくなります。'
+  gui_entrance_open_name: '&b&lダンジョンへのポータルを開く'
+  gui_entrance_open_action: ダンジョンへのポータルを開く
+  gui_style_name: '&6プレイスタイルの選択'
+  gui_style_multi: みんなで
+  gui_style_single: ひとりで
+  gui_size_name: '&eサイズの選択'
+  gui_size_small: 小
+  gui_size_medium: 中
+  gui_size_large: 大
+  gui_size_huge: 極大
+  gui_theme_name: '&dポータルの接続先'
+  gui_theme_world_value: '{theme}の世界'
+  gui_current_setting_label: 現在の設定
+  gui_change_action: 切り替え
+  gui_info_name: '&a情報'
+  gui_info_theme_label: ポータルの接続先
+  gui_info_size_label: サイズ
+  gui_info_warning:
+  - スキマの世界は非常に不安定なため、ポータルが別の世界に繋がることがあります
+  - 上位のしおりほど、望んだ傾向の世界に行きやすくなります
   gui_theme_error: '&cテーマが見つかりません'
   gui_theme_random: ???
   item_bookmark_name: '&d{tier}ふしぎなしおり'
@@ -116,35 +122,27 @@ sukima_dungeon:
   gui_talisman_confirm_title: '&0&l本当に脱出する？'
   gui_talisman_confirm_button: '&c&n脱出する'
   gui_talisman_confirm_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&7クリックすると、すべてのプレイヤーが'
-  - '&7このダンジョンから離脱し、攻略を終了します。'
-  - '&7&m――――――――――――――――――――――――――――――'
+  - すべてのプレイヤーがダンジョンから離脱し、攻略を終了します
+  gui_talisman_confirm_action: ダンジョンから脱出
   gui_talisman_cancel_button: '&aとどまる'
   gui_entrance_confirm_title: '&0&l本当に冒険に出る？'
   gui_entrance_confirm_button: '&b&n冒険に出る'
   gui_entrance_confirm_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&7しおりを消費して、選択した設定で'
-  - '&7ダンジョンへの扉を開きます。'
-  - '&7&m――――――――――――――――――――――――――――――'
+  - しおりを消費して、選択した設定でダンジョンへの扉を開きます
+  gui_entrance_confirm_action: 冒険を開始
   gui_entrance_cancel_button: '&c戻る'
   gui_join_title: '&5ポータルの先へ'
   gui_join_button_ready: '&b&n入場する'
   gui_join_button_wait: '&7生成中...'
-  gui_join_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&f§l| §7行き先 §d{theme}'
-  - '&f§l| §7サイズ §e{size}'
-  - '&7&m――――――――――――――――――――――――――――――'
+  gui_join_theme_label: 行き先
+  gui_join_size_label: サイズ
+  gui_join_action: 入場
   gui_join_cancel_button: '&c閉じる'
   gui_exit_title: '&0&l本当に帰還する？'
   gui_exit_button: '&c&n帰還する'
   gui_exit_button_lore:
-  - '&7&m――――――――――――――――――――――――――――――'
-  - '&7クリックすると、すべてのプレイヤーが'
-  - '&7このダンジョンから離脱し、攻略を終了します。'
-  - '&7&m――――――――――――――――――――――――――――――'
+  - すべてのプレイヤーがダンジョンから離脱し、攻略を終了します
+  gui_exit_action: ダンジョンから帰還
   gui_exit_cancel_button: '&aとどまる'
   talisman_cannot_use_here: '&cここではお札を使用できません。'
   item_bookmark_lore:

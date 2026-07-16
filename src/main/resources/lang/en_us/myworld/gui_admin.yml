@@ -3,17 +3,18 @@ gui:
     title: Manage All Worlds
     info:
       display: §fStatistics
-      total_count: '§7Results: §f{count}'
-      page: '§7Page: §f{page} / {total_pages}'
+      total_count_label: Results
+      page_label: Page
+      mspt_label: Server MSPT
     world_item:
-      uuid: §f§l| §7World Directory §8{uuid}
-      world_name_line: §f§l| §7World §a{world}
-      owner: §f§l| §7Owner {owner}{status_color}
-      status: §f§l| §7Status {status}
-      status_archived: §cArchived
-      status_active: §bActive
-      publish: §f§l| §7Publish {color}{level}
-      generation: §f§l| §7Generation §e{method}
+      uuid: World Directory
+      world_name_line: World
+      owner: Owner
+      status: Status
+      status_archived: Archived
+      status_active: Active
+      publish: Publish
+      generation: Generation
       generation_type:
         convert: Converted
         template: Template
@@ -21,29 +22,31 @@ gui:
         seed: Seed
         random: Random
         unknown: '{source}'
-      expansion: §f§l| §7Expansion §e{level}
-      expires_at: §f§l| §7Multi-Archive §e{date} §8({days_remain}§8)
-      archived_at: §f§l| §7Archived On §e{date} §8({mode}§8)
-      created_at: §f§l| §7Created §e{date} §8({days_ago}§8)
-      created_info_days: §7{days} days ago
-      created_info_today: §7Today
-      expire_info_remaining: §7in {days} days
-      expire_info_overdue: §7{days} days ago
+      expires_at: Multi-Archive
+      expires_value: '{date} ({days_remain})'
+      archived_at: Archived On
+      archived_value: '{date} ({mode})'
+      created_at: Created
+      created_value: '{date} ({days_ago})'
+      created_info_days: '{days} days ago'
+      created_info_today: Today
+      expire_info_remaining: 'in {days} days'
+      expire_info_overdue: '{days} days ago'
       archive_mode_auto: Auto Switch
       archive_mode_manual: Manual Switch
-      mspt: §f§l| §7MSPT {mspt}
-      mspt_with_status: §f§l| §7MSPT {mspt} §7({status}§7)
-      mspt_value_low: §a< 0.1 §7ms
-      mspt_status_unloaded: §7Unloaded
-      mspt_error_with_reason: §f§l| §7MSPT §cLoad Failed §7({reason}§7)
+      mspt: MSPT
+      mspt_with_status: '{mspt} ({status})'
+      mspt_value_low: < 0.1 ms
+      mspt_status_unloaded: Unloaded
+      mspt_error_with_reason: 'Load Failed ({reason})'
       mspt_reason_chiyogami_inactive: Chiyogami is disabled
       mspt_reason_directory_not_found: World directory not found
       mspt_reason_load_failed: Could not verify world load state
       mspt_reason_metrics_not_found: MSPT metrics data not found
-      world_size_line: §f§l| §7World Size §e{size}{suffix}
-      world_size_measuring: §f§l| §7World Size §8(Measuring...)
-      world_size_unavailable: §f§l| §7World Size §cUnavailable
-      world_size_archived_suffix: §8 (Archived)
+      world_size_line: World Size
+      world_size_measuring: Measuring...
+      world_size_unavailable: Unavailable
+      world_size_archived_suffix: ' (Archived)'
       action_archive: Toggle archive
       action_settings: Open world settings
       action_warp: Warp to this world
@@ -65,19 +68,11 @@ gui:
         locked: Locked Only
       player:
         display: §ePlayer Filter
-        lore:
-        - §8§m－－－－－－－－－－－－－－－－－－
-        - §f§l| §7Filter type §f{type}
-        - §f§l| §7Target player §b{player}
-        - §8§m－－－－－－－－－－－－－－－－－－
-        - Change type
-        - Set player
-        - §8§m－－－－－－－－－－－－－－－－－－
         none: No Filter
         owner: Owner Worlds
         member: Member Worlds
-        current_type: §f§l §7Filter Type §f{type}
-        current_player: §f§l §7Target Player §b{player}
+        current_type: Filter Type
+        current_player: Target Player
         click_left: Change filter type
         click_right: Set player
       click_lr: Change
@@ -94,6 +89,7 @@ gui:
       mspt_desc: MSPT (High)
   admin_menu:
     title: Admin Menu
+    target_world_label: Target world
     update_data:
       display: §eUpdate Data
       lore:
@@ -145,7 +141,6 @@ gui:
       - §7Export current world as ZIP archive.
       action: Open confirmation
       confirm_title: Export Confirmation
-      target_world: §f§l| §7Target World §b{world}
     plugin_info:
       display: §bMyWorldManager
       lore:
@@ -158,10 +153,8 @@ gui:
       action: Switch admin menu
     archive_world:
       confirm_title: Check archive
-      target_world: §f§l| §7Target world §b{world}
     unarchive_world:
       confirm_title: Confirmation of unarchiving
-      target_world: §f§l| §7Target world §b{world}
     info:
       display: §aWorld List
       lore:
@@ -169,17 +162,6 @@ gui:
       action: Open world list
     current_world:
       display: §bCurrent World Info
-      lore:
-      - §8§m-----------------------
-      - §f§l| §7World Directory §8{world_directory}
-      - §f§l| §7World §a{world}
-      - §f§l| §7Owner §b{owner}
-      - §f§l| §7Generation §e{generation}
-      - §8§m-----------------------
-      - '{action_settings}'
-      - '{action_archive}'
-      - '{uuid_copy_hint}'
-      - §8§m-----------------------
     portals:
       display: §bPortal Management
       lore:
@@ -187,8 +169,9 @@ gui:
       action: Open portal management
   unarchive_confirm:
     title: §6Unarchive Confirmation
-    lore:
+    description:
     - §fThis world is currently archived.
     - §fDo you want to unarchive and warp?
+    action: Unarchive and warp
   archive_confirm:
     title: §6Archive Confirmation

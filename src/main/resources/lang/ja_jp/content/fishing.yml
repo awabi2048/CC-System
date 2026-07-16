@@ -1,0 +1,44 @@
+fishing:
+  caught: "{fish}を釣り上げました。{weight}g / {quality}"
+  catch_item:
+    name: "§f{fish} §7({weight}g / {quality})"
+  failed: "釣りに失敗しました。"
+  no_catch: "この場所と条件では魚がかかりません。"
+  hooked: "魚がかかりました。{count}回の表示操作を成功させてください。"
+  progress: "{current}/{required}"
+  input:
+    left: "左クリック"
+    right: "右クリック"
+    tap: "クリック"
+  quality:
+    common: "ふつう"
+    uncommon: "良質"
+    rare: "希少"
+    epic: "極上"
+    legendary: "伝説"
+  fishdex:
+    title: "魚図鑑 {page}/{pages}"
+    previous: "前のページ"
+    next: "次のページ"
+    close: "閉じる"
+    description:
+      cod: "冷たい水域に生息する魚。"
+      salmon: "川を遡上する魚。"
+      pufferfish: "ふくらんだ体が特徴の魚。"
+      tropical_fish: "暖かい海に生息する魚。"
+    total: "累計捕獲数"
+    maximum: "最大重量"
+    minimum: "最小重量"
+    not_caught: "この魚は1度も捕まえていません"
+    quality:
+      common: "ふつう"
+      uncommon: "良質"
+      rare: "希少"
+      epic: "極上"
+      legendary: "伝説"
+  catalog:
+    item:
+      cod: "タラ"
+      salmon: "サケ"
+      pufferfish: "フグ"
+      tropical_fish: "熱帯魚"

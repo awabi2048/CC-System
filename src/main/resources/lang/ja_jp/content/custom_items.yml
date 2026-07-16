@@ -1,4 +1,45 @@
 custom_items:
+  minigame:
+    manager:
+      name: §6ミニゲーム管理アイテム
+      lore:
+      - §7右クリックでゲーム管理メニューを開く
+    start:
+      name: §aレース開始マーカー
+      lore:
+      - §7レースの開始地点
+    checkpoint:
+      name: §bレースチェックポイント
+      lore:
+      - §7設置順に通過するチェックポイント
+    goal:
+      name: §6レースゴールマーカー
+      lore:
+      - §7レースのゴール地点
+    jail:
+      name: §c逃走中の牢屋マーカー
+      lore:
+      - §7捕獲したランナーの移送先
+    colosseum_start:
+      name: §cコロシアム開始マーカー
+      lore:
+      - §71対1の試合開始地点
+    endergolf_start:
+      name: §aエンパゴルフ ティー
+      lore:
+      - §7ホールの開始地点。番号順に設置します
+    endergolf_cup:
+      name: §6エンパゴルフ カップ
+      lore:
+      - §7エンダーパールをここへ入れてホールを終えます
+    endergolf_water_hazard:
+      name: §bエンパゴルフ ウォーターハザード
+      lore:
+      - §7入るとペナルティが加算され、ティーから再開します
+    endergolf_bunker:
+      name: §eエンパゴルフ バンカー
+      lore:
+      - §7入るとペナルティが加算されます
   misc:
     big_light:
       name: §dビッグライト
@@ -43,6 +84,46 @@ custom_items:
       - §7最大3種類のアイテムを大量に格納できます。
       - §7手に持って§eShiftを2回§7でメニューを開きます。
       - §7§eShift+スクロール§7で使用対象を切り替えます。
+    storage_box_ui:
+      item_name: §6ストレージボックス
+      none: なし
+      state:
+        on: ON
+        off: OFF
+      data:
+        stored_item: 収納中
+        count: 個数
+        auto_store: 自動回収
+        stored_count: 格納数
+        current: 現在
+      option:
+        selected: 現在選択中
+      description:
+        registered_empty: 未格納（この種類を収納対象として指定済み）
+      action:
+        withdraw_stack: 1スタック取り出し
+        withdraw_all: インベントリいっぱいまで取り出し
+        store_type: この種類を格納
+        register_and_store: 登録後に格納
+        store_all: 対象アイテムを格納
+        toggle: 切り替え
+      menu:
+        title: §8ストレージボックス
+        register:
+          name: §e収納対象を指定してください
+          description_1: 中央の白スロットをクリックした状態で
+          description_2: カーソルに持ったアイテムを種類登録できます
+        store_all:
+          name: §6インベントリ内一括収納
+        auto_store:
+          name: §b自動収納
+        use_from_box:
+          name: §dストレージボックスから使用
+        container_io:
+          name: §aコンテナ連携
+      message:
+        box_not_found: §c手に持っていたストレージボックスが見つかりません
+        cannot_store: §eこのアイテムは格納できません（種類上限または対象外）
     boxed_daiginjo:
       name: §f箱入り大吟醸
       lore:
@@ -256,7 +337,7 @@ custom_items:
     end:
       name: エンド
   marker:
-    current_mode: '&f§l| §7現在のモード §a{mode}'
+    current_mode: 現在のモード
     mode_changed: '&7設置モードを §a{mode} §7に変更しました。'
     placed: '&b[Marker] {mode} §fマーカーを設置しました。'
     removed: '&b[Marker] {mode} §fマーカーを削除しました。'
@@ -479,13 +560,12 @@ custom_items:
         waiting: §cオーバーエンチャント実行
         ready_lore: §7クリックで実行
         waiting_lore: §7条件を満たすと実行できます
-    separator: §8§m――――――――――――――――――――
     coming_soon: §7Coming Soon!
     license_card:
       title: §bライセンスカード
-      current_license: §f❙ §7現在のライセンス §e{tier}
-      allowed_difficulty: §f❙ §7入場許可難易度 §c{difficulty} §7まで
-      next_header: §f❙ §7次のライセンスまで
+      current_license: 現在のライセンス
+      allowed_difficulty: 入場許可難易度
+      next_header: 次のライセンスまで
       max_reached: '  §8- §a全ライセンスを解放済み'
       requirement:
         mission_clear: '  §8- §fミッションを完了する {progress}'
@@ -508,13 +588,13 @@ custom_items:
     mission:
       item_name: §a{mission}
       completed_item_name: §a§m{mission}
-      mission_title: §f❙ §7ミッション内容
-      difficulty_inline: §f❙ §7難易度 §f{difficulty}
-      memo_inline: §f❙ §7メモ §f{memo}
+      mission_title: ミッション内容
+      difficulty_inline: 難易度
+      memo_inline: メモ
     player:
       name_format: §6{player}
-      mob_kills: §f❙ §7倒したモブ §e{count} 体
-      barrier_restarts: §f❙ §7結界石を再起動した回数 §e{count} 回
+      mob_kills: 倒したモブ
+      barrier_restarts: 結界石の再起動回数
     recruitment:
       default_mission_title: アリーナミッション
       title: §6【{missionTitle}】
@@ -599,6 +679,38 @@ custom_items:
       end:
         name: エンド
   brewery:
+    garden_seed_apple:
+      name: §aりんごの種
+      lore:
+      - §7Gardenでりんごを育てるための種
+    garden_fruit_apple:
+      name: §cりんご
+      lore:
+      - §7Gardenで収穫した醸造素材
+    garden_seed_blueberry:
+      name: §aブルーベリーの種
+      lore:
+      - §7Gardenでブルーベリーを育てるための種
+    garden_fruit_blueberry:
+      name: §9ブルーベリー
+      lore:
+      - §7Gardenで収穫した醸造素材
+    garden_seed_grape:
+      name: §aぶどうの種
+      lore:
+      - §7Gardenでぶどうを育てるための種
+    garden_fruit_grape:
+      name: §5ぶどう
+      lore:
+      - §7Gardenで収穫した醸造素材
+    garden_seed_strawberry:
+      name: §aイチゴの種
+      lore:
+      - §7Gardenでイチゴを育てるための種
+    garden_fruit_strawberry:
+      name: §dイチゴ
+      lore:
+      - §7Gardenで収穫した醸造素材
     sample_filter:
       name: §e蒸留フィルター（試作）
       lore:
@@ -628,9 +740,9 @@ custom_items:
           occupied: §cリフト使用中
           ready: §aリフト使用可
           preparing: §eリフト準備中
-        players_header: §f❙ §7参加プレイヤー
+        players_header: 参加プレイヤー
         player_line: §7・ §b{name} {status}
-        radio_header: §f❙ §7無線
+        radio_header: 無線
         wave:
           get_ready: §7« §6Wave ◯ (Last Wave) §7» §e到着！
           normal: §7« §6Wave {wave} §7»

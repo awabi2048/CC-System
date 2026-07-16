@@ -1,0 +1,31 @@
+chanpon:
+  phase:
+    selector:
+      display: "利用フェーズ"
+      current: "現在"
+    command:
+      no_permission: "§cちゃんぽん管理者権限が必要です。"
+      player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
+      unknown_subcommand: "§c不明なサブコマンドです。"
+      usage_get_linked_portal: "§e使用法: /chanpon-mwm get_linked_portal <プレイヤー>"
+      player_not_found: "§c対象プレイヤーがオンラインではありません。"
+      target_not_in_world: "§c対象プレイヤーはマイワールドにいません。"
+      portal_failed: "§cワールドポータルの取得に失敗しました。"
+      portal_received: "§aワールドポータルを取得しました。"
+      usage_unzip_archive: "§e使用法: /chanpon-mwm unzip_archive <アーカイブ名>"
+      archive_unzipped: "§aアーカイブを展開しました: §f{archive}"
+      archive_unzip_failed: "§cアーカイブの展開に失敗しました: §f{reason}"
+    creation_denied: "§c現在はワールドを作成できません。"
+    production_denied: "§c現在は本番用ワールドを作成・切り替えできません。"
+    state:
+      next_action: "次のフェーズ"
+      previous_action: "前のフェーズ"
+      build_locked:
+        display: "フェーズ1: 建築・作成停止"
+        description: "建築とワールド作成を停止しています。"
+      creation_allowed:
+        display: "フェーズ2: 通常作成"
+        description: "建築と通常のワールド作成を許可しています。"
+      production_allowed:
+        display: "フェーズ3: 本番公開"
+        description: "本番用ワールドの作成と切り替えを許可しています。"

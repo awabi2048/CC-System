@@ -1,4 +1,22 @@
 prefix: '§7[§bCC-System§7] '
+gui_data:
+  owner: Owner
+  visibility: Visibility
+  tags: Tags
+catalog:
+  unknown: "Undiscovered"
+  previous: "Previous page"
+  next: "Next page"
+  unavailable: "§cThis catalog is currently unavailable."
+  close: "Close"
+  page: "Page {page}/{pages}"
+  page_info: "Page information"
+  page_label: "Page"
+  data:
+    obtained: "Obtained"
+    drunk: "Drunk"
+    quality: "Best quality"
+    completion: "Best completion"
 no_permission: §cYou don't have permission.
 feature_disabled: §cThe %feature% feature is disabled.
 usage: '§cUsage: /ccsystem <toggle|lang|reload|update-day|rental-ticket|status|enable|disable>'
@@ -42,7 +60,35 @@ update_day_done: '§aUpdate-day process completed. PublicSign: %public_sign_coun
 command_player_only: §cThis command can only be executed by players.
 player_not_found: §cPlayer %player% not found.
 player_only_command: §cThis command can only be executed by players.
+lwc_expansion:
+  unavailable: §cLWC is not installed or is not enabled.
+  usage: '§cUsage: /ccs lwc-expansion <world_cleanup <world> confirm|remained_info_lookup|status>'
+  cleanup:
+    usage: '§cUsage: /ccs lwc-expansion world_cleanup <world> confirm'
+    started: '§eChecking LWC protections in world %world%.'
+    complete: '§aRemoved %count% protections from world %world%.'
+    failed: '§cFailed to remove protections from world %world%: %reason%'
+  lookup:
+    header: '§eMissing worlds with remaining LWC settings:'
+    empty: §7No matching worlds were found.
+    line: '§7- %world%: %count%'
+    failed: '§cFailed to load remaining LWC information: %reason%'
+  status:
+    header: §eLWC Protection Status
+    existing: '§7Existing worlds: %count%'
+    missing: '§7Missing worlds: %count%'
+    delta: '§7Since previous snapshot: total %total% / existing %existing% / missing %missing%'
+    failed: '§cFailed to load LWC status: %reason%'
+    top_header: §eTop 10 my_world protection counts
+    top_empty: §7No my_world protections were found.
+    top_line: '§7- %world%: %count%'
+  hover:
+    type: '§7%type%: %count%'
+    created: '§7Last created: %value%'
+    changed: '§7Last changed: %value%'
 gui:
+  resume:
+    unavailable: §eThe screen you had open previously is no longer available, so it could not be reopened.
   common:
     confirm: Execute
     cancel: Cancel
@@ -56,9 +102,9 @@ gui:
     confirmation: Confirmation
     next_page: Next Page
     prev_page: Prev Page
-    page_info: Page {page}/{total_pages}
-    page_shift_next: Shift + Click Jump 5 pages forward
-    page_shift_prev: Shift + Click Jump 5 pages back
+    page_info_label: Page
+    page_shift_next: Jump 5 pages forward
+    page_shift_prev: Jump 5 pages back
     status_display: 'Status: {color}{status}'
 lore:
   action_single_with_operation: '{operation} to {action}'

@@ -20,13 +20,11 @@ gui:
         name: Random
         lore:
         - Generate a world randomly.
-      cost: '§f§l| §7Cost: §6🛖 §e{cost}'
-      points: '§f§l| §7Your Points: §6🛖 §e{points}'
       available: §aAvailable
       insufficient: §cInsufficient points (§6🛖 §e{shortage} short)
     insufficient: §cInsufficient points (§6🛖 §e{shortage} short)
     limit_reached: §cYou have reached the limit of world creation. ({current}/{max})
-    period_disabled: §cWorld creation is currently closed.
+    policy_denied: §cWorld creation is currently unavailable.
     limit_reached_total: §cThe server-wide limit for world creation ({max}) has been reached.
     command_limit_reached_total: §c[Warning] The number of worlds created on the entire server has reached the upper limit ({max}), so it cannot be created.
     command_limit_reached: '§c[Warning] The target player ({player}) cannot create a world because the number of worlds he can create has reached the upper limit. (Currently: {current}/{max})'
@@ -66,19 +64,6 @@ gui:
         error:
           number: X, Y, and Z must all be integers.
           range: The coordinates are outside the supported range.
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7World name §a{name}
-      - §f§l| §7Creation method §e{type}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{template}'
-      - '{seed}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Consumption points §6🛖 §e{cost}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      template_line: §f§l| §7Template §f{template}
-      seed_line: §f§l| §7 Seed value §f{seed}
-      dimension_line: 'Dimension: {dimension}'
       name_label: World Name
       type_label: Creation Type
       cost_label: Cost
@@ -124,13 +109,13 @@ gui:
       warning: Existing files will be overwritten.
       action: Save and register
   world_seed_confirm:
-    title: Using world seeds
-    lore:
-    - Do you want to use §d world seed §f?
-    - '§7Current My World Slot: §a{current}'
-    - 'My world slot after using §7: §a{next}'
-    - By expanding the §7 slot, you can create
-    - §7 The number of My Worlds will increase.
+    title: Use World Seed
+    question: Use a World Seed?
+    current_label: Current MyWorld slots
+    next_label: MyWorld slots after use
+    description:
+    - §7Expanding your slots increases the number
+    - §7of MyWorlds you can create.
   announcement_dialog:
     title: Edit Welcome Message
     line_label: Line {number}
