@@ -76,6 +76,9 @@ gui:
         item:
           head_lore:
           - §bおあげ神社で交換してもらったヘッド
+          target_label: 交換対象
+          offering_label: 初穂料
+          exchange_limit_label: 交換可能個数
         confirm:
           title: §8交換確認
           confirm_button:
@@ -139,6 +142,9 @@ gui:
         - §c§l既に職業を選択しています
         - §c変更することはできません
         click_to_select: §e§nクリックで選択
+        click_operation: クリック
+        select_action: 選択
+        type_label_name: タイプ
         type_label: '§8タイプ: {type}'
     type:
       gathering: §a収集

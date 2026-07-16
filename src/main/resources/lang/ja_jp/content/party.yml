@@ -1,0 +1,87 @@
+party:
+  name: パーティー
+  invite_expired: パーティー招待の有効期限が切れています
+  joined: パーティーに参加しました
+  left: パーティーから脱退しました
+  kicked: パーティーから追放されました
+  disbanded: パーティーが解散されました
+  leader_transferred: パーティーリーダーを移譲しました
+  chat_prefix: パーティー
+  feature_disabled: パーティー機能は現在無効です
+  created: 'パーティ「{party}」を作成しました（ID: {id}）'
+  invited: '{inviter}からパーティー「{party}」への招待（クリックで参加）'
+  member_joined: '{player} がパーティに参加しました'
+  member_left: '{player} がパーティを脱退しました'
+  member_kicked: '{player} をパーティから追放しました'
+  invite_sent: '{player} に招待を送りました'
+  info: パーティ「{party}」 ID={id} リーダー={leader} メンバー={members} ({count}/{capacity}) 募集中={recruiting}
+  recruiting_updated: パーティ募集状態を {enabled} に変更しました
+  chat: 「{sender}」 {message}
+  not_in_party: パーティに所属していません
+  player_not_online: 対象プレイヤーはオンラインではありません
+  usage: /party menu|list|create|info|invite|accept|join|leave|kick|leader|disband|recruit|chat|chat-toggle
+  default_name: '{player}のパーティー'
+  recruiting_notice: 'パーティー「{party}」が募集中（{count}/{capacity}、クリックで参加）'
+  list:
+    header: '募集中のパーティー'
+    empty: 募集中のパーティーはありません
+    entry: '・{party}（{count}/{capacity}、クリックで参加）'
+  interaction:
+    busy: ほかの左クリック操作を受け付けているため、招待を開始できません
+    invite_waiting: 招待するプレイヤーを左クリック
+  chat_channel:
+    enabled: パーティーチャットに切り替えました
+    disabled: 通常チャットに戻しました
+  menu:
+    title: パーティー
+    state: 状態
+    leader_only: パーティーリーダーのみ変更できます
+    value:
+      none: なし
+    settings:
+      name: 名前・説明
+      party_name: パーティー名
+      description: 説明
+      action: 設定を開く
+    recruiting:
+      name: メンバー募集
+      enabled: 募集中
+      disabled: 募集停止中
+      action: 募集状態を切り替え
+    disband:
+      name: パーティーを解散
+      warning: この操作は取り消せません
+      action: 解散確認を開く
+    chat:
+      name: パーティーチャット
+      enabled: パーティーチャット
+      disabled: 通常チャット
+      action: チャットを切り替え
+    info:
+      name: パーティー情報
+      party_name: パーティー名
+      description: 説明
+      leader_label: リーダー
+      member_label: メンバー
+      capacity_label: 人数
+    invite:
+      name: プレイヤーを招待
+      full: パーティーが満員です
+      select: 対象プレイヤーを選択
+      input: プレイヤー名を入力
+  dialog:
+    body: 内容を入力
+    submit: 決定
+    cancel: キャンセル
+    settings:
+      title: パーティー設定
+      name: パーティー名
+      description: 説明
+    invite:
+      title: プレイヤーを招待
+      target: プレイヤー名
+    disband:
+      title: パーティーを解散
+      body: パーティーを解散します。この操作は取り消せません
+  error:
+    invalid_action: パーティ操作の引数または状態が不正です

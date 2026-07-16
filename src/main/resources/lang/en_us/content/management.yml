@@ -1,0 +1,29 @@
+content_management:
+  no_permission: '&cYou do not have permission.'
+  usage: '&eUsage: /ccc <status|enable|disable> [feature]'
+  status_header: '&6=== CC-Content Status ==='
+  status_line: '&7- &f{feature}: {status}'
+  state:
+    enabled: '&aEnabled'
+    disabled: '&cDisabled'
+    warning: '&eEnabled (warning)'
+    failure: '&cEnabled (initialization failed)'
+  feature:
+    arena: Arena
+    rank: Profession and Rank
+    brewery: Brewery
+    cooking: Cooking
+    fishing: Fishing
+    resource_collection: Resource Collection
+    sukima_dungeon: Sukima Dungeon
+    party: Party
+    minigame: Minigame
+  unknown_feature: '&cUnknown content: {feature}'
+  feature_unavailable: '&c{feature} is currently unavailable. Check /ccc status.'
+  already_set: '&e{feature} is already {status}.'
+  enable_dependency_required: '&cEnable these contents before enabling {feature}: {dependencies}'
+  enable_dependency_unavailable: '&cCannot enable {feature}. Resolve the initialization state of: {dependencies}'
+  disable_dependent_required: '&cDisable these contents before disabling {feature}: {dependents}'
+  change_started: '&6Changing {feature} to {status} and reinitializing CC-Content...'
+  change_success: '&aChanged {feature} to {status}.'
+  save_failed: '&cFailed to save the content setting: {reason}'

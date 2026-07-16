@@ -8,6 +8,7 @@ softdepend:
   - CMI
   - LuckPerms
   - WorldGuard
+  - LWC
 
 commands:
   resource:
@@ -71,6 +72,7 @@ permissions:
       cc-system.status: true
       cc-system.enable: true
       cc-system.disable: true
+      cc-system.lwc.expansion: true
       cc-system.rental.bypass: true
       cc-system.announce.use: true
       cc-system.announce.manage: true
@@ -102,6 +104,10 @@ permissions:
 
   cc-system.disable:
     description: /ccsystem disable コマンド使用権限
+    default: op
+
+  cc-system.lwc.expansion:
+    description: LWC保護情報の集計・削除権限
     default: op
 
   cc-system.rental.bypass:

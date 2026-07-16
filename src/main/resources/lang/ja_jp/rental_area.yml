@@ -3,9 +3,9 @@ rental_ticket_invalid_days: §cdaysには1以上の整数を指定してくだ�
 rental_ticket_give_success: '§a%player% にレンタルエリア手形を配布しました。(日数: %days%, 個数: %amount%)'
 rental_ticket_received: '§aレンタルエリア手形を受け取りました。(日数: %days%, 個数: %amount%)'
 rental_ticket_name: '&bレンタルエリア手形'
-rental_ticket_lore:
-- '&7レンタル可能日数: &e%days%日'
-- '&7レンタルエリア内で右クリックで契約'
+rental_ticket_days: レンタル可能日数
+rental_ticket_days_unit: 日
+rental_ticket_action: レンタルエリアを契約
 rental_area_invalid_ticket: §cこの手形は使用できません。
 rental_area_ticket_missing: §c手形を持っていないため契約できません。
 rental_area_not_found: §cレンタルエリアが見つかりません。

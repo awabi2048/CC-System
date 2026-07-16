@@ -6,6 +6,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
+import kotlin.math.floor
 
 /**
  * CC-System統合設定マネージャー
@@ -13,6 +14,7 @@ import java.io.File
  * 設定を機能ごとに分割して読み込みます。
  */
 object ConfigManager {
+    private val SOUND_ID_PATTERN = Regex("^[a-z0-9._-]+:[a-z0-9._/-]+$")
     private const val CORE_CONFIG_PATH = "config/core.yml"
     private const val MISC_CONFIG_PATH = "config/misc.yml"
     private const val RESOURCE_WORLD_CONFIG_PATH = "config/resource_world.yml"
@@ -177,6 +179,17 @@ object ConfigManager {
         val variations: List<String>
     )
 
+    private fun org.bukkit.configuration.ConfigurationSection.requireFiniteNumber(
+        key: String,
+        worldName: String
+    ): Double {
+        val value = get(key)
+        val number = value as? Number
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.$key' は数値を指定してください。")
+        return number.toDouble().takeIf { it.isFinite() }
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.$key' は有限の数値を指定してください。")
+    }
+
     fun load() {
         val core = loadYaml(CORE_CONFIG_PATH)
         val misc = loadYaml(MISC_CONFIG_PATH)
@@ -281,13 +294,11 @@ object ConfigManager {
         if (worldsSection != null) {
             for (worldName in worldsSection.getKeys(false)) {
                 val worldSection = worldsSection.getConfigurationSection(worldName)
-                if (worldSection != null) {
-                    val sound = worldSection.getString("sound") ?: "minecraft:music.game"
-                    val volume = worldSection.getDouble("volume").toFloat()
-                    val pitch = worldSection.getDouble("pitch").toFloat()
-                    val duration = worldSection.getInt("duration", 200)
-                    worldMusicSettings[worldName] = MusicSetting(sound, volume, pitch, duration)
+                if (worldSection == null) {
+                    throw IllegalArgumentException("音楽設定 '$worldName' は設定項目として記述してください。")
                 }
+
+                worldMusicSettings[worldName] = validateMusicSetting(worldName, worldSection)
             }
         }
 
@@ -309,6 +320,31 @@ object ConfigManager {
 
         dynamicDistanceSpeedRules = parseSpeedRules(misc)
         dynamicDistanceOnlineRules = parseOnlineRules(misc)
+    }
+
+    internal fun validateMusicSetting(
+        worldName: String,
+        worldSection: org.bukkit.configuration.ConfigurationSection
+    ): MusicSetting {
+        // 音楽再生は設定値を補正せず、その場で誤設定を明示して起動を止める。
+        val sound = worldSection.getString("sound")
+            ?.takeIf { it.matches(SOUND_ID_PATTERN) }
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.sound' は有効なサウンドIDを指定してください。")
+        val volume = worldSection.requireFiniteNumber("volume", worldName)
+            .takeIf { it > 0.0 }
+            ?.toFloat()
+            ?.takeIf { it.isFinite() }
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.volume' は0より大きい有限値を指定してください。")
+        val pitch = worldSection.requireFiniteNumber("pitch", worldName)
+            .takeIf { it in 0.5..2.0 }
+            ?.toFloat()
+            ?.takeIf { it.isFinite() }
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.pitch' は0.5から2.0の有限値を指定してください。")
+        val duration = worldSection.requireFiniteNumber("duration", worldName)
+            .takeIf { it > 0.0 && floor(it) == it && it <= Int.MAX_VALUE }
+            ?.toInt()
+            ?: throw IllegalArgumentException("音楽設定 '$worldName.duration' は1以上の整数秒を指定してください。")
+        return MusicSetting(sound, volume, pitch, duration)
     }
 
     private fun loadPublicSignSettings(publicSign: YamlConfiguration) {

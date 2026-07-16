@@ -4,6 +4,13 @@ chanpon:
     online: "オンライン"
     tool_permission_title: "ツールの使用権限"
     none: "なし"
+    permission_menu:
+      state_label: 状態
+      enabled: オン
+      disabled: オフ
+      toggle_operation: クリック
+      toggle_action: 切り替え
+      toggle_resolved: クリックで切り替え
     click_edit_operation: "左クリック"
     click_edit_action: "ツールの使用権限を変更する"
     transfer_owner_operation: "Shift+左クリック"

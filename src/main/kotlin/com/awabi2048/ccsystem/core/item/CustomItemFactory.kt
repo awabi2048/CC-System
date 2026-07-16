@@ -1,7 +1,7 @@
 package com.awabi2048.ccsystem.core.item
 
 import com.awabi2048.ccsystem.CCSystem
-import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
+import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.core.config.LanguageManager
@@ -30,12 +30,14 @@ object CustomItemFactory {
 
         meta.displayName(LanguageManager.getMessage(player, "rental_ticket_name"))
 
-        val lore = LanguageManager.getStringListWithPlaceholders(
-            player,
-            "rental_ticket_lore",
-            "days" to days.toString()
-        )
-        meta.lore(loreService.render(GuiLoreSpec.Rich(lore.map(GuiLoreLine::Raw), GuiLoreFrame.NONE)))
+        val daysLabel = LanguageManager.getRawString(player, "rental_ticket_days")
+        val daysUnit = LanguageManager.getRawString(player, "rental_ticket_days_unit")
+        val operation = LanguageManager.getRawString(player, "lore.click.right")
+        val action = LanguageManager.getRawString(player, "rental_ticket_action")
+        meta.lore(loreService.render(GuiLoreSpec.Blocks(listOf(
+            GuiLoreBlock(listOf(GuiLoreLine.Data(daysLabel, "$days$daysUnit", "§e"))),
+            GuiLoreBlock(listOf(GuiLoreLine.Action(operation, action)))
+        ))))
 
         meta.persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, RENTAL_TICKET_ITEM_ID)
         meta.persistentDataContainer.set(rentalDaysKey, PersistentDataType.INTEGER, days)

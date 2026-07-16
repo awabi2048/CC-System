@@ -4,15 +4,18 @@ gui:
     title_list: プレイヤーのところに行く
     empty_message: §7表示できるプレイヤーはいません
     world_item:
-      current_world: §f§l| §7現在のワールド §f{world}
-      current_world_same: §f§l| §7現在のワールド §6{world} §7(このワールド)
-      status: §f§l| §7ステータス §e{status}
+      current_world: 現在のワールド
+      same_world: このワールド
+      status: ステータス
+      online_state: 接続状態
+      online: オンライン
+      offline: オフライン
       click_visit: このワールドへワープ
       click_request: ワープ申請を送信
     status_button:
       display: §e{player}
-      current: §f§l| §7現在のステータス §e{status}
-      next: §f§l| §7次のステータス §7{next_status}
+      current: 現在のステータス
+      next: 次のステータス
       action: 切り替え
   member_request_confirm:
     title: メンバー参加申請の確認

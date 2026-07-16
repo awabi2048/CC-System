@@ -35,8 +35,6 @@ gui:
     icon:
       display: §aChange World Icon
       blocks:
-        current:
-        - §f§l| §7Current icon {current_icon}
         description:
         - §7Click to enter change mode.
         - §7Then, click an item in your inventory
@@ -46,63 +44,29 @@ gui:
     tags:
       display: §aWorld Tag Settings
       lore_empty: '  §fNone'
-      lore_item: '  §6- {tag}'
+      lore_item: '{tag}'
       blocks:
         description:
         - §7Set world tags used by
         - §7Discovery search.
-        summary:
-        - §f§l| §7Current tags
-        - '{tags_list}'
+        current_label: Current Tags
       action:
         edit: Edit tags
     expand:
       display: §aExpand World
-      cost: §f§l| §7Cost §6🛖 §e{cost}
-      lore_upgrade:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Current expansion level §e§l{current}/{max}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Cost §6🛖 §e{cost} §7({level_before} §f→ §e§l{level_after}§7)
-      - §f§l| §7Points you own §6🛖 §e{points}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_insufficient:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Current expansion level §e§l{current}/{max}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Cost §6🛖 §c§n{cost}§r §8({level_before} → {level_after}) §c§n{shortage}Points §c are missing.
-      - §f§l| §7Points you own §6🛖 §e{points}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_max:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Current expansion level §e§l{current}/{max}
-      - §f§l| §cCannot be expanded any further!
-      - §8§m－－－－－－－－－－－－－－－－－－
-      lore_border_info:
-      - '§f§l| §7Current border center §fX: §e{x} §7/ §fZ: §e{z}'
-      - §f§l| §7Current border size §e{size}
-      lore_no_border:
-      - §a There are no borders in this world.
       blocks:
         description:
         - §7Expand the world border to increase
         - §7the available building area.
-        status_upgrade:
-        - §f§l| §7Current expansion level §e§l{current}/{max}
-        - §f§l| §7Cost §6🛖 §e{cost} §7({level_before} §f→ §e§l{level_after}§7)
-        - §f§l| §7Points you own §6🛖 §e{points}
-        status_insufficient:
-        - §f§l| §7Current expansion level §e§l{current}/{max}
-        - §f§l| §7Cost §6🛖 §c§n{cost}§r §8({level_before} → {level_after}) §c§n{shortage} points missing.
-        - §f§l| §7Points you own §6🛖 §e{points}
-        status_max:
-        - §f§l| §7Current expansion level §e§l{current}/{max}
-        - §f§l| §cCannot be expanded any further!
-        no_border:
-        - §aThere are no borders in this world.
-        border_info:
-        - '§f§l| §7Current border center §fX: §e{x} §7/ §fZ: §e{z}'
-        - §f§l| §7Current border size §e{size}
+        current_level: Current Expansion Level
+        next_level: Next Expansion Level
+        cost: Required Points
+        owned_points: Your Points
+        shortage: '{shortage} points short'
+        max_reached: Cannot expand any further
+        no_border: This world has no border
+        border_center: Current Border Center
+        border_size: Current Border Size
       action:
         open_menu: Open border expansion menu
         teleport_center: Teleport to border center surface
@@ -119,12 +83,6 @@ gui:
       current_label: Current setting
       active_prefix: '§6» '
       inactive_prefix: '  '
-      blocks:
-        current:
-        - §f§l| §7Current setting {current_color}{current_level}
-        - '{description}'
-        level_list:
-        - '{level_list}'
       action:
         previous: Go to previous page
         next: Go to next page
@@ -140,46 +98,28 @@ gui:
         description:
         - §7Manage players who can participate
         - §7in this world.
-        summary:
-        - §f§l| §7Current number of members §b{count}
-        - §f§l| §7Pending requests §e{pending_request_count}
-        - §f§l| §7Pending member invites §e{pending_invite_count}
-        - §f§l| §bMember list
-        - '{member_list}'
+        count: Current Members
+        pending_requests: Pending Requests
+        pending_invites: Pending Member Invites
+        list_header: Member List
       action:
         open_list: View member list
     main_info:
       name: §f【§a{world}§f】
-      lore:
-      - §8§m-----------------------
-      - §f§l| §f{description}
-      - §f§l| §7Owner §b{owner}
-      - §f§l| §7Expansion §e§l{level}§7/{max_level}
-      - §8§m-----------------------
-      - §f§l| §7Archive in §6{days_until_archive} days §8({archive_date})
-      - §f§l| §7Members §f{member_count} §8({online_count} online)
-      - §f§l| §7Publish Level {publish_color}{publish_level}
-      - §8§m-----------------------
-      - §f§l| §7Favorites §c{favorites}
-      - §f§l| §7Recent Visitors §b{visitors}
-      - §8§m-----------------------
-      lore_special:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §f{description}
-      - §f§l| §7Owner §b{owner}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Creation date §e{created_at_date_formatted} §8({created_days_ago})
-      - '§f§l| §7 members §f{member_count} people §8(Online: {online_count} people)'
-      - §f§l| §7Public level {publish_color}{publish_level}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7Number of favorites §c{favorites}
-      - §f§l| §7Recently visited players §b{visitors} people
-      - §8§m－－－－－－－－－－－－－－－－－－
+      owner_label: Owner
+      expansion_label: Expansion Level
+      created_label: Created
+      archive_label: Auto Archive In
+      archive_value: '{days} days ({date})'
+      members_label: Members
+      members_value: '{members} ({online} online)'
+      publish_label: Publish Level
+      favorites_label: Favorites
+      visitors_label: Recent Visitors
     visitors:
       display: §aVisitor Management
       blocks:
-        summary:
-        - §f§l| §7Current visitors §e{count}
+        count_label: Current Visitors
       action:
         open: View list
     notification:
@@ -195,13 +135,11 @@ gui:
         toggle: Toggle
     announcement:
       display: §aPlayer Announcement
-      preview_header: §f§l| §e§nCurrent Message
+      preview_header: Current Message
       blocks:
         description:
         - §7Set a message to display
         - §7to visitors upon arrival.
-        preview:
-        - '{message_preview}'
       action:
         set_message: Set message
         reset_message: Reset setting
@@ -266,9 +204,10 @@ gui:
     title: Environment Settings
     gravity:
       display: §eGravity Settings
-      current: '§f§l| §7Current Multiplier: §6{multiplier}'
-      click_hint: Change by clicking while holding §e§nMoon Stone§7
-      cost: '§f§l| §7Cost: §6🛖 §e{cost}'
+      current: Current Multiplier
+      requirement: You must hold a Moon Stone
+      action: Change gravity
+      cost: Required Points
       options:
         zero: Zero Gravity (x0.0)
         moon: Moon (x0.17)
@@ -276,18 +215,19 @@ gui:
         earth: Earth (x1.0)
     weather:
       display: §bWeather Settings
-      current: '§f§l| §7Current Weather: §b{weather}'
-      cost: '§f§l| §7Cost: §6🛖 §e{cost}'
+      current: Current Weather
+      cost: Required Points
       desc: §7The weather will be fixed to the selected setting.
       action:
         cycle: Cycle weather
         confirm: Confirm and consume points
     biome:
       display: §aBiome Settings
-      current: '§f§l| §7Current Biome: §a{biome}'
-      click_hint: Change by clicking while holding §e§nbiome bottle§7
+      current: Current Biome
+      requirement: You must hold a Biome Bottle
+      action: Change biome
       click_bottle_hint: §7Click with a Bottled Biome Air to apply.
-      cost: '§f§l| §7Cost: §6🛖 §e{cost}'
+      cost: Required Points
       desc: §7Changes the biome for the entire world.
   member_management:
     title: Member Management
@@ -299,11 +239,10 @@ gui:
         force: Force add member
     remove_confirm:
       title: Confirm Removal
-      lore:
-      - §cReally remove?
-      - §f§l| §7Player §f{player}
-      - §f§l| §7World §f{world}
-      - §c※ They will lose access to this world.
+      question: Really remove this member?
+      player_label: Player
+      world_label: World
+      access_warning: They will lose access to this world
       cancel: §aCancel
       cancel_desc: §7Back to list
       confirm: §cRemove
@@ -311,11 +250,7 @@ gui:
     item:
       last_online_label: Last Online
       online_label: §aOnline
-      lore_info:
-      - §8§m-----------------------
-      - '{last_online}'
-      - §f§l| §7Rank §f{role}
-      - §8§m-----------------------
+      role_label: Role
       action:
         change_role: Change role to {next_role}
         transfer_owner: Transfer ownership
@@ -325,13 +260,6 @@ gui:
       status_online: §ePending §7(§aOnline§7)
       status_offline: §ePending §7(§cOffline§7)
       click: §7Open confirmation
-      lore:
-      - §8§m-----------------------
-      - §f§l| §7Status {status}
-      - §f§l| §7Sent At §f{datetime}
-      - §8§m-----------------------
-      - '{click}'
-      - §8§m-----------------------
     pending_cancel_confirm:
       title: Cancel Invite Confirmation
       body: §cCancel the member invite to {player}?
@@ -339,11 +267,10 @@ gui:
       confirm: §cCancel Invite
     transfer_confirm:
       title: Transfer Ownership
-      lore:
-      - §cReally transfer ownership?
-      - §f§l| §7New Owner §f{player}
-      - §f§l| §7Target World §f{world}
-      - §c※ You will lose ownership of this world.
+      question: Really transfer ownership?
+      player_label: New Owner
+      world_label: Target World
+      owner_warning: You will lose ownership of this world
       cancel: §aCancel
       cancel_desc: §7Back to list
       confirm: §cTransfer
@@ -354,7 +281,7 @@ gui:
     kick_confirm:
       title: Confirm Kick
       question: §cReally kick?
-      player: §f§l| §7Player §f{player}
+      player_label: Player
       cancel: §aCancel
       cancel_desc: §7Back to list
       confirm: §cKick

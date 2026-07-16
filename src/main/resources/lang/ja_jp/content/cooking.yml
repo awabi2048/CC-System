@@ -1,0 +1,24 @@
+cooking:
+  ui:
+    start_action: "調理を開始"
+    level: "現在レベル"
+    ingredient_slots: "解放済み材料スロット"
+    locked: "ロック中"
+    locked_reason: "この材料スロットは未解放です。"
+    title: "調理台"
+    start: "調理を開始"
+    info: "料理情報"
+  process:
+    started: "&a{recipe}の調理を始めました。"
+    completed: "&6{recipe}&aが完成しました。完成度: &e{score}%"
+  error:
+    in_progress: "&c調理中です。完成までお待ちください。"
+    no_ingredients: "&c材料を1つ以上入れてください。"
+    recipe_not_found: "&c材料の組み合わせがレシピに届きません。"
+  recipe:
+    rustic_stew: "素朴な煮込み"
+    sweet_bread: "蜂蜜の甘パン"
+    grilled_cod: "香ばしい焼き鱈"
+    carrot_cookie: "にんじんクッキー"
+  catalog:
+    title: "料理図鑑 {page}/{pages}"

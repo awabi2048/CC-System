@@ -4,20 +4,20 @@ announce:
   item_default_title: Announcement
   datetime_format: MM/dd/yyyy hh:mm a
   lore:
-    issued_at: '§8Issued: %datetime%'
-    updated_at: '§8Updated: %datetime%'
-    indefinite: '§8Expire: indefinite'
-    expires_at: '§8Expire: %datetime%'
-    help_left_click: §e§l| §eLeft Click §7Edit this announcement
-    help_right_click: §e§l| §eRight Click §7Delete this announcement
+    issued_at: Issued
+    updated_at: Updated
+    expires_at: Expires
+    indefinite: Indefinite
+    edit: edit this announcement
+    delete: delete this announcement
   notify:
     issued_title: '§aNew announcement: §f%title%'
     toast_title: §aYou have %count% new announcements!
     toast_description: §7Use /an to open
   menu_command_item_name: §cOpen menu
-  menu_command_item_lore: §7Click to execute the menu command
+  menu_command_item_lore: execute the menu command
   add_item_name: §fAdd announcement
-  add_item_lore: §7Click to create a new announcement
+  add_item_lore: create a new announcement
   add_limit_reached: §cYou can only have up to %max% announcements.
   icon_select_instruction: §eClick an item in your own inventory to use it as the announcement icon.
   menu_command_not_configured: §cannounce_menu_command is not configured.

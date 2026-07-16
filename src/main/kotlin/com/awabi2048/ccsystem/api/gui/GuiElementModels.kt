@@ -15,6 +15,7 @@ enum class GuiNameStyle(val colorCode: String) {
 sealed interface GuiNameSpec {
     data object Empty : GuiNameSpec
     data class Text(val text: String, val style: GuiNameStyle) : GuiNameSpec
+    data class Component(val value: net.kyori.adventure.text.Component) : GuiNameSpec
 }
 
 enum class GuiElementRole {
@@ -38,7 +39,13 @@ sealed interface GuiLoreLine {
     data object Spacer : GuiLoreLine
     data object Separator : GuiLoreLine
     data class Data(val label: String, val value: Any?, val valueColor: String) : GuiLoreLine
+    data class ComponentData(
+        val label: String,
+        val value: net.kyori.adventure.text.Component,
+        val valueColor: String
+    ) : GuiLoreLine
     data class SubData(val label: String, val value: Any?) : GuiLoreLine
+    data class Metadata(val label: String, val value: Any?) : GuiLoreLine
     data class Action(val operation: String, val action: String) : GuiLoreLine
     data class SingleAction(
         val operation: String,
@@ -54,7 +61,10 @@ sealed interface GuiLoreLine {
     data class Warning(val content: String) : GuiLoreLine
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
-    data class Raw(val line: String) : GuiLoreLine
+    data class StyledText(val text: String, val color: String, val italic: Boolean) : GuiLoreLine
+    /** プレイヤーが入力した装飾可能な本文。固定UI文言には使用しない。 */
+    data class UserText(val text: String) : GuiLoreLine
+    data class Component(val value: net.kyori.adventure.text.Component) : GuiLoreLine
 }
 
 sealed interface GuiLoreSpec {
@@ -64,16 +74,9 @@ sealed interface GuiLoreSpec {
             require(blocks.isNotEmpty()) { "Lore blocks must not be empty" }
         }
     }
-    data class Auto(
-        val lines: List<String>,
-        val frame: GuiLoreFrame
-    ) : GuiLoreSpec
     data class Rich(
         val lines: List<GuiLoreLine>,
         val frame: GuiLoreFrame
-    ) : GuiLoreSpec
-    data class Simple(
-        val actions: List<String>
     ) : GuiLoreSpec
 }
 
@@ -81,16 +84,9 @@ data class GuiLoreBlock(val lines: List<GuiLoreLine>) {
     init {
         require(lines.isNotEmpty()) { "Lore block must contain at least one line" }
         require(lines.any { it != GuiLoreLine.Spacer }) { "Lore block must not contain only spacers" }
-        require(lines.none(::isSeparatorLine)) {
+        require(lines.none { it == GuiLoreLine.Separator }) {
             "Lore block separators are managed by CC-System"
         }
-    }
-
-    private fun isSeparatorLine(line: GuiLoreLine): Boolean {
-        if (line == GuiLoreLine.Separator) return true
-        val raw = (line as? GuiLoreLine.Raw)?.line ?: return false
-        val plain = raw.replace(Regex("(?i)[§&][0-9A-FK-ORX]"), "").trim()
-        return plain.isNotEmpty() && plain.all { it == '―' || it == '-' || it == '－' || it == '—' }
     }
 }
 

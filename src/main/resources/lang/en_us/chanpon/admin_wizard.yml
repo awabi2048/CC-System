@@ -1,0 +1,19 @@
+chanpon:
+  admin_wizard:
+    title: Administrator World Creation
+    select_template: Select a template
+    input_name: Enter the world name
+    name_placeholder: World name
+    invalid_name: Enter a world name between 1 and 32 characters
+    confirm_title: Confirm Creation
+    confirm_content: |-
+      Owner: {owner}
+      Template: {template}
+      World name: {world}
+    create: Create
+    cancel: Cancel
+    created: World created
+    create_failed: Failed to create the world
+    cancelled: Operation cancelled
+    unavailable: The Bedrock form or MyWorldManager API is unavailable
+    usage: '/chanpon-mwm create_world <owner>'

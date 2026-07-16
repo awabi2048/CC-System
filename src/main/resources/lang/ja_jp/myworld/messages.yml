@@ -193,7 +193,7 @@ messages:
   worldwarp_usage: "§c使い方 /worldwarp <6桁のワールドID>"
   worldwarp_id_too_short: §cワールドIDは6桁の数字で指定してください。
   worldwarp_not_found: §c指定されたIDのワールドが見つかりませんでした。
-  worldwarp_ambiguous: §c指定されたIDに一致するワールドが複数あります。管理者に確認してください。
+  worldwarp_ambiguous: §c指定されたIDに一致するワールドが複数あります。別のIDを指定してください。
   worldwarp_access_denied: §cこのワールドにはワープできません。
   warp_invite_success: §a招待されたワールドにワープしました。
   warp_generic: §aワールドにワープしました。
@@ -283,6 +283,18 @@ messages:
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'
   usage_give: '§c使用法: /mwm give <プレイヤー名> <アイテムID> [個数]'
   command_disabled: '§cこのMWMコマンドは現在無効です。'
+  migration:
+    approval_required: '§e旧ワールド {world} の移行にはロード承認が必要です: /mwm migration approve {uuid}'
+    world_data_missing: '§c{world} に対応するワールド設定がないためロードできません。'
+    approved: '§a{world} のロードと移行を承認しました。'
+    load_failed: '§c{world} のロードと移行に失敗しました。'
+    none_pending: §7承認待ちの旧ワールドはありません。
+    conflict: '§cワールド {world} の移行を拒否しました。旧構造と現行構造のディレクトリが両方存在します。'
+    usage: '§c使用法: /mwm migration list | approve <UUID> | reject <UUID>'
+    not_found: §c対象の旧ワールドが見つからないか、処理に失敗しました。
+  seed_spawn:
+    corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
+    safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。
   myworld_command_usage: '§c使用法: /myworld accept | deny | transfer <プレイヤー> | remove_member <プレイヤー>'
   myworld_command_bedrock_only: §cこのサブコマンドは統合版プレイヤー専用です。
   myworld_target_not_member: §c対象プレイヤーはこのワールドのメンバーではありません。

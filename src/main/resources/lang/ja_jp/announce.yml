@@ -4,20 +4,20 @@ announce:
   item_default_title: お知らせ
   datetime_format: yyyy/MM/dd HH:mm
   lore:
-    issued_at: '§8発行: %datetime%'
-    updated_at: '§8最終更新: %datetime%'
-    indefinite: '§8期限: 無期限'
-    expires_at: '§8期限: %datetime%'
-    help_left_click: §e§l| §e左クリック §7お知らせ内容を編集
-    help_right_click: §e§l| §e右クリック §7お知らせを削除
+    issued_at: 発行
+    updated_at: 最終更新
+    expires_at: 期限
+    indefinite: 無期限
+    edit: お知らせ内容を編集
+    delete: お知らせを削除
   notify:
     issued_title: '§a新しいお知らせ: §f%title%'
     toast_title: §a新しいお知らせが%count%件あります！
     toast_description: §7/anで表示
   menu_command_item_name: §cメニューを開く
-  menu_command_item_lore: §7クリックでメニューコマンドを実行
+  menu_command_item_lore: メニューコマンドを実行
   add_item_name: §fお知らせを追加
-  add_item_lore: §7クリックで新しいお知らせを作成
+  add_item_lore: 新しいお知らせを作成
   add_limit_reached: §cお知らせは最大%max%件までです。
   icon_select_instruction: §e追加したいお知らせのアイコンとして、あなたのインベントリ内のアイテムをクリックしてください。
   menu_command_not_configured: §cannounce_menu_command が設定されていません。

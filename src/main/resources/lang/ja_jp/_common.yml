@@ -1,4 +1,22 @@
 prefix: '§7[§bCC-System§7] '
+gui_data:
+  owner: オーナー
+  visibility: 公開状態
+  tags: タグ
+catalog:
+  unavailable: "§cこの図鑑は現在利用できません。"
+  unknown: "未発見"
+  previous: "前のページ"
+  next: "次のページ"
+  close: "閉じる"
+  page: "ページ {page}/{pages}"
+  page_info: "ページ情報"
+  page_label: "ページ"
+  data:
+    obtained: "取得回数"
+    drunk: "飲用回数"
+    quality: "最高品質"
+    completion: "最高完成度"
 no_permission: §c権限がありません。
 feature_disabled: §c%feature% 機能は無効化されています。
 usage: '§c使用法: /ccsystem <toggle|lang|reload|update-day|rental-ticket|status|enable|disable>'
@@ -42,7 +60,35 @@ update_day_done: '§a日付更新処理が完了しました。PublicSign: %publ
 command_player_only: §cこのコマンドはプレイヤーのみ実行可能です。
 player_not_found: §cプレイヤー %player% は見つかりません。
 player_only_command: §cこのコマンドはプレイヤーのみ実行可能です。
+lwc_expansion:
+  unavailable: §cLWCが導入されていないか、起動していません。
+  usage: '§c使用法: /ccs lwc-expansion <world_cleanup <world> confirm|remained_info_lookup|status>'
+  cleanup:
+    usage: '§c使用法: /ccs lwc-expansion world_cleanup <world> confirm'
+    started: '§eワールド %world% のLWC保護を確認しています。'
+    complete: '§aワールド %world% の保護を %count% 件削除しました。'
+    failed: '§cワールド %world% の保護削除に失敗しました: %reason%'
+  lookup:
+    header: '§eLWC設定が残る非実在ワールド:'
+    empty: §7該当するワールドはありません。
+    line: '§7- %world%: %count%件'
+    failed: '§cLWC残存情報の取得に失敗しました: %reason%'
+  status:
+    header: §eLWC保護ステータス
+    existing: '§7実在ワールド: %count%件'
+    missing: '§7非実在ワールド: %count%件'
+    delta: '§7前回スナップショット差分: 合計 %total% / 実在 %existing% / 非実在 %missing%'
+    failed: '§cLWCステータスの取得に失敗しました: %reason%'
+    top_header: §emy_world 保護数上位10件
+    top_empty: §7該当するmy_worldはありません。
+    top_line: '§7- %world%: %count%件'
+  hover:
+    type: '§7%type%: %count%件'
+    created: '§7最終作成: %value%'
+    changed: '§7最終変更: %value%'
 gui:
+  resume:
+    unavailable: §e前回開いていた画面は、現在利用できないため再開できませんでした。
   common:
     confirm: 実行する
     cancel: キャンセル
@@ -56,9 +102,9 @@ gui:
     confirmation: 確認
     next_page: 次のページへ
     prev_page: 前のページへ
-    page_info: ページ {page}/{total_pages}
-    page_shift_next: Shift + クリック 5ページ進む
-    page_shift_prev: Shift + クリック 5ページ戻る
+    page_info_label: ページ
+    page_shift_next: 5ページ進む
+    page_shift_prev: 5ページ戻る
     status_display: 'ステータス: {color}{status}'
 lore:
   action_single_with_operation: '{operation}で{action}'

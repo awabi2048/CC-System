@@ -1,13 +1,19 @@
 arena:
   marker:
-    current_mode: '&f§l| §7Current Mode §a{mode}'
+    current_mode: Current Mode
     mode_changed: '&7Placement mode changed to §a{mode}§7.'
     placed: '&b[Marker] {mode} §fmarker placed.'
     removed: '&b[Marker] {mode} §fmarker removed.'
     usage:
-      place: '&eRight click block§7 to place a marker on the outside of the face'
-      delete: '&eF key§7 to remove the marker in your line of sight'
-      switch: '&eShift + hotbar scroll§7 to switch to the previous/next mode'
+      place:
+        operation: Right-click block
+        action: Place a marker outside the clicked face
+      delete:
+        operation: F key
+        action: Remove the marker in your line of sight
+      switch:
+        operation: Shift + hotbar scroll
+        action: Switch to the previous or next mode
     modes:
       mob: '&cMob'
       entrance: '&aEntrance'
@@ -80,6 +86,7 @@ arena:
         pool_world_unavailable: '&cCannot start because arena worlds are still preparing'
         stage_build_failed: '&c{message}'
         invalid_mission_type: '&cInvalid mission type: {type}'
+        interaction_busy: '&cAnother left-click action is active, so recruitment cannot start'
       help:
         header: '&6=== Arena Admin Commands ==='
         menu: '&f/arenaa menu <mission|broadcast|pedestal|token_exchange> [player]'
@@ -299,14 +306,14 @@ arena:
     coming_soon: §7Coming Soon!
     license_card:
       title: §bLicense Card
-      current_license: §f❙ §7Current License §e{tier}
-      allowed_difficulty: §f❙ §7Allowed Difficulty §c{difficulty} §7or below
-      next_header: §f❙ §7To next license
-      max_reached: '  §8- §aAll licenses unlocked'
+      current_license: Current License
+      allowed_difficulty: Allowed Difficulty
+      next_header: To Next License
+      max_reached: All licenses unlocked
       requirement:
-        mission_clear: '  §8- §fComplete missions {progress}'
-        mob_kill: '  §8- §fDefeat monsters (total) {progress}'
-        strong_enemy_kill: '  §8- §fDefeat strong enemies (total) {progress}'
+        mission_clear: Missions Completed
+        mob_kill: Monsters Defeated (Total)
+        strong_enemy_kill: Strong Enemies Defeated (Total)
     info_title: §bInfo
     info:
       lines:
@@ -324,13 +331,13 @@ arena:
     mission:
       item_name: §a{mission}
       completed_item_name: §a§m{mission}
-      mission_title: §f❙ §7Mission
-      difficulty_inline: §f❙ §7Difficulty §f{difficulty}
-      memo_inline: §f❙ §7Memo §f{memo}
+      mission_title: Mission
+      difficulty_inline: Difficulty
+      memo_inline: Memo
     player:
       name_format: §6{player}
-      mob_kills: §f❙ §7Mobs defeated §e{count}
-      barrier_restarts: §f❙ §7Barrier restarts §e{count}
+      mob_kills: Mobs Defeated
+      barrier_restarts: Barrier Restarts
     recruitment:
       default_mission_title: Arena Mission
       title: §6【{missionTitle}】
@@ -370,9 +377,9 @@ arena:
         ready: §aLift ready
         returning: §eLift returning
         unavailable: §cLift unavailable
-      players_header: §f❙ §7Players
+      players_header: Players
       player_line: §7・§b{name} {status}
-      radio_header: §f❙ §7Radio
+      radio_header: Radio
       wave:
         get_ready: §eArrived!
         normal: §7« Wave {wave} §7»

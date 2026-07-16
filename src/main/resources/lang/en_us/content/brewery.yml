@@ -1,0 +1,181 @@
+brewery:
+  garden:
+    planted: "&aPlanted {plant}."
+    not_mature: "&eThis plant is not ready to harvest."
+    harvested: "&aHarvested {plant}."
+  recipe:
+    wheatbeer:
+      name: "Wheat Beer"
+      middle:
+        name: "Young Wort"
+        description: "A fermented wheat base."
+      final:
+        low:
+          name: "Rough Wheat Beer"
+          description: "Bitterness and harsh flavors remain."
+        standard:
+          name: "Wheat Beer"
+          description: "Wheat aroma and a light bitterness are balanced."
+        high:
+          name: "Premium Wheat Beer"
+          description: "Fine foam and a long finish."
+    apple_cider:
+      name: "Apple Cider"
+      middle:
+        name: "Fermented Apple Must"
+        description: "A fermented liquid with a sweet and tart aroma."
+      final:
+        low:
+          name: "Sour Cider"
+          description: "Strong acidity and a rough finish."
+        standard:
+          name: "Apple Cider"
+          description: "Apple aroma and sweetness are balanced."
+        high:
+          name: "Golden Apple Cider"
+          description: "A bright aroma and refreshing finish linger."
+    sake:
+      name: "Sake"
+      middle:
+        name: "Sake Starter"
+        description: "An experimental starter made with seeds in place of rice."
+      final:
+        low:
+          name: "Bran-Scented Sake"
+          description: "Off-flavors remain in the aroma."
+        standard:
+          name: "Sake"
+          description: "A gentle aroma with a clean taste."
+        high:
+          name: "Daiginjo"
+          description: "A clear aroma and deep finish."
+    whiskey:
+      name: "Whiskey"
+      middle:
+        name: "Wheat New Make"
+        description: "A sharp spirit straight from distillation."
+      final:
+        low:
+          name: "Rough Whiskey"
+          description: "Strong alcohol bite."
+        standard:
+          name: "Whiskey"
+          description: "Barrel aroma and wheat richness."
+        high:
+          name: "Scotch Whisky"
+          description: "Smokiness and a long finish are balanced."
+    rum:
+      name: "Rum"
+      middle:
+        name: "Molasses Distillate"
+        description: "A distillate retaining a sweet aroma."
+      final:
+        low:
+          name: "Bitter Rum"
+          description: "Strong bitterness makes it difficult to drink."
+        standard:
+          name: "Spiced Rum"
+          description: "Barrel aroma and sweetness are balanced."
+        high:
+          name: "Golden Rum"
+          description: "Rich sweetness and a lingering spice finish."
+    moonshine:
+      name: "Moonshine"
+      middle:
+        name: "Dangerous New Make"
+        description: "A harsh spirit that is dangerous when mishandled."
+      final:
+        low:
+          name: "Crude Moonshine"
+          description: "A sharp nose and harsh flavors."
+        standard:
+          name: "Moonshine"
+          description: "Powerful, but barely balanced."
+        high:
+          name: "Aged Moonshine"
+          description: "Dangerous strength with a complex aroma."
+  item:
+    name:
+      muddy: "§7Muddy {recipe}"
+      fermented: "§b{product}"
+      distilled: "§e{product}"
+      distilled_degraded: "§e{product} (distillation degraded)"
+      aged: "§6{product} {stars}"
+    data:
+      recipe: "Recipe"
+      stage: "Stage"
+      quality: "Quality"
+      final_quality: "Final quality"
+      distill_count: "Distillations"
+      alcohol: "Alcohol"
+      rating: "Rating"
+    stage:
+      fermented: "Fermented"
+      distilled: "Distilled"
+      aged: "Aged"
+      failed: "Failed"
+    filter:
+      name: "Sample Distillation Filter"
+      description:
+        - "Distillation time -15%"
+        - "Consumes 1 durability per distillation"
+  drink:
+    completed: "&aYou drank {recipe}. &7Intoxication: &e{alcohol}%"
+  catalog:
+    title: "Brewery Catalog {page}/{pages}"
+    discovered: "&6Discovered in the brewery catalog: &f{recipe}"
+  process:
+    fermentation_started: "&aFermentation started. &7(Recipe: {recipe})"
+    fermentation_stopped: "&eFermentation stopped."
+    distillation_started: "&aDistillation started."
+    distillation_stopped: "&eDistillation stopped."
+    bottled: "&aBottling completed."
+    aged: "&aAging completed."
+  error:
+    no_fuel: "&cFermentation cannot start without fuel."
+    no_ingredients: "&cPlace ingredients in the input slots."
+    recipe_not_found: "&cNo matching recipe was found."
+    invalid_input: "&cThis brew cannot be inserted into this process."
+    no_material: "&cThere is no brew material to start with."
+    skill_required: "&cYou do not meet the profession level or skill requirement."
+    barrel_size: "&cThe barrel size does not match. Replace the barrel."
+    machine_locked: "&cThis equipment is being used by another player."
+    level_required: "&cProfession level {level} is required."
+    skills_required: "&cRequired skills: {skills}"
+    not_started: "&cFermentation has not started."
+    batch_limit: "&eThis batch is limited to three bottles."
+    single_item: "&cThis slot accepts one item at a time."
+    barrel_type: "&cThis recipe requires a barrel sign of type {types}."
+    invalid_slot: "&cThis item cannot be placed in this slot."
+  ui:
+    title:
+      fermentation: "§8Fermentation"
+      distillation: "§8Distillation"
+      aging_big: "§8Aging (Large Barrel)"
+      aging_small: "§8Aging (Small Barrel)"
+    action:
+      fermentation_start: "Start fermentation"
+      fermentation_stop: "Stop fermentation"
+      distillation_start: "Start distillation"
+      distillation_stop: "Stop distillation"
+      start: "Start"
+      stop: "Stop"
+    data:
+      fire: "Fire power"
+      current: "Current brew"
+      none: "None"
+      step_elapsed: "Step elapsed"
+      session_runs: "Distillations this session"
+      duration: "Time per distillation"
+      items: "Items inserted"
+    fire:
+      high: "High"
+      medium: "Medium"
+      low: "Low"
+      none: "Unlit"
+    barrel:
+      big: "Large barrel"
+      small: "Small barrel"
+    aging_core: "Aging process"
+  intoxication:
+    status: "&7Current intoxication: &e{alcohol}%"

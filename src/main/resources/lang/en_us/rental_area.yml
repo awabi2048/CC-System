@@ -3,9 +3,9 @@ rental_ticket_invalid_days: §cPlease specify an integer of 1 or greater for day
 rental_ticket_give_success: '§aGave rental area ticket(s) to %player%. (days: %days%, amount: %amount%)'
 rental_ticket_received: '§aYou received rental area ticket(s). (days: %days%, amount: %amount%)'
 rental_ticket_name: '&bRental Area Ticket'
-rental_ticket_lore:
-- '&7Rental days: &e%days%'
-- '&7Right-click inside rental area to contract'
+rental_ticket_days: Rental days
+rental_ticket_days_unit: ' days'
+rental_ticket_action: contract the rental area
 rental_area_invalid_ticket: §cThis ticket cannot be used.
 rental_area_ticket_missing: §cTicket not found. Contract failed.
 rental_area_not_found: §cRental area not found.

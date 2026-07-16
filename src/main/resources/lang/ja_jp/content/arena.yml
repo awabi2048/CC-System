@@ -1,13 +1,19 @@
 arena:
   marker:
-    current_mode: '&f§l| §7現在のモード §a{mode}'
+    current_mode: 現在のモード
     mode_changed: '&7設置モードを §a{mode} §7に変更しました。'
     placed: '&b[Marker] {mode} §fマーカーを設置しました。'
     removed: '&b[Marker] {mode} §fマーカーを削除しました。'
     usage:
-      place: '&e右クリック(ブロック)§7 クリック面の外側にマーカーを設置'
-      delete: '&eFキー§7 視線上のマーカーを削除'
-      switch: '&eShift + ホットバースクロール§7 前後のモードへ変更'
+      place:
+        operation: 右クリック（ブロック）
+        action: クリック面の外側にマーカーを設置
+      delete:
+        operation: Fキー
+        action: 視線上のマーカーを削除
+      switch:
+        operation: Shift + ホットバースクロール
+        action: 前後のモードへ変更
     modes:
       mob: '&cモブ'
       entrance: '&a入口'
@@ -80,6 +86,7 @@ arena:
         pool_world_unavailable: '&cアリーナワールド準備中のため開始できません'
         stage_build_failed: '&c{message}'
         invalid_mission_type: '&c無効なミッションタイプです: {type}'
+        interaction_busy: '&cほかの左クリック操作を受け付けているため、募集を開始できません'
       help:
         header: '&6=== Arena 管理コマンド ==='
         menu: '&f/arenaa menu <mission|broadcast|pedestal|token_exchange> [player]'
@@ -301,14 +308,14 @@ arena:
     coming_soon: §7Coming Soon!
     license_card:
       title: §bライセンスカード
-      current_license: §f❙ §7現在のライセンス §e{tier}
-      allowed_difficulty: §f❙ §7入場許可難易度 §c{difficulty} §7まで
-      next_header: §f❙ §7次のライセンスまで
-      max_reached: '  §8- §a全ライセンスを解放済み'
+      current_license: 現在のライセンス
+      allowed_difficulty: 入場許可難易度
+      next_header: 次のライセンスまで
+      max_reached: 全ライセンスを解放済み
       requirement:
-        mission_clear: '  §8- §fミッションを完了する {progress}'
-        mob_kill: '  §8- §fモンスターを討伐する（累計） {progress}'
-        strong_enemy_kill: '  §8- §f強敵を討伐する（累計） {progress}'
+        mission_clear: ミッション完了数
+        mob_kill: モンスター討伐数（累計）
+        strong_enemy_kill: 強敵討伐数（累計）
     info_title: §bInfo
     info:
       lines:
@@ -326,13 +333,13 @@ arena:
     mission:
       item_name: §a{mission}
       completed_item_name: §a§m{mission}
-      mission_title: §f❙ §7ミッション内容
-      difficulty_inline: §f❙ §7難易度 §f{difficulty}
-      memo_inline: §f❙ §7メモ §f{memo}
+      mission_title: ミッション内容
+      difficulty_inline: 難易度
+      memo_inline: メモ
     player:
       name_format: §6{player}
-      mob_kills: §f❙ §7倒したモブ §e{count} 体
-      barrier_restarts: §f❙ §7結界石を再起動した回数 §e{count} 回
+      mob_kills: 倒したモブ
+      barrier_restarts: 結界石の再起動回数
     recruitment:
       default_mission_title: アリーナミッション
       title: §6【{missionTitle}】
@@ -372,9 +379,9 @@ arena:
         ready: §aリフト使用可
         returning: §eリフト帰還中
         unavailable: §cリフト使用不可
-      players_header: §f❙ §7参加プレイヤー
+      players_header: 参加プレイヤー
       player_line: §7・§b{name} {status}
-      radio_header: §f❙ §7無線
+      radio_header: 無線
       wave:
         get_ready: §e到着！
         normal: §7« Wave {wave} §7»

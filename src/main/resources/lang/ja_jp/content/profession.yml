@@ -26,5 +26,25 @@ profession:
   carpenter:
     name: 大工
     description: 建築で経験値を得る職業
-  level_up: §a{profession} leveled up! §eLv.{old} -> Lv.{new} §7(+{gained})
-  new_unlock: 'New unlockable skills available ({count}): {skills} [Click to open skill tree]'
+  fisher:
+    name: 釣り師
+    description: 釣り場の条件を読み、釣果を釣り上げて経験値を得る職業
+  level_up: §a{profession}がレベルアップしました！ §eLv.{old} -> Lv.{new} §7(+{gained})
+  new_unlock: '新しく習得可能なスキルがあります（{count}個）: {skills} [クリックしてスキルツリーを開く]'
+
+active_skill:
+  selector:
+    display: モード切り替え
+    no_targets: 切り替え対象のスキルがありません
+    targets: '切り替え対象スキル:'
+    enabled: 有効
+    disabled: 無効
+    mode: 切り替え様式
+    left_click: 左クリック
+    right_click: 右クリック
+    select_action: スキル選択を切り替え
+    mode_action: 様式を変更
+release:
+  profession_unavailable: この職業は現在利用できません。
+  profession_unavailable_lore: 公開準備中です。
+  skill_unavailable: 職業スキルは現在利用できません。

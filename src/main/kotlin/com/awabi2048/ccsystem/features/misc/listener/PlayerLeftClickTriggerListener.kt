@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.api.event.PlayerLeftClickPlayerEvent
+import com.awabi2048.ccsystem.CCSystem
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
 import org.bukkit.attribute.Attribute
@@ -9,8 +10,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerAnimationType
+import org.bukkit.event.player.PlayerQuitEvent
 
 class PlayerLeftClickTriggerListener : Listener {
+
+    private val lastTriggeredTicks = HashMap<java.util.UUID, Int>()
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerAnimation(event: PlayerAnimationEvent) {
@@ -19,8 +23,19 @@ class PlayerLeftClickTriggerListener : Listener {
         }
 
         val player = event.player
+        val currentTick = Bukkit.getCurrentTick()
+        if (lastTriggeredTicks[player.uniqueId] == currentTick) {
+            return
+        }
         val target = resolveTargetPlayer(player) ?: return
+        lastTriggeredTicks[player.uniqueId] = currentTick
         Bukkit.getPluginManager().callEvent(PlayerLeftClickPlayerEvent(player, target))
+    }
+
+    @EventHandler
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        lastTriggeredTicks.remove(event.player.uniqueId)
+        CCSystem.getAPI().getPlayerInteractionClaimService().releaseAll(event.player.uniqueId)
     }
 
     private fun resolveTargetPlayer(player: Player): Player? {

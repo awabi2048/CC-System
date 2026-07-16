@@ -1,0 +1,24 @@
+cooking:
+  ui:
+    start_action: "Start cooking"
+    level: "Current level"
+    ingredient_slots: "Unlocked ingredient slots"
+    locked: "Locked"
+    locked_reason: "This ingredient slot is not unlocked."
+    title: "Cooking Station"
+    start: "Start Cooking"
+    info: "Cooking Information"
+  process:
+    started: "&aStarted cooking {recipe}."
+    completed: "&6{recipe}&a is ready. Completion: &e{score}%"
+  error:
+    in_progress: "&cYour dish is still cooking."
+    no_ingredients: "&cPlace at least one ingredient."
+    recipe_not_found: "&cThe ingredient combination does not match a recipe."
+  recipe:
+    rustic_stew: "Rustic Stew"
+    sweet_bread: "Honey Sweet Bread"
+    grilled_cod: "Grilled Cod"
+    carrot_cookie: "Carrot Cookie"
+  catalog:
+    title: "Cooking Catalog {page}/{pages}"

@@ -2,10 +2,6 @@ gui:
   discovery:
     title: ワールドディスカバリー
     world_item:
-      owner: §f§l| §7オーナー {owner}{status_color}
-      tag: §f§l| §7タグ §e{tags}
-      favorite: §f§l| §7お気に入り §c{count}
-      recent_visitors: §f§l| §7最近訪れたプレイヤー §a{count}人
       warp_hint: このワールドへワープ
       preview_hint: プレビューを表示
       member_request_hint: 参加申請を表示
@@ -59,23 +55,15 @@ gui:
       input_label: 説明文
     stats:
       name: §f統計情報
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '§f§l| §7並び順: §b{sort}'
-      - '§f§l| §7タグ: §b{tag}'
-      - §f§l| §7検索結果 §b{count}件
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7{desc}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      sort: '§f§l| §7並び順: §b{sort}'
-      tag: '§f§l| §7タグ: §b{tag}'
-      count: §f§l| §7検索結果 §b{count}件
+      sort_label: 並び順
+      tag_label: タグ
+      count_label: 検索結果
       desc: §7条件に一致するワールドを表示しています
     sort_info:
       hot: 直近の来訪者が多い順
       new: 公開日時が新しい順
       favorites: お気に入り登録数が多い順
-      spotlight: 運営によるピックアップ
+      spotlight: ピックアップ
       random: 日替わりランダム
     no_result: §7条件に一致するワールドが見つかりませんでした
     spotlight_remove_confirm:

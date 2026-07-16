@@ -193,7 +193,7 @@ messages:
   worldwarp_usage: "§cUsage: /worldwarp <6-digit-world-id>"
   worldwarp_id_too_short: §cWorld ID must be 6 digits.
   worldwarp_not_found: §cNo world matched that ID.
-  worldwarp_ambiguous: §cMultiple worlds matched that ID. Ask an administrator to resolve it.
+  worldwarp_ambiguous: §cMultiple worlds matched that ID. Enter a different ID.
   worldwarp_access_denied: §cYou cannot warp to this world.
   warp_invite_success: §aWarped to the invited world.
   warp_generic: §aWarped to world.
@@ -283,6 +283,18 @@ messages:
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
   usage_give: '§cUsage: /mwm give <player> <item_id> [amount]'
   command_disabled: '§cThis MWM command is disabled.'
+  migration:
+    approval_required: '§eLoading approval is required to migrate legacy world {world}: /mwm migration approve {uuid}'
+    world_data_missing: '§cCannot load {world} because its world settings are missing.'
+    approved: '§aApproved loading and migration of {world}.'
+    load_failed: '§cFailed to load and migrate {world}.'
+    none_pending: §7There are no legacy worlds awaiting approval.
+    conflict: '§cMigration of world {world} was rejected because both legacy and current directories exist.'
+    usage: '§cUsage: /mwm migration list | approve <UUID> | reject <UUID>'
+    not_found: §cThe legacy world was not found or the operation failed.
+  seed_spawn:
+    corrected: '§eThe configured spawn was unsafe and was moved to {x}, {y}, {z}.'
+    safe_location_not_found: §cNo safe location was found near the configured spawn. Warp cancelled.
   myworld_command_usage: '§cUsage: /myworld accept | deny | transfer <player> | remove_member <player>'
   myworld_command_bedrock_only: §cThis subcommand is available for Bedrock players only.
   myworld_target_not_member: §cTarget player is not a member of this world.

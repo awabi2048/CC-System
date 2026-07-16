@@ -1,24 +1,24 @@
 chanpon:
   submission:
     common:
-      "on": "§eOn"
-      "off": "§7Off"
+      "on": On
+      "off": Off
       middle_click: "Middle-Click"
     creation:
       display: "§eSet as production world"
       lore:
-        description: "§7Treats this world as a submission world."
-        delete_guard: "§cProduction worlds cannot be deleted."
-        state: "§7State: {state}"
+        description: Treats this world as a submission world.
+        delete_guard: Production worlds cannot be deleted.
+        state: State
     production:
       display: "§eSet as production world"
       lore:
         action: "Set as production world"
         limit_warning: "Each owner can have only one production world."
     state:
-      unsubmitted: "§6Unsubmitted"
-      submitted: "§aSubmitted"
-      completed: "§bCompleted"
+      unsubmitted: Unsubmitted
+      submitted: Submitted
+      completed: Completed
     progress:
       label: "Progress"
       unsubmitted: "§6Unsubmitted"
@@ -29,6 +29,7 @@ chanpon:
       completed: "§bCompleted"
       auto_rollback: "§dAuto rollback"
     submission:
+      display: World Submission
       lore:
         unsubmitted:
           action: "Mark as submitted"
@@ -56,6 +57,8 @@ chanpon:
       deadline_closed: "§cSubmissions are already closed."
     submitted_menu:
       title: "§0Protected World"
+      state_label: Submission
+      reason_label: Protection
       world_lore:
         - "§7State: {state}"
         - "§7Protection: {reason}"

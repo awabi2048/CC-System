@@ -76,6 +76,9 @@ gui:
         item:
           head_lore:
           - §bおあげ神社で交換してもらったヘッド
+          target_label: Item
+          offering_label: Offering
+          exchange_limit_label: Exchange limit
         confirm:
           title: §8交換確認
           confirm_button:
@@ -133,19 +136,22 @@ gui:
         - §e§l職業を選択してください
       profession_item:
         selected: §a§l[選択中]
-        current_profession: §a§l現在の職業です
+        current_profession: §a§lCurrent profession
         already_selected_title: §8§m{profession}
         already_selected_lore:
-        - §c§l既に職業を選択しています
-        - §c変更することはできません
-        click_to_select: §e§nクリックで選択
-        type_label: '§8タイプ: {type}'
+        - §c§lYou already selected a profession
+        - §cYour profession cannot be changed
+        click_to_select: §e§nClick to select
+        click_operation: Click
+        select_action: Select
+        type_label_name: Type
+        type_label: '§8Type: {type}'
     type:
-      gathering: §a収集
-      crafting: §6クラフト
-      combat: §c戦闘
-      creative: §dクリエイティブ
-      general: §7一般
+      gathering: §aGathering
+      crafting: §6Crafting
+      combat: §cCombat
+      creative: §dCreative
+      general: §7General
     confirm_dialog:
       title: §6§l職業選択の確認
       body: '§f§l{profession} §7を選択しますか？

@@ -5,37 +5,15 @@ gui:
     empty_message_no_favorites: §7まだお気に入りがありません
     current_world:
       name: §b現在のワールド
-      world_name: §f§l| §7ワールド名 §a{world}
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{world_line}'
-      - '{description}'
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{owner_line}'
-      - '{favorite_line}'
-      - '{visitor_line}'
-      - '{tag_line}'
-      - §8§m－－－－－－－－－－－－－－－－－－
     world_item:
-      owner: §f§l| §7オーナー §b{owner}{status_color}
-      favorite: §f§l| §7お気に入り §c{count}
-      recent_visitors: §f§l| §7最近の来訪者 §a{count}
-      tag: §f§l| §7タグ §e{tags}
       warp: このワールドへワープ
       unfavorite: お気に入りを解除
       archived_label: §c【アーカイブされています】
     info:
       display: §f統計情報
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §7登録中 §f{count}件
-      - §7表示中 §a{current_page}§7/{max_page}ページ
-      - §8§m－－－－－－－－－－－－－－－－－－
-      count: §7登録中 §f{count}件
-      page: §7表示中 §a{current}§7/{max}ページ
     player_icon:
       name: §b{player}
-      lore_count: §f§l| §7お気に入りしたワールド数 §a{count} §7個
+      lore_count: お気に入りしたワールド数
     favorite_menu:
       title: お気に入りメニュー
       other_worlds:

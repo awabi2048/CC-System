@@ -1,0 +1,85 @@
+minigame:
+  messages:
+    wrong_world: '&cThis item belongs to another world.'
+    edit_locked: '&eMarkers cannot be edited while the game is running.'
+    no_edit_permission: '&cYou do not have permission to edit this mini-game.'
+    marker_placed: '&aPlaced {type} marker.&7 (index: {index})'
+    marker_removed: '&aRemoved {type} marker.'
+    already_running: '&eThis game is already running.'
+    not_running: '&eThis game is not running.'
+    invalid_course: '&cThe race cannot start: {reason}'
+    no_participants: '&cThere are no eligible participants.'
+    hunter_selection_required: '&cSelect {count} hunter(s).'
+    participant_selection_required: '&cSelect {count} participant(s).'
+    selection_limit: '&cYou can select up to {count} player(s).'
+    started: '&aMini-game started: &f{game}'
+    preparation_started: '&ePreparation: &f{seconds}s'
+    role_assigned: '&bRole: &f{role}'
+    colosseum_spectating: '&7Spectating the two selected competitors.'
+    race_started: '&bRace started.'
+    checkpoint_reached: '&aCheckpoint reached.'
+    race_finished: '&6Goal: &f{milliseconds} ms'
+    captured: '&cYou have been captured.'
+    capture_success: '&aPlayer captured.'
+    invalid_jail: '&cChase cannot start: place exactly one jail marker.'
+    invalid_colosseum: '&cColosseum cannot start: it requires two players and one start marker.'
+    invalid_endergolf: '&cEnder Golf cannot start: {reason}'
+    golf_hole_started: '&aHole {hole} started.'
+    golf_water_hazard: '&bWater hazard. Resuming from your previous safe position.'
+    golf_bunker: '&eBunker. One penalty stroke has been added.'
+    golf_cup: '&6Cup! Continue to the next hole.'
+    time_limit_changed: '&aTime limit set to {seconds} seconds.'
+    preparation_changed: '&aPreparation time set to {seconds} seconds.'
+    ended: '&eMini-game ended: &f{reason}'
+    result_entry: '&f#{rank} &7{player} &8- &f{milliseconds} ms &7({score} strokes)'
+  gui:
+    title: '&8Mini-game manager'
+    game: '&bGame: &f{id}'
+    game_info: Game information
+    game_label: Game
+    start: '&aStart'
+    stop: '&cStop'
+    start_action: Start the game
+    stop_action: Stop the game
+    time_down: '&eDecrease time limit by 30 seconds'
+    time_up: '&eIncrease time limit by 30 seconds'
+    time_value: '&fTime limit: &e{seconds}s'
+    preparation_value: '&fPreparation: &e{seconds}s'
+    time_name: Time limit
+    preparation_name: Preparation time
+    current_seconds: Current value (seconds)
+    increase: 'Increase by {seconds} seconds'
+    decrease: 'Decrease by {seconds} seconds'
+    increase_action: '&eLeft-click to add {seconds}s'
+    decrease_action: '&eRight-click to subtract {seconds}s'
+    participants: '&bParticipants and roles'
+    participants_action: Open participants and roles
+    participant: Participant
+    player_label: Player
+    selection_label: Selection
+    selected: Selected
+    unselected: Not selected
+    participant_toggle: Toggle selection
+    participant_title: '&8Participants and roles ({page}/{pages})'
+    participant_selected: '&a{player}'
+    participant_unselected: '&7{player}'
+    previous: '&fPrevious'
+    next: '&fNext'
+    back: '&cBack'
+    history: '&bRecords'
+    history_recent: View recent records
+    history_top: View top records
+    history_recent_action: '&eLeft-click to view recent records'
+    history_top_action: '&eRight-click to view top records'
+    history_recent_title: '&8Recent records ({page}/{pages})'
+    history_top_title: '&8Top records ({page}/{pages})'
+    history_record: '&f{date}'
+    history_reason: '&7End reason: &f{reason}'
+    history_entries: '&7Participants: &f{count}'
+    top_record: '&e#{rank} &f{player}'
+    personal_best: '&6Personal best'
+    record_score: '&7Score: &f{score}'
+    record_time: '&7Time: &f{milliseconds} ms'
+    record_date: '&7Recorded: &f{date}'
+    close: Close
+    close_action: Close the menu

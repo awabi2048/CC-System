@@ -3,17 +3,18 @@ gui:
     title: マイワールドの管理
     info:
       display: §f統計情報
-      total_count: §f§l| §7検索結果 §b{count}件
-      page: '§7表示中: §a{page}§7/{total_pages} ページ'
+      total_count_label: 検索結果
+      page_label: 表示ページ
+      mspt_label: Server MSPT
     world_item:
-      uuid: §f§l| §7ワールドディレクトリ §8{uuid}
-      world_name_line: §f§l| §7ワールド名 §a{world}
-      owner: §f§l| §7オーナー {owner}{status_color}
-      status: §f§l| §7状態 {status}
-      status_archived: §cアーカイブ済み
-      status_active: §bアクティブ
-      publish: §f§l| §7公開レベル {color}{level}
-      generation: §f§l| §7生成方法 §e{method}
+      uuid: ワールドディレクトリ
+      world_name_line: ワールド名
+      owner: オーナー
+      status: 状態
+      status_archived: アーカイブ済み
+      status_active: アクティブ
+      publish: 公開レベル
+      generation: 生成方法
       generation_type:
         convert: 変換
         template: テンプレート
@@ -21,29 +22,31 @@ gui:
         seed: シード指定
         random: ランダム生成
         unknown: '{source}'
-      expansion: §f§l| §7拡張レベル §e{level}
-      expires_at: §f§l| §7自動アーカイブ予定 §e{date} §8({days_remain}§8)
-      archived_at: §f§l| §7アーカイブ実施日 §e{date} §8({mode}§8)
-      created_at: §f§l| §7作成日 §e{date} §8({days_ago}§8)
-      created_info_days: §7{days}日前
-      created_info_today: §7今日
-      expire_info_remaining: §7{days}日後
-      expire_info_overdue: §7{days}日前
+      expires_at: 自動アーカイブ予定
+      expires_value: '{date}（{days_remain}）'
+      archived_at: アーカイブ実施日
+      archived_value: '{date}（{mode}）'
+      created_at: 作成日
+      created_value: '{date}（{days_ago}）'
+      created_info_days: '{days}日前'
+      created_info_today: 今日
+      expire_info_remaining: '{days}日後'
+      expire_info_overdue: '{days}日前'
       archive_mode_auto: 自動切り替え
       archive_mode_manual: 手動切り替え
-      mspt: §f§l| §7MSPT {mspt}
-      mspt_with_status: §f§l| §7MSPT {mspt} §7({status}§7)
-      mspt_value_low: §a0.1§7 ms未満
-      mspt_status_unloaded: §7アンロード中
-      mspt_error_with_reason: §f§l| §7MSPT §c読み込み失敗 §7({reason}§7)
+      mspt: MSPT
+      mspt_with_status: '{mspt}（{status}）'
+      mspt_value_low: 0.1 ms未満
+      mspt_status_unloaded: アンロード中
+      mspt_error_with_reason: '読み込み失敗（{reason}）'
       mspt_reason_chiyogami_inactive: Chiyogamiが無効
       mspt_reason_directory_not_found: ワールドディレクトリが見つからない
       mspt_reason_load_failed: ワールドの読み込み状態を確認できない
       mspt_reason_metrics_not_found: MSPT計測データが見つからない
-      world_size_line: §f§l| §7ワールドサイズ §e{size}{suffix}
-      world_size_measuring: §f§l| §7ワールドサイズ §8(計測中...)
-      world_size_unavailable: §f§l| §7ワールドサイズ §c取得不可
-      world_size_archived_suffix: ' §8(アーカイブ中)'
+      world_size_line: ワールドサイズ
+      world_size_measuring: 計測中...
+      world_size_unavailable: 取得不可
+      world_size_archived_suffix: '（アーカイブ中）'
       action_archive: アーカイブ状態を切り替え
       action_settings: ワールド設定を開く
       action_warp: このワールドへワープ
@@ -65,19 +68,11 @@ gui:
         locked: 封鎖中のみ
       player:
         display: §eプレイヤーフィルター
-        lore:
-        - §8§m－－－－－－－－－－－－－－－－－－
-        - §f§l| §7フィルタータイプ §f{type}
-        - §f§l| §7対象プレイヤー §b{player}
-        - §8§m－－－－－－－－－－－－－－－－－－
-        - タイプを変更
-        - プレイヤーを設定
-        - §8§m－－－－－－－－－－－－－－－－－－
         none: フィルターなし
         owner: オーナーのワールド
         member: メンバーのワールド
-        current_type: §f§l| §7フィルタータイプ §f{type}
-        current_player: §f§l| §7対象プレイヤー §b{player}
+        current_type: フィルタータイプ
+        current_player: 対象プレイヤー
         click_left: タイプを変更
         click_right: プレイヤーを設定
       click_lr: 変更
@@ -94,6 +89,7 @@ gui:
       mspt_desc: §aMSPT（高い順）
   admin_menu:
     title: 管理者メニュー
+    target_world_label: 対象ワールド
     update_data:
       display: §eデータ更新
       lore:
@@ -145,7 +141,6 @@ gui:
       - §7現在のワールドをZIP形式でエクスポートします。
       action: 確認を開く
       confirm_title: エクスポート確認
-      target_world: §f§l| §7対象ワールド §b{world}
     plugin_info:
       display: §bMyWorldManager
       lore:
@@ -158,10 +153,8 @@ gui:
       action: 管理メニューを切り替え
     archive_world:
       confirm_title: アーカイブの確認
-      target_world: §f§l| §7対象ワールド §b{world}
     unarchive_world:
       confirm_title: アーカイブ解除の確認
-      target_world: §f§l| §7対象ワールド §b{world}
     info:
       display: §aワールド一覧
       lore:
@@ -169,17 +162,6 @@ gui:
       action: ワールド一覧を開く
     current_world:
       display: §b現在のワールド情報
-      lore:
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - §f§l| §7ワールドディレクトリ §8{world_directory}
-      - §f§l| §7ワールド名 §a{world}
-      - §f§l| §7オーナー §b{owner}
-      - §f§l| §7生成方法 §e{generation}
-      - §8§m－－－－－－－－－－－－－－－－－－
-      - '{action_settings}'
-      - '{action_archive}'
-      - '{uuid_copy_hint}'
-      - §8§m－－－－－－－－－－－－－－－－－－
     portals:
       display: §bポータル管理
       lore:
@@ -187,12 +169,9 @@ gui:
       action: ポータル管理を開く
   unarchive_confirm:
     title: §6アーカイブ解除の確認
-    lore:
-    - §8§m－－－－－－－－－－－－－－－－－－
+    description:
     - §fこのワールドは現在アーカイブされています。
     - §f解除してワープしますか？
-    - §8§m－－－－－－－－－－－－－－－－－－
-    - §e§nクリックで解除してワープ
-    - §8§m－－－－－－－－－－－－－－－－－－
+    action: 解除してワープ
   archive_confirm:
     title: §6アーカイブの確認
