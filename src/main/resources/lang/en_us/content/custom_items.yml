@@ -1,4 +1,35 @@
 custom_items:
+  fishing:
+    dictionary:
+      name: "§bFish Dictionary"
+      description: "Review caught fish records and their catch conditions."
+      operation: "Right-click"
+      action: "Open the Fish Dictionary"
+      resolved: "Right-click to open the Fish Dictionary"
+      hint_operation: "Left-click water"
+      hint_action: "Check what can be caught here"
+    rod_standard:
+      name: "§bExpedition Fishing Rod"
+      description: "A tuned fishing rod that makes fish movement easier to control."
+    bait_worm:
+      name: "§fWorm"
+      description: "Basic bait that shortens the time until a bite."
+    bait_lucky_worm:
+      name: "§dGlowing Worm"
+      description: "Bait that improves rare catches and catch quality."
+    bait_deep_sea_bait:
+      name: "§3Deep-sea Bait"
+      description: "Bait that draws out special fish hidden in deep waters."
+    data:
+      power: "Power"
+      finesse: "Finesse"
+      durability: "Durability"
+      wait_time: "Wait efficiency"
+      rare: "Rare catches"
+      quality: "Quality bonus"
+      special: "Special catches"
+    state:
+      enabled: "Enabled"
   minigame:
     manager:
       name: §6Mini-game Manager

@@ -636,5 +636,10 @@ object ConfigManager {
     fun isMacroAfterAllPregenEnabled(): Boolean = macroAfterAllPregenEnabled
     fun getMacroAfterAllPregenCommands(): List<String> = macroAfterAllPregen.toList()
     fun getResourceConfig(type: String): ResourceConfig? = resourceConfigs[type.lowercase()]
+
+    fun isResourceWorldName(worldName: String): Boolean =
+        resourceConfigs.values.any { config ->
+            worldName == config.baseName || worldName.startsWith("${config.baseName}.")
+        }
     fun getAllResourceConfigs(): Map<String, ResourceConfig> = resourceConfigs.toMap()
 }
