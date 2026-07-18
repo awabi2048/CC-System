@@ -276,12 +276,9 @@ messages:
   stats_add: §a{player} の {key} に {value} §aを加算しました。
   stats_remove: §a{player} の {key} から {value} §aを減算しました。
   stats_remove_error: '§cエラー: 減算後の値が負になります。（現在の値: {value}）'
-  give_success: §a{player} に {item} を {amount}個 付与しました。
-  give_inventory_full: §e{player} のインベントリが満杯だったため、{item} を {amount}個 足元にドロップしました。
   usage_create: '§c使用法: /mwm create <プレイヤー名>'
   usage_stats: '§c使用法: /mwm stats <プレイヤー名> <項目> <get/set/add/remove> [値]'
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'
-  usage_give: '§c使用法: /mwm give <プレイヤー名> <アイテムID> [個数]'
   command_disabled: '§cこのMWMコマンドは現在無効です。'
   migration:
     approval_required: '§e旧ワールド {world} の移行にはロード承認が必要です: /mwm migration approve {uuid}'
@@ -295,11 +292,31 @@ messages:
   seed_spawn:
     corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
     safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。
-  myworld_command_usage: '§c使用法: /myworld accept | deny | transfer <プレイヤー> | remove_member <プレイヤー>'
+  myworld_command_usage: '§c使用法: /myworld confirm <4桁コード> | deny <4桁コード> | transfer <プレイヤー> | remove_member <プレイヤー>'
   myworld_command_bedrock_only: §cこのサブコマンドは統合版プレイヤー専用です。
   myworld_target_not_member: §c対象プレイヤーはこのワールドのメンバーではありません。
   myworld_owner_remove_forbidden: §cオーナーをメンバー削除することはできません。
   myworld_pending_hint: '§e確認したい招待や申請があります！ /myworld からプレイヤーアイコンを開いて見てみてくださいね。 §7(保留: {count}件)'
+  pending_notification:
+    world_invite:
+      body: '{player}さんがあなたを「{world}」に招待しました！'
+      action: '{command} で招待を承諾できます！'
+    member_invite:
+      body: '{player}さんがあなたを「{world}」のメンバーに招待しました！'
+      action: '{command} でメンバー招待を承諾できます！'
+    member_request:
+      body: '{player}さんが「{world}」への参加を申請しました！'
+      action: '{command} で参加申請を承認できます！'
+    meet_request:
+      body: '{player}さんがあなたのいるワールドへのワープを申請しました！'
+      action: '{command} でワープを許可できます！'
+    visit_request:
+      body: '{player}さんが「{world}」への訪問を申請しました！'
+      action: '{command} で訪問を許可できます！'
+    hover: '{command} を実行します'
+  myworld_pending_code_invalid: §c4桁の通知コードを入力してください。
+  myworld_pending_code_not_found: §c指定した通知は存在しないか、すでに処理されています。
+  myworld_pending_code_expired: §c指定した通知は有効期限が切れています。
   myworld_pending_none: §c今は確認できる招待や申請はありません。
   myworld_pending_open_list: §e確認したい通知がいくつかあります！ 一覧から選んでみてくださいね。
   myworld_pending_remaining: '§e未処理の招待/申請がまだあります。 §7(残り: {count}件)'

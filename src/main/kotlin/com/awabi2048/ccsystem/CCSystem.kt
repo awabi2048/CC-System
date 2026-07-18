@@ -4,6 +4,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import com.awabi2048.ccsystem.api.CCSystemAPI
 import com.awabi2048.ccsystem.api.CCSystemAPIImpl
 import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy
+import com.awabi2048.ccsystem.api.config.ConfigClassification
+import com.awabi2048.ccsystem.api.config.ConfigMigration
+import com.awabi2048.ccsystem.api.config.ManagedConfigSpec
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.config.MessageManager
@@ -18,6 +21,7 @@ import com.awabi2048.ccsystem.features.clock.manager.ClockManager
 import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
+import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
 import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickBinderListener
@@ -57,6 +61,7 @@ class CCSystem : JavaPlugin() {
          * CC-System APIを取得します
          * 他のプラグインがこのメソッド経由でCC-Systemの機能を利用できます
          */
+        @JvmStatic
         fun getAPI(): CCSystemAPI = _api
     }
     
@@ -323,6 +328,57 @@ class CCSystem : JavaPlugin() {
         saveSplitLanguageResources()
     }
 
+    private fun registerManagedConfigs() {
+        val paths = listOf(
+            "config/core.yml",
+            "config/misc.yml",
+            "config/resource_world.yml",
+            "config/rental_area.yml",
+            "config/public_sign.yml",
+            "config/announce.yml",
+            "config/queue.yml"
+        )
+        val specs = paths.map { resourcePath ->
+            val currentVersion = if (resourcePath == "config/misc.yml") 2 else 1
+            ManagedConfigSpec(
+                owner = "cc-system",
+                sourcePlugin = this,
+                resourcePath = resourcePath,
+                targetPath = File(dataFolder, resourcePath).toPath(),
+                currentVersion = currentVersion,
+                classification = ConfigClassification.MANAGED_CONFIG,
+                migrations = if (resourcePath == "config/misc.yml") {
+                    mapOf(
+                        1 to ConfigMigration { configuration ->
+                            val worlds = configuration.getConfigurationSection("music.worlds")
+                            worlds?.getKeys(false)
+                                ?.filterNot { ':' in it }
+                                ?.forEach { legacyName ->
+                                    val currentKey = "minecraft:$legacyName"
+                                    if (!worlds.contains(currentKey)) {
+                                        worlds.set(currentKey, worlds.get(legacyName))
+                                    }
+                                    worlds.set(legacyName, null)
+                                }
+                        }
+                    )
+                } else {
+                    emptyMap()
+                },
+                validator = com.awabi2048.ccsystem.api.config.ConfigValidator {},
+                reloadAction = {
+                    ConfigManager.reload()
+                    syncFeatureRuntime()
+                }
+            )
+        }
+        _api.getConfigSchemaService().register("cc-system", specs)
+        val prepared = _api.getConfigSchemaService().prepare("cc-system")
+        check(prepared.successful) {
+            "CC-System Config preparation failed: ${prepared.statuses.filter { it.message != null }}"
+        }
+    }
+
     private fun saveSplitLanguageResources() {
         val codeSource = runCatching {
             File(javaClass.protectionDomain.codeSource.location.toURI())
@@ -355,6 +411,7 @@ class CCSystem : JavaPlugin() {
         
         // 設定読み込み
         ensureDefaultFiles()
+        registerManagedConfigs()
         
         // マネージャー初期化
         ConfigManager.load()
@@ -387,6 +444,9 @@ class CCSystem : JavaPlugin() {
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
+        val unifiedManagementCommand = UnifiedManagementCommand()
+        getCommand("cc")?.setExecutor(unifiedManagementCommand)
+        getCommand("cc")?.tabCompleter = unifiedManagementCommand
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())
         val clockCommand = ClockCommand()
         getCommand("clock")?.setExecutor(clockCommand)

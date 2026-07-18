@@ -1,19 +1,30 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.item.ItemGrantService
+import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.world.WorldDirectoryService
+import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuCommandServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
+import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
+import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
+import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
+import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -21,6 +32,7 @@ import com.awabi2048.ccsystem.core.queue.model.TaskState
 import java.io.File
 import net.kyori.adventure.text.Component
 import org.bukkit.World
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -32,11 +44,21 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     private val menuNavigationService = MenuNavigationServiceImpl(
         File(dataFolder, "data/gui/menu_routes.yml")
     )
+    private val menuCommandService = MenuCommandServiceImpl()
     private val guiElementService = GuiElementServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     private val menuSoundService = MenuSoundServiceImpl()
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
+    private val configSchemaService = ConfigSchemaServiceImpl()
+    private val itemGrantService = ItemGrantServiceImpl()
+    private val worldIdentityService = WorldIdentityServiceImpl()
+    private val worldDirectoryService = WorldDirectoryServiceImpl(
+        Bukkit.getWorldContainer().toPath(),
+        Bukkit.getWorlds().firstOrNull { it.key == org.bukkit.NamespacedKey.minecraft("overworld") }?.name
+            ?: "world"
+    )
+    private val soundResolutionService = SoundResolutionServiceImpl()
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -168,6 +190,8 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
         return menuNavigationService
     }
 
+    override fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService = menuCommandService
+
     override fun getMenuSoundService(): MenuSoundService {
         return menuSoundService
     }
@@ -175,6 +199,16 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getPlayerInteractionClaimService(): PlayerInteractionClaimService {
         return playerInteractionClaimService
     }
+
+    override fun getConfigSchemaService(): ConfigSchemaService = configSchemaService
+
+    override fun getItemGrantService(): ItemGrantService = itemGrantService
+
+    override fun getWorldIdentityService(): WorldIdentityService = worldIdentityService
+
+    override fun getWorldDirectoryService(): WorldDirectoryService = worldDirectoryService
+
+    override fun getSoundResolutionService(): SoundResolutionService = soundResolutionService
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)

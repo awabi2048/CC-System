@@ -1,0 +1,20 @@
+management:
+  usage: "§eUsage: /cc <config|give|menu>"
+  no_permission: "§cYou do not have permission to perform this action."
+  player_not_found: "§cTarget player was not found: {player}"
+  config:
+    usage: "§eUsage: /cc config <status|check|migrate|reload> [plugin]"
+    none: "§eNo managed configs are registered."
+    line: "{color}[{owner}] {file} {detected}->{required} {state} {message}"
+  give:
+    usage: "§eUsage: /cc give <target> <item-id> [amount] [arguments...]"
+    success: "§aGranted {item} to {player}. Granted: {granted}, dropped: {dropped}"
+    failed: "§cFailed to grant {item} to {player}: {reason}"
+  menu:
+    usage: "§eUsage: /cc menu <owner:id> [target] [key=value...]"
+    unknown: "§cPublic menu was not found: {menu}"
+    target_required: "§cSpecify a target player."
+    self_only: "§cThis menu can only be opened for the executor."
+    invalid_argument: "§cInvalid menu argument: {argument}"
+    success: "§aOpened {menu} for {player}."
+    failed: "§cCould not open {menu} for {player}."

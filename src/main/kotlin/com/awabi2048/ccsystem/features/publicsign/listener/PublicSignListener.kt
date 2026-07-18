@@ -38,9 +38,9 @@ class PublicSignListener : Listener {
             return
         }
 
-        val worldName = event.block.world.name
+        val worldKey = event.block.world.key.toString()
         val location = PublicSignManager.toLocation(
-            worldName,
+            worldKey,
             event.block.x,
             event.block.y,
             event.block.z
@@ -89,7 +89,7 @@ class PublicSignListener : Listener {
             return
         }
 
-        val location = PublicSignManager.toLocation(clicked.world.name, clicked.x, clicked.y, clicked.z)
+        val location = PublicSignManager.toLocation(clicked.world.key.toString(), clicked.x, clicked.y, clicked.z)
         val data = PublicSignManager.get(location) ?: return
 
         event.isCancelled = true
@@ -111,7 +111,7 @@ class PublicSignListener : Listener {
         }
 
         val location = PublicSignManager.toLocation(
-            event.block.world.name,
+            event.block.world.key.toString(),
             event.block.x,
             event.block.y,
             event.block.z
@@ -198,7 +198,8 @@ class PublicSignListener : Listener {
 
         PublicSignManager.updateContent(location, content)
 
-        val world = org.bukkit.Bukkit.getWorld(location.world)
+        val key = org.bukkit.NamespacedKey.fromString(location.worldKey)
+        val world = key?.let(org.bukkit.Bukkit::getWorld)
         if (world != null) {
             val state = world.getBlockAt(location.x, location.y, location.z).state
             if (state is Sign) {

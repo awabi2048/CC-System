@@ -71,12 +71,7 @@ class ResourceListener : Listener {
 
                             // 開始音の再生 (最初の実行時)
                             if (ticks == 2) {
-                                val soundName = ConfigManager.getSoundStart()
-                                try {
-                                    player.playSound(player.location, soundName, 1.0f, 1.0f)
-                                } catch (e: IllegalArgumentException) {
-                                    CCSystem.instance.logger.warning("Invalid start sound name: $soundName")
-                                }
+                                player.playSound(player.location, ConfigManager.getSoundStart(), 1.0f, 1.0f)
                             }
 
                             // 3秒 (60 ticks) 経過判定
@@ -163,12 +158,7 @@ class ResourceListener : Listener {
         // 成功音の再生 (1tick遅延)
         object : BukkitRunnable() {
             override fun run() {
-                val soundName = ConfigManager.getSoundSuccess()
-                try {
-                    player.playSound(player.location, soundName, 1.0f, 1.0f)
-                } catch (e: IllegalArgumentException) {
-                    CCSystem.instance.logger.warning("Invalid success sound name: $soundName")
-                }
+                player.playSound(player.location, ConfigManager.getSoundSuccess(), 1.0f, 1.0f)
             }
         }.runTaskLater(CCSystem.instance, 1L)
 

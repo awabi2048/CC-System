@@ -4,8 +4,6 @@ kantan_commander:
     prefix: "&7[&eKC&7]"
 
   command:
-    usage:
-      disk_give: "&c/kankoma disk give <player> [name]"
     error:
       player_not_found: "&cプレイヤーが見つかりません"
       player_only: "&cプレイヤーのみ実行できます"
@@ -15,7 +13,6 @@ kantan_commander:
       line: "&7{world} &f({x}, {y}, {z}) &7→ &e{name} &7({uuid})"
     help:
       header: "&6=== Kantan Commander ==="
-      disk_give: "&e/kankoma disk give <player> [name] &7- ディスク付与 (admin)"
       programs: "&e/kankoma programs &7- プログラム一覧"
       placed: "&e/kankoma placed list &7- 設置一覧 (admin)"
       reload: "&e/kankoma reload &7- 設定再読込 (admin)"
@@ -120,7 +117,6 @@ kantan_commander:
   message:
     no_permission: "&c権限がありません"
     not_disk_owner: "&cこのディスクを編集する権限がありません"
-    disk_given: "&a{player} にKantan Commanderディスクを付与しました"
     disk_gotten: "&aディスク「{name}」を取得しました"
     disk_created: "&a新しいディスクを作成しました (UUID: {uuid})"
     disk_deleted: "&aディスク {uuid} を削除しました"

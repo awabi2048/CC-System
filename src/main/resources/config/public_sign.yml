@@ -2,3 +2,4 @@
 public_sign:
   default_expire_days: 7
   content_lines: 3
+config_version: 1

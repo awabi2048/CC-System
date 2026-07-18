@@ -276,12 +276,9 @@ messages:
   stats_add: §aAdded {value} to {key} of {player}.
   stats_remove: §aRemoved {value} from {key} of {player}.
   stats_remove_error: '§cError: Resulting value would be negative. (Current: {value})'
-  give_success: §aGave {amount}x {item} to {player}.
-  give_inventory_full: §e{player}'s inventory was full, so {amount}x {item} was dropped at their feet.
   usage_create: '§cUsage: /mwm create <player>'
   usage_stats: '§cUsage: /mwm stats <player> <field> <action> [value]'
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
-  usage_give: '§cUsage: /mwm give <player> <item_id> [amount]'
   command_disabled: '§cThis MWM command is disabled.'
   migration:
     approval_required: '§eLoading approval is required to migrate legacy world {world}: /mwm migration approve {uuid}'
@@ -295,11 +292,31 @@ messages:
   seed_spawn:
     corrected: '§eThe configured spawn was unsafe and was moved to {x}, {y}, {z}.'
     safe_location_not_found: §cNo safe location was found near the configured spawn. Warp cancelled.
-  myworld_command_usage: '§cUsage: /myworld accept | deny | transfer <player> | remove_member <player>'
+  myworld_command_usage: '§cUsage: /myworld confirm <4-digit code> | deny <4-digit code> | transfer <player> | remove_member <player>'
   myworld_command_bedrock_only: §cThis subcommand is available for Bedrock players only.
   myworld_target_not_member: §cTarget player is not a member of this world.
   myworld_owner_remove_forbidden: §cYou cannot remove the owner.
   myworld_pending_hint: '§eYou have invites or requests waiting for you! Open /myworld and check the player icon. §7(Pending: {count})'
+  pending_notification:
+    world_invite:
+      body: '{player} invited you to "{world}"!'
+      action: 'Use {command} to accept the invitation!'
+    member_invite:
+      body: '{player} invited you to join "{world}" as a member!'
+      action: 'Use {command} to accept the member invitation!'
+    member_request:
+      body: '{player} requested to join "{world}"!'
+      action: 'Use {command} to approve the membership request!'
+    meet_request:
+      body: '{player} requested to warp to your current world!'
+      action: 'Use {command} to allow the warp!'
+    visit_request:
+      body: '{player} requested permission to visit "{world}"!'
+      action: 'Use {command} to allow the visit!'
+    hover: 'Run {command}'
+  myworld_pending_code_invalid: §cEnter a four-digit notification code.
+  myworld_pending_code_not_found: §cThat notification does not exist or has already been handled.
+  myworld_pending_code_expired: §cThat notification has expired.
   myworld_pending_none: §cThere is nothing waiting for you right now.
   myworld_pending_open_list: §eYou have a few notifications waiting! Please choose one from the list.
   myworld_pending_remaining: '§eThere are still pending invites/requests. §7(Remaining: {count})'

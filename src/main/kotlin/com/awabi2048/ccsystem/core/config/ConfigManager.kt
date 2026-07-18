@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.CCSystem
 import org.bukkit.Difficulty
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import kotlin.math.floor
@@ -123,8 +124,8 @@ object ConfigManager {
     private var particleCount: Int = 5
     private var particleSpeed: Double = 0.01
     private var particleInterval: Long = 2
-    private var soundStart: String = "BLOCK_NOTE_BLOCK_BELL"
-    private var soundSuccess: String = "ENTITY_EXPERIENCE_ORB_PICKUP"
+    private var soundStart: Sound? = null
+    private var soundSuccess: Sound? = null
     private var spawnSearchRadius: Int = 64
     private var spawnSearchAttempts: Int = 200
     private var spawnSafeBlocks: List<Material> = listOf(
@@ -380,8 +381,9 @@ object ConfigManager {
         particleInterval = (particleSection?.getInt("interval") ?: 2).toLong()
 
         val soundSection = scaffoldSection?.getConfigurationSection("sound")
-        soundStart = soundSection?.getString("start") ?: "BLOCK_NOTE_BLOCK_BELL"
-        soundSuccess = soundSection?.getString("success") ?: "ENTITY_EXPERIENCE_ORB_PICKUP"
+        val soundResolver = CCSystem.getAPI().getSoundResolutionService()
+        soundStart = soundResolver.resolve(soundSection?.getString("start") ?: "BLOCK_NOTE_BLOCK_BELL")
+        soundSuccess = soundResolver.resolve(soundSection?.getString("success") ?: "ENTITY_EXPERIENCE_ORB_PICKUP")
 
         val spawnSection = resourceWorld.getConfigurationSection("spawn")
         spawnSearchRadius = spawnSection?.getInt("search_radius") ?: 64
@@ -618,8 +620,8 @@ object ConfigManager {
     fun getParticleCount(): Int = particleCount
     fun getParticleSpeed(): Double = particleSpeed
     fun getParticleInterval(): Long = particleInterval
-    fun getSoundStart(): String = soundStart
-    fun getSoundSuccess(): String = soundSuccess
+    fun getSoundStart(): Sound = requireNotNull(soundStart) { "資源ワールド開始音が初期化されていません" }
+    fun getSoundSuccess(): Sound = requireNotNull(soundSuccess) { "資源ワールド成功音が初期化されていません" }
     fun getSpawnSearchRadius(): Int = spawnSearchRadius
     fun getSpawnSearchAttempts(): Int = spawnSearchAttempts
     fun getSpawnSafeBlocks(): List<Material> = spawnSafeBlocks.toList()

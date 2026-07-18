@@ -11,6 +11,10 @@ softdepend:
   - LWC
 
 commands:
+  cc:
+    description: Config・アイテム付与・公開メニューの統合管理コマンド
+    usage: /cc <config|give|menu>
+    permission: cc.command.use
   resource:
     description: 資源ワールド管理コマンド
     usage: /resource <generate|teleport|pause_pregen|close|monitor>
@@ -50,6 +54,42 @@ commands:
     permission: cc-system.clock.set
 
 permissions:
+  cc.command.use:
+    description: /ccコマンドの基本利用権限
+    default: op
+  cc.command.*:
+    description: /cc統合管理コマンドの全権限
+    default: op
+    children:
+      cc.command.use: true
+      cc.command.config: true
+      cc.command.give: true
+      cc.command.give.all: true
+      cc.command.menu: true
+      cc.item.give.cc-content: true
+      cc.item.give.myworld: true
+      cc.item.give.kantan: true
+  cc.command.config:
+    description: Config状態確認・移行・再読込権限
+    default: op
+  cc.command.give:
+    description: 登録アイテム付与権限
+    default: op
+  cc.command.give.all:
+    description: 全オンラインプレイヤーへの登録アイテム付与権限
+    default: op
+  cc.command.menu:
+    description: 公開メニュー起動権限
+    default: op
+  cc.item.give.cc-content:
+    description: CC-Content登録アイテム付与権限
+    default: op
+  cc.item.give.myworld:
+    description: MyWorld登録アイテム付与権限
+    default: op
+  cc.item.give.kantan:
+    description: Kantan Commanderディスク付与権限
+    default: op
   cc-system.*:
     description: CC-Systemの全権限
     default: op

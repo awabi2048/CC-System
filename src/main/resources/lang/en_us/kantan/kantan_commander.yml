@@ -4,8 +4,6 @@ kantan_commander:
     prefix: "&7[&eKC&7]"
 
   command:
-    usage:
-      disk_give: "&c/kankoma disk give <player> [name]"
     error:
       player_not_found: "&cPlayer not found"
       player_only: "&cPlayers only"
@@ -15,7 +13,6 @@ kantan_commander:
       line: "&7{world} &f({x}, {y}, {z}) &7→ &e{name} &7({uuid})"
     help:
       header: "&6=== Kantan Commander ==="
-      disk_give: "&e/kankoma disk give <player> [name] &7- Give a disk (admin)"
       programs: "&e/kankoma programs &7- Program list"
       placed: "&e/kankoma placed list &7- Placement list (admin)"
       reload: "&e/kankoma reload &7- Reload config (admin)"
@@ -120,7 +117,6 @@ kantan_commander:
   message:
     no_permission: "&cNo permission"
     not_disk_owner: "&cYou do not have permission to edit this disk"
-    disk_given: "&aGave Kantan Commander disk to {player}"
     disk_gotten: "&aGot disk \"{name}\""
     disk_created: "&aCreated new disk (UUID: {uuid})"
     disk_deleted: "&aDeleted disk {uuid}"

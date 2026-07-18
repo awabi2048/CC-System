@@ -1,0 +1,21 @@
+chanpon_utilities:
+  common:
+    prefix: "&7[&bChanpon-Utilities&7] "
+  unlink:
+    success: "&a書見台とのリンクを解除しました"
+    already: "&eこの本棚はリンクされていません"
+  freecam:
+    started: "&aFreeCamを開始しました。Shiftキー2回で終了します。"
+    stopped: "&a身体の位置へ戻りました。"
+    recovered: "&e未終了のFreeCam状態から身体の位置へ復旧しました。"
+    unavailable: "&c現在FreeCamを開始できません。"
+    not_active: "&cFreeCam中ではありません。"
+    usage: "&c使用法: /freecam [start|stop|status]"
+    status:
+      active: "&aFreeCam中です。"
+      inactive: "&7FreeCam中ではありません。"
+    body:
+      damaged: "&c身体が攻撃されたためFreeCamを終了しました。"
+    item:
+      name: "&bFreeCam起動アイテム"
+      lore: "&7使用するとFreeCamを開始します。"

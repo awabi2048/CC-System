@@ -90,3 +90,4 @@ resources:
     base_name: "resource_end"
     default_border: 6000
     variations: ["a", "b"]
+config_version: 1

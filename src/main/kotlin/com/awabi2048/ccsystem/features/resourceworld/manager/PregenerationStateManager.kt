@@ -22,7 +22,8 @@ object PregenerationStateManager {
      * 事前生成の状態
      */
     data class PregenState(
-        val worldName: String,
+        val worldKey: String,
+        val runtimeName: String,
         val borderSize: Int,
         var currentIndex: Int = 0,
         var elapsedMillis: Long = 0L,
@@ -80,21 +81,21 @@ object PregenerationStateManager {
     /**
      * 指定されたワールドの状態を削除する
      */
-    fun remove(worldName: String) {
-        states.remove(worldName)
+    fun remove(worldKey: String) {
+        states.remove(worldKey)
         save()
     }
 
     /**
      * 状態を取得する
      */
-    fun getState(worldName: String): PregenState? = states[worldName]
+    fun getState(worldKey: String): PregenState? = states[worldKey]
 
     /**
      * 状態を設定する
      */
     fun setState(state: PregenState) {
-        states[state.worldName] = state
+        states[state.worldKey] = state
     }
 
     /**
@@ -105,8 +106,8 @@ object PregenerationStateManager {
     /**
      * 指定されたワールドの状態を更新する
      */
-    fun updateState(worldName: String, updater: (PregenState) -> Unit) {
-        states[worldName]?.let { state ->
+    fun updateState(worldKey: String, updater: (PregenState) -> Unit) {
+        states[worldKey]?.let { state ->
             updater(state)
         }
     }

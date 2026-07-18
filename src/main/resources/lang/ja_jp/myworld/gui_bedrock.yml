@@ -136,8 +136,11 @@ gui:
       world_count_label: ワールド数
       slots_description: 新規にマイワールドを作成できる枠数です。「ワールドの種」で追加できます
       slots_bypass_description: 上限を貫通する権限が付与されています
-      pending_label: 未処理の招待・申請
-      pending_value: '{count}件'
-      latest_pending_label: 最新受信日時
-      action:
-        open_pending: 未処理の招待・申請を開く
+    pending_button:
+      display: 招待・申請
+      description:
+      - 受信した招待と申請を確認します。
+      count_label: 未処理件数
+      latest_label: 最新受信日時
+      none: なし
+      action: 一覧を開く
