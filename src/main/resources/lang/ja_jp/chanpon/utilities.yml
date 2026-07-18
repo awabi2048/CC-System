@@ -10,10 +10,14 @@ chanpon_utilities:
     recovered: "&e未終了のFreeCam状態から身体の位置へ復旧しました。"
     unavailable: "&c現在FreeCamを開始できません。"
     not_active: "&cFreeCam中ではありません。"
-    usage: "&c使用法: /freecam [start|stop|status|toggle_shortcut]"
+    usage: "&c使用法: /freecam [start|stop|status|toggle_shortcut|reset_distance]"
     shortcut:
       enabled: "&aFreeCamのショートカットを有効にしました。"
       disabled: "&eFreeCamのショートカットを無効にしました。"
+    reset_distance:
+      usage: "&c使用法: /freecam reset_distance <0～30000000 | reset>"
+      changed: "&aカメラ位置のリセット距離を {distance} ブロックに設定しました。"
+      reset: "&aカメラ位置のリセット距離を既定値の {distance} ブロックに戻しました。"
     status:
       active: "&aFreeCam中です。"
       inactive: "&7FreeCam中ではありません。"

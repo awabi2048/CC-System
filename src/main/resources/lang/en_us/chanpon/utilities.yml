@@ -10,10 +10,14 @@ chanpon_utilities:
     recovered: "&eRecovered your body from an unfinished FreeCam session."
     unavailable: "&cFreeCam cannot be started right now."
     not_active: "&cFreeCam is not active."
-    usage: "&cUsage: /freecam [start|stop|status|toggle_shortcut]"
+    usage: "&cUsage: /freecam [start|stop|status|toggle_shortcut|reset_distance]"
     shortcut:
       enabled: "&aEnabled the FreeCam shortcut."
       disabled: "&eDisabled the FreeCam shortcut."
+    reset_distance:
+      usage: "&cUsage: /freecam reset_distance <0-30000000 | reset>"
+      changed: "&aSet the camera reset distance to {distance} blocks."
+      reset: "&aReset the camera reset distance to the default of {distance} blocks."
     status:
       active: "&aFreeCam is active."
       inactive: "&7FreeCam is not active."
