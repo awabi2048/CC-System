@@ -30,6 +30,16 @@ custom_items:
       special: "Special catches"
     state:
       enabled: "Enabled"
+  resource:
+    mica_flake:
+      name: "§fMica Flake"
+      description: "A thin mineral flake found alongside natural ore."
+    resin:
+      name: "§6Resin"
+      description: "A tree-derived material used in processing and brewing."
+    straw:
+      name: "§eStraw"
+      description: "A dried fiber material gathered from mature vegetation."
   minigame:
     manager:
       name: §6Mini-game Manager

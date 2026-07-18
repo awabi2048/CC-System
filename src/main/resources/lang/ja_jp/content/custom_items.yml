@@ -30,6 +30,16 @@ custom_items:
       special: "特殊釣果"
     state:
       enabled: "有効"
+  resource:
+    mica_flake:
+      name: "§f雲母片"
+      description: "鉱石に伴って見つかる、薄く剥がれる鉱物片。"
+    resin:
+      name: "§6樹脂"
+      description: "天然木から採れる、加工や醸造に使える樹液素材。"
+    straw:
+      name: "§eわら"
+      description: "成熟した植生から得られる乾燥した繊維素材。"
   minigame:
     manager:
       name: §6ミニゲーム管理アイテム
