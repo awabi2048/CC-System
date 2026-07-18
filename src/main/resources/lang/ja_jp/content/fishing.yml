@@ -10,6 +10,7 @@ fishing:
     final_roll: "§7逃げられてしまったようです..."
     invalid_water: "§7ここでは釣りができないようです。"
   fight:
+    hit_title: "§6アタリ！"
     input_java: "§7左クリックで下げる / 右クリックで上げる"
     input_bedrock: "§7スニークタップで下げる / タップで上げる"
     status:
