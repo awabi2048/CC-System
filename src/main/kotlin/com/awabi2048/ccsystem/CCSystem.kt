@@ -43,6 +43,7 @@ import com.awabi2048.ccsystem.features.resourceworld.manager.ScoreboardManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.WorldManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
+import com.awabi2048.ccsystem.core.resource.NaturalOriginListener
 import java.io.File
 import org.bukkit.GameRules
 import org.bukkit.event.HandlerList
@@ -434,6 +435,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(AnnounceListener(), this)
         server.pluginManager.registerEvents(announcementNotificationListener, this)
         server.pluginManager.registerEvents(PlayerLeftClickTriggerListener(), this)
+        server.pluginManager.registerEvents(NaturalOriginListener(), this)
 
         syncFeatureRuntime()
         

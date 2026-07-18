@@ -29,6 +29,8 @@ import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
 import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
 import com.awabi2048.ccsystem.core.time.SharedClockServiceImpl
 import com.awabi2048.ccsystem.core.resource.ResourceWorldLifecycleRuntime
+import com.awabi2048.ccsystem.core.resource.NaturalOriginRuntime
+import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
@@ -51,6 +53,7 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
         ResourceWorldLifecycleRuntime.initialize(dataFolder) { owner, failure ->
             Bukkit.getLogger().warning("[CC-System][ResourceWorld] 購読者 $owner の処理に失敗しました: ${failure.message}")
         }
+        NaturalOriginRuntime.initialize(dataFolder)
     }
     private val menuNavigationService = MenuNavigationServiceImpl(
         File(dataFolder, "data/gui/menu_routes.yml")
@@ -230,6 +233,8 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getContentActionDispatcher(): ContentActionDispatcher = contentActionDispatcher
 
     override fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService = ResourceWorldLifecycleRuntime.service
+
+    override fun getNaturalOriginRegistry(): NaturalOriginRegistry = NaturalOriginRuntime.registry
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)
