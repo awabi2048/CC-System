@@ -79,6 +79,7 @@ gui:
           target_label: 交換対象
           offering_label: 初穂料
           exchange_limit_label: 交換可能個数
+          exchange_limit_unit: 個
         confirm:
           title: §8交換確認
           confirm_button:
@@ -120,6 +121,47 @@ gui:
           lore:
           - §7特別な儀式を行います
           - §8現在は見た目のみです
+      wording:
+        dead_chest:
+          description:
+          - デスチェストからアイテムを取り戻すことができます
+          - 取り戻したアイテムは、直接インベントリに入ります
+          - おあげちゃんが疲れてしまうので、連続で行うことはできません
+          action: 一覧から選んで取り戻します
+          unavailable: DeadChestが利用できないため、失具還術を行えません。
+          empty: 現在アクティブなデスチェストはありません。
+          economy_unavailable: 経済機能が利用できません。
+          failed: 失具還術を行えません
+          confirm: このデスチェストを回収します。
+          back: ご奉仕に戻ります。
+        delivery:
+          icon_name: §e奉納品
+          confirm_button: §a奉納する
+          cancel_button: §cキャンセル
+          offering_fallback: 奉納品
+          locked: 職業に就くと、おあげ神社への奉納が行えるようになります
+          description_1: おあげ神社に{offering}§7を奉納することで、
+          description_2: お礼として§6ワールドポイント§7と§6🐿 §eどんぐり§7を貰えます
+          limit: 奉納は1週間に1回まで行えます
+          confirm_offering: '{offering}を奉納します。'
+          confirm_reward: 報酬として{reward} ワールドポイントを受け取ります。
+          back: 日課メニューに戻ります。
+        oage_box:
+          confirm_button: §a受け取る
+          cancel_button: §cキャンセル
+          confirm: このご褒美を受け取ります。
+          back: おあげBOXに戻ります。
+        part_time:
+          icon_name: §6おあげちゃんアルバイト
+          heading: 今日のお仕事
+          task: アリーナミッションを1回完了する
+          description_1: おあげちゃんからの依頼をこなして、
+          description_2: ご褒美を貰いましょう！
+          claimed: 今日の分は既に受け取っています
+          completed: 今日のタスクがすべて完了しました！
+          operation: クリック
+          action: 報酬を受け取る
+          resolved_action: クリックで報酬を受け取る
   profession:
     selection:
       title: §8職業を選択してください

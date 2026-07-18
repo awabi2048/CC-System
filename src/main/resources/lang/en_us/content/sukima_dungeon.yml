@@ -89,7 +89,7 @@ sukima_dungeon:
       spawn: '&fSpawn'
   gui_entrance_title: '&5Connect Portals'
   gui_entrance_open_name: '&b&lOpen Dungeon Portal'
-  gui_entrance_open_action: Open a dungeon portal
+  gui_entrance_open_action: Click to open a dungeon portal!
   gui_style_name: '&6Select Play Style'
   gui_style_multi: Group
   gui_style_single: Solo
@@ -101,7 +101,9 @@ sukima_dungeon:
   gui_theme_name: '&dPortal Destination'
   gui_theme_world_value: '{theme} World'
   gui_current_setting_label: Current setting
-  gui_change_action: Switch
+  gui_style_action: Click to switch
+  gui_size_action: Click to switch
+  gui_theme_action: Click to change
   gui_info_name: '&aInformation'
   gui_info_theme_label: Portal destination
   gui_info_size_label: Size

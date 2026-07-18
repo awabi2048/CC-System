@@ -79,6 +79,7 @@ gui:
           target_label: Item
           offering_label: Offering
           exchange_limit_label: Exchange limit
+          exchange_limit_unit: items
         confirm:
           title: §8交換確認
           confirm_button:
@@ -120,6 +121,47 @@ gui:
           lore:
           - §7特別な儀式を行います
           - §8現在は見た目のみです
+      wording:
+        dead_chest:
+          description:
+          - You can recover items from a death chest
+          - Recovered items are placed directly in your inventory
+          - Oage-chan gets tired, so this cannot be used repeatedly
+          action: Select a death chest to recover its items
+          unavailable: DeadChest is unavailable, so Lost Item Recovery cannot be performed.
+          empty: There are no active death chests.
+          economy_unavailable: The economy service is unavailable.
+          failed: Lost Item Recovery cannot be performed
+          confirm: Recover this death chest.
+          back: Return to Services.
+        delivery:
+          icon_name: §eOffering
+          confirm_button: §aMake Offering
+          cancel_button: §cCancel
+          offering_fallback: offering
+          locked: Choose a profession to unlock offerings at Oage Shrine
+          description_1: By offering {offering}§7 at Oage Shrine,
+          description_2: you receive World Points and acorns as thanks
+          limit: Offerings can be made once per week
+          confirm_offering: Offer {offering}.
+          confirm_reward: Receive {reward} World Points as a reward.
+          back: Return to the daily menu.
+        oage_box:
+          confirm_button: §aClaim
+          cancel_button: §cCancel
+          confirm: Receive this reward.
+          back: Return to Oage BOX.
+        part_time:
+          icon_name: §6Oage-chan Part-time Job
+          heading: Today's Job
+          task: Complete one Arena mission
+          description_1: Complete Oage-chan's request
+          description_2: to receive a reward!
+          claimed: Today's reward has already been claimed
+          completed: All of today's tasks are complete!
+          operation: Click
+          action: claim the reward
+          resolved_action: Click to claim the reward
   profession:
     selection:
       title: §8職業を選択してください

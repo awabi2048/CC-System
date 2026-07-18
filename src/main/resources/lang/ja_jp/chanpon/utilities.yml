@@ -10,7 +10,10 @@ chanpon_utilities:
     recovered: "&e未終了のFreeCam状態から身体の位置へ復旧しました。"
     unavailable: "&c現在FreeCamを開始できません。"
     not_active: "&cFreeCam中ではありません。"
-    usage: "&c使用法: /freecam [start|stop|status]"
+    usage: "&c使用法: /freecam [start|stop|status|toggle_shortcut]"
+    shortcut:
+      enabled: "&aFreeCamのショートカットを有効にしました。"
+      disabled: "&eFreeCamのショートカットを無効にしました。"
     status:
       active: "&aFreeCam中です。"
       inactive: "&7FreeCam中ではありません。"
