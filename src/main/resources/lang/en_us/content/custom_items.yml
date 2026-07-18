@@ -91,6 +91,9 @@ custom_items:
     gathering_sickle:
       name: "§aGathering Sickle"
       description: "A specialist tool for harvesting inspected natural vegetation."
+    cultivation_hoe:
+      name: "§aCultivation Hoe"
+      description: "A specialist tool for Farmers with area tilling or harvesting enabled."
   minigame:
     manager:
       name: §6Mini-game Manager

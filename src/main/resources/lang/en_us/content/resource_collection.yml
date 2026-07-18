@@ -9,6 +9,7 @@ resource_collection:
     in_use: "§cAnother player is already processing this resource."
     protected: "§cThis location is protected and cannot be processed."
     natural_vegetation_required: "§cNatural vegetation in a READY resource world is required."
+    ready_world_required: "§cThis operation is available only in a READY resource world."
   chisel:
     started: "§bStrike the displayed target three times with the chisel."
     completed: "§aChisel mining complete. Special materials: {amount}"
@@ -22,3 +23,6 @@ resource_collection:
     inspected: "§aNatural vegetation inspected. Targets: {count}"
     completed: "§aGathered {amount} specialist plants."
     cooldown: "§7Wait before inspecting vegetation again."
+  cultivation:
+    harvested: "§aHarvested {count} mature crops."
+    tilled: "§aTilled {count} blocks of soil."

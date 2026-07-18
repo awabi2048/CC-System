@@ -91,6 +91,9 @@ custom_items:
     gathering_sickle:
       name: "§a採集鎌"
       description: "鑑定済みの天然植生から特殊素材を採取する専門道具。"
+    cultivation_hoe:
+      name: "§a栽培用のクワ"
+      description: "範囲耕作・範囲収穫を有効にした農家が使用する専門道具。"
   minigame:
     manager:
       name: §6ミニゲーム管理アイテム
