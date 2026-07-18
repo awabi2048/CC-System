@@ -1,0 +1,21 @@
+chanpon_utilities:
+  common:
+    prefix: "&7[&bChanpon-Utilities&7] "
+  unlink:
+    success: "&aUnlinked from the lectern"
+    already: "&eThis bookshelf is not linked"
+  freecam:
+    started: "&aFreeCam started. Press Shift twice to stop."
+    stopped: "&aReturned to your body."
+    recovered: "&eRecovered your body from an unfinished FreeCam session."
+    unavailable: "&cFreeCam cannot be started right now."
+    not_active: "&cFreeCam is not active."
+    usage: "&cUsage: /freecam [start|stop|status]"
+    status:
+      active: "&aFreeCam is active."
+      inactive: "&7FreeCam is not active."
+    body:
+      damaged: "&cFreeCam stopped because your body was attacked."
+    item:
+      name: "&bFreeCam Activator"
+      lore: "&7Use to start FreeCam."

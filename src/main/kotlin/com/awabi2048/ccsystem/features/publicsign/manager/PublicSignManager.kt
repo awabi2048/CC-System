@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.time.DatePolicy
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
 import org.bukkit.configuration.file.YamlConfiguration
@@ -17,7 +18,7 @@ object PublicSignManager {
     const val MARKER_TEXT = "[PublicSign]"
 
     data class SignLocation(
-        val world: String,
+        val worldKey: String,
         val x: Int,
         val y: Int,
         val z: Int
@@ -52,7 +53,7 @@ object PublicSignManager {
         for (key in section.getKeys(false)) {
             val signSection = section.getConfigurationSection(key) ?: continue
 
-            val world = signSection.getString("world") ?: continue
+            val worldKey = signSection.getString("world_key") ?: continue
             val x = signSection.getInt("x")
             val y = signSection.getInt("y")
             val z = signSection.getInt("z")
@@ -75,7 +76,7 @@ object PublicSignManager {
                 continue
             }
 
-            val location = SignLocation(world, x, y, z)
+            val location = SignLocation(worldKey, x, y, z)
             val content = normalizeContent(signSection.getStringList("content"))
 
             signs[location] = PublicSignData(location, content, owner, expireDate)
@@ -87,7 +88,7 @@ object PublicSignManager {
 
         for ((location, data) in signs) {
             val basePath = "signs.${toKey(location)}"
-            config.set("$basePath.world", location.world)
+            config.set("$basePath.world_key", location.worldKey)
             config.set("$basePath.x", location.x)
             config.set("$basePath.y", location.y)
             config.set("$basePath.z", location.z)
@@ -131,8 +132,8 @@ object PublicSignManager {
         save()
     }
 
-    fun toLocation(world: String, x: Int, y: Int, z: Int): SignLocation {
-        return SignLocation(world, x, y, z)
+    fun toLocation(worldKey: String, x: Int, y: Int, z: Int): SignLocation {
+        return SignLocation(worldKey, x, y, z)
     }
 
     fun updateDay(today: LocalDate = LocalDate.now()): Int {
@@ -164,7 +165,8 @@ object PublicSignManager {
     }
 
     private fun resetSign(location: SignLocation) {
-        val world = Bukkit.getWorld(location.world) ?: return
+        val key = NamespacedKey.fromString(location.worldKey) ?: return
+        val world = Bukkit.getWorld(key) ?: return
         val block = world.getBlockAt(location.x, location.y, location.z)
         val state = block.state
         if (state !is Sign) {
@@ -180,7 +182,8 @@ object PublicSignManager {
     }
 
     private fun updateMarkerColor(location: SignLocation, marker: String) {
-        val world = Bukkit.getWorld(location.world) ?: return
+        val key = NamespacedKey.fromString(location.worldKey) ?: return
+        val world = Bukkit.getWorld(key) ?: return
         val block = world.getBlockAt(location.x, location.y, location.z)
         val state = block.state
         if (state !is Sign) {
@@ -192,7 +195,7 @@ object PublicSignManager {
     }
 
     private fun toKey(location: SignLocation): String {
-        return "${location.world};${location.x};${location.y};${location.z}"
+        return "${location.worldKey};${location.x};${location.y};${location.z}"
     }
 
     private fun normalizeContent(content: List<String>): List<String> {

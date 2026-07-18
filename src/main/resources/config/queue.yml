@@ -10,3 +10,4 @@ chunk_task_queue:
 
   # キューデータの保存ファイル名（plugins/CC-System/ 配下）
   queue_data_file: "data/queue/queue_data.yml"
+config_version: 1

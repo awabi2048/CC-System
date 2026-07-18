@@ -103,7 +103,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                         // プレイヤーの音楽を即座に更新
                         val musicListener = CCSystem.instance.musicListener
                         if (newValue) {
-                            musicListener.playMusic(player, player.world.name)
+                            musicListener.playMusic(player, player.world.key.toString())
                         } else {
                             musicListener.stopMusic(player)
                         }

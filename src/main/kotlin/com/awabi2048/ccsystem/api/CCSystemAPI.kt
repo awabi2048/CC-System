@@ -1,11 +1,16 @@
 package com.awabi2048.ccsystem.api
 
+import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.item.ItemGrantService
+import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.world.WorldDirectoryService
+import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import org.bukkit.World
@@ -82,9 +87,21 @@ interface CCSystemAPI {
 
     fun getMenuNavigationService(): MenuNavigationService
 
+    fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService
+
     fun getMenuSoundService(): MenuSoundService
 
     fun getPlayerInteractionClaimService(): PlayerInteractionClaimService
+
+    fun getConfigSchemaService(): ConfigSchemaService
+
+    fun getItemGrantService(): ItemGrantService
+
+    fun getWorldIdentityService(): WorldIdentityService
+
+    fun getWorldDirectoryService(): WorldDirectoryService
+
+    fun getSoundResolutionService(): SoundResolutionService
 
     /**
      * 指定ワールドがCC-System管理の資源ワールドか判定します。

@@ -143,7 +143,7 @@ class RentalAreaListener : Listener {
             openContractDialog(
                 player = player,
                 areaId = area.id,
-                worldName = area.world,
+                worldName = area.worldKey,
                 days = days,
                 hand = event.hand ?: EquipmentSlot.HAND
             )

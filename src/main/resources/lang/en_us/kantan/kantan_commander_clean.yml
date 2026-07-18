@@ -62,9 +62,6 @@ kantan_commander_clean:
     amplifier: "Amplifier"
   message:
     player_not_found: "Player not found."
-    disk_created: "Gave {name} to {player}."
-    usage_disk_give: "/kankoma disk give <player> [name]"
-    help_disk_give: "/kankoma disk give <player> [name] - Give a disk"
     help_programs: "/kankoma programs - Open the program list"
     help_placed: "/kankoma placed - Show placed disks"
     help_reload: "/kankoma reload - Reload configuration"

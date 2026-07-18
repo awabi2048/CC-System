@@ -1,0 +1,20 @@
+management:
+  usage: "§e使用法: /cc <config|give|menu>"
+  no_permission: "§cこの操作を実行する権限がありません。"
+  player_not_found: "§c対象プレイヤーが見つかりません: {player}"
+  config:
+    usage: "§e使用法: /cc config <status|check|migrate|reload> [plugin]"
+    none: "§e登録済みのConfigがありません。"
+    line: "{color}[{owner}] {file} {detected}->{required} {state} {message}"
+  give:
+    usage: "§e使用法: /cc give <target> <item-id> [amount] [引数...]"
+    success: "§a{player}へ{item}を付与しました。付与: {granted}、ドロップ: {dropped}"
+    failed: "§c{player}への{item}付与に失敗しました: {reason}"
+  menu:
+    usage: "§e使用法: /cc menu <owner:id> [target] [key=value...]"
+    unknown: "§c公開メニューが見つかりません: {menu}"
+    target_required: "§c対象プレイヤーを指定してください。"
+    self_only: "§cこのメニューは実行者本人にだけ開けます。"
+    invalid_argument: "§cメニュー引数が不正です: {argument}"
+    success: "§a{player}へ{menu}を開きました。"
+    failed: "§c{player}へ{menu}を開けませんでした。"

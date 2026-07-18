@@ -25,7 +25,7 @@ class MusicListener : Listener {
 
     @EventHandler
     fun onWorldChange(event: PlayerChangedWorldEvent) {
-        playMusic(event.player, event.player.world.name)
+        playMusic(event.player, event.player.world.key.toString())
     }
 
     @EventHandler
@@ -33,7 +33,7 @@ class MusicListener : Listener {
         // ログイン直後は再生されないことがあるため、20tick遅延させる
         CCSystem.instance.server.scheduler.runTaskLater(CCSystem.instance, Runnable {
             if (event.player.isOnline) {
-                playMusic(event.player, event.player.world.name)
+                playMusic(event.player, event.player.world.key.toString())
             }
         }, 20L)
     }
@@ -54,7 +54,7 @@ class MusicListener : Listener {
      * 全プレイヤーの音楽を開始
      */
     fun startAllPlayersMusic() {
-        CCSystem.instance.server.onlinePlayers.forEach { playMusic(it, it.world.name) }
+        CCSystem.instance.server.onlinePlayers.forEach { playMusic(it, it.world.key.toString()) }
     }
 
     /**

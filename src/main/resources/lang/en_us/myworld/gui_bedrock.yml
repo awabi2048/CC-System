@@ -136,8 +136,11 @@ gui:
       world_count_label: World Count
       slots_description: Slots available for creating new MyWorlds. Use a World Seed to add more
       slots_bypass_description: You have permission to bypass the world limit
-      pending_label: Pending Invites and Requests
-      pending_value: '{count}'
-      latest_pending_label: Latest Received
-      action:
-        open_pending: Open pending invites and requests
+    pending_button:
+      display: Invites and Requests
+      description:
+      - Review received invitations and requests.
+      count_label: Pending
+      latest_label: Latest Received
+      none: None
+      action: Open list

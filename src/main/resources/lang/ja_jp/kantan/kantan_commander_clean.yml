@@ -62,9 +62,6 @@ kantan_commander_clean:
     amplifier: "強度"
   message:
     player_not_found: "プレイヤーが見つかりません。"
-    disk_created: "{player} に {name} を渡しました。"
-    usage_disk_give: "/kankoma disk give <player> [name]"
-    help_disk_give: "/kankoma disk give <player> [name] - ディスクを渡す"
     help_programs: "/kankoma programs - プログラム一覧を開く"
     help_placed: "/kankoma placed - 設置済みディスクを表示する"
     help_reload: "/kankoma reload - 設定を再読み込みする"

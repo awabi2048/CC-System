@@ -18,12 +18,12 @@ player_left_click_binder:
 # 特定のワールドに移動した際に音楽を再生します
 music:
   worlds:
-    world:
+    "minecraft:world":
       sound: "minecraft:music.game"
       volume: 1.0
       pitch: 1.0
       duration: 200
-    world_nether:
+    "minecraft:world_nether":
       sound: "minecraft:music.nether"
       volume: 1.0
       pitch: 1.0
@@ -70,3 +70,4 @@ dynamic_distance:
         delta: { view: -2, simulation: -1, send: -2 }
       - max_players: 999
         delta: { view: -4, simulation: -2, send: -4 }
+config_version: 2

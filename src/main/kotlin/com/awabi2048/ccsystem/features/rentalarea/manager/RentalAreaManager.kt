@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.time.LocalDate
@@ -18,14 +19,14 @@ object RentalAreaManager {
 
     data class RentalArea(
         val id: String,
-        val world: String,
+        val worldKey: String,
         val pos1: IntVector3,
         val pos2: IntVector3,
         val owner: UUID?,
         val expireDate: LocalDate?
     ) {
         fun isInside(location: Location): Boolean {
-            if (location.world?.name != world) {
+            if (location.world?.key?.toString() != worldKey) {
                 return false
             }
 
@@ -72,12 +73,12 @@ object RentalAreaManager {
                 continue
             }
 
-            val world = section.getString("world")
+            val worldKey = section.getString("world_key")
             val pos1Raw = section.getString("pos_1")
             val pos2Raw = section.getString("pos_2")
 
-            if (world.isNullOrBlank() || pos1Raw.isNullOrBlank() || pos2Raw.isNullOrBlank()) {
-                CCSystem.instance.logger.info("[RentalArea] area '$areaId' を読み飛ばしました: world/pos_1/pos_2 が不足")
+            if (worldKey.isNullOrBlank() || pos1Raw.isNullOrBlank() || pos2Raw.isNullOrBlank()) {
+                CCSystem.instance.logger.info("[RentalArea] area '$areaId' を読み飛ばしました: world_key/pos_1/pos_2 が不足")
                 continue
             }
 
@@ -93,7 +94,7 @@ object RentalAreaManager {
 
             areas[areaId] = RentalArea(
                 id = areaId,
-                world = world,
+                worldKey = worldKey,
                 pos1 = pos1,
                 pos2 = pos2,
                 owner = owner,
@@ -199,7 +200,8 @@ object RentalAreaManager {
     }
 
     private fun mockCleanupArea(area: RentalArea) {
-        val world = Bukkit.getWorld(area.world)
+        val key = NamespacedKey.fromString(area.worldKey)
+        val world = key?.let(Bukkit::getWorld)
         if (world == null) {
             CCSystem.instance.logger.info("[RentalArea] area '${area.id}' の撤去をスキップ: ワールド未ロード")
             return

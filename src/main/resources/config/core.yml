@@ -15,3 +15,4 @@ features:
   disable_global_sound_events: true
   delay_command: true
   npc_message: true
+config_version: 1

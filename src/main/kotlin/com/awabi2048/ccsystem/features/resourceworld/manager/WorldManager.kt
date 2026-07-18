@@ -9,6 +9,9 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.NamespacedKey
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.logging.Logger
@@ -49,6 +52,15 @@ object WorldManager {
 
     // 全エリア完了時刻 (ワールド名 -> 完了時刻)
     private val allCompleteTime = mutableMapOf<String, Long>()
+
+    private fun worldKey(world: World): String = world.key.toString()
+
+    private fun normalizeWorldIdentifier(identifier: String): String {
+        if (':' in identifier) {
+            return NamespacedKey.fromString(identifier)?.toString() ?: identifier
+        }
+        return Bukkit.getWorld(identifier)?.key?.toString() ?: NamespacedKey.minecraft(identifier).toString()
+    }
 
     /**
      * 資源ワールドを生成する
@@ -109,11 +121,12 @@ object WorldManager {
     }
 
     private fun findExistingResourceWorldFolderName(prefix: String): String? {
-        return Bukkit.getWorldContainer()
-            .listFiles()
-            ?.filter { it.isDirectory && it.name.startsWith(prefix) }
-            ?.maxByOrNull { it.name }
-            ?.name
+        return CCSystem.getAPI()
+            .getWorldDirectoryService()
+            .listByKeyPrefix(NamespacedKey.MINECRAFT, prefix)
+            .maxByOrNull { it.key.key }
+            ?.key
+            ?.key
     }
 
     private fun createResourceWorld(
@@ -126,7 +139,7 @@ object WorldManager {
         val dateStr = LocalDateTime.now().format(dateFormatter)
         val worldName = "${resourceConfig.baseName}.$variation.$dateStr"
 
-        val creator = WorldCreator(worldName)
+        val creator = WorldCreator(NamespacedKey.minecraft(worldName))
         when (type.lowercase()) {
             "nether" -> creator.environment(World.Environment.NETHER)
             "end" -> creator.environment(World.Environment.THE_END)
@@ -344,15 +357,17 @@ object WorldManager {
         val startTime = System.currentTimeMillis() - elapsedMillis
         val initialPercent = (startIndex * 100) / totalChunks.coerceAtLeast(1)
         val initialPriorityPercent = ((startIndex.coerceAtMost(priorityChunks.size)) * 100) / priorityChunks.size.coerceAtLeast(1)
-        pregenProgress[world.name] = initialPercent
-        priorityPregenProgress[world.name] = if (priorityCompleted) 100 else initialPriorityPercent
+        val worldKey = worldKey(world)
+        pregenProgress[worldKey] = initialPercent
+        priorityPregenProgress[worldKey] = if (priorityCompleted) 100 else initialPriorityPercent
         if (priorityCompleted) {
-            readyWorlds.add(world.name)
+            readyWorlds.add(worldKey)
         }
 
         // 状態の初期化・更新
         val state = PregenerationStateManager.PregenState(
-            worldName = world.name,
+            worldKey = worldKey,
+            runtimeName = world.name,
             borderSize = borderSize,
             currentIndex = startIndex,
             elapsedMillis = elapsedMillis,
@@ -375,13 +390,13 @@ object WorldManager {
                 }
 
                 index = endIdx
-                pregenTaskInfos[world.name]?.currentIndex = index
+                pregenTaskInfos[worldKey]?.currentIndex = index
 
                 // 進捗報告
                 val percent = (index * 100) / totalChunks
-                pregenProgress[world.name] = percent
+                pregenProgress[worldKey] = percent
                 val priorityPercent = ((index.coerceAtMost(priorityChunks.size)) * 100) / priorityChunks.size.coerceAtLeast(1)
-                priorityPregenProgress[world.name] = priorityPercent
+                priorityPregenProgress[worldKey] = priorityPercent
 
                 if (percent / 10 > lastReportedPercent / 10) {
                     logger.info("資源ワールド ${world.name} チャンク生成中... $percent%")
@@ -390,7 +405,7 @@ object WorldManager {
 
                 // 定期的に状態を保存（10%ごと）
                 if (percent / 10 > lastSavedPercent / 10) {
-                    PregenerationStateManager.updateState(world.name) {
+                    PregenerationStateManager.updateState(worldKey) {
                         it.currentIndex = index
                         it.elapsedMillis = (System.currentTimeMillis() - startTime).coerceAtLeast(0L)
                     }
@@ -399,9 +414,9 @@ object WorldManager {
                 }
 
                 // 優先ゾーン完了判定
-                if (index >= priorityChunks.size && !readyWorlds.contains(world.name)) {
-                    readyWorlds.add(world.name)
-                    priorityCompleteTime[world.name] = System.currentTimeMillis()
+                if (index >= priorityChunks.size && !readyWorlds.contains(worldKey)) {
+                    readyWorlds.add(worldKey)
+                    priorityCompleteTime[worldKey] = System.currentTimeMillis()
                     val msg = LanguageManager.getRawString(null, "pregen_priority_complete").replace("%world_name%", world.name)
                     broadcastLegacy(msg)
 
@@ -411,7 +426,7 @@ object WorldManager {
                     // 優先エリア生成完了後マクロの実行
                     MacroManager.executeAfterPriorityPregen(world.name)
 
-                    PregenerationStateManager.updateState(world.name) {
+                    PregenerationStateManager.updateState(worldKey) {
                         it.currentIndex = index
                         it.elapsedMillis = (System.currentTimeMillis() - startTime).coerceAtLeast(0L)
                         it.priorityCompleted = true
@@ -423,12 +438,12 @@ object WorldManager {
                 if (index >= totalChunks) {
                     val msg = LanguageManager.getRawString(null, "pregen_all_complete").replace("%world_name%", world.name)
                     logger.info(msg)
-                    pregenProgress.remove(world.name)
-                    priorityPregenProgress.remove(world.name)
-                    allCompleteTime[world.name] = System.currentTimeMillis()
-                    pregenTaskInfos.remove(world.name)
-                    pregenTasks.remove(world.name)
-                    PregenerationStateManager.remove(world.name)
+                    pregenProgress.remove(worldKey)
+                    priorityPregenProgress.remove(worldKey)
+                    allCompleteTime[worldKey] = System.currentTimeMillis()
+                    pregenTaskInfos.remove(worldKey)
+                    pregenTasks.remove(worldKey)
+                    PregenerationStateManager.remove(worldKey)
 
                     // 全エリア生成完了後マクロの実行
                     MacroManager.executeAfterAllPregen(world.name)
@@ -441,8 +456,8 @@ object WorldManager {
         // タスクを開始して情報を保存
         task.runTaskTimer(CCSystem.instance, 0L, delay)
         val taskInfo = PregenTaskInfo(task, startTime, borderSize, totalChunks, priorityChunks.size, startIndex)
-        pregenTaskInfos[world.name] = taskInfo
-        pregenTasks[world.name] = task
+        pregenTaskInfos[worldKey] = taskInfo
+        pregenTasks[worldKey] = task
     }
 
     private fun broadcastLegacy(message: String) {
@@ -451,24 +466,27 @@ object WorldManager {
 
     data class ChunkCoords(val x: Int, val z: Int)
 
-    fun isWorldReady(worldName: String): Boolean = readyWorlds.contains(worldName)
+    fun isWorldReady(worldName: String): Boolean = readyWorlds.contains(normalizeWorldIdentifier(worldName))
 
-    fun getPregenProgress(worldName: String): Int = pregenProgress[worldName] ?: 0
+    fun getPregenProgress(worldName: String): Int = pregenProgress[normalizeWorldIdentifier(worldName)] ?: 0
 
-    fun getPriorityPregenProgress(worldName: String): Int = priorityPregenProgress[worldName] ?: if (readyWorlds.contains(worldName)) 100 else 0
+    fun getPriorityPregenProgress(worldName: String): Int {
+        val worldKey = normalizeWorldIdentifier(worldName)
+        return priorityPregenProgress[worldKey] ?: if (readyWorlds.contains(worldKey)) 100 else 0
+    }
 
     /**
      * すべての事前生成タスクをキャンセルする
      */
     fun cancelAllPregenTasks() {
         logger.info("すべての事前生成タスクをキャンセルしています...")
-        for ((worldName, taskInfo) in pregenTaskInfos) {
-            PregenerationStateManager.updateState(worldName) {
+        for ((worldKey, taskInfo) in pregenTaskInfos) {
+            PregenerationStateManager.updateState(worldKey) {
                 it.currentIndex = taskInfo.currentIndex
                 it.elapsedMillis = (System.currentTimeMillis() - taskInfo.startTime).coerceAtLeast(0L)
             }
             taskInfo.runnable.cancel()
-            logger.info("ワールド $worldName の事前生成タスクをキャンセルしました。")
+            logger.info("ワールド $worldKey の事前生成タスクをキャンセルしました。")
         }
         pregenTaskInfos.clear()
         pregenTasks.clear()
@@ -490,18 +508,19 @@ object WorldManager {
                 continue
             }
 
-            val world = Bukkit.getWorld(state.worldName)
+            val key = NamespacedKey.fromString(state.worldKey)
+            val world = key?.let(Bukkit::getWorld)
             if (world == null) {
-                logger.warning("ワールド ${state.worldName} が見つかりません。事前生成をスキップします。")
-                PregenerationStateManager.remove(state.worldName)
+                logger.warning("ワールド ${state.worldKey} が見つかりません。事前生成をスキップします。")
+                PregenerationStateManager.remove(state.worldKey)
                 continue
             }
 
             if (state.priorityCompleted) {
-                readyWorlds.add(state.worldName)
+                readyWorlds.add(state.worldKey)
             }
 
-            logger.info("ワールド ${state.worldName} の事前生成をインデックス ${state.currentIndex} から再開します...")
+            logger.info("ワールド ${state.runtimeName} の事前生成をインデックス ${state.currentIndex} から再開します...")
             startPregeneration(world, state.borderSize, state.currentIndex, state.elapsedMillis, state.priorityCompleted, false)
         }
     }
@@ -515,23 +534,31 @@ object WorldManager {
             return
         }
         val prefix = "${resourceConfig.baseName}.$variation."
+        val directoryService = CCSystem.getAPI().getWorldDirectoryService()
+        val directoriesToRemove = directoryService.listByKeyPrefix(NamespacedKey.MINECRAFT, prefix)
 
         val worldsToRemove = Bukkit.getWorlds().filter { it.name.startsWith(prefix) }
+        if (worldsToRemove.isEmpty() && directoriesToRemove.isEmpty()) {
+            logger.warning("削除対象の資源ワールドが見つかりません: $prefix")
+            onComplete(false)
+            return
+        }
         
         for (world in worldsToRemove) {
             val worldName = world.name
-            readyWorlds.remove(worldName)
-            pregenProgress.remove(worldName)
-            priorityPregenProgress.remove(worldName)
+            val worldKey = worldKey(world)
+            readyWorlds.remove(worldKey)
+            pregenProgress.remove(worldKey)
+            priorityPregenProgress.remove(worldKey)
 
             // 事前生成タスクをキャンセル
-            pregenTaskInfos[worldName]?.runnable?.cancel()
-            pregenTaskInfos.remove(worldName)
-            pregenTasks[worldName]?.cancel()
-            pregenTasks.remove(worldName)
+            pregenTaskInfos[worldKey]?.runnable?.cancel()
+            pregenTaskInfos.remove(worldKey)
+            pregenTasks[worldKey]?.cancel()
+            pregenTasks.remove(worldKey)
 
             // 状態を削除
-            PregenerationStateManager.remove(worldName)
+            PregenerationStateManager.remove(worldKey)
             
             // プレイヤーを避難させる
             val evacuationCmd = ConfigManager.getEvacuationCommand()
@@ -551,23 +578,14 @@ object WorldManager {
             private val maxAttempts = 5
             
             override fun run() {
-                val worldContainer = Bukkit.getWorldContainer()
-                val files = worldContainer.listFiles() ?: run {
-                    this.cancel()
-                    logger.severe("ワールドコンテナの一覧取得に失敗したため、ワールド削除状態を確認できませんでした。")
-                    onComplete(false)
-                    return
-                }
                 var hasRemainingFiles = false
                 
-                for (file in files) {
-                    if (file.isDirectory && file.name.startsWith(prefix)) {
-                        if (deleteWorldFolder(file)) {
-                            logger.info("ワールドフォルダ ${file.name} を削除しました。")
-                        } else {
-                            hasRemainingFiles = true
-                            logger.warning("ワールドフォルダ ${file.name} の削除に失敗しました。リトライします (${attempts + 1}/${maxAttempts})")
-                        }
+                for (entry in directoriesToRemove) {
+                    if (deleteWorldDirectory(entry.directory)) {
+                        logger.info("ワールドディレクトリ ${entry.directory} を削除しました。")
+                    } else {
+                        hasRemainingFiles = true
+                        logger.warning("ワールドディレクトリ ${entry.directory} の削除に失敗しました。リトライします (${attempts + 1}/${maxAttempts})")
                     }
                 }
                 
@@ -588,28 +606,15 @@ object WorldManager {
         }.runTaskLater(CCSystem.instance, 20L) // 1秒後に最初の削除を試行
     }
 
-    private fun deleteWorldFolder(path: java.io.File): Boolean {
-        if (!path.exists()) return true
-        
-        val files = path.listFiles()
-        if (files != null) {
-            for (file in files) {
-                if (file.isDirectory) {
-                    if (!deleteWorldFolder(file)) {
-                        logger.warning("ディレクトリの削除に失敗しました: ${file.absolutePath}")
-                    }
-                } else {
-                    if (!file.delete()) {
-                        logger.warning("ファイルの削除に失敗しました: ${file.absolutePath}")
-                    }
-                }
+    private fun deleteWorldDirectory(path: Path): Boolean {
+        if (!Files.exists(path)) return true
+        return runCatching {
+            Files.walk(path).use { paths ->
+                paths.sorted(Comparator.reverseOrder()).forEach(Files::deleteIfExists)
             }
-        }
-        
-        return if (path.delete()) {
-            true
-        } else {
-            logger.warning("フォルダの削除に失敗しました: ${path.absolutePath}")
+            !Files.exists(path)
+        }.getOrElse {
+            logger.warning("ワールドディレクトリの削除に失敗しました: $path (${it.message})")
             false
         }
     }
@@ -619,15 +624,16 @@ object WorldManager {
      */
     fun loadExistingWorlds() {
         logger.info("既存の資源ワールドをスキャンしています...")
-        val worldContainer = Bukkit.getWorldContainer()
-        val files = worldContainer.listFiles() ?: return
-        
         val resourceConfigs = ConfigManager.getAllResourceConfigs()
-        val worldsToLoad = mutableMapOf<String, java.io.File>() // "baseName.variation" -> latest folder
+        val directoryService = CCSystem.getAPI().getWorldDirectoryService()
+        val worldsToLoad = mutableMapOf<String, com.awabi2048.ccsystem.api.world.WorldDirectoryEntry>()
 
-        for (file in files) {
-            if (!file.isDirectory) continue
-            val nameParts = file.name.split(".")
+        val entries = resourceConfigs.values
+            .flatMap { config -> directoryService.listByKeyPrefix(NamespacedKey.MINECRAFT, "${config.baseName}.") }
+            .distinctBy { it.key }
+        for (entry in entries) {
+            val worldName = entry.key.key
+            val nameParts = worldName.split(".")
             if (nameParts.size != 3) continue
 
             val baseName = nameParts[0]
@@ -640,20 +646,19 @@ object WorldManager {
 
             val key = "$baseName.$variation"
             val existing = worldsToLoad[key]
-            if (existing == null || file.name > existing.name) {
-                // 古い方は削除対象（または単に無視）
+            if (existing == null || worldName > existing.key.key) {
                 if (existing != null) {
-                    logger.info("古い資源ワールド ${existing.name} をスキップします。")
+                    logger.info("古い資源ワールド ${existing.key.key} をスキップします。")
                 }
-                worldsToLoad[key] = file
+                worldsToLoad[key] = entry
             }
         }
 
-        for ((key, folder) in worldsToLoad) {
-            val worldName = folder.name
-            if (Bukkit.getWorld(worldName) == null) {
+        for ((key, entry) in worldsToLoad) {
+            val worldName = entry.key.key
+            if (Bukkit.getWorld(entry.key) == null) {
                 logger.info("既存の資源ワールド $worldName をロードしています...")
-                val creator = WorldCreator(worldName)
+                val creator = WorldCreator(entry.key)
                 
                 // 環境設定の復元
                 val type = resourceConfigs.entries.find { key.startsWith(it.value.baseName) }?.key ?: "normal"
@@ -664,17 +669,19 @@ object WorldManager {
                 }
                 
                 if (creator.createWorld() != null) {
-                    readyWorlds.add(worldName)
-                    pregenProgress[worldName] = 100 // 既存ワールドは100%完了とみなす
+                    val worldKey = entry.key.toString()
+                    readyWorlds.add(worldKey)
+                    pregenProgress[worldKey] = 100 // 既存ワールドは100%完了とみなす
                     logger.info("資源ワールド $worldName のロードに成功しました。")
-                    priorityPregenProgress[worldName] = 100
+                    priorityPregenProgress[worldKey] = 100
                 } else {
                     logger.severe("資源ワールド $worldName のロードに失敗しました。")
                 }
             } else {
-                readyWorlds.add(worldName)
-                pregenProgress[worldName] = 100 // 既存ワールドは100%完了とみなす
-                priorityPregenProgress[worldName] = 100
+                val worldKey = entry.key.toString()
+                readyWorlds.add(worldKey)
+                pregenProgress[worldKey] = 100 // 既存ワールドは100%完了とみなす
+                priorityPregenProgress[worldKey] = 100
             }
         }
     }
@@ -713,17 +720,18 @@ object WorldManager {
             return false
         }
 
-        val task = pregenTasks[world.name]
+        val worldKey = worldKey(world)
+        val task = pregenTasks[worldKey]
         if (task != null) {
-            pregenTaskInfos[world.name]?.let { taskInfo ->
-                PregenerationStateManager.updateState(world.name) {
+            pregenTaskInfos[worldKey]?.let { taskInfo ->
+                PregenerationStateManager.updateState(worldKey) {
                     it.currentIndex = taskInfo.currentIndex
                     it.elapsedMillis = (System.currentTimeMillis() - taskInfo.startTime).coerceAtLeast(0L)
                 }
                 PregenerationStateManager.save()
             }
             task.cancel()
-            pregenTasks.remove(world.name)
+            pregenTasks.remove(worldKey)
             logger.info("資源ワールド ${world.name} の事前読み込みを中断しました。")
             return true
         }
@@ -743,10 +751,11 @@ object WorldManager {
         }
 
         // 事前読み込み中なら中断
-        val task = pregenTasks[world.name]
+        val worldKey = worldKey(world)
+        val task = pregenTasks[worldKey]
         if (task != null) {
             task.cancel()
-            pregenTasks.remove(world.name)
+            pregenTasks.remove(worldKey)
             logger.info("資源ワールド ${world.name} の事前読み込みを中断しました。")
         }
 
@@ -757,17 +766,18 @@ object WorldManager {
             player.sendMessage(LanguageManager.getMessage(player, "resource.returned_on_close"))
         }
 
-        readyWorlds.remove(world.name)
-        pregenProgress.remove(world.name)
-        priorityPregenProgress.remove(world.name)
-        priorityCompleteTime.remove(world.name)
-        allCompleteTime.remove(world.name)
+        readyWorlds.remove(worldKey)
+        pregenProgress.remove(worldKey)
+        priorityPregenProgress.remove(worldKey)
+        priorityCompleteTime.remove(worldKey)
+        allCompleteTime.remove(worldKey)
 
         logger.info("ワールド ${world.name} を閉鎖しました。")
         return true
     }
 
     fun getPregenTasks(): Map<String, PregenTaskInfo> = pregenTaskInfos.toMap()
-    fun getPriorityCompleteTime(worldName: String): Long? = priorityCompleteTime[worldName]
-    fun getAllCompleteTime(worldName: String): Long? = allCompleteTime[worldName]
+    fun getPregenTask(worldName: String): PregenTaskInfo? = pregenTaskInfos[normalizeWorldIdentifier(worldName)]
+    fun getPriorityCompleteTime(worldName: String): Long? = priorityCompleteTime[normalizeWorldIdentifier(worldName)]
+    fun getAllCompleteTime(worldName: String): Long? = allCompleteTime[normalizeWorldIdentifier(worldName)]
 }

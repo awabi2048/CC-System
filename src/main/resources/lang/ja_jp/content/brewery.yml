@@ -1,181 +1,621 @@
 brewery:
   garden:
-    planted: "&a{plant}を植えました。"
-    not_mature: "&eまだ収穫できません。"
-    harvested: "&a{plant}を収穫しました。"
+    planted: '&a{plant}を植えました。'
+    not_mature: '&eまだ収穫できません。'
+    harvested: '&a{plant}を収穫しました。'
   recipe:
     wheatbeer:
-      name: "小麦ビール"
+      name: 白ビール
       middle:
-        name: "若い麦汁"
-        description: "発酵を終えた麦の原液。"
+        name: 白ビール????
+        description: ????????????????
       final:
         low:
-          name: "荒い小麦ビール"
-          description: "苦みと雑味が残る。"
+          name: 臭い白ビール
+          description: ???????????????
         standard:
-          name: "小麦ビール"
-          description: "麦の香りと軽い苦みが整っている。"
+          name: 白ビール
+          description: ???????????????
         high:
-          name: "極上小麦ビール"
-          description: "きめ細かな泡と長い余韻がある。"
-    apple_cider:
-      name: "アップルサイダー"
+          name: 美味い白ビール
+          description: Refreshing
+    beer:
+      name: ビール
       middle:
-        name: "発酵りんご液"
-        description: "甘酸っぱい香りの発酵液。"
+        name: ビール????
+        description: ????????????????
       final:
         low:
-          name: "酸っぱいサイダー"
-          description: "酸味が強く、後味が荒い。"
+          name: 臭いビール
+          description: ???????????????
         standard:
-          name: "アップルサイダー"
-          description: "りんごの香りと甘みが釣り合っている。"
+          name: ビール
+          description: ???????????????
         high:
-          name: "黄金のアップルサイダー"
-          description: "華やかな香りと爽やかな余韻が続く。"
-    sake:
-      name: "日本酒"
+          name: 美味いビール
+          description: Crisp taste
+    darkbeer:
+      name: 黒ビール
       middle:
-        name: "酒母"
-        description: "米の代わりに種を使った試験的な酒母。"
+        name: 黒ビール????
+        description: ????????????????
       final:
         low:
-          name: "ぬか臭い日本酒"
-          description: "香りに雑味が残る。"
+          name: 臭い黒ビール
+          description: ???????????????
         standard:
-          name: "日本酒"
-          description: "穏やかな香りとすっきりした味わい。"
+          name: 黒ビール
+          description: ???????????????
         high:
-          name: "大吟醸"
-          description: "透明感のある香りと深い余韻がある。"
-    whiskey:
-      name: "ウイスキー"
+          name: 美味い黒ビール
+          description: Roasted taste
+    mead:
+      name: 蜂蜜酒
       middle:
-        name: "麦の蒸留原酒"
-        description: "刺激の強い蒸留直後の原酒。"
+        name: 蜂蜜酒????
+        description: ????????????????
       final:
         low:
-          name: "荒削りウイスキー"
-          description: "アルコールの刺激が強い。"
+          name: 不味い蜂蜜酒
+          description: ???????????????
         standard:
-          name: "ウイスキー"
-          description: "樽の香りと麦のコクがある。"
+          name: 蜂蜜酒
+          description: ???????????????
         high:
-          name: "スコッチウイスキー"
-          description: "燻香と長い余韻が調和している。"
+          name: 黄金色の蜂蜜酒
+          description: もしかして甘党？
+    ap_mead:
+      name: 甘いリンゴ蜂蜜酒
+      middle:
+        name: 甘いリンゴ蜂蜜酒????
+        description: ????????????????
+      final:
+        low:
+          name: リンゴ蜂蜜酒
+          description: Is there any Apple in this?
+        standard:
+          name: 甘いリンゴ蜂蜜酒
+          description: Refreshing taste of Apple
+        high:
+          name: 黄金色の甘いリンゴ蜂蜜酒
+          description: Sweetest hint of Apple
+    redwine:
+      name: 赤ワイン
+      middle:
+        name: 赤ワイン????
+        description: ????????????????
+      final:
+        low:
+          name: 赤ワイン
+          description: Harsh
+        standard:
+          name: 赤ワイン
+          description: ???????????????
+        high:
+          name: 赤ワイン
+          description: ???????????????
+    whitewine:
+      name: 白ワイン
+      middle:
+        name: 白ワイン????
+        description: ????????????????
+      final:
+        low:
+          name: 白ワイン
+          description: Harsh
+        standard:
+          name: 白ワイン
+          description: ???????????????
+        high:
+          name: 白ワイン
+          description: ???????????????
+    cidre:
+      name: シードル
+      middle:
+        name: シードル????
+        description: ????????????????
+      final:
+        low:
+          name: 渋いシードル
+          description: ???????????????
+        standard:
+          name: シードル
+          description: ???????????????
+        high:
+          name: 上質なシードル
+          description: ???????????????
+    apple_liquor:
+      name: アップルリキュール
+      middle:
+        name: アップルリキュール????
+        description: ????????????????
+      final:
+        low:
+          name: 低品質なアップルリキュール
+          description: Sour like Acid
+        standard:
+          name: アップルリキュール
+          description: ???????????????
+        high:
+          name: カルヴァドス
+          description: Good Apple Liquor
+    whisky:
+      name: ウイスキー
+      middle:
+        name: ウイスキー????
+        description: ????????????????
+      final:
+        low:
+          name: 低品質なウイスキー
+          description: Single Malt
+        standard:
+          name: ウイスキー
+          description: Single Malt
+        high:
+          name: スコッチウイスキー
+          description: Single Malt
     rum:
-      name: "ラム"
+      name: 辛口ラム酒
       middle:
-        name: "糖蜜の蒸留液"
-        description: "甘い香りが残る蒸留液。"
+        name: 辛口ラム酒????
+        description: ????????????????
       final:
         low:
-          name: "苦いラム"
-          description: "苦みが強く飲みにくい。"
+          name: 苦いラム酒
+          description: Too bitter to drink
         standard:
-          name: "スパイスラム"
-          description: "樽の香りと甘みがまとまっている。"
+          name: 辛口ラム酒
+          description: Spiced by the barrel
         high:
-          name: "黄金のラム"
-          description: "濃厚な甘みとスパイスの余韻が続く。"
+          name: 黄金色のラム酒
+          description: Spiced Gold
+    vodka:
+      name: ウォッカ
+      middle:
+        name: ウォッカ????
+        description: ????????????????
+      final:
+        low:
+          name: 粗末なウォッカ
+          description: Almost undrinkable
+        standard:
+          name: ウォッカ
+          description: ???????????????
+        high:
+          name: ロシアンウォッカ
+          description: ???????????????
+    gin:
+      name: ジン
+      middle:
+        name: ジン????
+        description: ????????????????
+      final:
+        low:
+          name: 薄いジン
+          description: ???????????????
+        standard:
+          name: ジン
+          description: With the / taste of juniper
+        high:
+          name: オールド・トム・ジン
+          description: Perfectly finished off / with juniper
+    tequila:
+      name: テキーラ
+      middle:
+        name: テキーラ????
+        description: ????????????????
+      final:
+        low:
+          name: メスカル
+          description: Tastes like spine !
+        standard:
+          name: テキーラ
+          description: Desert spirit
+        high:
+          name: テキーラ・アネホ
+          description: Desert spirit
+    absinthe:
+      name: アブサン
+      middle:
+        name: アブサン????
+        description: ????????????????
+      final:
+        low:
+          name: 劣化アブサン
+          description: ???????????????
+        standard:
+          name: アブサン
+          description: ???????????????
+        high:
+          name: 濃厚アブサン
+          description: High proof liquor
+    gr_absinthe:
+      name: 高品質なアブサン
+      middle:
+        name: 高品質なアブサン????
+        description: ????????????????
+      final:
+        low:
+          name: 高品質な劣化アブサン
+          description: Looks poisonous
+        standard:
+          name: 高品質なアブサン
+          description: Looks poisonous
+        high:
+          name: 翡翠色の高品質なアブサン
+          description: You'll see green Muse…
+    pork_soup:
+      name: 豚汁
+      middle:
+        name: 豚汁????
+        description: ????????????????
+      final:
+        low:
+          name: 薄味豚汁
+          description: ???????????????
+        standard:
+          name: 豚汁
+          description: ???????????????
+        high:
+          name: 金色に輝く豚汁
+          description: ???????????????
+    coffee:
+      name: コーヒー
+      middle:
+        name: コーヒー????
+        description: ????????????????
+      final:
+        low:
+          name: 酸っぱいコーヒー
+          description: Probably a week old
+        standard:
+          name: コーヒー
+          description: ???????????????
+        high:
+          name: コクのあるコーヒー
+          description: ???????????????
+    potato_soup:
+      name: ポテトスープ
+      middle:
+        name: ポテトスープ????
+        description: ????????????????
+      final:
+        low:
+          name: ポテトが固いスープ
+          description: ???????????????
+        standard:
+          name: ポテトスープ
+          description: ???????????????
+        high:
+          name: 美味しいポテトスープ
+          description: ???????????????
+    spirytus:
+      name: スピリタス
+      middle:
+        name: スピリタス????
+        description: ????????????????
+      final:
+        low:
+          name: ほぼエタノール
+          description: ???????????????
+        standard:
+          name: スピリタス
+          description: ???????????????
+        high:
+          name: 最高純度のスピリタス
+          description: ???????????????
+    apple_saida:
+      name: アップルサイダー
+      middle:
+        name: アップルサイダー????
+        description: ????????????????
+      final:
+        low:
+          name: 炭酸の抜けたアップルサイダー
+          description: ???????????????
+        standard:
+          name: アップルサイダー
+          description: ???????????????
+        high:
+          name: 強炭酸アップルサイダー
+          description: ???????????????
+    sake:
+      name: 日本酒
+      middle:
+        name: 日本酒????
+        description: ????????????????
+      final:
+        low:
+          name: ぬか臭い日本酒
+          description: ???????????????
+        standard:
+          name: 日本酒
+          description: ???????????????
+        high:
+          name: 美味い日本酒
+          description: 大吟醸
+    awamori:
+      name: 泡盛
+      middle:
+        name: 泡盛????
+        description: ????????????????
+      final:
+        low:
+          name: 低品質な泡盛
+          description: 沖縄伝統のお酒！
+        standard:
+          name: 泡盛
+          description: 沖縄伝統のお酒！
+        high:
+          name: 琉球泡盛
+          description: 沖縄伝統のお酒！
+    shochu:
+      name: 焼酎
+      middle:
+        name: 焼酎????
+        description: ????????????????
+      final:
+        low:
+          name: 低品質な焼酎
+          description: ???????????????
+        standard:
+          name: 焼酎
+          description: ???????????????
+        high:
+          name: 高級焼酎
+          description: 芳醇な香り
+    brandy:
+      name: ブランデー
+      middle:
+        name: ブランデー????
+        description: ????????????????
+      final:
+        low:
+          name: 低品質なブランデー
+          description: No Rank
+        standard:
+          name: ブランデー
+          description: V.S.O.P.
+        high:
+          name: コニャック
+          description: X.P.
+    vintagewine:
+      name: ヴィンテージワイン
+      middle:
+        name: ヴィンテージワイン????
+        description: ????????????????
+      final:
+        low:
+          name: 古臭いワイン
+          description: こわくて飲めない？
+        standard:
+          name: ヴィンテージワイン
+          description: もったいなくて飲めない？
+        high:
+          name: 至高のヴィンテージワイン
+          description: もったいなくて飲めない？
     moonshine:
-      name: "密造酒"
+      name: 密造酒
       middle:
-        name: "危険な蒸留原酒"
-        description: "刺激が強く、扱いを誤ると危険な原酒。"
+        name: 密造酒????
+        description: ????????????????
       final:
         low:
-          name: "粗悪な密造酒"
-          description: "鼻を刺す刺激と雑味がある。"
+          name: 粗悪な密造酒
+          description: 表に出せないヤバイお酒
         standard:
-          name: "密造酒"
-          description: "強い酒だが、辛うじて味が整っている。"
+          name: 密造酒
+          description: 表に出せないヤバイお酒
         high:
-          name: "熟成密造酒"
-          description: "危険な強さと複雑な香りを持つ。"
+          name: ムーンシャイン
+          description: 表に出せないヤバイお酒
+    rd_smoothie:
+      name: 赤い野菜スムージー
+      middle:
+        name: 赤い野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: 赤い野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: 赤い野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: 赤い野菜スムージー
+          description: 美味しくて健康になる！
+    yl_smoothie:
+      name: 黄色の野菜スムージー
+      middle:
+        name: 黄色の野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: 黄色の野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: 黄色の野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: 黄色の野菜スムージー
+          description: 美味しくて健康になる！
+    pl_smoothie:
+      name: 紫の野菜スムージー
+      middle:
+        name: 紫の野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: 紫の野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: 紫の野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: 紫の野菜スムージー
+          description: 美味しくて健康になる！
+    mix_smoothie:
+      name: ミックス野菜スムージー
+      middle:
+        name: ミックス野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: ミックス野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: ミックス野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: ミックス野菜スムージー
+          description: 美味しくて健康になる！
+    or_smoothie:
+      name: お日様色の野菜スムージー
+      middle:
+        name: お日様色の野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: お日様色の野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: お日様色の野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: お日様色の野菜スムージー
+          description: 美味しくて健康になる！
+    bl_smoothie:
+      name: 深紅の野菜スムージー
+      middle:
+        name: 深紅の野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: 深紅の野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: 深紅の野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: 深紅の野菜スムージー
+          description: 美味しくて健康になる！
+    vt_smoothie:
+      name: すみれ色の野菜スムージー
+      middle:
+        name: すみれ色の野菜スムージー????
+        description: ????????????????
+      final:
+        low:
+          name: すみれ色の野菜スムージー
+          description: 美味しくて健康になる！
+        standard:
+          name: すみれ色の野菜スムージー
+          description: 美味しくて健康になる！
+        high:
+          name: すみれ色の野菜スムージー
+          description: 美味しくて健康になる！
+    gr_smoothie:
+      name: グリーンスムージー
+      middle:
+        name: グリーンスムージー????
+        description: ????????????????
+      final:
+        low:
+          name: グリーンスムージー
+          description: デトックス効果で / 二日酔いに効果抜群！
+        standard:
+          name: グリーンスムージー
+          description: デトックス効果で / 二日酔いに効果抜群！
+        high:
+          name: グリーンスムージー
+          description: デトックス効果で / 二日酔いに効果抜群！
   item:
     name:
-      muddy: "§7泥状の{recipe}"
-      fermented: "§b{product}"
-      distilled: "§e{product}"
-      distilled_degraded: "§e{product}（蒸留失敗）"
-      aged: "§6{product} {stars}"
+      muddy: §7泥状の{recipe}
+      fermented: §b{product}
+      distilled: §e{product}
+      distilled_degraded: §e{product}（蒸留失敗）
+      aged: §6{product} {stars}
     data:
-      recipe: "レシピ"
-      stage: "段階"
-      quality: "品質"
-      final_quality: "最終品質"
-      distill_count: "蒸留回数"
-      alcohol: "アルコール"
-      rating: "評価"
+      recipe: レシピ
+      stage: 段階
+      quality: 品質
+      final_quality: 最終品質
+      distill_count: 蒸留回数
+      alcohol: アルコール
+      rating: 評価
     stage:
-      fermented: "発酵済み"
-      distilled: "蒸留済み"
-      aged: "熟成済み"
-      failed: "失敗"
+      fermented: 発酵済み
+      distilled: 蒸留済み
+      aged: 熟成済み
+      failed: 失敗
     filter:
-      name: "蒸留フィルター（試作品）"
+      name: 蒸留フィルター（試作品）
       description:
-        - "蒸留時間 -15%"
-        - "蒸留ごとに耐久値を1消費"
+      - 蒸留時間 -15%
+      - 蒸留ごとに耐久値を1消費
   drink:
-    completed: "&a{recipe}を飲みました。&7酔い: &e{alcohol}%"
+    completed: '&a{recipe}を飲みました。&7酔い: &e{alcohol}%'
   catalog:
-    title: "醸造図鑑 {page}/{pages}"
-    discovered: "&6醸造図鑑に新しく発見しました: &f{recipe}"
+    title: 醸造図鑑 {page}/{pages}
+    discovered: '&6醸造図鑑に新しく発見しました: &f{recipe}'
   process:
-    fermentation_started: "&a発酵を開始しました。&7（レシピ: {recipe}）"
-    fermentation_stopped: "&e発酵を停止しました。"
-    distillation_started: "&a蒸留を開始しました。"
-    distillation_stopped: "&e蒸留を停止しました。"
-    bottled: "&a瓶詰めが完了しました。"
-    aged: "&a熟成が完了しました。"
+    fermentation_started: '&a発酵を開始しました。&7（レシピ: {recipe}）'
+    fermentation_stopped: '&e発酵を停止しました。'
+    distillation_started: '&a蒸留を開始しました。'
+    distillation_stopped: '&e蒸留を停止しました。'
+    bottled: '&a瓶詰めが完了しました。'
+    aged: '&a熟成が完了しました。'
+    barrel_registered: '&a{wood}材の{size}樽を登録しました。'
   error:
-    no_fuel: "&c燃料がないため発酵を開始できません。"
-    no_ingredients: "&c材料スロットにアイテムを入れてください。"
-    recipe_not_found: "&c一致するレシピが見つかりません。"
-    invalid_input: "&cこの工程に投入できる醸造物ではありません。"
-    no_material: "&c醸造素材がないため開始できません。"
-    skill_required: "&cこのレシピを実行するには職業レベルまたはスキルが不足しています。"
-    barrel_size: "&c樽サイズが一致しません。再設置してください。"
-    machine_locked: "&cこの設備は他のプレイヤーが使用中です。"
-    level_required: "&c必要職業レベル不足: Lv{level} が必要です。"
-    skills_required: "&c必要スキル不足: {skills}"
-    not_started: "&c発酵が開始されていません。"
-    batch_limit: "&eこのバッチは最大3本までです。"
-    single_item: "&cスタックできません。1個ずつ入れてください。"
-    barrel_type: "&cこのレシピは{types}の看板樽のみ対応です。"
-    invalid_slot: "&cこのスロットには入れられません。"
+    no_fuel: '&c燃料がないため発酵を開始できません。'
+    no_ingredients: '&c材料スロットにアイテムを入れてください。'
+    recipe_not_found: '&c一致するレシピが見つかりません。'
+    invalid_input: '&cこの工程に投入できる醸造物ではありません。'
+    no_material: '&c醸造素材がないため開始できません。'
+    skill_required: '&cこのレシピを実行するには職業レベルまたはスキルが不足しています。'
+    barrel_size: '&c樽サイズが一致しません。再設置してください。'
+    machine_locked: '&cこの設備は他のプレイヤーが使用中です。'
+    level_required: '&c必要職業レベル不足: Lv{level} が必要です。'
+    skills_required: '&c必要スキル不足: {skills}'
+    not_started: '&c発酵が開始されていません。'
+    batch_limit: '&eこのバッチは最大3本までです。'
+    single_item: '&cスタックできません。1個ずつ入れてください。'
+    barrel_type: '&cこのレシピは{types}の看板樽のみ対応です。'
+    invalid_slot: '&cこのスロットには入れられません。'
+    barrel_structure: '&c樽構造が不完全です。位置: {location} / 必要: {expected} / 現在: {actual}'
+    barrel_overlap: '&c既存の樽と構造範囲が重なっています。'
   ui:
     title:
-      fermentation: "§8発酵"
-      distillation: "§8蒸留"
-      aging_big: "§8熟成（大樽）"
-      aging_small: "§8熟成（小樽）"
+      fermentation: §8発酵
+      distillation: §8蒸留
+      aging_big: §8熟成（大樽）
+      aging_small: §8熟成（小樽）
+      aging_minecraft: §8熟成（バニラ樽）
     action:
-      fermentation_start: "発酵開始"
-      fermentation_stop: "発酵停止"
-      distillation_start: "蒸留開始"
-      distillation_stop: "蒸留停止"
-      start: "開始"
-      stop: "停止"
+      fermentation_start: 発酵開始
+      fermentation_stop: 発酵停止
+      distillation_start: 蒸留開始
+      distillation_stop: 蒸留停止
+      start: 開始
+      stop: 停止
     data:
-      fire: "火力"
-      current: "現在の醸造物"
-      none: "なし"
-      step_elapsed: "工程経過"
-      session_runs: "今回の蒸留回数"
-      duration: "1回の蒸留時間"
-      items: "投入数"
+      fire: 火力
+      current: 現在の醸造物
+      none: なし
+      step_elapsed: 工程経過
+      session_runs: 今回の蒸留回数
+      duration: 1回の蒸留時間
+      items: 投入数
     fire:
-      high: "高"
-      medium: "中"
-      low: "低"
-      none: "未点火"
+      high: 高
+      medium: 中
+      low: 低
+      none: 未点火
     barrel:
-      big: "大樽"
-      small: "小樽"
-    aging_core: "熟成工程"
+      big: 大樽
+      small: 小樽
+      minecraft: バニラ樽
+    aging_core: 熟成工程
   intoxication:
-    status: "&7現在の酔い: &e{alcohol}%"
+    status: '&7現在の酔い: &e{alcohol}%'

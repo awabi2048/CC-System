@@ -120,7 +120,7 @@ object ScoreboardManager {
     }
 
     private fun calculateEstimatedMinutes(worldName: String, isPriority: Boolean): Int {
-        val taskInfo = WorldManager.getPregenTasks()[worldName]
+        val taskInfo = WorldManager.getPregenTask(worldName)
         if (taskInfo == null) return 0
 
         val progress = if (isPriority) {
