@@ -116,11 +116,15 @@ custom_items:
       - §7手に持って§eShiftを2回§7でメニューを開きます。
       - §7§eShift+スクロール§7で使用対象を切り替えます。
     storage_box_ui:
-      item_name: §6ストレージボックス
+      item_name: §6Storage Box
       none: なし
       state:
-        on: ON
-        off: OFF
+        item_lore:
+          on: オン
+          off: オフ
+        menu:
+          on: ON
+          off: OFF
       data:
         stored_item: 収納中
         count: 個数
@@ -129,21 +133,23 @@ custom_items:
         current: 現在
       option:
         selected: 現在選択中
+        unselected: 未選択
       description:
         registered_empty: 未格納（この種類を収納対象として指定済み）
       action:
         withdraw_stack: 1スタック取り出し
         withdraw_all: インベントリいっぱいまで取り出し
-        store_type: この種類を格納
-        register_and_store: 登録後に格納
-        store_all: 対象アイテムを格納
-        toggle: 切り替え
+        store_type: この種類をShiftクリックで格納できます
+        register_and_store: Shiftクリックで登録後に格納
+        store_all: インベントリ内の対象アイテムを格納
+        toggle: 切替
       menu:
         title: §8ストレージボックス
         register:
           name: §e収納対象を指定してください
           description_1: 中央の白スロットをクリックした状態で
           description_2: カーソルに持ったアイテムを種類登録できます
+          description_3: 登録後、Shiftクリックで格納できます
         store_all:
           name: §6インベントリ内一括収納
         auto_store:
@@ -596,6 +602,7 @@ custom_items:
       title: §bライセンスカード
       current_license: 現在のライセンス
       allowed_difficulty: 入場許可難易度
+      allowed_difficulty_suffix: まで
       next_header: 次のライセンスまで
       max_reached: '  §8- §a全ライセンスを解放済み'
       requirement:
@@ -625,7 +632,9 @@ custom_items:
     player:
       name_format: §6{player}
       mob_kills: 倒したモブ
-      barrier_restarts: 結界石の再起動回数
+      mob_kills_unit: 体
+      barrier_restarts: 結界石を再起動した回数
+      barrier_restarts_unit: 回
     recruitment:
       default_mission_title: アリーナミッション
       title: §6【{missionTitle}】

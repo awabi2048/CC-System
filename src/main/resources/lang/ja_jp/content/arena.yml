@@ -305,17 +305,21 @@ arena:
       confirm_title: §8モブドロップ交換 - 確認
       confirm_ok: §a交換する
       confirm_cancel: §cキャンセル
+      details_heading: 交換するモブドロップ
+      details_line: '{unit_price} × {amount} 個 = {subtotal}'
+      details_other: その他
     coming_soon: §7Coming Soon!
     license_card:
       title: §bライセンスカード
       current_license: 現在のライセンス
       allowed_difficulty: 入場許可難易度
+      allowed_difficulty_suffix: まで
       next_header: 次のライセンスまで
       max_reached: 全ライセンスを解放済み
       requirement:
-        mission_clear: ミッション完了数
-        mob_kill: モンスター討伐数（累計）
-        strong_enemy_kill: 強敵討伐数（累計）
+        mission_clear: ミッションを完了する
+        mob_kill: モンスターを討伐する（累計）
+        strong_enemy_kill: 強敵を討伐する（累計）
     info_title: §bInfo
     info:
       lines:
@@ -339,7 +343,9 @@ arena:
     player:
       name_format: §6{player}
       mob_kills: 倒したモブ
-      barrier_restarts: 結界石の再起動回数
+      mob_kills_unit: 体
+      barrier_restarts: 結界石を再起動した回数
+      barrier_restarts_unit: 回
     recruitment:
       default_mission_title: アリーナミッション
       title: §6【{missionTitle}】

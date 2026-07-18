@@ -303,11 +303,15 @@ arena:
       confirm_title: §8Mob Drop Exchange - Confirm
       confirm_ok: §aExchange
       confirm_cancel: §cCancel
+      details_heading: Mob drops to exchange
+      details_line: '{unit_price} × {amount} items = {subtotal}'
+      details_other: Other
     coming_soon: §7Coming Soon!
     license_card:
       title: §bLicense Card
       current_license: Current License
       allowed_difficulty: Allowed Difficulty
+      allowed_difficulty_suffix: or below
       next_header: To Next License
       max_reached: All licenses unlocked
       requirement:
@@ -337,7 +341,9 @@ arena:
     player:
       name_format: §6{player}
       mob_kills: Mobs Defeated
+      mob_kills_unit: mobs
       barrier_restarts: Barrier Restarts
+      barrier_restarts_unit: times
     recruitment:
       default_mission_title: Arena Mission
       title: §6【{missionTitle}】
