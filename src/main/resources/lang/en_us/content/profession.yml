@@ -1,6 +1,42 @@
 profession:
   level_up: §a{profession} leveled up! §eLv.{old} -> Lv.{new} §7(+{gained})
   new_unlock: 'New unlockable skills available ({count}): {skills} [Click to open skill tree]'
+  bossbar: '§6[{profession}] §7Lv. §e§l{level} §7(§a{current}§7/{required}§7)'
+  bossbar_with_gain: '§6[{profession}] §7Lv. §e§l{level} §7(§a{current}§7/{required} +§a{gained}§7)'
+  specialization:
+    tunnel_mining:
+      name: Tunnel Mining
+    precision_mining:
+      name: Precision Mining
+    felling:
+      name: Felling
+    wood_utilization:
+      name: Wood Utilization
+    cultivation:
+      name: Cultivation
+    wild_gathering:
+      name: Wild Gathering
+    rod_handling:
+      name: Rod Handling
+    fishing_ground_knowledge:
+      name: Fishing Ground Knowledge
+    fermentation:
+      name: Fermentation
+    distillation_aging:
+      name: Distillation and Aging
+    bulk_cooking:
+      name: Bulk Cooking
+    precision_cooking:
+      name: Precision Cooking
+  prestige:
+    executed: '§dCompleted a {profession} cycle. Total cycles: {level}.'
+    token:
+      name: §d§l{profession} Remembrance
+      description: 'Proof of mastering {profession}'
+      cycle: Cycle
+      owner: Owner
+      specialization: Specialization
+      representative_statistic: Representative record
   lumberjack:
     name: Lumberjack
     description: Gain profession experience by chopping wood
