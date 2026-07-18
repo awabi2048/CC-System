@@ -1,7 +1,16 @@
 resource_collection:
-  action:
-    harvest: "Resource harvest"
-    craft: "Resource crafting"
-  reward: "Gained {experience} {profession} experience from {action}."
   error:
-    disabled: "Resource collection is currently disabled."
+    miner_required: "§cThe chisel requires Miner level 5 or higher."
+    lumberjack_required: "§cWoodworking requires Lumberjack level 5 or higher."
+    natural_resource_required: "§cA naturally generated ore in a READY resource world is required."
+    placed_log_required: "§cA placed log in a READY resource world is required."
+    stripped_log_required: "§cTarget a stripped log or stripped stem."
+    in_use: "§cAnother player is already processing this resource."
+    protected: "§cThis location is protected and cannot be processed."
+  chisel:
+    started: "§bStrike the displayed target three times with the chisel."
+    completed: "§aChisel mining complete. Special materials: {amount}"
+    cancelled: "§7Chisel mining was cancelled. The ore was not changed."
+    timeout: "§7Chisel mining timed out and the ore was not changed."
+  woodworking:
+    completed: "§aWoodworking complete."

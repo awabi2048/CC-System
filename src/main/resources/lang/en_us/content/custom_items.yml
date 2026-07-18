@@ -34,12 +34,45 @@ custom_items:
     mica_flake:
       name: "§fMica Flake"
       description: "A thin mineral flake found alongside natural ore."
+    rock_salt:
+      name: "§fRock Salt"
+      description: "Salt crystals extracted from a mineral vein for cooking and processing."
+    calcite_fragment:
+      name: "§fCalcite Fragment"
+      description: "A carbonate mineral found alongside deep mineral veins."
+    sulfur:
+      name: "§eSulfur"
+      description: "A reactive mineral extracted from Nether mineral veins."
     resin:
       name: "§6Resin"
       description: "A tree-derived material used in processing and brewing."
     straw:
       name: "§eStraw"
       description: "A dried fiber material gathered from mature vegetation."
+    heartwood:
+      name: "§6Heartwood"
+      description: "Durable wood recovered from the main trunk of a generated tree."
+    bark:
+      name: "§6Bark"
+      description: "Outer bark recovered while carefully stripping a log."
+    timber_beam:
+      name: "§6Timber Beam"
+      description: "Precisely processed structural wood for tools and furniture."
+    chisel:
+      name: "§bMining Chisel"
+      description: "A specialist tool for extracting associated minerals from ore surfaces."
+    woodworking_hatchet:
+      name: "§6Woodworking Hatchet"
+      description: "A specialist tool that rough-processes placed stripped logs into planks."
+    woodworking_knife:
+      name: "§6Woodworking Knife"
+      description: "A specialist tool that precisely processes placed stripped logs into beams."
+    gathering_guide:
+      name: "§aGathering Guide"
+      description: "A specialist guide for inspecting natural vegetation."
+    gathering_sickle:
+      name: "§aGathering Sickle"
+      description: "A specialist tool for harvesting inspected natural vegetation."
   minigame:
     manager:
       name: §6Mini-game Manager

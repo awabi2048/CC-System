@@ -1,7 +1,16 @@
 resource_collection:
-  action:
-    harvest: "資源採取"
-    craft: "資源クラフト"
-  reward: "{action}により{profession}の経験値を{experience}獲得しました"
   error:
-    disabled: "資源収集機能は現在無効です"
+    miner_required: "§c鉱夫レベル5以上でのみノミを使用できます。"
+    lumberjack_required: "§c木こりレベル5以上でのみ木材加工を行えます。"
+    natural_resource_required: "§cREADY状態の資源ワールドにある自然生成鉱石が必要です。"
+    placed_log_required: "§cREADY状態の資源ワールドに設置した原木が必要です。"
+    stripped_log_required: "§c剥いだ原木または剥いだ幹を対象にしてください。"
+    in_use: "§cこの資源は他のプレイヤーが処理中です。"
+    protected: "§cこの場所は保護されているため処理できません。"
+  chisel:
+    started: "§b表示された目標をノミで3回狙ってください。"
+    completed: "§aノミ採掘が完了しました。特殊素材: {amount}個"
+    cancelled: "§7ノミ採掘を中断しました。鉱石は変更されていません。"
+    timeout: "§7制限時間を超えたため、ノミ採掘を中断しました。"
+  woodworking:
+    completed: "§a木材加工が完了しました。"
