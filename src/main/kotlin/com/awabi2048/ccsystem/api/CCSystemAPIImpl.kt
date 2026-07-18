@@ -9,6 +9,8 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.time.SharedClockService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.config.ConfigManager
@@ -23,6 +25,8 @@ import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
+import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
+import com.awabi2048.ccsystem.core.time.SharedClockServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
@@ -59,6 +63,10 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
             ?: "world"
     )
     private val soundResolutionService = SoundResolutionServiceImpl()
+    private val sharedClockService = SharedClockServiceImpl()
+    private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
+        Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
+    }
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -209,6 +217,10 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getWorldDirectoryService(): WorldDirectoryService = worldDirectoryService
 
     override fun getSoundResolutionService(): SoundResolutionService = soundResolutionService
+
+    override fun getSharedClockService(): SharedClockService = sharedClockService
+
+    override fun getContentActionDispatcher(): ContentActionDispatcher = contentActionDispatcher
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)

@@ -9,6 +9,8 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.time.SharedClockService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
@@ -102,6 +104,10 @@ interface CCSystemAPI {
     fun getWorldDirectoryService(): WorldDirectoryService
 
     fun getSoundResolutionService(): SoundResolutionService
+
+    fun getSharedClockService(): SharedClockService
+
+    fun getContentActionDispatcher(): ContentActionDispatcher
 
     /**
      * 指定ワールドがCC-System管理の資源ワールドか判定します。
