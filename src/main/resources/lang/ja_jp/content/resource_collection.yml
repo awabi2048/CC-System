@@ -21,6 +21,7 @@ resource_collection:
     completed: "§a一括処理が完了しました。対象: {count}個"
   gathering:
     inspected: "§a天然植生を鑑定しました。採集候補: {count}個"
+    no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
     completed: "§a特殊植物を{amount}個採集しました。"
     cooldown: "§7次の鑑定まで少し待ってください。"
   cultivation:

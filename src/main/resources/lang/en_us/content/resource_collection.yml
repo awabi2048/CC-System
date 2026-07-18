@@ -21,6 +21,7 @@ resource_collection:
     completed: "§aBatch operation complete. Targets: {count}"
   gathering:
     inspected: "§aNatural vegetation inspected. Targets: {count}"
+    no_discoveries: "§7Natural vegetation inspected, but no gathering candidates are currently available."
     completed: "§aGathered {amount} specialist plants."
     cooldown: "§7Wait before inspecting vegetation again."
   cultivation:

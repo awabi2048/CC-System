@@ -58,18 +58,6 @@ custom_items:
     timber_beam:
       name: "§6角材"
       description: "工具柄や家具の骨組みに使える精密加工材。"
-    mugwort:
-      name: "§aヨモギ"
-      description: "春の天然植生から採れる香りの強い野草。"
-    mint:
-      name: "§aミント"
-      description: "夏の天然植生から採れる清涼感のある香草。"
-    porcini:
-      name: "§6ポルチーニ茸"
-      description: "秋の天然植生から採れる香り高い食用菌。"
-    rosehip:
-      name: "§cローズヒップ"
-      description: "冬の天然植生から採れる赤い果実。"
     chisel:
       name: "§b鉱脈用ノミ"
       description: "鉱石の表面を狙って随伴鉱物を取り出す専門道具。"
