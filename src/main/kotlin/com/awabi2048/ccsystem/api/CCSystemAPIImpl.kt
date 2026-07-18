@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
 import com.awabi2048.ccsystem.api.time.SharedClockService
+import com.awabi2048.ccsystem.api.time.SeasonService
 import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
@@ -28,6 +29,7 @@ import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
 import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
 import com.awabi2048.ccsystem.core.time.SharedClockServiceImpl
+import com.awabi2048.ccsystem.core.time.SeasonServiceImpl
 import com.awabi2048.ccsystem.core.resource.ResourceWorldLifecycleRuntime
 import com.awabi2048.ccsystem.core.resource.NaturalOriginRuntime
 import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
@@ -74,6 +76,11 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     )
     private val soundResolutionService = SoundResolutionServiceImpl()
     private val sharedClockService = SharedClockServiceImpl()
+    private val seasonService = SeasonServiceImpl(
+        sharedClockService,
+        File(dataFolder, "data/season/override.yml"),
+        Bukkit.getLogger()
+    )
     private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
         Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
     }
@@ -229,6 +236,8 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getSoundResolutionService(): SoundResolutionService = soundResolutionService
 
     override fun getSharedClockService(): SharedClockService = sharedClockService
+
+    override fun getSeasonService(): SeasonService = seasonService
 
     override fun getContentActionDispatcher(): ContentActionDispatcher = contentActionDispatcher
 

@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
 import com.awabi2048.ccsystem.api.time.SharedClockService
+import com.awabi2048.ccsystem.api.time.SeasonService
 import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
@@ -108,6 +109,8 @@ interface CCSystemAPI {
     fun getSoundResolutionService(): SoundResolutionService
 
     fun getSharedClockService(): SharedClockService
+
+    fun getSeasonService(): SeasonService
 
     fun getContentActionDispatcher(): ContentActionDispatcher
 
