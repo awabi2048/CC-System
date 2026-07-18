@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
 import com.awabi2048.ccsystem.api.time.SharedClockService
+import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.config.ConfigManager
@@ -27,6 +28,7 @@ import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
 import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
 import com.awabi2048.ccsystem.core.time.SharedClockServiceImpl
+import com.awabi2048.ccsystem.core.resource.ResourceWorldLifecycleRuntime
 import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
@@ -45,6 +47,11 @@ import org.bukkit.plugin.java.JavaPlugin
  * LanguageManagerおよびChunkTaskQueueManagerをラップして他のプラグインに機能を提供します
  */
 internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
+    init {
+        ResourceWorldLifecycleRuntime.initialize(dataFolder) { owner, failure ->
+            Bukkit.getLogger().warning("[CC-System][ResourceWorld] 購読者 $owner の処理に失敗しました: ${failure.message}")
+        }
+    }
     private val menuNavigationService = MenuNavigationServiceImpl(
         File(dataFolder, "data/gui/menu_routes.yml")
     )
@@ -221,6 +228,8 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getSharedClockService(): SharedClockService = sharedClockService
 
     override fun getContentActionDispatcher(): ContentActionDispatcher = contentActionDispatcher
+
+    override fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService = ResourceWorldLifecycleRuntime.service
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)
