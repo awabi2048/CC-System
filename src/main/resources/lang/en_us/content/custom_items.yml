@@ -58,9 +58,27 @@ custom_items:
     timber_beam:
       name: "§6Timber Beam"
       description: "Precisely processed structural wood for tools and furniture."
+    mugwort:
+      name: "§aMugwort"
+      description: "An aromatic wild herb gathered from spring vegetation."
+    mint:
+      name: "§aMint"
+      description: "A refreshing herb gathered from summer vegetation."
+    porcini:
+      name: "§6Porcini"
+      description: "An aromatic edible fungus gathered from autumn vegetation."
+    rosehip:
+      name: "§cRosehip"
+      description: "A red fruit gathered from winter vegetation."
     chisel:
       name: "§bMining Chisel"
       description: "A specialist tool for extracting associated minerals from ore surfaces."
+    mining_hammer:
+      name: "§bBatch Mining Hammer"
+      description: "A specialist tool for Miners with batch mining enabled."
+    felling_axe:
+      name: "§6Batch Felling Axe"
+      description: "A specialist tool for Lumberjacks with batch felling enabled."
     woodworking_hatchet:
       name: "§6Woodworking Hatchet"
       description: "A specialist tool that rough-processes placed stripped logs into planks."

@@ -2,11 +2,13 @@ resource_collection:
   error:
     miner_required: "§c鉱夫レベル5以上でのみノミを使用できます。"
     lumberjack_required: "§c木こりレベル5以上でのみ木材加工を行えます。"
+    farmer_required: "§c農家レベル5以上でのみ天然植生を鑑定できます。"
     natural_resource_required: "§cREADY状態の資源ワールドにある自然生成鉱石が必要です。"
     placed_log_required: "§cREADY状態の資源ワールドに設置した原木が必要です。"
     stripped_log_required: "§c剥いだ原木または剥いだ幹を対象にしてください。"
     in_use: "§cこの資源は他のプレイヤーが処理中です。"
     protected: "§cこの場所は保護されているため処理できません。"
+    natural_vegetation_required: "§cREADY状態の資源ワールドにある天然植生が必要です。"
   chisel:
     started: "§b表示された目標をノミで3回狙ってください。"
     completed: "§aノミ採掘が完了しました。特殊素材: {amount}個"
@@ -14,3 +16,9 @@ resource_collection:
     timeout: "§7制限時間を超えたため、ノミ採掘を中断しました。"
   woodworking:
     completed: "§a木材加工が完了しました。"
+  batch:
+    completed: "§a一括処理が完了しました。対象: {count}個"
+  gathering:
+    inspected: "§a天然植生を鑑定しました。採集候補: {count}個"
+    completed: "§a特殊植物を{amount}個採集しました。"
+    cooldown: "§7次の鑑定まで少し待ってください。"
