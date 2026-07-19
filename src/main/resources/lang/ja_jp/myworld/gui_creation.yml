@@ -30,7 +30,17 @@ gui:
     command_limit_reached: '§c[Warning] 対象プレイヤー（{player}）のワールド作成数が上限に達しているため、作成できません。(現在: {current}/{max})'
     template_item:
       action:
-        preview: プレビューを表示
+        details: 詳細を表示
+    template_detail:
+      title: テンプレート詳細
+      spawn_label: 作成時スポーン
+      use: このテンプレートを使用
+      use_action: ワールド名の入力へ進む
+      preview: テンプレートをプレビュー
+      preview_action: 登録されたスポーン位置から確認
+      error:
+        missing_directory: テンプレートのワールドデータが見つかりません。
+        missing_origin: 作成時スポーンが登録されていません。
     confirm:
       name: この内容で確定して作成
       world_name_label: ワールド名
@@ -67,6 +77,9 @@ gui:
       name_label: ワールド名
       type_label: 作成方法
       cost_label: 消費ポイント
+      remaining_points_label: 作成後の残りポイント
+      template_spawn_label: 作成時スポーン
+      change_template: テンプレートを変更
       select_action: アクションを選択
       action_create: 作成する
       action_preview: テンプレートをプレビュー
@@ -76,6 +89,11 @@ gui:
       cancel_button: 閉じる
   template_wizard:
     title: テンプレート作成ウィザード
+    status:
+      display: 登録内容
+      source_world: 登録元ワールド
+      template_id: テンプレートID
+      spawn: 作成時スポーン
     name_input:
       display: §eテンプレート名・IDの設定
       description:
@@ -97,17 +115,25 @@ gui:
       - §7現在の設定 {icon}
       action: 設定
     origin_set:
-      display: §e原点座標の設定
+      display: §e作成時スポーンの設定
       description:
-      - §7スポーン地点やオフセットの基準となる原点を設定します。
+      - §7現在位置を作成されたワールドのスポーンに設定します。
       - §7現在の設定 {origin}
-      action: 設定
+      action: 現在位置を作成時スポーンに設定
     save_confirm:
       display: §6テンプレートを保存・登録
       description:
-      - §7現在の設定でテンプレートを保存します。
-      warning: 既存のファイルは上書きされます。
-      action: 保存・登録
+      - §7現在のワールドをtemplates.ymlへ登録します。
+      - §7ワールドファイルのコピーは行いません。
+      action: テンプレートを登録
+    requirement:
+      display: 登録できません
+      name: テンプレート名とIDを設定してください。
+      spawn: 作成時スポーンを設定してください。
+      source_world: 作成時スポーンは登録元ワールド内で設定してください。
+    cancel:
+      display: 登録を中断
+      action: 変更を破棄して管理画面へ戻る
   world_seed_confirm:
     title: ワールドの種の使用
     question: ワールドの種を使用しますか？

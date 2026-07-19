@@ -30,7 +30,17 @@ gui:
     command_limit_reached: '§c[Warning] The target player ({player}) cannot create a world because the number of worlds he can create has reached the upper limit. (Currently: {current}/{max})'
     template_item:
       action:
-        preview: Show preview
+        details: Show details
+    template_detail:
+      title: Template Details
+      spawn_label: Creation Spawn
+      use: Use This Template
+      use_action: Continue to world name
+      preview: Preview Template
+      preview_action: Preview from the registered spawn
+      error:
+        missing_directory: The template world data could not be found.
+        missing_origin: No creation spawn is registered.
     confirm:
       name: Confirm and Create
       world_name_label: World name
@@ -67,6 +77,9 @@ gui:
       name_label: World Name
       type_label: Creation Type
       cost_label: Cost
+      remaining_points_label: Remaining points after creation
+      template_spawn_label: Creation spawn
+      change_template: Change Template
       select_action: Select Action
       action_create: Create World
       action_preview: Preview Template
@@ -76,6 +89,11 @@ gui:
       cancel_button: Close
   template_wizard:
     title: Template Creation Wizard
+    status:
+      display: Registration Details
+      source_world: Source world
+      template_id: Template ID
+      spawn: Creation spawn
     name_input:
       display: §eSet Template Name/ID
       description:
@@ -97,17 +115,25 @@ gui:
       - §7Current settings {icon}
       action: Configure
     origin_set:
-      display: §eSet Origin Location
+      display: §eSet Creation Spawn
       description:
-      - §7Set the origin that is the reference point for the spawn point and offset.
+      - §7Use your current location as the spawn of created worlds.
       - §7Current settings {origin}
-      action: Configure
+      action: Use current location as creation spawn
     save_confirm:
       display: §6Save and Register Template
       description:
-      - §7 Save the template with the current settings.
-      warning: Existing files will be overwritten.
-      action: Save and register
+      - §7Register the current world in templates.yml.
+      - §7World files are not copied.
+      action: Register template
+    requirement:
+      display: Cannot Register
+      name: Set the template name and ID.
+      spawn: Set the creation spawn.
+      source_world: Set the creation spawn inside the source world.
+    cancel:
+      display: Cancel Registration
+      action: Discard changes and return to administration
   world_seed_confirm:
     title: Use World Seed
     question: Use a World Seed?

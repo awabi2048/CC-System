@@ -25,6 +25,7 @@ messages:
   creation_cancelled: §cマイワールドの作成をキャンセルしました。
   creation_success: §aワールド作成完了！
   creation_failed: §c作成に失敗しました。
+  world_creation_processing: §aワールドを作成しています...
   world_not_found: §cワールドが見つかりませんでした。
   spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
@@ -123,6 +124,14 @@ messages:
   wizard_id_missing: §cIDが設定されていません。
   wizard_id_exists: §cそのIDは既に存在します。
   wizard_registered: §aテンプレート「{template}」を登録しました！
+  template_wizard_icon_help: §eインベントリ内のアイテムをクリックしてアイコンに設定してください。
+  template_wizard_source_changed: §c登録元ワールド内で作成時スポーンを設定してください。
+  template_wizard_spawn_set: §a現在位置を作成時スポーンに設定しました。
+  template_wizard_id_missing: §cテンプレートIDが設定されていません。
+  template_wizard_id_exists: §cそのテンプレートIDは既に存在します。
+  template_wizard_name_required: §cテンプレート名を入力してください。
+  template_wizard_name_set: '§aテンプレート名を設定しました: {name} (ID: {id})'
+  template_wizard_description_set: §aテンプレート説明を設定しました。
   oage_ganbaru_messages:
   - §eおあげちゃんがワールドを拡げてくれています...§7「よいしょ！」
   - §eおあげちゃんが境界線を押し広げています！

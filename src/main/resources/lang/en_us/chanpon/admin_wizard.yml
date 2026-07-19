@@ -2,6 +2,18 @@ chanpon:
   admin_wizard:
     title: Administrator World Creation
     select_template: Select a template
+    detail_content: |-
+      {description}
+
+      Creation spawn: {spawn}
+      Status: {status}
+    no_description: No description
+    unset: Not set
+    status_available: Available
+    status_unavailable: Unavailable due to incomplete configuration
+    use_template: Use this template
+    preview: Preview template
+    back: Back to template list
     input_name: Enter the world name
     name_placeholder: World name
     invalid_name: Enter a world name between 1 and 32 characters
@@ -10,6 +22,8 @@ chanpon:
       Owner: {owner}
       Template: {template}
       World name: {world}
+      Creation spawn: {spawn}
+      Cost: {cost}
     create: Create
     cancel: Cancel
     created: World created

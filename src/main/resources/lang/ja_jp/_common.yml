@@ -196,6 +196,10 @@ error:
   world_gate_item_required: §cワールドゲートアイテムを手に持った状態で確認してください。
   world_gate_insufficient_points: '§cポイントが不足しています。(必要: §6🛖 §e{required}§c / 現在: §6🛖 §e{current}§c / 不足: §6🛖 §e{shortage}§c)'
   preview_template_not_found: §cテンプレートが見つかりませんでした。
+  preview_template_invalid: §cこのテンプレートは設定不備のため利用できません。
+  template_directory_missing: §cテンプレートのワールドデータが見つかりません。
+  template_origin_missing: §cテンプレートに作成時スポーンが登録されていません。
+  template_copy_failed: §cテンプレートのコピーに失敗しました。
   preview_world_load_failed: §cプレビュー用ワールドのロードに失敗しました。
   target_not_in_myworld: §c対象のプレイヤーはマイワールド内にいません。
   target_offline: §c対象のプレイヤーはオフラインです
