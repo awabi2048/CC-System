@@ -28,3 +28,18 @@ content_management:
   change_started: '&6{feature}を{status}に変更し、CC-Contentを再初期化します...'
   change_success: '&a{feature}を{status}に変更しました'
   save_failed: '&cコンテンツ設定の保存に失敗しました: {reason}'
+  debug:
+    usage: '&e使用法: /ccc debug <clear_block_placement_data|placement_recording|clear_fishing_grounds|complete_oage_daily> ...'
+    unknown_mode: '&c不明なデバッグ項目です: {mode}'
+    placement_recording:
+      usage: '&e使用法: /ccc debug placement_recording <enable|disable|status>'
+      unavailable: '&cブロック配置記録の制御機能が利用できません'
+      status: '&7ブロック配置記録: {status}'
+      changed: '&aブロック配置記録を{status}にしました'
+      state:
+        enabled: '&a有効'
+        disabled: '&c無効'
+    fishing_ground:
+      usage: '&e使用法: /ccc debug clear_fishing_grounds'
+      unavailable: '&c天然の好漁場を管理する機能が利用できません'
+      cleared: '&a現在の天然の好漁場をすべて削除しました'
