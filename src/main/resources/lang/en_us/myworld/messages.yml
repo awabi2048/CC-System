@@ -170,6 +170,7 @@ messages:
   expand_complete: '§aExpansion complete! §7{level_before} §f→ §e§l{level_after}'
   expansion_reset_complete: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
   expansion_reset_success: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
+  expansion_reset_success_without_points: §aExpansion reset.
   expansion_step_back_success: §aWorld border stepped back by one level. §7{level_before} §f→ §e§l{level_after}
   expansion_step_back_unavailable: §cThere is no expansion history to step back.
   world_delete_start: §cDeleting world "{world}"...
@@ -244,6 +245,10 @@ messages:
   - '§7Cost: §6🛖 §e{required}'
   - '§7Current: §6🛖 §e{current}'
   - '§7After Place: §6🛖 §e{remaining}'
+  world_gate_confirm_body_without_points:
+  - §fThe world gate will be placed in this region.
+  - '§7Min: §f({min_x}, {min_y}, {min_z})'
+  - '§7Max: §f({max_x}, {max_y}, {max_z})'
   world_gate_place_cancelled: §eWorld gate placement was cancelled.
   world_gate_place_success: §aWorld gate placed successfully.
   world_gate_removed_refund: '§aWorld gate removed. Refunded §6🛖 §e{points} §ato owner §e{owner}§a. (Rate: §e{percent}%§a)'
