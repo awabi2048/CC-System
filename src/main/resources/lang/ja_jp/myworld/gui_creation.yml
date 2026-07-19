@@ -20,6 +20,9 @@ gui:
         name: ランダム生成
         lore:
         - ワールドをランダムに生成します。
+      cost_label: 消費ポイント
+      current_points_label: 現在ポイント
+      remaining_points_label: 作成後の残りポイント
       available: §a作成可能です！
       insufficient: §cポイントが足りません。(§6🛖 §e{shortage}不足)
     insufficient: §cポイントが足りません。(§6🛖 §e{shortage}不足)
@@ -80,6 +83,7 @@ gui:
       name_label: ワールド名
       type_label: 作成方法
       cost_label: 消費ポイント
+      current_points_label: 現在ポイント
       remaining_points_label: 作成後の残りポイント
       template_spawn_label: 作成時スポーン
       change_template: テンプレートを変更

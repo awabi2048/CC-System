@@ -20,6 +20,9 @@ gui:
         name: Random
         lore:
         - Generate a world randomly.
+      cost_label: Cost
+      current_points_label: Current points
+      remaining_points_label: Remaining points after creation
       available: §aAvailable
       insufficient: §cInsufficient points (§6🛖 §e{shortage} short)
     insufficient: §cInsufficient points (§6🛖 §e{shortage} short)
@@ -80,6 +83,7 @@ gui:
       name_label: World Name
       type_label: Creation Type
       cost_label: Cost
+      current_points_label: Current points
       remaining_points_label: Remaining points after creation
       template_spawn_label: Creation spawn
       change_template: Change Template
