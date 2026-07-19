@@ -1,4 +1,23 @@
 resource_collection:
+  display:
+    heading:
+      mineral: "Vein appraisal"
+      forest: "Forest product appraisal"
+      vegetation: "Vegetation appraisal"
+    data:
+      altitude: "Altitude"
+      region: "Region"
+      candidate_count: "Candidates"
+      collectible_items: "Collectible hints"
+      season: "Season"
+      uses: "Uses"
+      vegetation_group: "Vegetation group"
+    hint:
+      companion_minerals: "Companion minerals"
+      forest_products: "Bark, resin, nuts, and similar products"
+      seasonal_plants: "Plants available in the current season"
+      none: "None"
+    list_separator: ", "
   error:
     miner_required: "§cThe chisel requires Miner level 5 or higher."
     lumberjack_required: "§cWoodworking requires Lumberjack level 5 or higher."

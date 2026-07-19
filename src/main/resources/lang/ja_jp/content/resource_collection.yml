@@ -1,4 +1,23 @@
 resource_collection:
+  display:
+    heading:
+      mineral: "鉱脈鑑定"
+      forest: "林産物鑑定"
+      vegetation: "植生鑑定"
+    data:
+      altitude: "高度"
+      region: "地域"
+      candidate_count: "候補数"
+      collectible_items: "収集候補"
+      season: "季節"
+      uses: "用途"
+      vegetation_group: "植生群"
+    hint:
+      companion_minerals: "随伴鉱物"
+      forest_products: "樹皮・樹脂・木の実など"
+      seasonal_plants: "現在の季節に採れる植物"
+      none: "なし"
+    list_separator: "、"
   error:
     miner_required: "§c鉱夫レベル5以上でのみノミを使用できます。"
     lumberjack_required: "§c木こりレベル5以上でのみ木材加工を行えます。"

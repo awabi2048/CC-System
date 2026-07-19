@@ -104,6 +104,8 @@ fishing:
       resolved: "左クリックで魚の詳細を確認"
     hint:
       title: "この水場で釣れそうな魚"
+      candidates: "釣れそうな魚"
+      list_separator: "、"
       none: "現在の条件では魚の気配がありません。"
       not_water: "資源ワールドの水場を左クリックしてください。"
   detail:

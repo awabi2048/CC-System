@@ -104,6 +104,8 @@ fishing:
       resolved: "Left-click to view fish details"
     hint:
       title: "Fish that may be caught here"
+      candidates: "Likely fish"
+      list_separator: ", "
       none: "There are no signs of fish under the current conditions."
       not_water: "Left-click water in a resource world."
   detail:
