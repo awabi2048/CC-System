@@ -19,17 +19,9 @@ resource_collection:
       none: "なし"
     list_separator: "、"
   error:
-    miner_required: "§c鉱夫レベル5以上でのみノミを使用できます。"
-    lumberjack_required: "§c木こりレベル5以上でのみ木材加工を行えます。"
-    farmer_required: "§c農家レベル5以上でのみ天然植生を鑑定できます。"
-    natural_resource_required: "§cREADY状態の資源ワールドにある自然生成鉱石が必要です。"
-    placed_log_required: "§cREADY状態の資源ワールドに設置した原木が必要です。"
     stripped_log_required: "§c剥いだ原木または剥いだ幹を対象にしてください。"
     in_use: "§cこの資源は他のプレイヤーが処理中です。"
     protected: "§cこの場所は保護されているため処理できません。"
-    natural_vegetation_required: "§cREADY状態の資源ワールドにある天然植生が必要です。"
-    natural_tree_required: "§cREADY状態の資源ワールドにある自然生成樹木が必要です。"
-    ready_world_required: "§cREADY状態の資源ワールドでのみ使用できます。"
   chisel:
     started: "§b表示された目標をノミで3回狙ってください。"
     completed: "§aノミ採掘が完了しました。特殊素材: {amount}個"
@@ -59,7 +51,6 @@ resource_collection:
     inspected_detailed: "§a天然植生を鑑定しました。採集候補: {count}個 / 季節: {season} / 用途: {uses} / 植生群: {groups}"
     no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
     completed: "§a特殊植物を{amount}個採集しました。"
-    cooldown: "§7次の鑑定まで少し待ってください。"
     surface_depleted: "§7この区画の表層植物は採集済みです。回復するまで待ってください。"
     season:
       spring: "春"
@@ -71,7 +62,6 @@ resource_collection:
     inspected_exact: "§a樹木の周囲を鑑定しました。発見可能: {products}"
     no_discoveries: "§7樹木の周囲を鑑定しましたが、林産物は見つかりませんでした。"
     completed: "§a林産物を{amount}個採集しました。"
-    cooldown: "§7次の林産物鑑定まで少し待ってください。"
   cultivation:
     harvested: "§a成熟した作物を{count}個収穫しました。"
     tilled: "§a土を{count}ブロック耕しました。"
