@@ -75,10 +75,12 @@ fishing:
       water: "水場"
       weather: "天候傾向"
       time: "時間帯傾向"
+      season: "旬"
       level: "釣り人レベル"
       bait: "必要なエサ"
       anywhere: "どこでも"
       anytime: "いつでも"
+      year_round: "通年"
     water:
       shore: "岸に近い浅い水場"
       narrow: "川幅ほどの狭い水場"
@@ -92,6 +94,11 @@ fishing:
       day: "昼"
       dusk: "夕方"
       night: "夜"
+    season:
+      spring: "春"
+      summer: "夏"
+      autumn: "秋"
+      winter: "冬"
     biome:
       river: "川"
       frozen_river: "凍った川"

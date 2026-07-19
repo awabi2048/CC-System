@@ -75,10 +75,12 @@ fishing:
       water: "Water"
       weather: "Weather tendency"
       time: "Time tendency"
+      season: "Peak season"
       level: "Fisher level"
       bait: "Required bait"
       anywhere: "Anywhere"
       anytime: "Any time"
+      year_round: "Year-round"
     water:
       shore: "Shallow water near shore"
       narrow: "Narrow river-width water"
@@ -92,6 +94,11 @@ fishing:
       day: "Day"
       dusk: "Dusk"
       night: "Night"
+    season:
+      spring: "Spring"
+      summer: "Summer"
+      autumn: "Autumn"
+      winter: "Winter"
     biome:
       river: "River"
       frozen_river: "Frozen River"
