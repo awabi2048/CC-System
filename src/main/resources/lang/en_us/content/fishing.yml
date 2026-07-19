@@ -57,8 +57,8 @@ fishing:
     condition:
       biome: "Habitat"
       water: "Water"
-      weather: "Weather"
-      time: "Time"
+      weather: "Weather tendency"
+      time: "Time tendency"
       level: "Fisher level"
       bait: "Required bait"
       anywhere: "Anywhere"

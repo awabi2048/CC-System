@@ -57,8 +57,8 @@ fishing:
     condition:
       biome: "生息地"
       water: "水場"
-      weather: "天候"
-      time: "時間帯"
+      weather: "天候傾向"
+      time: "時間帯傾向"
       level: "釣り人レベル"
       bait: "必要なエサ"
       anywhere: "どこでも"
