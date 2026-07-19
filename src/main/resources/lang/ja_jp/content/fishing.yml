@@ -23,6 +23,18 @@ fishing:
       recover: "体勢を立て直して！"
   search:
     ready: "お目当てのものが釣れそうです"
+  ground:
+    created_nearby: "§7近くに魚の群れがいるようです"
+    created_direction: "§7{direction}の方角に魚の群れの気配がします"
+    direction:
+      north: "北"
+      north_east: "北東"
+      east: "東"
+      south_east: "南東"
+      south: "南"
+      south_west: "南西"
+      west: "西"
+      north_west: "北西"
   quality:
     common: "§e★§7☆☆"
     rare: "§e★★§7☆"

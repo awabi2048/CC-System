@@ -29,7 +29,7 @@ content_management:
   change_success: '&aChanged {feature} to {status}.'
   save_failed: '&cFailed to save the content setting: {reason}'
   debug:
-    usage: '&eUsage: /ccc debug <clear_block_placement_data|placement_recording|complete_oage_daily> ...'
+    usage: '&eUsage: /ccc debug <clear_block_placement_data|placement_recording|clear_fishing_grounds|complete_oage_daily> ...'
     unknown_mode: '&cUnknown debug mode: {mode}'
     placement_recording:
       usage: '&eUsage: /ccc debug placement_recording <enable|disable|status>'
@@ -39,3 +39,7 @@ content_management:
       state:
         enabled: '&aenabled'
         disabled: '&cdisabled'
+    fishing_ground:
+      usage: '&eUsage: /ccc debug clear_fishing_grounds'
+      unavailable: '&cNatural fishing ground management is unavailable.'
+      cleared: '&aRemoved all current natural fishing grounds.'

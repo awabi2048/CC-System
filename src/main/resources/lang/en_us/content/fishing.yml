@@ -23,6 +23,18 @@ fishing:
       recover: "Regain control!"
   search:
     ready: "Your target seems catchable here"
+  ground:
+    created_nearby: "§7A school of fish seems to be nearby."
+    created_direction: "§7You sense a school of fish to the {direction}."
+    direction:
+      north: "north"
+      north_east: "northeast"
+      east: "east"
+      south_east: "southeast"
+      south: "south"
+      south_west: "southwest"
+      west: "west"
+      north_west: "northwest"
   quality:
     common: "§e★§7☆☆"
     rare: "§e★★§7☆"
