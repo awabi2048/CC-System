@@ -2,13 +2,13 @@ fishing:
   caught: "釣り上げました！"
   no_catch: "§7このあたりには、魚の気配はなさそうです"
   error:
-    rod_broken: "§7この竿では、もう釣れそうにない。"
+    rod_broken: "§7釣り竿が壊れてしまいました...\n§7使い続けるには修理が必要です"
   failed:
-    cancelled: "§7魚に逃げられてしまったようだ。"
-    hook_timeout: "§7魚に逃げられてしまったようだ。"
-    no_rod: "§7魚に逃げられてしまったようだ。"
-    final_roll: "§7魚に逃げられてしまったようだ。"
-    invalid_water: "§7ここでは釣れそうにない。"
+    cancelled: "§7逃げられてしまいました..."
+    hook_timeout: "§7逃げられてしまいました..."
+    no_rod: "§7逃げられてしまいました..."
+    final_roll: "§7逃げられてしまいました..."
+    invalid_water: "§7ここでは何も釣れなさそうです"
   fight:
     hit_title: "§6アタリ！"
     input_java: "§7左クリックで下げる / 右クリックで上げる"
@@ -22,10 +22,10 @@ fishing:
       danger: "逃げられそうです！"
       recover: "体勢を立て直して！"
   search:
-    ready: "目当ての魚が釣れそうだ。"
+    ready: "お目当ての魚が釣れそうです"
   ground:
-    created_nearby: "§7近くに魚の群れがいるようだ。"
-    created_direction: "§7{direction}の方角に魚の群れの気配がする。"
+    created_nearby: "§7近くに魚の群れの気配を感じます！"
+    created_direction: "§7{direction}に魚の群れの気配を感じます！"
     direction:
       north: "北"
       north_east: "北東"
@@ -59,7 +59,7 @@ fishing:
   dictionary:
     item_required: "お魚辞典を手に持ち、右クリックして開いてください。"
     details_hidden: "詳細: ???"
-    discovered: "新しい魚をお魚辞典に記録しました。"
+    discovered: "新しい魚を辞典に登録しました！"
     description:
       cod: "冷たい水域にも広く生息する身近な魚。"
       salmon: "川と寒冷な海域を行き来する魚。"
@@ -148,7 +148,6 @@ fishing:
       candidates: "釣れそうな魚"
       list_separator: "、"
       none: "このあたりには、魚の気配はなさそうです"
-      not_water: "ここでは、水の様子を調べられそうにない。"
   detail:
     title: "お魚辞典・詳細"
     conditions: "捕獲条件"
