@@ -15,6 +15,7 @@ content_management:
     cooking: 料理
     fishing: 釣り
     resource_collection: 資源収集
+    seasonal: 季節イベント
     sukima_dungeon: スキマダンジョン
     party: パーティー
     minigame: ミニゲーム
