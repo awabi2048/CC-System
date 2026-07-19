@@ -292,15 +292,18 @@ messages:
   usage_stats: '§c使用法: /mwm stats <プレイヤー名> <項目> <get/set/add/remove> [値]'
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'
   command_disabled: '§cこのMWMコマンドは現在無効です。'
+  world_operation_locked: §cこのワールドは別の操作を処理中です。完了後にもう一度お試しください。
   migration:
-    approval_required: '§e旧ワールド {world} の移行にはロード承認が必要です: /mwm migration approve {uuid}'
-    world_data_missing: '§c{world} に対応するワールド設定がないためロードできません。'
-    approved: '§a{world} のロードと移行を承認しました。'
-    load_failed: '§c{world} のロードと移行に失敗しました。'
-    none_pending: §7承認待ちの旧ワールドはありません。
+    pending: '§e移行待ちの旧ワールド: {world} ({uuid})'
+    none_pending: §7移行対象の旧ワールドはありません。
     conflict: '§cワールド {world} の移行を拒否しました。旧構造と現行構造のディレクトリが両方存在します。'
-    usage: '§c使用法: /mwm migration list | approve <UUID> | reject <UUID>'
-    not_found: §c対象の旧ワールドが見つからないか、処理に失敗しました。
+    usage: '§c使用法: /mwm migration execute | status'
+    already_running: §eワールド移行はすでに実行中です。
+    console_confirm: '§e実行を確認するには /mwm migration execute confirm を入力してください。'
+    started: '§a{count}件の旧ワールドを移行キューへ登録しました。'
+    completed: §aワールド移行キューの処理が完了しました。
+    status_summary: '§e移行状態: {state} §7| 全体: {total} / 完了: {completed} / 待機: {waiting} / 再試行: {retries} / 失敗: {failed} / 処理中: {current}'
+    status_world: '§7- {world}: {status} / 試行 {attempts} / 最終エラー {error} / 更新 {updated}'
   seed_spawn:
     corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
     safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。

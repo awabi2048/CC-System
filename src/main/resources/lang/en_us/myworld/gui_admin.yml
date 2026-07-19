@@ -1,4 +1,10 @@
 gui:
+  migration:
+    confirm:
+      title: Confirm legacy world migration
+      summary: Legacy worlds will be processed sequentially
+      execute: Run migration
+      cancel: Cancel
   admin:
     title: Manage All Worlds
     info:

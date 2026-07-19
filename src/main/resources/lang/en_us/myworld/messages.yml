@@ -292,15 +292,18 @@ messages:
   usage_stats: '§cUsage: /mwm stats <player> <field> <action> [value]'
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
   command_disabled: '§cThis MWM command is disabled.'
+  world_operation_locked: §cAnother operation is active for this world. Try again after it finishes.
   migration:
-    approval_required: '§eLoading approval is required to migrate legacy world {world}: /mwm migration approve {uuid}'
-    world_data_missing: '§cCannot load {world} because its world settings are missing.'
-    approved: '§aApproved loading and migration of {world}.'
-    load_failed: '§cFailed to load and migrate {world}.'
-    none_pending: §7There are no legacy worlds awaiting approval.
+    pending: '§eLegacy world awaiting migration: {world} ({uuid})'
+    none_pending: §7There are no legacy worlds to migrate.
     conflict: '§cMigration of world {world} was rejected because both legacy and current directories exist.'
-    usage: '§cUsage: /mwm migration list | approve <UUID> | reject <UUID>'
-    not_found: §cThe legacy world was not found or the operation failed.
+    usage: '§cUsage: /mwm migration execute | status'
+    already_running: §eWorld migration is already running.
+    console_confirm: '§eTo confirm, run /mwm migration execute confirm.'
+    started: '§aQueued {count} legacy worlds for migration.'
+    completed: §aThe world migration queue has completed.
+    status_summary: '§eMigration: {state} §7| total: {total} / completed: {completed} / waiting: {waiting} / retry: {retries} / failed: {failed} / current: {current}'
+    status_world: '§7- {world}: {status} / attempts {attempts} / last error {error} / updated {updated}'
   seed_spawn:
     corrected: '§eThe configured spawn was unsafe and was moved to {x}, {y}, {z}.'
     safe_location_not_found: §cNo safe location was found near the configured spawn. Warp cancelled.
