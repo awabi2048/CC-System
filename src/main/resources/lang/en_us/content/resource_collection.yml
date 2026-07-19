@@ -9,6 +9,7 @@ resource_collection:
     in_use: "§cAnother player is already processing this resource."
     protected: "§cThis location is protected and cannot be processed."
     natural_vegetation_required: "§cNatural vegetation in a READY resource world is required."
+    natural_tree_required: "§cA naturally generated tree in a READY resource world is required."
     ready_world_required: "§cThis operation is available only in a READY resource world."
   chisel:
     started: "§bStrike the displayed target three times with the chisel."
@@ -24,6 +25,12 @@ resource_collection:
     no_discoveries: "§7Natural vegetation inspected, but no gathering candidates are currently available."
     completed: "§aGathered {amount} specialist plants."
     cooldown: "§7Wait before inspecting vegetation again."
+  forest:
+    inspected: "§aInspected the tree surroundings. Forest-product targets: {count}"
+    inspected_exact: "§aInspected the tree surroundings. Available: {products}"
+    no_discoveries: "§7Inspected the tree surroundings, but found no forest products."
+    completed: "§aCollected {amount} forest products."
+    cooldown: "§7Please wait before inspecting forest products again."
   cultivation:
     harvested: "§aHarvested {count} mature crops."
     tilled: "§aTilled {count} blocks of soil."

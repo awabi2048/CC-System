@@ -9,6 +9,7 @@ resource_collection:
     in_use: "§cこの資源は他のプレイヤーが処理中です。"
     protected: "§cこの場所は保護されているため処理できません。"
     natural_vegetation_required: "§cREADY状態の資源ワールドにある天然植生が必要です。"
+    natural_tree_required: "§cREADY状態の資源ワールドにある自然生成樹木が必要です。"
     ready_world_required: "§cREADY状態の資源ワールドでのみ使用できます。"
   chisel:
     started: "§b表示された目標をノミで3回狙ってください。"
@@ -24,6 +25,12 @@ resource_collection:
     no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
     completed: "§a特殊植物を{amount}個採集しました。"
     cooldown: "§7次の鑑定まで少し待ってください。"
+  forest:
+    inspected: "§a樹木の周囲を鑑定しました。林産物候補: {count}個"
+    inspected_exact: "§a樹木の周囲を鑑定しました。発見可能: {products}"
+    no_discoveries: "§7樹木の周囲を鑑定しましたが、林産物は見つかりませんでした。"
+    completed: "§a林産物を{amount}個採集しました。"
+    cooldown: "§7次の林産物鑑定まで少し待ってください。"
   cultivation:
     harvested: "§a成熟した作物を{count}個収穫しました。"
     tilled: "§a土を{count}ブロック耕しました。"

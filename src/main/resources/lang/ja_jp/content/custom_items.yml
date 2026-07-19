@@ -73,6 +73,12 @@ custom_items:
     woodworking_knife:
       name: "§6木工ナイフ"
       description: "設置した剥いだ原木を角材へ精密加工する専門道具。"
+    forest_guide:
+      name: "§6森林手帳"
+      description: "自然生成樹木の周囲を鑑定して林産物の候補を調べる専門道具。"
+    forest_knife:
+      name: "§6林産物採集ナイフ"
+      description: "鑑定済みの対象から林産物を追加採取する専門道具。"
     gathering_guide:
       name: "§a採集手帳"
       description: "天然植生を鑑定して採集候補を調べる専門道具。"

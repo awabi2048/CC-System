@@ -73,6 +73,12 @@ custom_items:
     woodworking_knife:
       name: "§6Woodworking Knife"
       description: "A specialist tool that precisely processes placed stripped logs into beams."
+    forest_guide:
+      name: "§6Forest Guide"
+      description: "A specialist guide for inspecting naturally generated trees for forest products."
+    forest_knife:
+      name: "§6Forest Product Knife"
+      description: "A specialist tool for collecting an additional product from an inspected target."
     gathering_guide:
       name: "§aGathering Guide"
       description: "A specialist guide for inspecting natural vegetation."
