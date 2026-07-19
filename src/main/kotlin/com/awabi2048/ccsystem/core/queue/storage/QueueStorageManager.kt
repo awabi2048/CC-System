@@ -50,7 +50,6 @@ object QueueStorageManager {
         }
 
         yaml.save(file)
-        plugin.logger.fine("キューデータを保存しました: ${tasksToSave.size}件")
     }
 
     /**
