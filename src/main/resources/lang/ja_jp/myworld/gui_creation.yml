@@ -34,6 +34,9 @@ gui:
     template_detail:
       title: テンプレート詳細
       spawn_label: 作成時スポーン
+      status_label: 状態
+      status_available: 作成可能
+      status_unavailable: 作成不可
       use: このテンプレートを使用
       use_action: ワールド名の入力へ進む
       preview: テンプレートをプレビュー
@@ -80,6 +83,7 @@ gui:
       remaining_points_label: 作成後の残りポイント
       template_spawn_label: 作成時スポーン
       change_template: テンプレートを変更
+      change_name: ワールド名を変更
       select_action: アクションを選択
       action_create: 作成する
       action_preview: テンプレートをプレビュー
@@ -134,6 +138,9 @@ gui:
     cancel:
       display: 登録を中断
       action: 変更を破棄して管理画面へ戻る
+    validate:
+      display: 登録内容を検証
+      action: 登録元・ID・作成時スポーンを確認
   world_seed_confirm:
     title: ワールドの種の使用
     question: ワールドの種を使用しますか？

@@ -34,6 +34,9 @@ gui:
     template_detail:
       title: Template Details
       spawn_label: Creation Spawn
+      status_label: Status
+      status_available: Available
+      status_unavailable: Unavailable
       use: Use This Template
       use_action: Continue to world name
       preview: Preview Template
@@ -80,6 +83,7 @@ gui:
       remaining_points_label: Remaining points after creation
       template_spawn_label: Creation spawn
       change_template: Change Template
+      change_name: Change World Name
       select_action: Select Action
       action_create: Create World
       action_preview: Preview Template
@@ -134,6 +138,9 @@ gui:
     cancel:
       display: Cancel Registration
       action: Discard changes and return to administration
+    validate:
+      display: Validate Registration
+      action: Check source, ID, and creation spawn
   world_seed_confirm:
     title: Use World Seed
     question: Use a World Seed?

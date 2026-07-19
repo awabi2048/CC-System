@@ -26,6 +26,7 @@ messages:
   creation_success: §aワールド作成完了！
   creation_failed: §c作成に失敗しました。
   world_creation_processing: §aワールドを作成しています...
+  template_creation_cost_paid: '§6🛖 §e{cost} §aポイントを消費しました。(残り: §6🛖 §e{remaining}§a)'
   world_not_found: §cワールドが見つかりませんでした。
   spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
@@ -132,6 +133,8 @@ messages:
   template_wizard_name_required: §cテンプレート名を入力してください。
   template_wizard_name_set: '§aテンプレート名を設定しました: {name} (ID: {id})'
   template_wizard_description_set: §aテンプレート説明を設定しました。
+  template_wizard_validation_success: §a登録元、ID、作成時スポーンを確認しました。登録できます。
+  template_wizard_validation_failed: §c登録内容に不足があります。画面の警告を確認してください。
   oage_ganbaru_messages:
   - §eおあげちゃんがワールドを拡げてくれています...§7「よいしょ！」
   - §eおあげちゃんが境界線を押し広げています！

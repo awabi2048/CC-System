@@ -26,6 +26,7 @@ messages:
   creation_success: §a World creation completed!
   creation_failed: §c creation failed.
   world_creation_processing: §aCreating world...
+  template_creation_cost_paid: '§aSpent §6🛖 §e{cost} §apoints. (Remaining: §6🛖 §e{remaining}§a)'
   world_not_found: §c World not found.
   spawn_set_start: §aSetting spawn point for {type}. Left-click a block while facing the desired direction.
   spawn_setting_started: §aSetting spawn point for {type}. Click a block while facing the desired direction.
@@ -132,6 +133,8 @@ messages:
   template_wizard_name_required: §cEnter a template name.
   template_wizard_name_set: '§aTemplate name set: {name} (ID: {id})'
   template_wizard_description_set: §aTemplate description set.
+  template_wizard_validation_success: §aSource, ID, and creation spawn are valid. The template can be registered.
+  template_wizard_validation_failed: §cRegistration details are incomplete. Review the warnings on the screen.
   oage_ganbaru_messages:
   - §eOage is expanding the world... §7"Heave-ho!"
   - §eOage is pushing the boundaries!
