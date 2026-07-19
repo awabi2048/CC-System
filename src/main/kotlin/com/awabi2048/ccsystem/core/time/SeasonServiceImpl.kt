@@ -9,25 +9,29 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.LocalDate
+import java.time.MonthDay
 import java.util.logging.Logger
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 
-class SeasonServiceImpl(
+class SeasonServiceImpl @JvmOverloads constructor(
     private val clock: SharedClockService,
     private val storageFile: File,
-    private val logger: Logger
+    private val logger: Logger,
+    private val settingsFile: File? = null
 ) : SeasonService {
+    @Volatile
+    private var boundaries: SeasonBoundaries = loadBoundaries()
+
     @Volatile
     private var override: SeasonOverride? = loadOverride()
 
     override fun currentSeason(): Season = override?.season ?: seasonAt(clock.currentDate())
 
-    override fun seasonAt(date: LocalDate): Season = when (date.monthValue) {
-        in 3..5 -> Season.SPRING
-        in 6..8 -> Season.SUMMER
-        in 9..11 -> Season.AUTUMN
-        else -> Season.WINTER
+    override fun seasonAt(date: LocalDate): Season = boundaries.resolve(MonthDay.from(date))
+
+    fun reload() {
+        boundaries = loadBoundaries()
     }
 
     override fun currentContext(world: World): SeasonContext {
@@ -75,6 +79,32 @@ class SeasonServiceImpl(
         return SeasonOverride(season, actor, changedAt)
     }
 
+    private fun loadBoundaries(): SeasonBoundaries {
+        val file = settingsFile?.takeIf(File::isFile) ?: return SeasonBoundaries.DEFAULT
+        val config = YamlConfiguration.loadConfiguration(file)
+        require(config.getInt("config_version", -1) == 1) {
+            "config/season.yml.config_version must be the integer 1"
+        }
+        return SeasonBoundaries(
+            spring = parseBoundary(config, "spring"),
+            summer = parseBoundary(config, "summer"),
+            autumn = parseBoundary(config, "autumn"),
+            winter = parseBoundary(config, "winter")
+        )
+    }
+
+    private fun parseBoundary(config: YamlConfiguration, id: String): MonthDay {
+        val raw = config.getString("boundaries.$id")?.takeIf(String::isNotBlank)
+            ?: error("config/season.yml.boundaries.$id must not be blank")
+        require(raw.matches(Regex("""\d{2}-\d{2}"""))) {
+            "config/season.yml.boundaries.$id must use MM-dd"
+        }
+        return runCatching { MonthDay.parse("--$raw") }
+            .getOrElse {
+                throw IllegalArgumentException("config/season.yml.boundaries.$id is invalid: $raw", it)
+            }
+    }
+
     private fun invalidStoredOverride(reason: String): SeasonOverride? {
         logger.warning("[CC-System][Season] 保存済み上書きを無効化しました: $reason")
         return null
@@ -101,5 +131,34 @@ class SeasonServiceImpl(
         } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
             Files.move(temporary.toPath(), storageFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
+    }
+}
+
+private data class SeasonBoundaries(
+    val spring: MonthDay,
+    val summer: MonthDay,
+    val autumn: MonthDay,
+    val winter: MonthDay
+) {
+    init {
+        require(spring < summer && summer < autumn && autumn < winter) {
+            "config/season.yml boundaries must be ordered spring < summer < autumn < winter"
+        }
+    }
+
+    fun resolve(day: MonthDay): Season = when {
+        day >= spring && day < summer -> Season.SPRING
+        day >= summer && day < autumn -> Season.SUMMER
+        day >= autumn && day < winter -> Season.AUTUMN
+        else -> Season.WINTER
+    }
+
+    companion object {
+        val DEFAULT = SeasonBoundaries(
+            MonthDay.of(3, 1),
+            MonthDay.of(6, 1),
+            MonthDay.of(9, 1),
+            MonthDay.of(12, 1)
+        )
     }
 }

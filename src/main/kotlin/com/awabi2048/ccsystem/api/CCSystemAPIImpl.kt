@@ -75,14 +75,21 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
             ?: "world"
     )
     private val soundResolutionService = SoundResolutionServiceImpl()
-    private val sharedClockService = SharedClockServiceImpl()
+    private val seasonSettingsFile = File(dataFolder, "config/season.yml")
+    private val sharedClockService = SharedClockServiceImpl(settingsFile = seasonSettingsFile)
     private val seasonService = SeasonServiceImpl(
         sharedClockService,
         File(dataFolder, "data/season/override.yml"),
-        Bukkit.getLogger()
+        Bukkit.getLogger(),
+        seasonSettingsFile
     )
     private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
         Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
+    }
+
+    internal fun reloadTimeSettings() {
+        sharedClockService.reload()
+        seasonService.reload()
     }
     
     

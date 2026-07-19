@@ -56,7 +56,7 @@ class CCSystem : JavaPlugin() {
         lateinit var instance: CCSystem
             private set
         
-        private lateinit var _api: CCSystemAPI
+        private lateinit var _api: CCSystemAPIImpl
         
         /**
          * CC-System APIを取得します
@@ -308,6 +308,7 @@ class CCSystem : JavaPlugin() {
             "config/public_sign.yml",
             "config/announce.yml",
             "config/queue.yml",
+            "config/season.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
             "data/announce/announce_data.yml",
@@ -337,7 +338,8 @@ class CCSystem : JavaPlugin() {
             "config/rental_area.yml",
             "config/public_sign.yml",
             "config/announce.yml",
-            "config/queue.yml"
+            "config/queue.yml",
+            "config/season.yml"
         )
         val specs = paths.map { resourcePath ->
             val currentVersion = if (resourcePath == "config/misc.yml") 2 else 1
@@ -369,6 +371,7 @@ class CCSystem : JavaPlugin() {
                 validator = com.awabi2048.ccsystem.api.config.ConfigValidator {},
                 reloadAction = {
                     ConfigManager.reload()
+                    _api.reloadTimeSettings()
                     syncFeatureRuntime()
                 }
             )
@@ -402,6 +405,9 @@ class CCSystem : JavaPlugin() {
     override fun onEnable() {
         // インスタンス保存
         instance = this
+
+        // API初期化より先に共有時刻・季節設定を展開する
+        ensureDefaultFiles()
         
         // API初期化
         _api = CCSystemAPIImpl(dataFolder)
@@ -411,7 +417,6 @@ class CCSystem : JavaPlugin() {
         _api.getMenuNavigationService().registerInventoryPolicy("cc-system", GuiInventoryPolicy())
         
         // 設定読み込み
-        ensureDefaultFiles()
         registerManagedConfigs()
         
         // マネージャー初期化
