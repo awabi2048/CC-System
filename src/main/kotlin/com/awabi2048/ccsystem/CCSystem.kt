@@ -48,7 +48,6 @@ import java.io.File
 import org.bukkit.GameRules
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import java.util.jar.JarFile
 
 class CCSystem : JavaPlugin() {
     
@@ -327,7 +326,6 @@ class CCSystem : JavaPlugin() {
         File(dataFolder, "data/rental_area/remained_item").mkdirs()
         File(dataFolder, "data/clock").mkdirs()
         File(dataFolder, "playerdata").mkdirs()
-        saveSplitLanguageResources()
     }
 
     private fun registerManagedConfigs() {
@@ -383,25 +381,6 @@ class CCSystem : JavaPlugin() {
         }
     }
 
-    private fun saveSplitLanguageResources() {
-        val codeSource = runCatching {
-            File(javaClass.protectionDomain.codeSource.location.toURI())
-        }.getOrNull() ?: return
-        if (!codeSource.isFile) {
-            return
-        }
-
-        JarFile(codeSource).use { jar ->
-            jar.entries().asSequence()
-                .filter { !it.isDirectory && it.name.startsWith("lang/") && it.name.endsWith(".yml") }
-                .forEach { entry ->
-                    val target = File(dataFolder, entry.name)
-                    target.parentFile?.mkdirs()
-                    saveResource(entry.name, true)
-                }
-        }
-    }
-    
     override fun onEnable() {
         // インスタンス保存
         instance = this

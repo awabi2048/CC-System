@@ -74,7 +74,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
     }
 
     fun validateSource(sourcePlugin: JavaPlugin, featureByFile: Map<String, String>): ValidationResult {
-        val filesByLocale = discoverEffectiveLanguageFiles(sourcePlugin)
+        val filesByLocale = discoverResourceLanguageFiles(sourcePlugin)
         val errorsByFeature = linkedMapOf<String, MutableList<String>>()
 
         if (filesByLocale.isEmpty()) {
@@ -367,7 +367,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
         locales += "ja_jp"
         locales += "en_us"
 
-        locales += discoverEffectiveLanguageFiles(source.plugin, source.fileNames).keys
+        locales += discoverResourceLanguageFiles(source.plugin, source.fileNames).keys
 
         return locales
     }
@@ -381,7 +381,7 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
         val merged = YamlConfiguration()
         val mergedKeys = mutableMapOf<String, String>()
 
-        discoverEffectiveLanguageFiles(source.plugin, source.fileNames)[locale]
+        discoverResourceLanguageFiles(source.plugin, source.fileNames)[locale]
             ?.toSortedMap()
             ?.values
             ?.forEach { file ->
@@ -398,27 +398,6 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
 
     private fun availableLocales(): Set<String> {
         return languageDataBySource.values.flatMap { it.keys }.toCollection(linkedSetOf())
-    }
-
-    private fun discoverEffectiveLanguageFiles(sourcePlugin: JavaPlugin, allowedFileNames: Set<String> = emptySet()): Map<String, Map<String, DiscoveredLanguageFile>> {
-        val resourceFiles = discoverResourceLanguageFiles(sourcePlugin, allowedFileNames)
-        val dataFiles = discoverDataLanguageFiles(sourcePlugin, allowedFileNames)
-        val locales = linkedSetOf<String>()
-        locales += resourceFiles.keys
-        locales += dataFiles.keys
-
-        val result = linkedMapOf<String, Map<String, DiscoveredLanguageFile>>()
-        for (locale in locales) {
-            val merged = linkedMapOf<String, DiscoveredLanguageFile>()
-            resourceFiles[locale]?.forEach { (fileName, file) ->
-                merged[fileName] = file
-            }
-            dataFiles[locale]?.forEach { (fileName, file) ->
-                merged[fileName] = file
-            }
-            result[locale] = merged
-        }
-        return result
     }
 
     private fun discoverResourceLanguageFiles(sourcePlugin: JavaPlugin, allowedFileNames: Set<String> = emptySet()): Map<String, Map<String, DiscoveredLanguageFile>> {
@@ -452,32 +431,6 @@ class UnifiedLanguageManager(private val plugin: JavaPlugin) {
                             content = content
                         )
                     }
-                }
-        }
-        return files
-    }
-
-    private fun discoverDataLanguageFiles(sourcePlugin: JavaPlugin, allowedFileNames: Set<String> = emptySet()): Map<String, Map<String, DiscoveredLanguageFile>> {
-        val langDir = File(sourcePlugin.dataFolder, "lang")
-        if (!langDir.isDirectory) {
-            return emptyMap()
-        }
-
-        val files = linkedMapOf<String, MutableMap<String, DiscoveredLanguageFile>>()
-        langDir.listFiles { file -> file.isDirectory }?.forEach { localeDir ->
-            val locale = normalizeLocale(localeDir.name)
-            localeDir.listFiles { file -> file.isFile && file.extension.equals("yml", ignoreCase = true) }
-                ?.sortedBy { it.name }
-                ?.forEach { file ->
-                    if (allowedFileNames.isNotEmpty() && file.name !in allowedFileNames) {
-                        return@forEach
-                    }
-                    files.getOrPut(locale) { linkedMapOf() }[file.name] = DiscoveredLanguageFile(
-                        locale = locale,
-                        fileName = file.name,
-                        sourceName = "data:${file.absolutePath}",
-                        content = file.readText(Charsets.UTF_8)
-                    )
                 }
         }
         return files
