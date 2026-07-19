@@ -25,7 +25,7 @@ resource_collection:
       companion_minerals: "Companion minerals"
       forest_products: "Bark, resin, nuts, and similar products"
       seasonal_plants: "Plants available in the current season"
-      vegetation_none: "It seems there is nothing to gather around here."
+      vegetation_none: "There does not seem to be anything noteworthy around here."
       forest_none: "It seems there is nothing to gather from this tree."
       forest_harvested: "It seems there is nothing left to gather from this tree."
     list_separator: ", "

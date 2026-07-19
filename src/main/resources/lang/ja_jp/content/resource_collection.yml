@@ -25,7 +25,7 @@ resource_collection:
       companion_minerals: "随伴鉱物"
       forest_products: "樹皮・樹脂・木の実など"
       seasonal_plants: "現在の季節に採れる植物"
-      vegetation_none: "この辺りには、採れそうなものはないようだ。"
+      vegetation_none: "このあたりには、めぼしいものはなさそうです"
       forest_none: "この木には、採れそうなものはないようだ。"
       forest_harvested: "この木からは、もう何も採れそうにない。"
     list_separator: "、"

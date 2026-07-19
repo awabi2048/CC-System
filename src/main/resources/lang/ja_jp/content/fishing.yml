@@ -1,6 +1,6 @@
 fishing:
   caught: "釣り上げました！"
-  no_catch: "§7この水辺には、今は魚の気配がないようだ。"
+  no_catch: "§7このあたりには、魚の気配はなさそうです"
   error:
     rod_broken: "§7この竿では、もう釣れそうにない。"
   failed:
@@ -144,10 +144,10 @@ fishing:
       action: "魚の詳細を確認"
       resolved: "左クリックで魚の詳細を確認"
     hint:
-      title: "この水場で釣れそうな魚"
+      title: "水場の調査"
       candidates: "釣れそうな魚"
       list_separator: "、"
-      none: "この水辺には、今は魚の気配がないようだ。"
+      none: "このあたりには、魚の気配はなさそうです"
       not_water: "ここでは、水の様子を調べられそうにない。"
   detail:
     title: "お魚辞典・詳細"

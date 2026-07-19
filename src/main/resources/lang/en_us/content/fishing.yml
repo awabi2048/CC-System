@@ -1,6 +1,6 @@
 fishing:
   caught: "Caught it!"
-  no_catch: "§7There seem to be no signs of fish in these waters right now."
+  no_catch: "§7There does not seem to be any sign of fish around here."
   error:
     rod_broken: "§7It seems this rod can no longer catch fish."
   failed:
@@ -144,10 +144,10 @@ fishing:
       action: "View fish details"
       resolved: "Left-click to view fish details"
     hint:
-      title: "Fish that may be caught here"
+      title: "Water Survey"
       candidates: "Likely fish"
       list_separator: ", "
-      none: "There seem to be no signs of fish in these waters right now."
+      none: "There does not seem to be any sign of fish around here."
       not_water: "It seems the water cannot be surveyed here."
   detail:
     title: "Fish Dictionary Details"
