@@ -76,6 +76,7 @@ fishing:
       weather: "天候傾向"
       time: "時間帯傾向"
       season: "旬"
+      environment: "見つけやすい環境"
       level: "釣り人レベル"
       bait: "必要なエサ"
       anywhere: "どこでも"
@@ -99,6 +100,11 @@ fishing:
       summer: "夏"
       autumn: "秋"
       winter: "冬"
+    environment:
+      estuary: "川と海が接する水域"
+      sand_bottom: "砂地の底"
+      aquatic_vegetation: "水草や昆布のある水域"
+      rocky_deep: "深い岩場"
     biome:
       river: "川"
       frozen_river: "凍った川"

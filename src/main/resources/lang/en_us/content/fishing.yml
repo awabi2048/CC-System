@@ -76,6 +76,7 @@ fishing:
       weather: "Weather tendency"
       time: "Time tendency"
       season: "Peak season"
+      environment: "Favored environment"
       level: "Fisher level"
       bait: "Required bait"
       anywhere: "Anywhere"
@@ -99,6 +100,11 @@ fishing:
       summer: "Summer"
       autumn: "Autumn"
       winter: "Winter"
+    environment:
+      estuary: "Where river and sea meet"
+      sand_bottom: "Sandy bottom"
+      aquatic_vegetation: "Water with seagrass or kelp"
+      rocky_deep: "Deep rocky water"
     biome:
       river: "River"
       frozen_river: "Frozen River"
