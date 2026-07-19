@@ -5,8 +5,12 @@ chanpon_utilities:
     success: "&aUnlinked from the lectern"
     already: "&eThis bookshelf is not linked"
   freecam:
-    started: "&aFreeCam started. Press Shift twice to stop."
-    stopped: "&aReturned to your body."
+    started:
+    - "&7FreeCam started"
+    - "&ePress Shift twice&7 or use &e/freecam stop &7to stop"
+    previous_camera_too_far:
+    - "&7The previous camera position was too far away, so the camera started here"
+    - "&e/freecam reset_distance <distance> &7changes the allowed distance"
     recovered: "&eRecovered your body from an unfinished FreeCam session."
     unavailable: "&cFreeCam cannot be started right now."
     not_active: "&cFreeCam is not active."
