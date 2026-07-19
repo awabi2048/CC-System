@@ -70,6 +70,18 @@ custom_items:
     straw:
       name: "§eわら"
       description: "成熟した植生から得られる乾燥した繊維素材。"
+    sprouted_potato:
+      name: "§e芽付き芋"
+      description: "成熟したジャガイモの収穫時に見つかる、芽を持つ芋。"
+    vegetable_leaves:
+      name: "§a野菜葉"
+      description: "根菜の収穫時に切り分けられる、料理や加工に使える葉。"
+    cocoa_pulp:
+      name: "§6カカオ果肉"
+      description: "成熟したカカオの実から採れる、種子を包む果肉。"
+    wart_fiber:
+      name: "§cウォート繊維"
+      description: "成熟したネザーウォートから分離した、丈夫な植物繊維。"
     heartwood:
       name: "§6心材"
       description: "自然生成樹木の主要幹から得られる丈夫な木材。"

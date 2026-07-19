@@ -70,6 +70,18 @@ custom_items:
     straw:
       name: "§eStraw"
       description: "A dried fiber material gathered from mature vegetation."
+    sprouted_potato:
+      name: "§eSprouted Potato"
+      description: "A potato with a growing sprout found while harvesting mature potatoes."
+    vegetable_leaves:
+      name: "§aVegetable Leaves"
+      description: "Usable leaves separated while harvesting mature root vegetables."
+    cocoa_pulp:
+      name: "§6Cocoa Pulp"
+      description: "Fruit pulp surrounding the beans of a mature cocoa pod."
+    wart_fiber:
+      name: "§cWart Fiber"
+      description: "Durable plant fiber separated from mature Nether wart."
     heartwood:
       name: "§6Heartwood"
       description: "Durable wood recovered from the main trunk of a generated tree."
