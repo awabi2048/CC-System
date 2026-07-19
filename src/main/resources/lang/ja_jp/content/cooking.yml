@@ -13,6 +13,7 @@ cooking:
     completed: "&6{recipe}&aが完成しました。完成度: &e{score}%"
     collected: "&6{recipe}&aを調理台から回収しました。"
   error:
+    no_heat: '&c設備の直下に点火済みの焚き火または魂の焚き火が必要です。'
     in_progress: "&c調理中です。完成までお待ちください。"
     in_use: "&cこの調理台は他のプレイヤーが操作中です。"
     no_ingredients: "&c材料を1つ以上入れてください。"

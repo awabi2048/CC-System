@@ -497,10 +497,10 @@ custom_items:
       name: §bMysterious Clock (Mock)
       lore:
       - §7For aging GUI clock slot (no effect)
-    mock_yeast:
-      name: §aCultured Yeast (Mock)
+    cultured_yeast:
+      name: §aCultured Yeast
       lore:
-      - §7For fermentation GUI yeast slot (no effect)
+      - §7Yeast used to ferment prepared wort
   marker:
     current_mode: Current mode
     mode_changed: '&7設置モードを §a{mode} §7に変更しました。'

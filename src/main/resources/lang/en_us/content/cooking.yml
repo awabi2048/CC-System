@@ -13,6 +13,7 @@ cooking:
     completed: "&6{recipe}&a is ready. Completion: &e{score}%"
     collected: "&aCollected &6{recipe}&a from the cooking station."
   error:
+    no_heat: '&cA lit campfire or soul campfire is required directly below the equipment.'
     in_progress: "&cYour dish is still cooking."
     in_use: "&cAnother player is using this cooking station."
     no_ingredients: "&cPlace at least one ingredient."

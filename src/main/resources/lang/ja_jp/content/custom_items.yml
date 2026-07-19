@@ -842,10 +842,10 @@ custom_items:
       name: §bふしぎな時計（モック）
       lore:
       - §7熟成GUIの時計スロット用（効果なし）
-    mock_yeast:
-      name: §a培養済み酵母（モック）
+    cultured_yeast:
+      name: §a培養済み酵母
       lore:
-      - §7発酵GUIの酵母スロット用（効果なし）
+      - §7醸造原液を発酵させるための酵母
   arena_broadcast:
     ui:
       broadcast:
