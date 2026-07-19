@@ -113,6 +113,17 @@ sukima_dungeon:
   gui_theme_error: '&cTheme not found'
   item_bookmark_name: '&d{tier} Bookmark'
   item_talisman_name: '&6Oage-chan''s Talisman'
+  item_world_sprout_name: '&dWorld Sprout'
+  item_world_sprout_lore:
+  - '&7A world sprout harvested in Sukima Dungeon.'
+  - '&7Give it to Oage-chan to exchange it for an item.'
+  item_compass_name: '&bWorld Sprout Compass [Tier {tier}]'
+  item_compass_lore:
+  - '&7Hold Shift in Sukima Dungeon to locate'
+  - '&7nearby world sprouts.'
+  - '&7Detection radius: {radius} blocks'
+  - '&7Maximum duration: {time} seconds'
+  - '&7Cooldown: {cooldown} seconds'
   item_talisman_lore:
   - '&7&m――――――――――――――――――――――――――――――'
   - '&7An amulet given by Oage-chan to protect'

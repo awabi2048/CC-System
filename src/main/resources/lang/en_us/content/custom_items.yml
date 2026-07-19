@@ -366,6 +366,9 @@ custom_items:
       lore:
       - §7Right click to start or stop timing.
       - §7Press F while holding it to reset.
+  sukima_dungeon:
+    marker_tool:
+      name: §dSukima Management Marker Tool
   arena:
     structure_marker_tool:
       name: §6Arena Structure Marker Tool

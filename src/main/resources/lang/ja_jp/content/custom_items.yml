@@ -366,6 +366,9 @@ custom_items:
       lore:
       - §7右クリックで計測を開始/停止します。
       - §7手に持ってFキーで計測をリセットします。
+  sukima_dungeon:
+    marker_tool:
+      name: §dスキマ管理マーカーツール
   arena:
     structure_marker_tool:
       name: §6アリーナ構造マーカーツール

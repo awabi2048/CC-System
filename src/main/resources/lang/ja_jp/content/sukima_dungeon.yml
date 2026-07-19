@@ -118,6 +118,17 @@ sukima_dungeon:
   gui_theme_random: ???
   item_bookmark_name: '&d{tier}ふしぎなしおり'
   item_talisman_name: '&6おあげちゃんのお札'
+  item_world_sprout_name: '&dワールドの芽'
+  item_world_sprout_lore:
+  - '&7スキマダンジョンで刈り取ってきた、ワールドの芽。'
+  - '&7おあげちゃんに渡すと、アイテムと交換してもらえる。'
+  item_compass_name: '&bワールドの芽コンパス [Tier {tier}]'
+  item_compass_lore:
+  - '&7スキマダンジョン内でShiftを長押しすることで、近くにある'
+  - '&7ワールドの芽の場所を知ることができます。'
+  - '&7探知半径: {radius} block'
+  - '&7最大展開: {time} 秒'
+  - '&7クールタイム: {cooldown} 秒'
   item_talisman_lore:
   - '&7&m――――――――――――――――――――――――――――――'
   - '&7スキマダンジョンに送り出したクラフターを守り、帰り道を作るために'
