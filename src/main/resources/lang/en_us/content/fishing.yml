@@ -1,14 +1,14 @@
 fishing:
   caught: "Caught it!"
-  no_catch: "No fish can be caught under these conditions."
+  no_catch: "§7There seem to be no signs of fish in these waters right now."
   error:
-    rod_broken: "This fishing rod is too damaged to use."
+    rod_broken: "§7It seems this rod can no longer catch fish."
   failed:
-    cancelled: "§7It seems to have escaped..."
-    hook_timeout: "§7It seems to have escaped..."
-    no_rod: "§7It seems to have escaped..."
-    final_roll: "§7It seems to have escaped..."
-    invalid_water: "§7It seems you cannot fish here."
+    cancelled: "§7It seems the fish got away."
+    hook_timeout: "§7It seems the fish got away."
+    no_rod: "§7It seems the fish got away."
+    final_roll: "§7It seems the fish got away."
+    invalid_water: "§7It seems nothing can be caught here."
   fight:
     hit_title: "§6HIT!"
     input_java: "§7Left-click to lower / Right-click to raise"
@@ -22,7 +22,7 @@ fishing:
       danger: "It's about to escape!"
       recover: "Regain control!"
   search:
-    ready: "Your target seems catchable here"
+    ready: "It seems your target fish can be caught here."
   ground:
     created_nearby: "§7A school of fish seems to be nearby."
     created_direction: "§7You sense a school of fish to the {direction}."
@@ -59,7 +59,7 @@ fishing:
   dictionary:
     item_required: "Hold the Fish Dictionary and right-click to open it."
     details_hidden: "Details: ???"
-    discovered: "A new fish was added to your Fish Dictionary."
+    discovered: "A new fish has been recorded in your Fish Dictionary."
     description:
       cod: "A familiar fish found across many cold waters."
       salmon: "A fish that travels between rivers and cold oceans."
@@ -147,8 +147,8 @@ fishing:
       title: "Fish that may be caught here"
       candidates: "Likely fish"
       list_separator: ", "
-      none: "There are no signs of fish under the current conditions."
-      not_water: "Left-click water in a resource world."
+      none: "There seem to be no signs of fish in these waters right now."
+      not_water: "It seems the water cannot be surveyed here."
   detail:
     title: "Fish Dictionary Details"
     conditions: "Catch Conditions"

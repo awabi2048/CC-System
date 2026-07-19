@@ -4,6 +4,12 @@ resource_collection:
       mineral: "鉱脈鑑定"
       forest: "林産物鑑定"
       vegetation: "植生鑑定"
+      chisel_result: "ノミ採掘"
+      mineral_batch_result: "一括採掘"
+      forest_batch_result: "一括伐採"
+      woodworking_result: "木材加工"
+      harvest_result: "範囲収穫"
+      tilling_result: "範囲耕作"
     data:
       altitude: "高度"
       region: "地域"
@@ -12,24 +18,20 @@ resource_collection:
       season: "季節"
       uses: "用途"
       vegetation_group: "植生群"
+      amount: "個数"
+      processed_count: "処理数"
+      special_materials: "特殊素材"
     hint:
       companion_minerals: "随伴鉱物"
       forest_products: "樹皮・樹脂・木の実など"
       seasonal_plants: "現在の季節に採れる植物"
-      none: "なし"
+      vegetation_none: "この辺りには、採れそうなものはないようだ。"
+      forest_none: "この木には、採れそうなものはないようだ。"
+      forest_harvested: "この木からは、もう何も採れそうにない。"
     list_separator: "、"
-  error:
-    stripped_log_required: "§c剥いだ原木または剥いだ幹を対象にしてください。"
-    in_use: "§cこの資源は他のプレイヤーが処理中です。"
-    protected: "§cこの場所は保護されているため処理できません。"
   chisel:
-    started: "§b表示された目標をノミで3回狙ってください。"
-    completed: "§aノミ採掘が完了しました。特殊素材: {amount}個"
-    cancelled: "§7ノミ採掘を中断しました。鉱石は変更されていません。"
-    timeout: "§7制限時間を超えたため、ノミ採掘を中断しました。"
+    completed: "§aノミ採掘が完了しました。"
   inspection:
-    basic: "§b鉱脈を鑑定しました。高度: {altitude} / 地域: {biome}"
-    detailed: "§b鉱脈を鑑定しました。高度: {altitude} / 地域: {biome} / 随伴鉱物: {material}"
     altitude:
       high: "高所"
       shallow: "浅層"
@@ -44,24 +46,20 @@ resource_collection:
       nether: "ネザー"
   woodworking:
     completed: "§a木材加工が完了しました。"
+    not_ready: "§7この木材は、まだ加工できないようだ。"
   batch:
-    completed: "§a一括処理が完了しました。対象: {count}個"
+    completed: "§a一括処理が完了しました。"
   gathering:
-    inspected: "§a天然植生を鑑定しました。採集候補: {count}個"
-    inspected_detailed: "§a天然植生を鑑定しました。採集候補: {count}個 / 季節: {season} / 用途: {uses} / 植生群: {groups}"
-    no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
-    completed: "§a特殊植物を{amount}個採集しました。"
-    surface_depleted: "§7この区画の表層植物は採集済みです。回復するまで待ってください。"
+    completed: "§a植物を採集しました。"
+    surface_depleted: "§7ここでは、しばらく何も採れそうにない。"
     season:
       spring: "春"
       summer: "夏"
       autumn: "秋"
       winter: "冬"
   forest:
-    inspected: "§a樹木の周囲を鑑定しました。林産物候補: {count}個"
-    inspected_exact: "§a樹木の周囲を鑑定しました。発見可能: {products}"
-    no_discoveries: "§7樹木の周囲を鑑定しましたが、林産物は見つかりませんでした。"
-    completed: "§a林産物を{amount}個採集しました。"
+    harvested: "§7この木からは、もう何も採れそうにない。"
+    completed: "§a林産物を採集しました。"
   cultivation:
-    harvested: "§a成熟した作物を{count}個収穫しました。"
-    tilled: "§a土を{count}ブロック耕しました。"
+    harvested: "§a作物を収穫しました。"
+    tilled: "§a土を耕しました。"
