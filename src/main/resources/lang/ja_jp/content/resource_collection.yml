@@ -40,6 +40,7 @@ resource_collection:
     no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
     completed: "§a特殊植物を{amount}個採集しました。"
     cooldown: "§7次の鑑定まで少し待ってください。"
+    surface_depleted: "§7この区画の表層植物は採集済みです。回復するまで待ってください。"
   forest:
     inspected: "§a樹木の周囲を鑑定しました。林産物候補: {count}個"
     inspected_exact: "§a樹木の周囲を鑑定しました。発見可能: {products}"

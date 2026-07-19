@@ -40,6 +40,7 @@ resource_collection:
     no_discoveries: "§7Natural vegetation inspected, but no gathering candidates are currently available."
     completed: "§aGathered {amount} specialist plants."
     cooldown: "§7Wait before inspecting vegetation again."
+    surface_depleted: "§7Surface plants in this area were already gathered. Wait for them to recover."
   forest:
     inspected: "§aInspected the tree surroundings. Forest-product targets: {count}"
     inspected_exact: "§aInspected the tree surroundings. Available: {products}"
