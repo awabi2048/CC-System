@@ -24,6 +24,7 @@ class NaturalOriginRegistryImpl(
     )
 
     private val states = load()
+    private var placementRecordingEnabled = true
 
     init {
         lifecycleService.subscribe("cc-system:natural-origin") { change ->
@@ -33,6 +34,14 @@ class NaturalOriginRegistryImpl(
                 clearGeneration(change.current.generationId)
             }
         }
+    }
+
+    @Synchronized
+    override fun isPlacementRecordingEnabled(): Boolean = placementRecordingEnabled
+
+    @Synchronized
+    override fun setPlacementRecordingEnabled(enabled: Boolean) {
+        placementRecordingEnabled = enabled
     }
 
     @Synchronized
@@ -48,6 +57,7 @@ class NaturalOriginRegistryImpl(
 
     @Synchronized
     override fun markPlayerPlaced(worldKey: NamespacedKey, x: Int, y: Int, z: Int) {
+        if (!placementRecordingEnabled) return
         val generation = lifecycleService.getGeneration(worldKey) ?: return
         val state = states.getOrPut(generation.generationId) { GenerationState(worldKey) }
         state.nonNaturalBlocks += BlockPosition(x, y, z)
@@ -56,6 +66,7 @@ class NaturalOriginRegistryImpl(
 
     @Synchronized
     override fun markPlayerPlaced(blocks: Collection<Block>) {
+        if (!placementRecordingEnabled) return
         var changed = false
         blocks.forEach { block ->
             val generation = lifecycleService.getGeneration(block.world.key) ?: return@forEach

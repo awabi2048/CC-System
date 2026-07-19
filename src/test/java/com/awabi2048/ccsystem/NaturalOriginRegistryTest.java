@@ -75,6 +75,37 @@ class NaturalOriginRegistryTest {
         assertFalse(registry.isNatural(worldKey, 1, 64, 1));
     }
 
+    @Test
+    void placementRecordingCanBeTemporarilyDisabledWithoutDiscardingExistingRecords() {
+        NamespacedKey worldKey = NamespacedKey.minecraft("resource");
+        UUID generationId = UUID.randomUUID();
+        FakeLifecycle lifecycle = new FakeLifecycle(new ResourceWorldGeneration(
+            worldKey, "resource", "overworld", "default", generationId, ResourceWorldState.READY
+        ));
+        Path store = tempDirectory.resolve("natural.properties");
+        NaturalOriginRegistryImpl registry = new NaturalOriginRegistryImpl(store, lifecycle);
+        registry.markGeneratedChunk(generationId, worldKey, 0, 0);
+        registry.markPlayerPlaced(worldKey, 1, 64, 1);
+
+        assertTrue(registry.isPlacementRecordingEnabled());
+        assertFalse(registry.isNatural(worldKey, 1, 64, 1));
+
+        registry.setPlacementRecordingEnabled(false);
+        registry.markPlayerPlaced(worldKey, 2, 64, 2);
+        assertFalse(registry.isPlacementRecordingEnabled());
+        assertTrue(registry.isNatural(worldKey, 2, 64, 2));
+        assertFalse(registry.isNatural(worldKey, 1, 64, 1));
+
+        registry.setPlacementRecordingEnabled(true);
+        registry.markPlayerPlaced(worldKey, 3, 64, 3);
+        assertFalse(registry.isNatural(worldKey, 3, 64, 3));
+
+        NaturalOriginRegistryImpl reloaded = new NaturalOriginRegistryImpl(store, lifecycle);
+        assertTrue(reloaded.isPlacementRecordingEnabled());
+        assertTrue(reloaded.isNatural(worldKey, 2, 64, 2));
+        assertFalse(reloaded.isNatural(worldKey, 3, 64, 3));
+    }
+
     private static final class FakeLifecycle implements ResourceWorldLifecycleService {
         private ResourceWorldGeneration generation;
 
