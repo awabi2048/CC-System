@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
+import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -18,6 +19,7 @@ import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.cosmetic.CosmeticPlatformImpl
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
@@ -50,7 +52,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * CC-System APIの実装クラス
  * LanguageManagerおよびChunkTaskQueueManagerをラップして他のプラグインに機能を提供します
  */
-internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
+internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemAPI {
     init {
         ResourceWorldLifecycleRuntime.initialize(dataFolder) { owner, failure ->
             Bukkit.getLogger().warning("[CC-System][ResourceWorld] 購読者 $owner の処理に失敗しました: ${failure.message}")
@@ -86,6 +88,7 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
         Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
     }
+    private val cosmeticPlatform = CosmeticPlatformImpl(plugin, dataFolder)
 
     internal fun reloadTimeSettings() {
         sharedClockService.reload()
@@ -251,6 +254,12 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService = ResourceWorldLifecycleRuntime.service
 
     override fun getNaturalOriginRegistry(): NaturalOriginRegistry = NaturalOriginRuntime.registry
+
+    override fun getCosmeticPlatform(): CosmeticPlatform = cosmeticPlatform
+
+    internal fun shutdown() {
+        cosmeticPlatform.shutdown()
+    }
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)

@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
+import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -117,6 +118,8 @@ interface CCSystemAPI {
     fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService
 
     fun getNaturalOriginRegistry(): NaturalOriginRegistry
+
+    fun getCosmeticPlatform(): CosmeticPlatform
 
     /**
      * 指定ワールドがCC-System管理の資源ワールドか判定します。

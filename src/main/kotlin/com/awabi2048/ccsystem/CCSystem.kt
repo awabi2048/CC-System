@@ -410,7 +410,7 @@ class CCSystem : JavaPlugin() {
         ensureDefaultFiles()
         
         // API初期化
-        _api = CCSystemAPIImpl(dataFolder)
+        _api = CCSystemAPIImpl(this, dataFolder)
         _api.getMenuNavigationService().registerMenuMatcher("cc-system") { inventory ->
             inventory.holder?.javaClass?.name?.startsWith("com.awabi2048.ccsystem") == true
         }
@@ -477,6 +477,7 @@ class CCSystem : JavaPlugin() {
         }
         ClockManager.unload()
         AnnouncementManager.unload()
+        _api.shutdown()
 
         // チャンクタスクキューのシャットダウン（状態保存）
         ChunkTaskQueueManager.unload()
