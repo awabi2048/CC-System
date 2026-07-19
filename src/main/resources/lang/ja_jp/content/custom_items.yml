@@ -43,9 +43,30 @@ custom_items:
     sulfur:
       name: "§e硫黄"
       description: "ネザーの鉱脈から採れる反応性の高い鉱物。"
-    resin:
+    pine_cone:
+      name: "§6松かさ"
+      description: "トウヒの葉から採れる、燃料や香り付けに使える林産物。"
+    tree_resin:
       name: "§6樹脂"
-      description: "天然木から採れる、加工や醸造に使える樹液素材。"
+      description: "原生タイガのトウヒから採れる、接着や防水に使える樹液素材。"
+    birch_outer_bark:
+      name: "§f白樺外皮"
+      description: "シラカバから採れる、火口や包み材に使える薄い外皮。"
+    tannin_bark:
+      name: "§6タンニン樹皮"
+      description: "オーク類から採れる、染色や保存加工に使える樹皮。"
+    tinder_fungus:
+      name: "§6火口茸"
+      description: "特定の森林樹木から採れる、着火材に適した木質菌。"
+    acacia_gum:
+      name: "§eアカシアゴム"
+      description: "アカシアから採れる、接着や結合材に使える樹液素材。"
+    aromatic_wood_chip:
+      name: "§d芳香木片"
+      description: "ジャングルの木やサクラから採れる、香り付けや熟成に使える木片。"
+    burl_wood:
+      name: "§6木瘤材"
+      description: "特殊な森林の樹木からまれに採れる、装飾性に優れた木材。"
     straw:
       name: "§eわら"
       description: "成熟した植生から得られる乾燥した繊維素材。"
@@ -75,13 +96,10 @@ custom_items:
       description: "設置した剥いだ原木を板材へ粗加工する専門道具。"
     woodworking_knife:
       name: "§6木工ナイフ"
-      description: "設置した剥いだ原木を角材へ精密加工する専門道具。"
+      description: "設置した剥いだ原木の精密加工と、鑑定済み林産物の採集に使う専門道具。"
     forest_guide:
       name: "§6森林手帳"
-      description: "自然生成樹木の周囲を鑑定して林産物の候補を調べる専門道具。"
-    forest_knife:
-      name: "§6林産物採集ナイフ"
-      description: "鑑定済みの対象から林産物を追加採取する専門道具。"
+      description: "自然生成樹木を鑑定して、一株に存在する林産物を調べる専門道具。"
     gathering_guide:
       name: "§a採集手帳"
       description: "天然植生を鑑定して採集候補を調べる専門道具。"

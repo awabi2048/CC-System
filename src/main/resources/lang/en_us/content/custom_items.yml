@@ -43,9 +43,30 @@ custom_items:
     sulfur:
       name: "§eSulfur"
       description: "A reactive mineral extracted from Nether mineral veins."
-    resin:
-      name: "§6Resin"
-      description: "A tree-derived material used in processing and brewing."
+    pine_cone:
+      name: "§6Pine Cone"
+      description: "A forest product gathered from spruce leaves for fuel, smoke, and decoration."
+    tree_resin:
+      name: "§6Tree Resin"
+      description: "Resin gathered from old-growth spruce for adhesives and waterproofing."
+    birch_outer_bark:
+      name: "§fBirch Outer Bark"
+      description: "Thin birch bark used for tinder, wrapping, and lining."
+    tannin_bark:
+      name: "§6Tannin Bark"
+      description: "Oak bark used for tanning, dyes, and preservation."
+    tinder_fungus:
+      name: "§6Tinder Fungus"
+      description: "A wood fungus gathered in specific forests and used as tinder."
+    acacia_gum:
+      name: "§eAcacia Gum"
+      description: "Acacia sap used as an adhesive and binding material."
+    aromatic_wood_chip:
+      name: "§dAromatic Wood Chip"
+      description: "Fragrant wood from jungle trees and cherry trees, used for smoke and aging."
+    burl_wood:
+      name: "§6Burl Wood"
+      description: "Rare decorative wood gathered from trees in special forests."
     straw:
       name: "§eStraw"
       description: "A dried fiber material gathered from mature vegetation."
@@ -75,13 +96,10 @@ custom_items:
       description: "A specialist tool that rough-processes placed stripped logs into planks."
     woodworking_knife:
       name: "§6Woodworking Knife"
-      description: "A specialist tool that precisely processes placed stripped logs into beams."
+      description: "A specialist tool for precision woodworking and gathering inspected forest products."
     forest_guide:
       name: "§6Forest Guide"
-      description: "A specialist guide for inspecting naturally generated trees for forest products."
-    forest_knife:
-      name: "§6Forest Product Knife"
-      description: "A specialist tool for collecting an additional product from an inspected target."
+      description: "A specialist guide for identifying the fixed forest product of a generated tree."
     gathering_guide:
       name: "§aGathering Guide"
       description: "A specialist guide for inspecting natural vegetation."
