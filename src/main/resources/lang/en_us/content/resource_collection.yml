@@ -37,10 +37,16 @@ resource_collection:
     completed: "§aBatch operation complete. Targets: {count}"
   gathering:
     inspected: "§aNatural vegetation inspected. Targets: {count}"
+    inspected_detailed: "§aNatural vegetation inspected. Targets: {count} / Season: {season} / Uses: {uses} / Vegetation groups: {groups}"
     no_discoveries: "§7Natural vegetation inspected, but no gathering candidates are currently available."
     completed: "§aGathered {amount} specialist plants."
     cooldown: "§7Wait before inspecting vegetation again."
     surface_depleted: "§7Surface plants in this area were already gathered. Wait for them to recover."
+    season:
+      spring: "Spring"
+      summer: "Summer"
+      autumn: "Autumn"
+      winter: "Winter"
   forest:
     inspected: "§aInspected the tree surroundings. Forest-product targets: {count}"
     inspected_exact: "§aInspected the tree surroundings. Available: {products}"

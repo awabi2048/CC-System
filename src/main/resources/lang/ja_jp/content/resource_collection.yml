@@ -37,10 +37,16 @@ resource_collection:
     completed: "§a一括処理が完了しました。対象: {count}個"
   gathering:
     inspected: "§a天然植生を鑑定しました。採集候補: {count}個"
+    inspected_detailed: "§a天然植生を鑑定しました。採集候補: {count}個 / 季節: {season} / 用途: {uses} / 植生群: {groups}"
     no_discoveries: "§7天然植生を鑑定しましたが、現在発見できる採集候補はありません。"
     completed: "§a特殊植物を{amount}個採集しました。"
     cooldown: "§7次の鑑定まで少し待ってください。"
     surface_depleted: "§7この区画の表層植物は採集済みです。回復するまで待ってください。"
+    season:
+      spring: "春"
+      summer: "夏"
+      autumn: "秋"
+      winter: "冬"
   forest:
     inspected: "§a樹木の周囲を鑑定しました。林産物候補: {count}個"
     inspected_exact: "§a樹木の周囲を鑑定しました。発見可能: {products}"
