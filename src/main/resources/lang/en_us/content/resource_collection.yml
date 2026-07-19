@@ -16,6 +16,21 @@ resource_collection:
     completed: "§aChisel mining complete. Special materials: {amount}"
     cancelled: "§7Chisel mining was cancelled. The ore was not changed."
     timeout: "§7Chisel mining timed out and the ore was not changed."
+  inspection:
+    basic: "§bVein inspected. Altitude: {altitude} / Region: {biome}"
+    detailed: "§bVein inspected. Altitude: {altitude} / Region: {biome} / Companion mineral: {material}"
+    altitude:
+      high: "High"
+      shallow: "Shallow"
+      middle: "Mid-depth"
+      deep: "Deep"
+    biome:
+      temperate: "Temperate"
+      cold: "Cold"
+      dry: "Dry"
+      wet: "Wet"
+      mountain: "Mountain"
+      nether: "Nether"
   woodworking:
     completed: "§aWoodworking complete."
   batch:

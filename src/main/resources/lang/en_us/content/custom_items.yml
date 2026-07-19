@@ -61,6 +61,9 @@ custom_items:
     chisel:
       name: "§bMining Chisel"
       description: "A specialist tool for extracting associated minerals from ore surfaces."
+    geology_guide:
+      name: "§bGeology Field Guide"
+      description: "A specialist guide for reading the altitude, region, and companion mineral of natural ore."
     mining_hammer:
       name: "§bBatch Mining Hammer"
       description: "A specialist tool for Miners with batch mining enabled."

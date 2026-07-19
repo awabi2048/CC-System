@@ -16,6 +16,21 @@ resource_collection:
     completed: "§aノミ採掘が完了しました。特殊素材: {amount}個"
     cancelled: "§7ノミ採掘を中断しました。鉱石は変更されていません。"
     timeout: "§7制限時間を超えたため、ノミ採掘を中断しました。"
+  inspection:
+    basic: "§b鉱脈を鑑定しました。高度: {altitude} / 地域: {biome}"
+    detailed: "§b鉱脈を鑑定しました。高度: {altitude} / 地域: {biome} / 随伴鉱物: {material}"
+    altitude:
+      high: "高所"
+      shallow: "浅層"
+      middle: "中層"
+      deep: "深層"
+    biome:
+      temperate: "温帯"
+      cold: "寒冷"
+      dry: "乾燥"
+      wet: "湿潤"
+      mountain: "山岳"
+      nether: "ネザー"
   woodworking:
     completed: "§a木材加工が完了しました。"
   batch:

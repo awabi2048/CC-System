@@ -61,6 +61,9 @@ custom_items:
     chisel:
       name: "§b鉱脈用ノミ"
       description: "鉱石の表面を狙って随伴鉱物を取り出す専門道具。"
+    geology_guide:
+      name: "§b地質調査手帳"
+      description: "自然生成鉱石の高度・地域と随伴鉱物を読み取る専門道具。"
     mining_hammer:
       name: "§b一括採掘ハンマー"
       description: "一括採掘を有効にした鉱夫が鉱脈を処理する専門道具。"
