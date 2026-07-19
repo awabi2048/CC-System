@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoreFormatterTest {
@@ -20,10 +21,11 @@ class LoreFormatterTest {
     }
 
     @Test
-    void warningLineUsesReferenceMarkerWithUnderline() {
+    void warningLineUsesReferenceMarkerWithoutUnderline() {
         String line = LoreFormatter.INSTANCE.warningLine("テスト警告");
-        assertTrue(line.startsWith("§c§n"), "warningLine should start with red underline");
-        assertEquals("§c§n※ テスト警告", line);
+        assertTrue(line.startsWith("§c※"), "warningLine should start with a red reference marker");
+        assertFalse(line.contains("§n"), "warningLine should not underline only part of the warning");
+        assertEquals("§c※ テスト警告", line);
     }
 
     @Test

@@ -41,7 +41,7 @@ object LoreFormatter {
     }
 
     fun warningLine(content: String): String {
-        return "§c§n※ $content"
+        return "§c※ $content"
     }
 
     fun dangerLine(content: String): String {

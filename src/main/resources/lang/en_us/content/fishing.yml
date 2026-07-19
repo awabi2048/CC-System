@@ -10,6 +10,7 @@ fishing:
     final_roll: "§7It seems to have escaped..."
     invalid_water: "§7It seems you cannot fish here."
   fight:
+    hit_title: "§6HIT!"
     input_java: "§7Left-click to lower / Right-click to raise"
     input_bedrock: "§7Sneak-tap to lower / Tap to raise"
     status:

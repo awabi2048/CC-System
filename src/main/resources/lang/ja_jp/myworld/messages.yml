@@ -25,6 +25,8 @@ messages:
   creation_cancelled: §cマイワールドの作成をキャンセルしました。
   creation_success: §aワールド作成完了！
   creation_failed: §c作成に失敗しました。
+  world_creation_processing: §aワールドを作成しています...
+  template_creation_cost_paid: '§6🛖 §e{cost} §aポイントを消費しました。(残り: §6🛖 §e{remaining}§a)'
   world_not_found: §cワールドが見つかりませんでした。
   spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
   spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
@@ -123,6 +125,16 @@ messages:
   wizard_id_missing: §cIDが設定されていません。
   wizard_id_exists: §cそのIDは既に存在します。
   wizard_registered: §aテンプレート「{template}」を登録しました！
+  template_wizard_icon_help: §eインベントリ内のアイテムをクリックしてアイコンに設定してください。
+  template_wizard_source_changed: §c登録元ワールド内で作成時スポーンを設定してください。
+  template_wizard_spawn_set: §a現在位置を作成時スポーンに設定しました。
+  template_wizard_id_missing: §cテンプレートIDが設定されていません。
+  template_wizard_id_exists: §cそのテンプレートIDは既に存在します。
+  template_wizard_name_required: §cテンプレート名を入力してください。
+  template_wizard_name_set: '§aテンプレート名を設定しました: {name} (ID: {id})'
+  template_wizard_description_set: §aテンプレート説明を設定しました。
+  template_wizard_validation_success: §a登録元、ID、作成時スポーンを確認しました。登録できます。
+  template_wizard_validation_failed: §c登録内容に不足があります。画面の警告を確認してください。
   oage_ganbaru_messages:
   - §eおあげちゃんがワールドを拡げてくれています...§7「よいしょ！」
   - §eおあげちゃんが境界線を押し広げています！
@@ -158,6 +170,7 @@ messages:
   expand_complete: §aワールドの拡張が完了しました！ §7{level_before} §f→ §e§l{level_after}
   expansion_reset_complete: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
   expansion_reset_success: §a拡張段階を初期化し、§6🛖 §e{points} §aポイントを返還しました。
+  expansion_reset_success_without_points: §a拡張段階を初期化しました。
   expansion_step_back_success: §aワールドボーダーを1段階戻しました。§7{level_before} §f→ §e§l{level_after}
   expansion_step_back_unavailable: §c戻せる拡張履歴がありません。
   world_delete_start: §cワールド「{world}」を削除しています...
@@ -232,6 +245,10 @@ messages:
   - '§7消費ポイント: §6🛖 §e{required}'
   - '§7現在ポイント: §6🛖 §e{current}'
   - '§7設置後ポイント: §6🛖 §e{remaining}'
+  world_gate_confirm_body_without_points:
+  - §f次の範囲でワールドゲートを設置します。
+  - '§7最小: §f({min_x}, {min_y}, {min_z})'
+  - '§7最大: §f({max_x}, {max_y}, {max_z})'
   world_gate_place_cancelled: §eワールドゲートの設置をキャンセルしました。
   world_gate_place_success: §aワールドゲートを設置しました
   world_gate_removed_refund: '§aワールドゲートを撤去しました。設置者 §e{owner} §aに §6🛖 §e{points} §aポイントを返還しました。(返還率: §e{percent}%§a)'
@@ -280,15 +297,18 @@ messages:
   usage_stats: '§c使用法: /mwm stats <プレイヤー名> <項目> <get/set/add/remove> [値]'
   usage_stats_fields: '§7項目: points, warp-slots, world-slots'
   command_disabled: '§cこのMWMコマンドは現在無効です。'
+  world_operation_locked: §cこのワールドは別の操作を処理中です。完了後にもう一度お試しください。
   migration:
-    approval_required: '§e旧ワールド {world} の移行にはロード承認が必要です: /mwm migration approve {uuid}'
-    world_data_missing: '§c{world} に対応するワールド設定がないためロードできません。'
-    approved: '§a{world} のロードと移行を承認しました。'
-    load_failed: '§c{world} のロードと移行に失敗しました。'
-    none_pending: §7承認待ちの旧ワールドはありません。
+    pending: '§e移行待ちの旧ワールド: {world} ({uuid})'
+    none_pending: §7移行対象の旧ワールドはありません。
     conflict: '§cワールド {world} の移行を拒否しました。旧構造と現行構造のディレクトリが両方存在します。'
-    usage: '§c使用法: /mwm migration list | approve <UUID> | reject <UUID>'
-    not_found: §c対象の旧ワールドが見つからないか、処理に失敗しました。
+    usage: '§c使用法: /mwm migration execute | status'
+    already_running: §eワールド移行はすでに実行中です。
+    console_confirm: '§e実行を確認するには /mwm migration execute confirm を入力してください。'
+    started: '§a{count}件の旧ワールドを移行キューへ登録しました。'
+    completed: §aワールド移行キューの処理が完了しました。
+    status_summary: '§e移行状態: {state} §7| 全体: {total} / 完了: {completed} / 待機: {waiting} / 再試行: {retries} / 失敗: {failed} / 処理中: {current}'
+    status_world: '§7- {world}: {status} / 試行 {attempts} / 最終エラー {error} / 更新 {updated}'
   seed_spawn:
     corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
     safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。

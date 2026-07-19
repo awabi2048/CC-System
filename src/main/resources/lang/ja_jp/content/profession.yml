@@ -31,6 +31,42 @@ profession:
     description: 釣り場の条件を読み、釣果を釣り上げて経験値を得る職業
   level_up: §a{profession}がレベルアップしました！ §eLv.{old} -> Lv.{new} §7(+{gained})
   new_unlock: '新しく習得可能なスキルがあります（{count}個）: {skills} [クリックしてスキルツリーを開く]'
+  bossbar: '§6【{profession}】 §7Lv. §e§l{level} §7(§a{current}§7/{required}§7)'
+  bossbar_with_gain: '§6【{profession}】 §7Lv. §e§l{level} §7(§a{current}§7/{required} +§a{gained}§7)'
+  specialization:
+    tunnel_mining:
+      name: 坑道採掘
+    precision_mining:
+      name: 精密採掘
+    felling:
+      name: 伐採
+    wood_utilization:
+      name: 木材活用
+    cultivation:
+      name: 栽培
+    wild_gathering:
+      name: 野外採集
+    rod_handling:
+      name: 竿さばき
+    fishing_ground_knowledge:
+      name: 釣り場知識
+    fermentation:
+      name: 発酵調合
+    distillation_aging:
+      name: 蒸留熟成
+    bulk_cooking:
+      name: まとめ調理
+    precision_cooking:
+      name: 精密調理
+  prestige:
+    executed: §d{profession}の周回を完了しました。周回数は{level}です。
+    token:
+      name: §d§l{profession}の思念
+      description: '{profession}を極めた証'
+      cycle: 周回数
+      owner: 保有者
+      specialization: 分岐
+      representative_statistic: 代表実績
 
 active_skill:
   selector:

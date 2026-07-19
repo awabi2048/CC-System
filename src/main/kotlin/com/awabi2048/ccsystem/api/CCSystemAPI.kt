@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
+import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -9,6 +10,11 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.time.SharedClockService
+import com.awabi2048.ccsystem.api.time.SeasonService
+import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
+import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
@@ -102,6 +108,18 @@ interface CCSystemAPI {
     fun getWorldDirectoryService(): WorldDirectoryService
 
     fun getSoundResolutionService(): SoundResolutionService
+
+    fun getSharedClockService(): SharedClockService
+
+    fun getSeasonService(): SeasonService
+
+    fun getContentActionDispatcher(): ContentActionDispatcher
+
+    fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService
+
+    fun getNaturalOriginRegistry(): NaturalOriginRegistry
+
+    fun getCosmeticPlatform(): CosmeticPlatform
 
     /**
      * 指定ワールドがCC-System管理の資源ワールドか判定します。

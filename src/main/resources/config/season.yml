@@ -1,0 +1,11 @@
+config_version: 1
+
+enabled: true
+timezone: Asia/Tokyo
+mode: AUTO
+
+boundaries:
+  spring: "03-01"
+  summer: "06-01"
+  autumn: "09-01"
+  winter: "12-01"

@@ -11,8 +11,11 @@ cooking:
   process:
     started: "&aStarted cooking {recipe}."
     completed: "&6{recipe}&a is ready. Completion: &e{score}%"
+    collected: "&aCollected &6{recipe}&a from the cooking station."
   error:
+    no_heat: '&cA lit campfire or soul campfire is required directly below the equipment.'
     in_progress: "&cYour dish is still cooking."
+    in_use: "&cAnother player is using this cooking station."
     no_ingredients: "&cPlace at least one ingredient."
     recipe_not_found: "&cThe ingredient combination does not match a recipe."
   recipe:
@@ -20,5 +23,13 @@ cooking:
     sweet_bread: "Honey Sweet Bread"
     grilled_cod: "Grilled Cod"
     carrot_cookie: "Carrot Cookie"
+  recipe_description:
+    rustic_stew: "A rustic dish of root vegetables and beef cooked slowly."
+    sweet_bread: "Bread made with honey kneaded into the dough."
+    grilled_cod: "Cod grilled until fragrant."
+    carrot_cookie: "A baked treat that brings out the sweetness of carrots."
+  item:
+    data:
+      completion: "Completion"
   catalog:
     title: "Cooking Catalog {page}/{pages}"

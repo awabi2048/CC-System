@@ -11,8 +11,11 @@ cooking:
   process:
     started: "&a{recipe}の調理を始めました。"
     completed: "&6{recipe}&aが完成しました。完成度: &e{score}%"
+    collected: "&6{recipe}&aを調理台から回収しました。"
   error:
+    no_heat: '&c設備の直下に点火済みの焚き火または魂の焚き火が必要です。'
     in_progress: "&c調理中です。完成までお待ちください。"
+    in_use: "&cこの調理台は他のプレイヤーが操作中です。"
     no_ingredients: "&c材料を1つ以上入れてください。"
     recipe_not_found: "&c材料の組み合わせがレシピに届きません。"
   recipe:
@@ -20,5 +23,13 @@ cooking:
     sweet_bread: "蜂蜜の甘パン"
     grilled_cod: "香ばしい焼き鱈"
     carrot_cookie: "にんじんクッキー"
+  recipe_description:
+    rustic_stew: "根菜と牛肉をじっくり火にかけた素朴な料理。"
+    sweet_bread: "蜂蜜の甘みを生地に練り込んだパン。"
+    grilled_cod: "鱈を香ばしく焼き上げた料理。"
+    carrot_cookie: "にんじんの甘みを活かした焼き菓子。"
+  item:
+    data:
+      completion: "完成度"
   catalog:
     title: "料理図鑑 {page}/{pages}"

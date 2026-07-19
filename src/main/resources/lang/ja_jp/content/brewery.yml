@@ -561,14 +561,17 @@ brewery:
     discovered: '&6醸造図鑑に新しく発見しました: &f{recipe}'
   process:
     fermentation_started: '&a発酵を開始しました。&7（レシピ: {recipe}）'
-    fermentation_stopped: '&e発酵を停止しました。'
     distillation_started: '&a蒸留を開始しました。'
     distillation_stopped: '&e蒸留を停止しました。'
     bottled: '&a瓶詰めが完了しました。'
     aged: '&a熟成が完了しました。'
     barrel_registered: '&a{wood}材の{size}樽を登録しました。'
+    fermentation_barrel_registered: '&a発酵樽を登録しました。'
   error:
-    no_fuel: '&c燃料がないため発酵を開始できません。'
+    no_yeast: '&c培養済み酵母を投入してください。'
+    already_fermenting: '&eこの樽では発酵が進行中です。'
+    fermentation_not_ready: '&e発酵はまだ完了していません。'
+    fermentation_barrel_required: '&c指定の看板はバニラ樽の側面に取り付けてください。'
     no_ingredients: '&c材料スロットにアイテムを入れてください。'
     recipe_not_found: '&c一致するレシピが見つかりません。'
     invalid_input: '&cこの工程に投入できる醸造物ではありません。'
@@ -579,7 +582,7 @@ brewery:
     level_required: '&c必要職業レベル不足: Lv{level} が必要です。'
     skills_required: '&c必要スキル不足: {skills}'
     not_started: '&c発酵が開始されていません。'
-    batch_limit: '&eこのバッチは最大3本までです。'
+    batch_limit: '&eこのバッチは最大{capacity}本までです。'
     single_item: '&cスタックできません。1個ずつ入れてください。'
     barrel_type: '&cこのレシピは{types}の看板樽のみ対応です。'
     invalid_slot: '&cこのスロットには入れられません。'
@@ -591,31 +594,23 @@ brewery:
       distillation: §8蒸留
       aging_big: §8熟成（大樽）
       aging_small: §8熟成（小樽）
-      aging_minecraft: §8熟成（バニラ樽）
     action:
       fermentation_start: 発酵開始
-      fermentation_stop: 発酵停止
+      fermentation_running: 発酵中
       distillation_start: 蒸留開始
       distillation_stop: 蒸留停止
       start: 開始
       stop: 停止
     data:
-      fire: 火力
       current: 現在の醸造物
       none: なし
       step_elapsed: 工程経過
       session_runs: 今回の蒸留回数
       duration: 1回の蒸留時間
       items: 投入数
-    fire:
-      high: 高
-      medium: 中
-      low: 低
-      none: 未点火
     barrel:
       big: 大樽
       small: 小樽
-      minecraft: バニラ樽
     aging_core: 熟成工程
   intoxication:
     status: '&7現在の酔い: &e{alcohol}%'

@@ -30,6 +30,85 @@ custom_items:
       special: "特殊釣果"
     state:
       enabled: "有効"
+  resource:
+    mica_flake:
+      name: "§f雲母片"
+      description: "鉱石に伴って見つかる、薄く剥がれる鉱物片。"
+    rock_salt:
+      name: "§f岩塩"
+      description: "鉱脈から採れる、料理や加工に使える塩の結晶。"
+    calcite_fragment:
+      name: "§f方解石片"
+      description: "深層の鉱脈に伴って見つかる炭酸塩鉱物。"
+    sulfur:
+      name: "§e硫黄"
+      description: "ネザーの鉱脈から採れる反応性の高い鉱物。"
+    pine_cone:
+      name: "§6松かさ"
+      description: "トウヒの葉から採れる、燃料や香り付けに使える林産物。"
+    tree_resin:
+      name: "§6樹脂"
+      description: "原生タイガのトウヒから採れる、接着や防水に使える樹液素材。"
+    birch_outer_bark:
+      name: "§f白樺外皮"
+      description: "シラカバから採れる、火口や包み材に使える薄い外皮。"
+    tannin_bark:
+      name: "§6タンニン樹皮"
+      description: "オーク類から採れる、染色や保存加工に使える樹皮。"
+    tinder_fungus:
+      name: "§6火口茸"
+      description: "特定の森林樹木から採れる、着火材に適した木質菌。"
+    acacia_gum:
+      name: "§eアカシアゴム"
+      description: "アカシアから採れる、接着や結合材に使える樹液素材。"
+    aromatic_wood_chip:
+      name: "§d芳香木片"
+      description: "ジャングルの木やサクラから採れる、香り付けや熟成に使える木片。"
+    burl_wood:
+      name: "§6木瘤材"
+      description: "特殊な森林の樹木からまれに採れる、装飾性に優れた木材。"
+    straw:
+      name: "§eわら"
+      description: "成熟した植生から得られる乾燥した繊維素材。"
+    heartwood:
+      name: "§6心材"
+      description: "自然生成樹木の主要幹から得られる丈夫な木材。"
+    bark:
+      name: "§6樹皮"
+      description: "原木を丁寧に剥いだ際に得られる外皮。"
+    timber_beam:
+      name: "§6角材"
+      description: "工具柄や家具の骨組みに使える精密加工材。"
+    chisel:
+      name: "§b鉱脈用ノミ"
+      description: "鉱石の表面を狙って随伴鉱物を取り出す専門道具。"
+    geology_guide:
+      name: "§b地質調査手帳"
+      description: "自然生成鉱石の高度・地域と随伴鉱物を読み取る専門道具。"
+    mining_hammer:
+      name: "§b一括採掘ハンマー"
+      description: "一括採掘を有効にした鉱夫が鉱脈を処理する専門道具。"
+    felling_axe:
+      name: "§6一括伐採斧"
+      description: "一括伐採を有効にした木こりが樹木を処理する専門道具。"
+    woodworking_hatchet:
+      name: "§6木工用手斧"
+      description: "設置した剥いだ原木を板材へ粗加工する専門道具。"
+    woodworking_knife:
+      name: "§6木工ナイフ"
+      description: "設置した剥いだ原木の精密加工と、鑑定済み林産物の採集に使う専門道具。"
+    forest_guide:
+      name: "§6森林手帳"
+      description: "自然生成樹木を鑑定して、一株に存在する林産物を調べる専門道具。"
+    gathering_guide:
+      name: "§a採集手帳"
+      description: "天然植生を鑑定して採集候補を調べる専門道具。"
+    gathering_sickle:
+      name: "§a採集鎌"
+      description: "鑑定済みの天然植生から特殊素材を採取する専門道具。"
+    cultivation_hoe:
+      name: "§a栽培用のクワ"
+      description: "範囲耕作・範囲収穫を有効にした農家が使用する専門道具。"
   minigame:
     manager:
       name: §6ミニゲーム管理アイテム
@@ -287,6 +366,9 @@ custom_items:
       lore:
       - §7右クリックで計測を開始/停止します。
       - §7手に持ってFキーで計測をリセットします。
+  sukima_dungeon:
+    marker_tool:
+      name: §dスキマ管理マーカーツール
   arena:
     structure_marker_tool:
       name: §6アリーナ構造マーカーツール
@@ -760,10 +842,10 @@ custom_items:
       name: §bふしぎな時計（モック）
       lore:
       - §7熟成GUIの時計スロット用（効果なし）
-    mock_yeast:
-      name: §a培養済み酵母（モック）
+    cultured_yeast:
+      name: §a培養済み酵母
       lore:
-      - §7発酵GUIの酵母スロット用（効果なし）
+      - §7醸造原液を発酵させるための酵母
   arena_broadcast:
     ui:
       broadcast:

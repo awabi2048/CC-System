@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
+import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -9,11 +10,16 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
+import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.time.SharedClockService
+import com.awabi2048.ccsystem.api.time.SeasonService
+import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.cosmetic.CosmeticPlatformImpl
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
@@ -23,6 +29,12 @@ import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
+import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
+import com.awabi2048.ccsystem.core.time.SharedClockServiceImpl
+import com.awabi2048.ccsystem.core.time.SeasonServiceImpl
+import com.awabi2048.ccsystem.core.resource.ResourceWorldLifecycleRuntime
+import com.awabi2048.ccsystem.core.resource.NaturalOriginRuntime
+import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
@@ -40,7 +52,13 @@ import org.bukkit.plugin.java.JavaPlugin
  * CC-System APIの実装クラス
  * LanguageManagerおよびChunkTaskQueueManagerをラップして他のプラグインに機能を提供します
  */
-internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
+internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemAPI {
+    init {
+        ResourceWorldLifecycleRuntime.initialize(dataFolder) { owner, failure ->
+            Bukkit.getLogger().warning("[CC-System][ResourceWorld] 購読者 $owner の処理に失敗しました: ${failure.message}")
+        }
+        NaturalOriginRuntime.initialize(dataFolder)
+    }
     private val menuNavigationService = MenuNavigationServiceImpl(
         File(dataFolder, "data/gui/menu_routes.yml")
     )
@@ -59,6 +77,23 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
             ?: "world"
     )
     private val soundResolutionService = SoundResolutionServiceImpl()
+    private val seasonSettingsFile = File(dataFolder, "config/season.yml")
+    private val sharedClockService = SharedClockServiceImpl(settingsFile = seasonSettingsFile)
+    private val seasonService = SeasonServiceImpl(
+        sharedClockService,
+        File(dataFolder, "data/season/override.yml"),
+        Bukkit.getLogger(),
+        seasonSettingsFile
+    )
+    private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
+        Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
+    }
+    private val cosmeticPlatform = CosmeticPlatformImpl(plugin, dataFolder)
+
+    internal fun reloadTimeSettings() {
+        sharedClockService.reload()
+        seasonService.reload()
+    }
     
     
     override fun getPlayerLanguage(player: Player): String {
@@ -209,6 +244,22 @@ internal class CCSystemAPIImpl(dataFolder: File) : CCSystemAPI {
     override fun getWorldDirectoryService(): WorldDirectoryService = worldDirectoryService
 
     override fun getSoundResolutionService(): SoundResolutionService = soundResolutionService
+
+    override fun getSharedClockService(): SharedClockService = sharedClockService
+
+    override fun getSeasonService(): SeasonService = seasonService
+
+    override fun getContentActionDispatcher(): ContentActionDispatcher = contentActionDispatcher
+
+    override fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService = ResourceWorldLifecycleRuntime.service
+
+    override fun getNaturalOriginRegistry(): NaturalOriginRegistry = NaturalOriginRuntime.registry
+
+    override fun getCosmeticPlatform(): CosmeticPlatform = cosmeticPlatform
+
+    internal fun shutdown() {
+        cosmeticPlatform.shutdown()
+    }
 
     override fun isResourceWorld(world: World): Boolean {
         return ConfigManager.isResourceWorldName(world.name)

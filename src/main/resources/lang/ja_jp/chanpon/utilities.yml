@@ -5,8 +5,12 @@ chanpon_utilities:
     success: "&a書見台とのリンクを解除しました"
     already: "&eこの本棚はリンクされていません"
   freecam:
-    started: "&aFreeCamを開始しました。Shiftキー2回で終了します。"
-    stopped: "&a身体の位置へ戻りました。"
+    started:
+    - "&7FreeCamを開始しました"
+    - "&eShiftキー2回&7または &e/freecam stop &7で終了できます"
+    previous_camera_too_far:
+    - "&7前回の中断位置から離れたため、この場からカメラを開始しました"
+    - "&e/freecam reset_distance <距離> &7で規定の距離から変更できます"
     recovered: "&e未終了のFreeCam状態から身体の位置へ復旧しました。"
     unavailable: "&c現在FreeCamを開始できません。"
     not_active: "&cFreeCam中ではありません。"

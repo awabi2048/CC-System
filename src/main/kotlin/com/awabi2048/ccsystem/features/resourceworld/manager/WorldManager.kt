@@ -3,6 +3,8 @@ package com.awabi2048.ccsystem.features.resourceworld.manager
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.api.resource.ResourceWorldState
+import com.awabi2048.ccsystem.core.resource.ResourceWorldLifecycleRuntime
 import com.awabi2048.ccsystem.features.resourceworld.manager.MacroManager
 import com.awabi2048.ccsystem.features.resourceworld.manager.PregenerationStateManager
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -139,7 +141,9 @@ object WorldManager {
         val dateStr = LocalDateTime.now().format(dateFormatter)
         val worldName = "${resourceConfig.baseName}.$variation.$dateStr"
 
-        val creator = WorldCreator(NamespacedKey.minecraft(worldName))
+        val generatedWorldKey = NamespacedKey.minecraft(worldName)
+        ResourceWorldLifecycleRuntime.service.beginGeneration(generatedWorldKey, worldName, type, variation)
+        val creator = WorldCreator(generatedWorldKey)
         when (type.lowercase()) {
             "nether" -> creator.environment(World.Environment.NETHER)
             "end" -> creator.environment(World.Environment.THE_END)
@@ -148,6 +152,7 @@ object WorldManager {
 
         logger.info("資源ワールド $worldName を生成しています...")
         val world = creator.createWorld() ?: run {
+            ResourceWorldLifecycleRuntime.service.transition(generatedWorldKey, ResourceWorldState.FAILED)
             val errorMsg = LanguageManager.getRawString(null, "resource.world_create_failed", "world_name" to worldName)
             logger.severe(errorMsg)
             broadcastLegacy(errorMsg)
@@ -333,6 +338,12 @@ object WorldManager {
             return
         }
 
+        val lifecycle = ResourceWorldLifecycleRuntime.service
+        val generation = lifecycle.getGeneration(world.key)
+        if (generation?.state == ResourceWorldState.CREATING) {
+            lifecycle.transition(world.key, ResourceWorldState.PREGENERATING)
+        }
+
         val priorityDiameter = ConfigManager.getPregenPriorityDiameter()
         val delay = ConfigManager.getPregenDelayTicks()
         val batchSize = ConfigManager.getPregenBatchSize()
@@ -362,6 +373,9 @@ object WorldManager {
         priorityPregenProgress[worldKey] = if (priorityCompleted) 100 else initialPriorityPercent
         if (priorityCompleted) {
             readyWorlds.add(worldKey)
+            if (lifecycle.getGeneration(world.key)?.state == ResourceWorldState.PREGENERATING) {
+                lifecycle.transition(world.key, ResourceWorldState.READY)
+            }
         }
 
         // 状態の初期化・更新
@@ -416,6 +430,7 @@ object WorldManager {
                 // 優先ゾーン完了判定
                 if (index >= priorityChunks.size && !readyWorlds.contains(worldKey)) {
                     readyWorlds.add(worldKey)
+                    lifecycle.transition(world.key, ResourceWorldState.READY)
                     priorityCompleteTime[worldKey] = System.currentTimeMillis()
                     val msg = LanguageManager.getRawString(null, "pregen_priority_complete").replace("%world_name%", world.name)
                     broadcastLegacy(msg)
@@ -543,6 +558,16 @@ object WorldManager {
             onComplete(false)
             return
         }
+
+        val lifecycle = ResourceWorldLifecycleRuntime.service
+        val removalKeys = (directoriesToRemove.map { it.key } + worldsToRemove.map { it.key }).distinct()
+        removalKeys.forEach { key ->
+            if (lifecycle.getGeneration(key) == null) {
+                lifecycle.registerExisting(key, key.key, type, variation)
+            }
+            lifecycle.transition(key, ResourceWorldState.RESETTING)
+            lifecycle.transition(key, ResourceWorldState.UNLOADING)
+        }
         
         for (world in worldsToRemove) {
             val worldName = world.name
@@ -597,8 +622,10 @@ object WorldManager {
                     this.cancel()
                     if (hasRemainingFiles) {
                         logger.severe("ワールドフォルダの削除が完了しませんでした。手動での削除が必要かもしれません。")
+                        removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.FAILED) }
                         onComplete(false)
                     } else {
+                        removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.DELETED) }
                         onComplete(true)
                     }
                 }
@@ -674,6 +701,12 @@ object WorldManager {
                     pregenProgress[worldKey] = 100 // 既存ワールドは100%完了とみなす
                     logger.info("資源ワールド $worldName のロードに成功しました。")
                     priorityPregenProgress[worldKey] = 100
+                    ResourceWorldLifecycleRuntime.service.registerExisting(
+                        entry.key,
+                        worldName,
+                        type,
+                        worldName.split('.').getOrElse(1) { "default" }
+                    )
                 } else {
                     logger.severe("資源ワールド $worldName のロードに失敗しました。")
                 }
@@ -682,6 +715,13 @@ object WorldManager {
                 readyWorlds.add(worldKey)
                 pregenProgress[worldKey] = 100 // 既存ワールドは100%完了とみなす
                 priorityPregenProgress[worldKey] = 100
+                val type = resourceConfigs.entries.find { key.startsWith(it.value.baseName) }?.key ?: "normal"
+                ResourceWorldLifecycleRuntime.service.registerExisting(
+                    entry.key,
+                    worldName,
+                    type,
+                    worldName.split('.').getOrElse(1) { "default" }
+                )
             }
         }
     }
@@ -721,6 +761,12 @@ object WorldManager {
         }
 
         val worldKey = worldKey(world)
+        val lifecycle = ResourceWorldLifecycleRuntime.service
+        lifecycle.getGeneration(world.key)?.let { generation ->
+            if (generation.state == ResourceWorldState.READY || generation.state == ResourceWorldState.PREGENERATING) {
+                lifecycle.transition(world.key, ResourceWorldState.RESETTING)
+            }
+        }
         val task = pregenTasks[worldKey]
         if (task != null) {
             pregenTaskInfos[worldKey]?.let { taskInfo ->

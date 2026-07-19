@@ -26,6 +26,13 @@ class LanguageResourceValidationTest {
         LanguageResourceValidator.validate(
             Path.of("src/main/resources/lang"),
             List.of(
+                "gui.creation.template_detail.status_label",
+                "gui.creation.template_detail.status_available",
+                "gui.creation.template_detail.status_unavailable",
+                "chanpon.admin_wizard.detail_content_available",
+                "chanpon.admin_wizard.detail_content_unavailable",
+                "chanpon.admin_wizard.validation.missing_directory",
+                "chanpon.admin_wizard.validation.missing_origin",
                 "chanpon.submission.common.on",
                 "chanpon.submission.common.off",
                 "chanpon.submission.creation.display",

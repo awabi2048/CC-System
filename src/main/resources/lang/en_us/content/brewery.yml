@@ -561,14 +561,17 @@ brewery:
     discovered: '&6Discovered in the brewery catalog: &f{recipe}'
   process:
     fermentation_started: '&aFermentation started. &7(Recipe: {recipe})'
-    fermentation_stopped: '&eFermentation stopped.'
     distillation_started: '&aDistillation started.'
     distillation_stopped: '&eDistillation stopped.'
     bottled: '&aBottling completed.'
     aged: '&aAging completed.'
     barrel_registered: '&aRegistered a {size} barrel made of {wood}.'
+    fermentation_barrel_registered: '&aRegistered the fermentation barrel.'
   error:
-    no_fuel: '&cFermentation cannot start without fuel.'
+    no_yeast: '&cAdd cultured yeast before starting fermentation.'
+    already_fermenting: '&eFermentation is already in progress in this barrel.'
+    fermentation_not_ready: '&eFermentation has not finished yet.'
+    fermentation_barrel_required: '&cAttach this sign to the side of a vanilla barrel.'
     no_ingredients: '&cPlace ingredients in the input slots.'
     recipe_not_found: '&cNo matching recipe was found.'
     invalid_input: '&cThis brew cannot be inserted into this process.'
@@ -579,7 +582,7 @@ brewery:
     level_required: '&cProfession level {level} is required.'
     skills_required: '&cRequired skills: {skills}'
     not_started: '&cFermentation has not started.'
-    batch_limit: '&eThis batch is limited to three bottles.'
+    batch_limit: '&eThis batch is limited to {capacity} bottles.'
     single_item: '&cThis slot accepts one item at a time.'
     barrel_type: '&cThis recipe requires a barrel sign of type {types}.'
     invalid_slot: '&cThis item cannot be placed in this slot.'
@@ -591,31 +594,23 @@ brewery:
       distillation: §8Distillation
       aging_big: §8Aging (Large Barrel)
       aging_small: §8Aging (Small Barrel)
-      aging_minecraft: §8Aging (Minecraft Barrel)
     action:
       fermentation_start: Start fermentation
-      fermentation_stop: Stop fermentation
+      fermentation_running: Fermenting
       distillation_start: Start distillation
       distillation_stop: Stop distillation
       start: Start
       stop: Stop
     data:
-      fire: Fire power
       current: Current brew
       none: None
       step_elapsed: Step elapsed
       session_runs: Distillations this session
       duration: Time per distillation
       items: Items inserted
-    fire:
-      high: High
-      medium: Medium
-      low: Low
-      none: Unlit
     barrel:
       big: Large barrel
       small: Small barrel
-      minecraft: Minecraft barrel
     aging_core: Aging process
   intoxication:
     status: '&7Current intoxication: &e{alcohol}%'

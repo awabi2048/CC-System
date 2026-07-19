@@ -1,4 +1,10 @@
 gui:
+  migration:
+    confirm:
+      title: 旧ワールド移行の確認
+      summary: 移行対象を直列処理します
+      execute: 移行を実行
+      cancel: キャンセル
   admin:
     title: マイワールドの管理
     info:

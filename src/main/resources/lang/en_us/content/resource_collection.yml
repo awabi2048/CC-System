@@ -1,7 +1,58 @@
 resource_collection:
-  action:
-    harvest: "Resource harvest"
-    craft: "Resource crafting"
-  reward: "Gained {experience} {profession} experience from {action}."
   error:
-    disabled: "Resource collection is currently disabled."
+    miner_required: "§cThe chisel requires Miner level 5 or higher."
+    lumberjack_required: "§cWoodworking requires Lumberjack level 5 or higher."
+    farmer_required: "§cVegetation inspection requires Farmer level 5 or higher."
+    natural_resource_required: "§cA naturally generated ore in a READY resource world is required."
+    placed_log_required: "§cA placed log in a READY resource world is required."
+    stripped_log_required: "§cTarget a stripped log or stripped stem."
+    in_use: "§cAnother player is already processing this resource."
+    protected: "§cThis location is protected and cannot be processed."
+    natural_vegetation_required: "§cNatural vegetation in a READY resource world is required."
+    natural_tree_required: "§cA naturally generated tree in a READY resource world is required."
+    ready_world_required: "§cThis operation is available only in a READY resource world."
+  chisel:
+    started: "§bStrike the displayed target three times with the chisel."
+    completed: "§aChisel mining complete. Special materials: {amount}"
+    cancelled: "§7Chisel mining was cancelled. The ore was not changed."
+    timeout: "§7Chisel mining timed out and the ore was not changed."
+  inspection:
+    basic: "§bVein inspected. Altitude: {altitude} / Region: {biome}"
+    detailed: "§bVein inspected. Altitude: {altitude} / Region: {biome} / Companion mineral: {material}"
+    altitude:
+      high: "High"
+      shallow: "Shallow"
+      middle: "Mid-depth"
+      deep: "Deep"
+    biome:
+      temperate: "Temperate"
+      cold: "Cold"
+      dry: "Dry"
+      wet: "Wet"
+      mountain: "Mountain"
+      nether: "Nether"
+  woodworking:
+    completed: "§aWoodworking complete."
+  batch:
+    completed: "§aBatch operation complete. Targets: {count}"
+  gathering:
+    inspected: "§aNatural vegetation inspected. Targets: {count}"
+    inspected_detailed: "§aNatural vegetation inspected. Targets: {count} / Season: {season} / Uses: {uses} / Vegetation groups: {groups}"
+    no_discoveries: "§7Natural vegetation inspected, but no gathering candidates are currently available."
+    completed: "§aGathered {amount} specialist plants."
+    cooldown: "§7Wait before inspecting vegetation again."
+    surface_depleted: "§7Surface plants in this area were already gathered. Wait for them to recover."
+    season:
+      spring: "Spring"
+      summer: "Summer"
+      autumn: "Autumn"
+      winter: "Winter"
+  forest:
+    inspected: "§aInspected the tree surroundings. Forest-product targets: {count}"
+    inspected_exact: "§aInspected the tree surroundings. Available: {products}"
+    no_discoveries: "§7Inspected the tree surroundings, but found no forest products."
+    completed: "§aCollected {amount} forest products."
+    cooldown: "§7Please wait before inspecting forest products again."
+  cultivation:
+    harvested: "§aHarvested {count} mature crops."
+    tilled: "§aTilled {count} blocks of soil."

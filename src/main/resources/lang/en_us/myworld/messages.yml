@@ -25,6 +25,8 @@ messages:
   creation_cancelled: §c Creation of My World has been canceled.
   creation_success: §a World creation completed!
   creation_failed: §c creation failed.
+  world_creation_processing: §aCreating world...
+  template_creation_cost_paid: '§aSpent §6🛖 §e{cost} §apoints. (Remaining: §6🛖 §e{remaining}§a)'
   world_not_found: §c World not found.
   spawn_set_start: §aSetting spawn point for {type}. Left-click a block while facing the desired direction.
   spawn_setting_started: §aSetting spawn point for {type}. Click a block while facing the desired direction.
@@ -123,6 +125,16 @@ messages:
   wizard_id_missing: §cID is not set.
   wizard_id_exists: §c That ID already exists.
   wizard_registered: §a template “{template}” has been registered!
+  template_wizard_icon_help: §eClick an inventory item to use it as the icon.
+  template_wizard_source_changed: §cSet the creation spawn inside the source world.
+  template_wizard_spawn_set: §aYour current location is now the creation spawn.
+  template_wizard_id_missing: §cThe template ID is not set.
+  template_wizard_id_exists: §cThat template ID already exists.
+  template_wizard_name_required: §cEnter a template name.
+  template_wizard_name_set: '§aTemplate name set: {name} (ID: {id})'
+  template_wizard_description_set: §aTemplate description set.
+  template_wizard_validation_success: §aSource, ID, and creation spawn are valid. The template can be registered.
+  template_wizard_validation_failed: §cRegistration details are incomplete. Review the warnings on the screen.
   oage_ganbaru_messages:
   - §eOage is expanding the world... §7"Heave-ho!"
   - §eOage is pushing the boundaries!
@@ -158,6 +170,7 @@ messages:
   expand_complete: '§aExpansion complete! §7{level_before} §f→ §e§l{level_after}'
   expansion_reset_complete: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
   expansion_reset_success: §aExpansion reset. Refunded §6🛖 §e{points} §apoints.
+  expansion_reset_success_without_points: §aExpansion reset.
   expansion_step_back_success: §aWorld border stepped back by one level. §7{level_before} §f→ §e§l{level_after}
   expansion_step_back_unavailable: §cThere is no expansion history to step back.
   world_delete_start: §cDeleting world "{world}"...
@@ -232,6 +245,10 @@ messages:
   - '§7Cost: §6🛖 §e{required}'
   - '§7Current: §6🛖 §e{current}'
   - '§7After Place: §6🛖 §e{remaining}'
+  world_gate_confirm_body_without_points:
+  - §fThe world gate will be placed in this region.
+  - '§7Min: §f({min_x}, {min_y}, {min_z})'
+  - '§7Max: §f({max_x}, {max_y}, {max_z})'
   world_gate_place_cancelled: §eWorld gate placement was cancelled.
   world_gate_place_success: §aWorld gate placed successfully.
   world_gate_removed_refund: '§aWorld gate removed. Refunded §6🛖 §e{points} §ato owner §e{owner}§a. (Rate: §e{percent}%§a)'
@@ -280,15 +297,18 @@ messages:
   usage_stats: '§cUsage: /mwm stats <player> <field> <action> [value]'
   usage_stats_fields: '§7Fields: points, warp-slots, world-slots'
   command_disabled: '§cThis MWM command is disabled.'
+  world_operation_locked: §cAnother operation is active for this world. Try again after it finishes.
   migration:
-    approval_required: '§eLoading approval is required to migrate legacy world {world}: /mwm migration approve {uuid}'
-    world_data_missing: '§cCannot load {world} because its world settings are missing.'
-    approved: '§aApproved loading and migration of {world}.'
-    load_failed: '§cFailed to load and migrate {world}.'
-    none_pending: §7There are no legacy worlds awaiting approval.
+    pending: '§eLegacy world awaiting migration: {world} ({uuid})'
+    none_pending: §7There are no legacy worlds to migrate.
     conflict: '§cMigration of world {world} was rejected because both legacy and current directories exist.'
-    usage: '§cUsage: /mwm migration list | approve <UUID> | reject <UUID>'
-    not_found: §cThe legacy world was not found or the operation failed.
+    usage: '§cUsage: /mwm migration execute | status'
+    already_running: §eWorld migration is already running.
+    console_confirm: '§eTo confirm, run /mwm migration execute confirm.'
+    started: '§aQueued {count} legacy worlds for migration.'
+    completed: §aThe world migration queue has completed.
+    status_summary: '§eMigration: {state} §7| total: {total} / completed: {completed} / waiting: {waiting} / retry: {retries} / failed: {failed} / current: {current}'
+    status_world: '§7- {world}: {status} / attempts {attempts} / last error {error} / updated {updated}'
   seed_spawn:
     corrected: '§eThe configured spawn was unsafe and was moved to {x}, {y}, {z}.'
     safe_location_not_found: §cNo safe location was found near the configured spawn. Warp cancelled.

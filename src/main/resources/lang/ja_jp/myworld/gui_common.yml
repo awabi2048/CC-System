@@ -2,6 +2,8 @@ gui:
   common:
     action:
       cycle: 切り替え
+      previous: 前の項目へ変更
+      next: 次の項目へ変更
     world_item_name: §f【§a{world}§f】
     world_item_name_simple: §f「§a{world}§f」
     world_desc: §f{description}
