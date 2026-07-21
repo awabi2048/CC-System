@@ -1,0 +1,379 @@
+brewery:
+  preparation:
+    wheatbeer_wort:
+      name: "wheatbeerの原液"
+    beer_wort:
+      name: "beerの原液"
+    darkbeer_wort:
+      name: "黒beerの原液"
+    mead_must:
+      name: "meadの原液"
+    apple_mead_must:
+      name: "林檎のmeadの原液"
+    red_grape_must:
+      name: "redwineの原液"
+    white_glowberry_must:
+      name: "whitewineの原液"
+    cider_must:
+      name: "cidreの原液"
+    apple_liquor_mash:
+      name: "apple liquorの原液"
+    whisky_wort:
+      name: "whiskyの原液"
+    rum_wash:
+      name: "rumの原液"
+    vodka_mash:
+      name: "vodkaの原液"
+    gin_wash:
+      name: "ginの原液"
+    tequila_wash:
+      name: "tequilaの原液"
+    absinthe_wash:
+      name: "absintheの原液"
+    great_absinthe_wash:
+      name: "上質なabsintheの原液"
+    spirytus_mash:
+      name: "spirytusの原液"
+    apple_saida_must:
+      name: "apple saidaの原液"
+    sake_mash:
+      name: "sakeの原液"
+    awamori_mash:
+      name: "awamoriの原液"
+    shochu_mash:
+      name: "shochuの原液"
+    brandy_must:
+      name: "brandyの原液"
+    moonshine_mash:
+      name: "moonshineの原液"
+    mushroom_ale_wort:
+      name: "mushroom aleの原液"
+    chorus_spirit_wash:
+      name: "chorus spiritの原液"
+    cacao_must:
+      name: "cacao wineの原液"
+  recipe:
+    wheatbeer:
+      name: "wheatbeer"
+      final:
+        low:
+          name: "wheatbeer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "wheatbeer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "wheatbeer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    beer:
+      name: "beer"
+      final:
+        low:
+          name: "beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    darkbeer:
+      name: "黒beer"
+      final:
+        low:
+          name: "黒beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "黒beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "黒beer"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    mead:
+      name: "mead"
+      final:
+        low:
+          name: "mead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "mead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "mead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    ap_mead:
+      name: "林檎のmead"
+      final:
+        low:
+          name: "林檎のmead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "林檎のmead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "林檎のmead"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    redwine:
+      name: "redwine"
+      final:
+        low:
+          name: "redwine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "redwine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "redwine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    vintagewine:
+      name: "vintagewine"
+      final:
+        low:
+          name: "vintagewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "vintagewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "vintagewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    whitewine:
+      name: "whitewine"
+      final:
+        low:
+          name: "whitewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "whitewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "whitewine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    cidre:
+      name: "cidre"
+      final:
+        low:
+          name: "cidre"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "cidre"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "cidre"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    apple_liquor:
+      name: "apple liquor"
+      final:
+        low:
+          name: "apple liquor"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "apple liquor"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "apple liquor"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    whisky:
+      name: "whisky"
+      final:
+        low:
+          name: "whisky"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "whisky"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "whisky"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    rum:
+      name: "rum"
+      final:
+        low:
+          name: "rum"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "rum"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "rum"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    vodka:
+      name: "vodka"
+      final:
+        low:
+          name: "vodka"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "vodka"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "vodka"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    gin:
+      name: "gin"
+      final:
+        low:
+          name: "gin"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "gin"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "gin"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    tequila:
+      name: "tequila"
+      final:
+        low:
+          name: "tequila"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "tequila"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "tequila"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    absinthe:
+      name: "absinthe"
+      final:
+        low:
+          name: "absinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "absinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "absinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    gr_absinthe:
+      name: "上質なabsinthe"
+      final:
+        low:
+          name: "上質なabsinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "上質なabsinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "上質なabsinthe"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    spirytus:
+      name: "spirytus"
+      final:
+        low:
+          name: "spirytus"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "spirytus"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "spirytus"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    apple_saida:
+      name: "apple saida"
+      final:
+        low:
+          name: "apple saida"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "apple saida"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "apple saida"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    sake:
+      name: "sake"
+      final:
+        low:
+          name: "sake"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "sake"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "sake"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    awamori:
+      name: "awamori"
+      final:
+        low:
+          name: "awamori"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "awamori"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "awamori"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    shochu:
+      name: "shochu"
+      final:
+        low:
+          name: "shochu"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "shochu"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "shochu"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    brandy:
+      name: "brandy"
+      final:
+        low:
+          name: "brandy"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "brandy"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "brandy"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    moonshine:
+      name: "moonshine"
+      final:
+        low:
+          name: "moonshine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "moonshine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "moonshine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    mushroom_ale:
+      name: "mushroom ale"
+      final:
+        low:
+          name: "mushroom ale"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "mushroom ale"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "mushroom ale"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    chorus_spirit:
+      name: "chorus spirit"
+      final:
+        low:
+          name: "chorus spirit"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "chorus spirit"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "chorus spirit"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+    cacao_wine:
+      name: "cacao wine"
+      final:
+        low:
+          name: "cacao wine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        standard:
+          name: "cacao wine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"
+        high:
+          name: "cacao wine"
+          description: "発酵、蒸留、熟成の必要工程を経て完成した醸造品。"

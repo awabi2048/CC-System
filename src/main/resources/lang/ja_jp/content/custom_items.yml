@@ -813,47 +813,11 @@ custom_items:
       end:
         name: エンド
   brewery:
-    garden_seed_apple:
-      name: §aりんごの種
-      lore:
-      - §7Gardenでりんごを育てるための種
-    garden_fruit_apple:
-      name: §cりんご
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_blueberry:
-      name: §aブルーベリーの種
-      lore:
-      - §7Gardenでブルーベリーを育てるための種
-    garden_fruit_blueberry:
-      name: §9ブルーベリー
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_grape:
-      name: §aぶどうの種
-      lore:
-      - §7Gardenでぶどうを育てるための種
-    garden_fruit_grape:
-      name: §5ぶどう
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_strawberry:
-      name: §aイチゴの種
-      lore:
-      - §7Gardenでイチゴを育てるための種
-    garden_fruit_strawberry:
-      name: §dイチゴ
-      lore:
-      - §7Gardenで収穫した醸造素材
     sample_filter:
       name: §e蒸留フィルター（試作）
       lore:
       - §7蒸留時間 -15%
       - §71蒸留ごとに耐久を1消費
-    mock_clock:
-      name: §bふしぎな時計（モック）
-      lore:
-      - §7熟成GUIの時計スロット用（効果なし）
     cultured_yeast:
       name: §a培養済み酵母
       lore:

@@ -1,0 +1,338 @@
+cooking:
+  ui:
+    title:
+      cutting: "まな板"
+      pan: "フライパン調理"
+      cauldron: "大釜調理"
+    close: "閉じる"
+    info: "料理情報"
+    start: "開始"
+    cancel: "取消"
+    state: "状態"
+    heat: "火力"
+    liquid_result: "液体成果物"
+  process:
+    started: "§a調理を開始しました。"
+    completed: "§a処理が完了しました。"
+    cancelled: "§e処理を取り消しました。"
+  error:
+    no_heat: "§c有効な火力がありません。"
+    no_pan: "§c開始時のフライパンを持ってください。"
+    in_use: "§cこの設備は使用中です。"
+    recipe_not_found: "§c一致するレシピがありません。"
+    ambiguous_recipe: "§c候補を一意に決定できません。"
+    tier_locked: "§cこのレシピは未解放です。"
+    container_required: "§c正しい空容器が必要です。"
+  recipe:
+    cooked_rice: "炊いたご飯"
+    tomato_sauce: "トマトソース"
+    dashi: "魚介だし"
+    miso: "味噌"
+    soy_sauce: "しょうゆ"
+    curry_roux: "カレールー"
+    butter: "バター"
+    dough: "生地"
+    sweet_dough: "甘い生地"
+    carrot_cookie_dough: "人参クッキー生地"
+    roasted_coffee: "焙煎コーヒー"
+    rice_vinegar: "米酢"
+    tofu: "豆腐"
+    cocoa_syrup: "カカオシロップ"
+    pan_fried_potato: "フライパンポテト"
+    honey_carrot: "ハチミツ人参"
+    grilled_cod: "タラの塩焼き"
+    grilled_mackerel: "サバの塩焼き"
+    grilled_horse_mackerel: "アジの塩焼き"
+    potato_soup: "ポテトスープ"
+    mushroom_soup: "キノコスープ"
+    miso_soup: "味噌汁"
+    green_tea: "緑茶"
+    hot_cocoa: "ホットココア"
+    meat_vegetable_stir_fry: "肉野菜炒め"
+    hamburg_steak: "ハンバーグ"
+    teriyaki_chicken: "照り焼きチキン"
+    vegetable_curry_rice: "野菜カレーライス"
+    cod_simmered: "タラの煮付け"
+    mackerel_miso_simmer: "サバの味噌煮"
+    cod_meuniere: "タラのムニエル"
+    flounder_meuniere: "ヒラメのムニエル"
+    ayu_shioyaki: "鮎の塩焼き"
+    sea_bream_shioyaki: "鯛の塩焼き"
+    smelt_soup: "ワカサギの汁物"
+    potato_potage: "ジャガイモのポタージュ"
+    mushroom_butter_saute: "キノコバター炒め"
+    ginger_drink: "生姜湯"
+    coffee: "コーヒー"
+    rd_smoothie: "赤い果実のシロップ"
+    yl_smoothie: "黄金果実のシロップ"
+    pl_smoothie: "紫果実のドリンク"
+    mix_smoothie: "三色果実のシロップ"
+    or_smoothie: "夕焼け果実のシロップ"
+    bl_smoothie: "深紅のベリーエキス"
+    vt_smoothie: "すみれ色の果実煎液"
+    gr_smoothie: "青葉の滋養液"
+    pork_soup: "豚汁"
+    cream_stew: "クリームシチュー"
+    beef_stew: "ビーフシチュー"
+    fried_rice: "炒飯"
+    omurice: "オムライス"
+    tuna_steak: "マグロステーキ"
+    salmon_mushroom_grill: "サケとキノコのバター焼き"
+    eel_kabayaki: "うなぎの蒲焼き"
+    nether_fungus_stir_fry: "ネザーキノコ炒め"
+    chorus_compote: "コーラスフルーツの甘煮"
+    autumn_salmon_hotpot: "秋鮭ときのこの鍋"
+    anglerfish_hotpot: "アンコウ鍋"
+    fugu_hotpot: "フグ鍋"
+    soul_fire_tuna_steak: "魂火のマグロステーキ"
+    adventurers_hotpot: "冒険者の大鍋"
+    sweet_bread: "甘いパン"
+    carrot_cookie: "人参クッキー"
+    country_bread: "田舎パン"
+    baked_apple: "焼きリンゴ"
+    smoked_cod: "燻製タラ"
+    smoked_salmon: "燻製サケ"
+    smoked_mackerel: "燻製サバ"
+    knife: "包丁"
+    frying_pan: "フライパン"
+    burnt_solid_food: "焦げた料理"
+    burnt_bowl_food: "焦げた汁物"
+    burnt_bottle_liquid: "焦げた飲み物"
+    undercooked_solid_food: "生焼けの料理"
+    undercooked_bowl_food: "加熱不足の汁物"
+    underprepared_bottle_liquid: "抽出不足の飲み物"
+  catalog:
+    title: "料理図鑑 {page}/{pages}"
+custom_items:
+  cooking:
+    cooked_rice:
+      name: "炊いたご飯"
+      description: "料理や醸造に使用する加工品。"
+    tomato_sauce:
+      name: "トマトソース"
+      description: "料理や醸造に使用する加工品。"
+    dashi:
+      name: "魚介だし"
+      description: "料理や醸造に使用する加工品。"
+    miso:
+      name: "味噌"
+      description: "料理や醸造に使用する加工品。"
+    soy_sauce:
+      name: "しょうゆ"
+      description: "料理や醸造に使用する加工品。"
+    curry_roux:
+      name: "カレールー"
+      description: "料理や醸造に使用する加工品。"
+    butter:
+      name: "バター"
+      description: "料理や醸造に使用する加工品。"
+    dough:
+      name: "生地"
+      description: "料理や醸造に使用する加工品。"
+    sweet_dough:
+      name: "甘い生地"
+      description: "料理や醸造に使用する加工品。"
+    carrot_cookie_dough:
+      name: "人参クッキー生地"
+      description: "料理や醸造に使用する加工品。"
+    roasted_coffee:
+      name: "焙煎コーヒー"
+      description: "料理や醸造に使用する加工品。"
+    rice_vinegar:
+      name: "米酢"
+      description: "料理や醸造に使用する加工品。"
+    tofu:
+      name: "豆腐"
+      description: "料理や醸造に使用する加工品。"
+    cocoa_syrup:
+      name: "カカオシロップ"
+      description: "料理や醸造に使用する加工品。"
+    pan_fried_potato:
+      name: "フライパンポテト"
+      description: "切ったジャガイモを高火力で香ばしく焼いた料理。"
+    honey_carrot:
+      name: "ハチミツ人参"
+      description: "ニンジンをハチミツの甘みで照りよく焼いた料理。"
+    grilled_cod:
+      name: "タラの塩焼き"
+      description: "タラを丸ごと塩で焼いた素朴な魚料理。"
+    grilled_mackerel:
+      name: "サバの塩焼き"
+      description: "脂ののったサバを丸ごと塩で焼いた料理。"
+    grilled_horse_mackerel:
+      name: "アジの塩焼き"
+      description: "アジを丸ごと塩で焼いた家庭的な魚料理。"
+    potato_soup:
+      name: "ポテトスープ"
+      description: "ジャガイモとニンジンを柔らかく煮たスープ。"
+    mushroom_soup:
+      name: "キノコスープ"
+      description: "二種類のキノコの香りを生かしたスープ。"
+    miso_soup:
+      name: "味噌汁"
+      description: "味噌、豆腐、ネギを使った日常的な汁物。"
+    green_tea:
+      name: "緑茶"
+      description: "採集した茶葉を湯で抽出した飲み物。"
+    hot_cocoa:
+      name: "ホットココア"
+      description: "カカオシロップと牛乳を合わせた温かな飲み物。"
+    meat_vegetable_stir_fry:
+      name: "肉野菜炒め"
+      description: "豚肉と切った野菜をしょうゆで強火炒めにした料理。"
+    hamburg_steak:
+      name: "ハンバーグ"
+      description: "牛肉とタマネギをまとめ、トマトソースで仕上げた洋食。"
+    teriyaki_chicken:
+      name: "照り焼きチキン"
+      description: "鶏肉をしょうゆ、砂糖、生姜で甘辛く焼いた料理。"
+    vegetable_curry_rice:
+      name: "野菜カレーライス"
+      description: "野菜とカレールーを炊いた米に合わせた料理。"
+    cod_simmered:
+      name: "タラの煮付け"
+      description: "タラの切り身をしょうゆと生姜で煮た料理。"
+    mackerel_miso_simmer:
+      name: "サバの味噌煮"
+      description: "サバの切り身を味噌と生姜で煮た家庭料理。"
+    cod_meuniere:
+      name: "タラのムニエル"
+      description: "タラの切り身をバターで焼いた洋食。"
+    flounder_meuniere:
+      name: "ヒラメのムニエル"
+      description: "ヒラメの切り身をバターで焼いた洋食。"
+    ayu_shioyaki:
+      name: "鮎の塩焼き"
+      description: "鮎を丸ごと塩で焼いた季節の料理。"
+    sea_bream_shioyaki:
+      name: "鯛の塩焼き"
+      description: "鯛を丸ごと塩で焼いた祝いの料理。"
+    smelt_soup:
+      name: "ワカサギの汁物"
+      description: "ワカサギと魚介だし、ネギを使った汁物。"
+    potato_potage:
+      name: "ジャガイモのポタージュ"
+      description: "ジャガイモ、タマネギ、牛乳を煮た滑らかなスープ。"
+    mushroom_butter_saute:
+      name: "キノコバター炒め"
+      description: "二種類のキノコをバターで香ばしく炒めた料理。"
+    ginger_drink:
+      name: "生姜湯"
+      description: "生姜とハチミツを湯で合わせた温かな飲み物。"
+    coffee:
+      name: "コーヒー"
+      description: "焙煎したコーヒー豆から抽出した飲み物。"
+    rd_smoothie:
+      name: "赤い果実のシロップ"
+      description: "イチゴと砂糖を加熱して作る赤い果実の飲み物。"
+    yl_smoothie:
+      name: "黄金果実のシロップ"
+      description: "リンゴとハチミツを加熱して作る黄金色の飲み物。"
+    pl_smoothie:
+      name: "紫果実のドリンク"
+      description: "ブルーベリーと砂糖を加熱して作る紫色の飲み物。"
+    mix_smoothie:
+      name: "三色果実のシロップ"
+      description: "三種類の果実を加熱して作る甘い飲み物。"
+    or_smoothie:
+      name: "夕焼け果実のシロップ"
+      description: "リンゴとニンジンを加熱して作る夕焼け色の飲み物。"
+    bl_smoothie:
+      name: "深紅のベリーエキス"
+      description: "ブドウと砂糖を加熱して作る深紅の飲み物。"
+    vt_smoothie:
+      name: "すみれ色の果実煎液"
+      description: "ブルーベリーとブドウを加熱して作るすみれ色の飲み物。"
+    gr_smoothie:
+      name: "青葉の滋養液"
+      description: "青菜とハチミツを加熱して作る滋養飲料。"
+    pork_soup:
+      name: "豚汁"
+      description: "豚肉、根菜、味噌を合わせた具だくさんの汁物。"
+    cream_stew:
+      name: "クリームシチュー"
+      description: "鶏肉と切った根菜を牛乳で煮た白いシチュー。"
+    beef_stew:
+      name: "ビーフシチュー"
+      description: "牛肉と切った野菜をトマトソースで煮た洋食。"
+    fried_rice:
+      name: "炒飯"
+      description: "炊いた米、卵、豚肉、野菜を強火で炒めた料理。"
+    omurice:
+      name: "オムライス"
+      description: "鶏肉とトマト味の米を卵と合わせた洋食。"
+    tuna_steak:
+      name: "マグロステーキ"
+      description: "マグロの切り身を生姜と塩で強火焼きにした料理。"
+    salmon_mushroom_grill:
+      name: "サケとキノコのバター焼き"
+      description: "サケとキノコをバターで焼いた料理。"
+    eel_kabayaki:
+      name: "うなぎの蒲焼き"
+      description: "ウナギの切り身を甘辛いしょうゆだれで焼いた料理。"
+    nether_fungus_stir_fry:
+      name: "ネザーキノコ炒め"
+      description: "ネザーの二種類のキノコと豚肉を炒めた料理。"
+    chorus_compote:
+      name: "コーラスフルーツの甘煮"
+      description: "コーラスフルーツを砂糖で煮た不思議な甘味。"
+    autumn_salmon_hotpot:
+      name: "秋鮭ときのこの鍋"
+      description: "サケ、キノコ、青菜、大根を魚介だしで煮た鍋料理。"
+    anglerfish_hotpot:
+      name: "アンコウ鍋"
+      description: "アンコウ、キノコ、青菜、大根を魚介だしで煮た鍋料理。"
+    fugu_hotpot:
+      name: "フグ鍋"
+      description: "適切に下ごしらえしたフグを魚介だしで煮た特別な鍋料理。"
+    soul_fire_tuna_steak:
+      name: "魂火のマグロステーキ"
+      description: "マグロとガストの涙を魂火で焼き上げた特殊料理。"
+    adventurers_hotpot:
+      name: "冒険者の大鍋"
+      description: "三種類の肉と根菜を高火力で煮込んだ大鍋。"
+    sweet_bread:
+      name: "甘いパン"
+      description: "小麦、卵、ハチミツを使った甘いパン。"
+    carrot_cookie:
+      name: "人参クッキー"
+      description: "切ったニンジンを生地へ加えて焼いた菓子。"
+    country_bread:
+      name: "田舎パン"
+      description: "小麦と卵の生地を焼いた素朴なパン。"
+    baked_apple:
+      name: "焼きリンゴ"
+      description: "リンゴを丸ごと焼いた温かな甘味。"
+    smoked_cod:
+      name: "燻製タラ"
+      description: "タラの切り身を燻製にした保存食。"
+    smoked_salmon:
+      name: "燻製サケ"
+      description: "サケの切り身を燻製にした保存食。"
+    smoked_mackerel:
+      name: "燻製サバ"
+      description: "サバの切り身を燻製にした保存食。"
+    knife:
+      name: "包丁"
+      description: "料理や醸造に使用する加工品。"
+    frying_pan:
+      name: "フライパン"
+      description: "料理や醸造に使用する加工品。"
+    burnt_solid_food:
+      name: "焦げた料理"
+      description: "料理や醸造に使用する加工品。"
+    burnt_bowl_food:
+      name: "焦げた汁物"
+      description: "料理や醸造に使用する加工品。"
+    burnt_bottle_liquid:
+      name: "焦げた飲み物"
+      description: "料理や醸造に使用する加工品。"
+    undercooked_solid_food:
+      name: "生焼けの料理"
+      description: "料理や醸造に使用する加工品。"
+    undercooked_bowl_food:
+      name: "加熱不足の汁物"
+      description: "料理や醸造に使用する加工品。"
+    underprepared_bottle_liquid:
+      name: "抽出不足の飲み物"
+      description: "料理や醸造に使用する加工品。"
