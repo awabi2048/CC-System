@@ -93,6 +93,41 @@ cooking:
     smoked_cod: "smoked cod"
     smoked_salmon: "smoked salmon"
     smoked_mackerel: "smoked mackerel"
+    cut_onion: "cut onion"
+    cut_carrot: "cut carrot"
+    cut_potato: "cut potato"
+    cut_tomato: "cut tomato"
+    cut_daikon: "cut daikon"
+    cut_green_onion: "cut green onion"
+    cut_beetroot: "cut beetroot"
+    cut_pumpkin: "cut pumpkin"
+    slice_red_mushroom: "slice red mushroom"
+    slice_brown_mushroom: "slice brown mushroom"
+    cut_apple: "cut apple"
+    cut_beef: "cut beef"
+    cut_pork: "cut pork"
+    cut_chicken: "cut chicken"
+    cut_rabbit: "cut rabbit"
+    fillet_cod: "fillet cod"
+    fillet_salmon: "fillet salmon"
+    fillet_crucian_carp: "fillet crucian carp"
+    fillet_carp: "fillet carp"
+    fillet_trout: "fillet trout"
+    fillet_ayu: "fillet ayu"
+    fillet_catfish: "fillet catfish"
+    fillet_eel: "fillet eel"
+    fillet_smelt: "fillet smelt"
+    fillet_sardine: "fillet sardine"
+    fillet_horse_mackerel: "fillet horse mackerel"
+    fillet_mackerel: "fillet mackerel"
+    fillet_sea_bass: "fillet sea bass"
+    fillet_flounder: "fillet flounder"
+    fillet_sea_bream: "fillet sea bream"
+    fillet_tuna: "fillet tuna"
+    fillet_grouper: "fillet grouper"
+    fillet_anglerfish: "fillet anglerfish"
+    fillet_pufferfish: "fillet pufferfish"
+    fillet_tropical_fish: "fillet tropical fish"
     knife: "knife"
     frying_pan: "frying pan"
     burnt_solid_food: "burnt solid food"
@@ -312,6 +347,111 @@ custom_items:
     smoked_mackerel:
       name: "smoked mackerel"
       description: "サバの切り身を燻製にした保存食。"
+    cut_onion:
+      name: "cut onion"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_carrot:
+      name: "cut carrot"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_potato:
+      name: "cut potato"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_tomato:
+      name: "cut tomato"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_daikon:
+      name: "cut daikon"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_green_onion:
+      name: "cut green onion"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_beetroot:
+      name: "cut beetroot"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_pumpkin:
+      name: "cut pumpkin"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    slice_red_mushroom:
+      name: "slice red mushroom"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    slice_brown_mushroom:
+      name: "slice brown mushroom"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_apple:
+      name: "cut apple"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_beef:
+      name: "cut beef"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_pork:
+      name: "cut pork"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_chicken:
+      name: "cut chicken"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    cut_rabbit:
+      name: "cut rabbit"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_cod:
+      name: "fillet cod"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_salmon:
+      name: "fillet salmon"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_crucian_carp:
+      name: "fillet crucian carp"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_carp:
+      name: "fillet carp"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_trout:
+      name: "fillet trout"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_ayu:
+      name: "fillet ayu"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_catfish:
+      name: "fillet catfish"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_eel:
+      name: "fillet eel"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_smelt:
+      name: "fillet smelt"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_sardine:
+      name: "fillet sardine"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_horse_mackerel:
+      name: "fillet horse mackerel"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_mackerel:
+      name: "fillet mackerel"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_sea_bass:
+      name: "fillet sea bass"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_flounder:
+      name: "fillet flounder"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_sea_bream:
+      name: "fillet sea bream"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_tuna:
+      name: "fillet tuna"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_grouper:
+      name: "fillet grouper"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_anglerfish:
+      name: "fillet anglerfish"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_pufferfish:
+      name: "fillet pufferfish"
+      description: "An intermediate cooking ingredient prepared with a knife."
+    fillet_tropical_fish:
+      name: "fillet tropical fish"
+      description: "An intermediate cooking ingredient prepared with a knife."
     knife:
       name: "knife"
       description: "料理や醸造に使用する加工品。"

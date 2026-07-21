@@ -93,6 +93,41 @@ cooking:
     smoked_cod: "燻製タラ"
     smoked_salmon: "燻製サケ"
     smoked_mackerel: "燻製サバ"
+    cut_onion: "刻みタマネギ"
+    cut_carrot: "刻みニンジン"
+    cut_potato: "刻みジャガイモ"
+    cut_tomato: "刻みトマト"
+    cut_daikon: "刻みダイコン"
+    cut_green_onion: "刻み長ネギ"
+    cut_beetroot: "刻みビートルート"
+    cut_pumpkin: "刻みカボチャ"
+    slice_red_mushroom: "薄切り赤キノコ"
+    slice_brown_mushroom: "薄切り茶キノコ"
+    cut_apple: "切り分けたリンゴ"
+    cut_beef: "切り分けた牛肉"
+    cut_pork: "切り分けた豚肉"
+    cut_chicken: "切り分けた鶏肉"
+    cut_rabbit: "切り分けた兎肉"
+    fillet_cod: "タラの切り身"
+    fillet_salmon: "サケの切り身"
+    fillet_crucian_carp: "フナの切り身"
+    fillet_carp: "コイの切り身"
+    fillet_trout: "マスの切り身"
+    fillet_ayu: "アユの切り身"
+    fillet_catfish: "ナマズの切り身"
+    fillet_eel: "ウナギの切り身"
+    fillet_smelt: "ワカサギの切り身"
+    fillet_sardine: "イワシの切り身"
+    fillet_horse_mackerel: "アジの切り身"
+    fillet_mackerel: "サバの切り身"
+    fillet_sea_bass: "スズキの切り身"
+    fillet_flounder: "ヒラメの切り身"
+    fillet_sea_bream: "タイの切り身"
+    fillet_tuna: "マグロの切り身"
+    fillet_grouper: "ハタの切り身"
+    fillet_anglerfish: "アンコウの切り身"
+    fillet_pufferfish: "フグの切り身"
+    fillet_tropical_fish: "熱帯魚の切り身"
     knife: "包丁"
     frying_pan: "フライパン"
     burnt_solid_food: "焦げた料理"
@@ -312,6 +347,111 @@ custom_items:
     smoked_mackerel:
       name: "燻製サバ"
       description: "サバの切り身を燻製にした保存食。"
+    cut_onion:
+      name: "刻みタマネギ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_carrot:
+      name: "刻みニンジン"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_potato:
+      name: "刻みジャガイモ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_tomato:
+      name: "刻みトマト"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_daikon:
+      name: "刻みダイコン"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_green_onion:
+      name: "刻み長ネギ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_beetroot:
+      name: "刻みビートルート"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_pumpkin:
+      name: "刻みカボチャ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    slice_red_mushroom:
+      name: "薄切り赤キノコ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    slice_brown_mushroom:
+      name: "薄切り茶キノコ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_apple:
+      name: "切り分けたリンゴ"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_beef:
+      name: "切り分けた牛肉"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_pork:
+      name: "切り分けた豚肉"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_chicken:
+      name: "切り分けた鶏肉"
+      description: "包丁で切り分けた料理用の中間素材。"
+    cut_rabbit:
+      name: "切り分けた兎肉"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_cod:
+      name: "タラの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_salmon:
+      name: "サケの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_crucian_carp:
+      name: "フナの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_carp:
+      name: "コイの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_trout:
+      name: "マスの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_ayu:
+      name: "アユの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_catfish:
+      name: "ナマズの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_eel:
+      name: "ウナギの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_smelt:
+      name: "ワカサギの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_sardine:
+      name: "イワシの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_horse_mackerel:
+      name: "アジの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_mackerel:
+      name: "サバの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_sea_bass:
+      name: "スズキの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_flounder:
+      name: "ヒラメの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_sea_bream:
+      name: "タイの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_tuna:
+      name: "マグロの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_grouper:
+      name: "ハタの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_anglerfish:
+      name: "アンコウの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_pufferfish:
+      name: "フグの切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
+    fillet_tropical_fish:
+      name: "熱帯魚の切り身"
+      description: "包丁で切り分けた料理用の中間素材。"
     knife:
       name: "包丁"
       description: "料理や醸造に使用する加工品。"
