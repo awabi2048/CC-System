@@ -121,6 +121,48 @@ custom_items:
     cultivation_hoe:
       name: "§aCultivation Hoe"
       description: "A specialist tool for Farmers with area tilling or harvesting enabled."
+    rice:
+      name: "§fRice"
+      description: "A cooking ingredient gathered from natural waterside vegetation."
+    onion:
+      name: "§aOnion"
+      description: "A cooking ingredient gathered from natural temperate vegetation."
+    soybean:
+      name: "§eSoybean"
+      description: "A fermentation and cooking ingredient gathered from natural temperate vegetation."
+    tomato:
+      name: "§cTomato"
+      description: "A cooking ingredient gathered from natural warm-region vegetation."
+    ginger:
+      name: "§6Ginger"
+      description: "An aromatic ingredient gathered from natural jungle vegetation."
+    spice_leaf:
+      name: "§6Spice Leaf"
+      description: "A seasoning ingredient gathered from natural dry-region vegetation."
+    tea_leaf:
+      name: "§aTea Leaf"
+      description: "A beverage ingredient gathered from natural forest vegetation."
+    hops:
+      name: "§aHops"
+      description: "A brewing ingredient gathered from natural taiga vegetation."
+    coffee_bean:
+      name: "§6Coffee Bean"
+      description: "A beverage ingredient gathered from natural jungle vegetation."
+    daikon:
+      name: "§fDaikon"
+      description: "A cooking ingredient gathered from natural cold-region vegetation."
+    green_onion:
+      name: "§aGreen Onion"
+      description: "An aromatic ingredient gathered from natural temperate vegetation."
+    blueberry:
+      name: "§9Blueberry"
+      description: "A fruit gathered from natural taiga vegetation."
+    grape:
+      name: "§5Grape"
+      description: "A brewing and cooking fruit gathered from natural forest vegetation."
+    strawberry:
+      name: "§cStrawberry"
+      description: "A fruit gathered from natural flower-rich vegetation."
   minigame:
     manager:
       name: §6Mini-game Manager
