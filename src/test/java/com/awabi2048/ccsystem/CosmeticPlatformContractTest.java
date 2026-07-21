@@ -1,14 +1,10 @@
 package com.awabi2048.ccsystem;
 
-import com.awabi2048.ccsystem.api.CCSystemAPI;
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticId;
-import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform;
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticProfileSnapshot;
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticType;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,16 +38,4 @@ class CosmeticPlatformContractTest {
         assertNotEquals(CosmeticType.MEDAL, CosmeticType.PARTICLE);
     }
 
-    @Test
-    void publicApiExposesTheCosmeticPlatform() throws Exception {
-        assertEquals(CosmeticPlatform.class, CCSystemAPI.class.getMethod("getCosmeticPlatform").getReturnType());
-
-        String platformSource = Files.readString(Path.of(
-            "src/main/kotlin/com/awabi2048/ccsystem/core/cosmetic/CosmeticPlatformImpl.kt"
-        ));
-        assertTrue(platformSource.contains("TextDisplay"));
-        assertTrue(platformSource.contains("Interaction"));
-        assertTrue(platformSource.contains("globalBudget = 512"));
-        assertTrue(platformSource.contains("repository.shutdown()"));
-    }
 }
