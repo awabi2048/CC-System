@@ -121,6 +121,48 @@ custom_items:
     cultivation_hoe:
       name: "§a栽培用のクワ"
       description: "範囲耕作・範囲収穫を有効にした農家が使用する専門道具。"
+    rice:
+      name: "§f米"
+      description: "水辺の天然植生から採集できる料理用素材。"
+    onion:
+      name: "§aタマネギ"
+      description: "温帯の天然植生から採集できる料理用素材。"
+    soybean:
+      name: "§e大豆"
+      description: "温帯の天然植生から採集できる発酵・料理用素材。"
+    tomato:
+      name: "§cトマト"
+      description: "暖地の天然植生から採集できる料理用素材。"
+    ginger:
+      name: "§6ショウガ"
+      description: "ジャングルの天然植生から採集できる香味素材。"
+    spice_leaf:
+      name: "§6香辛葉"
+      description: "乾燥地の天然植生から採集できる香辛料素材。"
+    tea_leaf:
+      name: "§a茶葉"
+      description: "森林の天然植生から採集できる飲料用素材。"
+    hops:
+      name: "§aホップ"
+      description: "タイガの天然植生から採集できる醸造用素材。"
+    coffee_bean:
+      name: "§6コーヒー豆"
+      description: "ジャングルの天然植生から採集できる飲料用素材。"
+    daikon:
+      name: "§fダイコン"
+      description: "寒冷地の天然植生から採集できる料理用素材。"
+    green_onion:
+      name: "§a長ネギ"
+      description: "温帯の天然植生から採集できる香味素材。"
+    blueberry:
+      name: "§9ブルーベリー"
+      description: "タイガの天然植生から採集できる果実。"
+    grape:
+      name: "§5ブドウ"
+      description: "森林の天然植生から採集できる醸造・料理用果実。"
+    strawberry:
+      name: "§cイチゴ"
+      description: "花の多い天然植生から採集できる果実。"
   minigame:
     manager:
       name: §6ミニゲーム管理アイテム
@@ -813,47 +855,11 @@ custom_items:
       end:
         name: エンド
   brewery:
-    garden_seed_apple:
-      name: §aりんごの種
-      lore:
-      - §7Gardenでりんごを育てるための種
-    garden_fruit_apple:
-      name: §cりんご
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_blueberry:
-      name: §aブルーベリーの種
-      lore:
-      - §7Gardenでブルーベリーを育てるための種
-    garden_fruit_blueberry:
-      name: §9ブルーベリー
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_grape:
-      name: §aぶどうの種
-      lore:
-      - §7Gardenでぶどうを育てるための種
-    garden_fruit_grape:
-      name: §5ぶどう
-      lore:
-      - §7Gardenで収穫した醸造素材
-    garden_seed_strawberry:
-      name: §aイチゴの種
-      lore:
-      - §7Gardenでイチゴを育てるための種
-    garden_fruit_strawberry:
-      name: §dイチゴ
-      lore:
-      - §7Gardenで収穫した醸造素材
     sample_filter:
       name: §e蒸留フィルター（試作）
       lore:
       - §7蒸留時間 -15%
       - §71蒸留ごとに耐久を1消費
-    mock_clock:
-      name: §bふしぎな時計（モック）
-      lore:
-      - §7熟成GUIの時計スロット用（効果なし）
     cultured_yeast:
       name: §a培養済み酵母
       lore:

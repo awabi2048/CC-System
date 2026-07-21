@@ -121,6 +121,48 @@ custom_items:
     cultivation_hoe:
       name: "§aCultivation Hoe"
       description: "A specialist tool for Farmers with area tilling or harvesting enabled."
+    rice:
+      name: "§fRice"
+      description: "A cooking ingredient gathered from natural waterside vegetation."
+    onion:
+      name: "§aOnion"
+      description: "A cooking ingredient gathered from natural temperate vegetation."
+    soybean:
+      name: "§eSoybean"
+      description: "A fermentation and cooking ingredient gathered from natural temperate vegetation."
+    tomato:
+      name: "§cTomato"
+      description: "A cooking ingredient gathered from natural warm-region vegetation."
+    ginger:
+      name: "§6Ginger"
+      description: "An aromatic ingredient gathered from natural jungle vegetation."
+    spice_leaf:
+      name: "§6Spice Leaf"
+      description: "A seasoning ingredient gathered from natural dry-region vegetation."
+    tea_leaf:
+      name: "§aTea Leaf"
+      description: "A beverage ingredient gathered from natural forest vegetation."
+    hops:
+      name: "§aHops"
+      description: "A brewing ingredient gathered from natural taiga vegetation."
+    coffee_bean:
+      name: "§6Coffee Bean"
+      description: "A beverage ingredient gathered from natural jungle vegetation."
+    daikon:
+      name: "§fDaikon"
+      description: "A cooking ingredient gathered from natural cold-region vegetation."
+    green_onion:
+      name: "§aGreen Onion"
+      description: "An aromatic ingredient gathered from natural temperate vegetation."
+    blueberry:
+      name: "§9Blueberry"
+      description: "A fruit gathered from natural taiga vegetation."
+    grape:
+      name: "§5Grape"
+      description: "A brewing and cooking fruit gathered from natural forest vegetation."
+    strawberry:
+      name: "§cStrawberry"
+      description: "A fruit gathered from natural flower-rich vegetation."
   minigame:
     manager:
       name: §6Mini-game Manager
@@ -468,47 +510,11 @@ custom_items:
     end:
       name: エンド
   brewery:
-    garden_seed_apple:
-      name: §aApple Seeds
-      lore:
-      - §7Seeds used to grow apples in the Garden
-    garden_fruit_apple:
-      name: §cApple
-      lore:
-      - §7A brewing ingredient harvested from the Garden
-    garden_seed_blueberry:
-      name: §aBlueberry Seeds
-      lore:
-      - §7Seeds used to grow blueberries in the Garden
-    garden_fruit_blueberry:
-      name: §9Blueberry
-      lore:
-      - §7A brewing ingredient harvested from the Garden
-    garden_seed_grape:
-      name: §aGrape Seeds
-      lore:
-      - §7Seeds used to grow grapes in the Garden
-    garden_fruit_grape:
-      name: §5Grapes
-      lore:
-      - §7A brewing ingredient harvested from the Garden
-    garden_seed_strawberry:
-      name: §aStrawberry Seeds
-      lore:
-      - §7Seeds used to grow strawberries in the Garden
-    garden_fruit_strawberry:
-      name: §dStrawberry
-      lore:
-      - §7A brewing ingredient harvested from the Garden
     sample_filter:
       name: §eDistillation Filter (Prototype)
       lore:
       - §7Distillation time -15%
       - §7Consumes 1 durability per distillation
-    mock_clock:
-      name: §bMysterious Clock (Mock)
-      lore:
-      - §7For aging GUI clock slot (no effect)
     cultured_yeast:
       name: §aCultured Yeast
       lore:

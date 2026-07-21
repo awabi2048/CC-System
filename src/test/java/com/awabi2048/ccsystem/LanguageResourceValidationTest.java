@@ -63,7 +63,13 @@ class LanguageResourceValidationTest {
                 "chanpon.submission.confirm.button.confirm.display",
                 "chanpon.submission.confirm.button.confirm.lore",
                 "chanpon.submission.confirm.button.cancel.display",
-                "chanpon.submission.confirm.button.cancel.lore"
+                "chanpon.submission.confirm.button.cancel.lore",
+                "custom_items.cooking.cut_onion.name",
+                "custom_items.cooking.cut_carrot.name",
+                "custom_items.cooking.fillet_cod.name",
+                "custom_items.cooking.fillet_tropical_fish.name",
+                "custom_items.resource.soybean.name",
+                "custom_items.resource.strawberry.name"
             )
         );
     }
