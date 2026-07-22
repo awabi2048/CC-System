@@ -20,8 +20,11 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
+import java.util.logging.Level
 
 internal class MenuDialogServiceImpl(
+    private val plugin: JavaPlugin,
     private val sounds: MenuSoundService,
     private val runtime: MenuRuntimeService,
 ) : MenuDialogService {
@@ -70,7 +73,14 @@ internal class MenuDialogServiceImpl(
                         .associate { it.id to (response.getBoolean(it.id) ?: false) },
                 )
                 val result = runCatching { button.handler.handle(target, values) }
-                    .getOrElse { MenuActionResult.Rejected() }
+                    .getOrElse { failure ->
+                        plugin.logger.log(
+                            Level.SEVERE,
+                            "Dialog処理に失敗しました: owner=${request.owner} id=${request.id} player=${target.uniqueId}",
+                            failure
+                        )
+                        MenuActionResult.Rejected()
+                    }
                 applyResult(target, request, button, clickType, result)
             },
             ClickCallback.Options.builder().uses(1).build(),

@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.MenuActionSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuCustomFormRequest
 import com.awabi2048.ccsystem.api.gui.MenuFormInput
+import com.awabi2048.ccsystem.api.gui.MenuFormHandler
 import com.awabi2048.ccsystem.api.gui.MenuFormResponse
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.gui.MenuSimpleFormRequest
@@ -18,6 +19,7 @@ import org.geysermc.cumulus.form.CustomForm
 import org.geysermc.cumulus.form.SimpleForm
 import org.geysermc.cumulus.util.FormImage
 import org.geysermc.floodgate.api.FloodgateApi
+import java.util.logging.Level
 
 internal class MenuFormServiceImpl(
     private val plugin: JavaPlugin,
@@ -40,16 +42,18 @@ internal class MenuFormServiceImpl(
             onMainThread {
                 val button = request.buttons.getOrNull(response.clickedButtonId()) ?: return@onMainThread
                 val result = if (button.enabled) {
-                    runCatching { request.handler.handle(player, MenuFormResponse(text = mapOf("button" to button.id))) }
-                        .getOrElse { MenuActionResult.Rejected() }
+                    handleSafely(request.owner, request.id, player, MenuFormResponse(text = mapOf("button" to button.id)), request.handler)
                 } else MenuActionResult.Rejected()
-                applyResult(player, result, button.sound, request.sounds)
+                applyResult(player, result, button.sound, request.sounds) { show(player, request) }
             }
         }
         val closeHandler = request.onClosed
         if (closeHandler != null) {
             builder.closedOrInvalidResultHandler(Runnable {
-                onMainThread { applyResult(player, closeHandler.handle(player, MenuFormResponse()), request.sounds, request.sounds) }
+                onMainThread {
+                    val result = handleSafely(request.owner, request.id, player, MenuFormResponse(), closeHandler)
+                    applyResult(player, result, request.sounds, request.sounds) { show(player, request) }
+                }
             })
         }
         return runCatching { FloodgateApi.getInstance().sendForm(player.uniqueId, builder.build()) }.getOrDefault(false)
@@ -74,15 +78,17 @@ internal class MenuFormServiceImpl(
                         is MenuFormInput.Toggle -> toggles[input.id] = response.asToggle(index)
                     }
                 }
-                val result = runCatching { request.handler.handle(player, MenuFormResponse(text, toggles)) }
-                    .getOrElse { MenuActionResult.Rejected() }
-                applyResult(player, result, request.sounds, request.sounds)
+                val result = handleSafely(request.owner, request.id, player, MenuFormResponse(text, toggles), request.handler)
+                applyResult(player, result, request.sounds, request.sounds) { show(player, request) }
             }
         }
         val closeHandler = request.onClosed
         if (closeHandler != null) {
             builder.closedOrInvalidResultHandler(Runnable {
-                onMainThread { applyResult(player, closeHandler.handle(player, MenuFormResponse()), request.sounds, request.sounds) }
+                onMainThread {
+                    val result = handleSafely(request.owner, request.id, player, MenuFormResponse(), closeHandler)
+                    applyResult(player, result, request.sounds, request.sounds) { show(player, request) }
+                }
             })
         }
         return runCatching { FloodgateApi.getInstance().sendForm(player.uniqueId, builder.build()) }.getOrDefault(false)
@@ -92,12 +98,13 @@ internal class MenuFormServiceImpl(
         player: Player,
         result: MenuActionResult,
         actionSounds: MenuActionSoundPolicy,
-        requestSounds: MenuActionSoundPolicy
+        requestSounds: MenuActionSoundPolicy,
+        refresh: () -> Unit
     ) {
         when (result) {
             is MenuActionResult.Success -> {
                 play(player, result.sound, MenuSoundPolicyResolver.successPolicy(actionSounds, requestSounds))
-                applyUpdate(player, result.update)
+                applyUpdate(player, result.update, refresh)
             }
             is MenuActionResult.Rejected -> {
                 result.message?.let(player::sendMessage)
@@ -107,14 +114,29 @@ internal class MenuFormServiceImpl(
         }
     }
 
-    private fun applyUpdate(player: Player, update: MenuUpdate) {
+    private fun applyUpdate(player: Player, update: MenuUpdate, refresh: () -> Unit) {
         when (update) {
             MenuUpdate.None, MenuUpdate.Close -> Unit
-            MenuUpdate.Refresh -> Unit
+            MenuUpdate.Refresh -> refresh()
             MenuUpdate.Back -> runtime.back(player)
             is MenuUpdate.Navigate -> runtime.open(player, update.route)
             is MenuUpdate.Replace -> runtime.open(player, update.route)
         }
+    }
+
+    private fun handleSafely(
+        owner: String,
+        id: String,
+        player: Player,
+        response: MenuFormResponse,
+        handler: MenuFormHandler
+    ): MenuActionResult = runCatching { handler.handle(player, response) }.getOrElse { failure ->
+        plugin.logger.log(
+            Level.SEVERE,
+            "Bedrock Form処理に失敗しました: owner=$owner id=$id player=${player.uniqueId}",
+            failure
+        )
+        MenuActionResult.Rejected()
     }
 
     private fun play(player: Player, policy: MenuSoundPolicy, fallback: MenuSoundPolicy) {
