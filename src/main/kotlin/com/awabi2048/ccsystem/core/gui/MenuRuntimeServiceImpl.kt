@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.core.gui
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
+import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
@@ -68,7 +69,35 @@ internal class MenuRuntimeServiceImpl(
 
     override fun refresh(player: Player): Boolean {
         val session = sessions[player.uniqueId] ?: return false
-        return openDirect(player, session.route, playOpenSound = false)
+        val holder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
+            ?: return openDirect(player, session.route, playOpenSound = false)
+        if (holder.route != session.route) return false
+        val definition = definition(session.route.owner, session.route.id) ?: return false
+        val view = runCatching {
+            definition.renderer.render(MenuRenderContext(player, session.route))
+        }.onFailure { failure ->
+            plugin.logger.log(
+                Level.SEVERE,
+                "メニュー再描画に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                failure
+            )
+        }.getOrNull() ?: return false
+        val policy = GuiInventoryPolicy(view.inputSlots, view.allowPlayerInventoryInteraction)
+        if (
+            player.openInventory.topInventory.size != view.size ||
+            player.openInventory.title() != view.title ||
+            holder.guiInventoryPolicy() != policy
+        ) {
+            return openDirect(player, session.route, playOpenSound = false)
+        }
+
+        val inventory = player.openInventory.topInventory
+        val inputItems = policy.inputSlots.associateWith { inventory.getItem(it)?.clone() }
+        inventory.clear()
+        applyView(inventory, view)
+        inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
+        sessions[player.uniqueId] = Session(session.route, view.elements.associateBy { it.slot })
+        return true
     }
 
     override fun back(player: Player): Boolean = navigation.openPrevious(player)
@@ -147,12 +176,16 @@ internal class MenuRuntimeServiceImpl(
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
-        if (view.standardFrame) layouts.applyStandardFrame(inventory)
-        view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
+        applyView(inventory, view)
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot })
         if (playOpenSound) sounds.onMenuOpen(player, definition.routeId)
         player.openInventory(inventory)
         return true
+    }
+
+    private fun applyView(inventory: org.bukkit.inventory.Inventory, view: InventoryMenuView) {
+        if (view.standardFrame) layouts.applyStandardFrame(inventory)
+        view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
     }
 
     private fun applyResult(
