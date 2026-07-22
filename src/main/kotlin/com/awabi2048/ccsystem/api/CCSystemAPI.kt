@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
@@ -96,6 +97,8 @@ interface CCSystemAPI {
     fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService
 
     fun getMenuSoundService(): MenuSoundService
+
+    fun getMenuRuntimeService(): MenuRuntimeService
 
     fun getPlayerInteractionClaimService(): PlayerInteractionClaimService
 

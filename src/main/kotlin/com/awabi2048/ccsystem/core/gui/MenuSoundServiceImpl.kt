@@ -33,6 +33,10 @@ class MenuSoundServiceImpl : MenuSoundService {
         MenuClickType.INFO to MenuSound("UI_BUTTON_CLICK", pitch = 1.5f),
     )
 
+    override fun play(player: Player, sound: MenuSound) {
+        playSound(player, sound)
+    }
+
     override fun onMenuOpen(player: Player, menuId: String?) {
         // 開封音は「閉じた状態からメニューを開く」瞬間だけに限定する。
         // GUI間の戻る/ページ送り/再描画ではクリック音だけを残し、チェスト開封音の連続再生を避ける。

@@ -10,6 +10,9 @@ import org.bukkit.entity.Player
  * 間接的なタイトル/ホルダー比較には依存しない。
  */
 interface MenuSoundService {
+    /** 解決済みの任意メニュー音を再生する。 */
+    fun play(player: Player, sound: MenuSound)
+
     /**
      * メニューを開いたときの効果音を再生する。
      * 新しい画面を開いたときに呼ぶ。再描画（リフレッシュ）時は呼ばない。
