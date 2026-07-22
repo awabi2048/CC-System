@@ -12,6 +12,11 @@ import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuActionHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogButton
+import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogInput
+import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
+import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
 import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuSound
@@ -24,15 +29,7 @@ import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
-import io.papermc.paper.dialog.Dialog
-import io.papermc.paper.registry.data.dialog.ActionButton
-import io.papermc.paper.registry.data.dialog.DialogBase
-import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
-import io.papermc.paper.registry.data.dialog.input.DialogInput
-import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -501,142 +498,102 @@ class AnnounceListener : Listener {
     ) {
         val titleLabel = buildTitleLabel(player, titleWarningKey)
         val endAtLabel = buildEndAtLabel(player, endAtWarningKey)
-        val inputs = listOf(
-            DialogInput.text("title", titleLabel).initial(formState.title).width(310).maxLength(64).build(),
-            DialogInput.text("content_1", Component.text("内容1")).initial(formState.content1).width(310).maxLength(128).build(),
-            DialogInput.text("content_2", Component.text("内容2")).initial(formState.content2).width(310).maxLength(128).build(),
-            DialogInput.text("content_3", Component.text("内容3")).initial(formState.content3).width(310).maxLength(128).build(),
-            DialogInput.text("duration", endAtLabel).initial(formState.endAtRaw).width(310).maxLength(128).build(),
-            DialogInput.bool("indefinite", Component.text("無期限にする")).initial(formState.indefinite).build()
-        )
+        val inputs = createAnnouncementInputs(titleLabel, endAtLabel, formState)
 
-        val saveAction = DialogAction.customClick(
-            { response, audience ->
-                val target = audience as? Player ?: return@customClick
-
-                val title = response.getText("title") ?: ""
-                val contentLines = listOf(
-                    response.getText("content_1") ?: "",
-                    response.getText("content_2") ?: "",
-                    response.getText("content_3") ?: ""
-                )
-                val endAtRaw = response.getText("duration")
-                val indefinite = response.getBoolean("indefinite") ?: false
-                val nextState = AnnounceFormState(
-                    title = title,
-                    content1 = contentLines.getOrElse(0) { "" },
-                    content2 = contentLines.getOrElse(1) { "" },
-                    content3 = contentLines.getOrElse(2) { "" },
-                    endAtRaw = endAtRaw ?: "",
-                    indefinite = indefinite
-                )
-
-                when (AnnouncementManager.updateAnnouncement(announcement.id, title, contentLines, endAtRaw, indefinite)) {
+        val body = LanguageManager.getStringList(player, "announce.edit_dialog_body")
+            .ifEmpty { listOf("お知らせを編集します。") }
+            .joinToString("\n")
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-edit",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_title"),
+                body = listOf(Component.text(body)),
+                inputs = inputs,
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_confirm"),
+                    MenuDialogHandler { target, response ->
+                        val nextState = response.toAnnounceFormState()
+                        val contentLines = nextState.contentLines()
+                        when (AnnouncementManager.updateAnnouncement(
+                            announcement.id,
+                            nextState.title,
+                            contentLines,
+                            nextState.endAtRaw,
+                            nextState.indefinite
+                        )) {
                     AnnouncementManager.AddResult.SUCCESS -> {
                         target.sendMessage(LanguageManager.getMessage(target, "announce.edit_success"))
-                        playOperationSound(target, Sound.ENTITY_PLAYER_LEVELUP, 1.2f)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Success(
+                                    MenuUpdate.None,
+                                    MenuSoundPolicy.Custom(MenuSound("ENTITY_PLAYER_LEVELUP", pitch = 1.2f))
+                                )
                     }
 
                     AnnouncementManager.AddResult.NOT_FOUND -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_END_AT_FORMAT -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_duration"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.invalid_format"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_duration"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.END_AT_NOT_FUTURE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.end_at_not_future"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.not_future"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.end_at_not_future"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_TITLE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_title"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             titleWarningKey = "announce.title_warning.required"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_title"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.LIMIT_REACHED -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.add_limit_reached", "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.add_limit_reached", "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
                 }
-            },
-            ClickCallback.Options.builder().uses(1).build()
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.dialog_cancel"),
+            )
         )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_confirm")
-        ).action(saveAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_cancel")
-        ).build()
-
-        val body = LanguageManager.getStringList(player, "announce.edit_dialog_body")
-            .ifEmpty { listOf("お知らせを編集します。") }
-            .joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(body))))
-                        .inputs(inputs)
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
     }
 
     private fun openDeleteConfirmDialog(player: Player, announcement: AnnouncementManager.Announcement) {
-        val deleteAction = DialogAction.customClick(
-            { _, audience ->
-                val target = audience as? Player ?: return@customClick
-                val deleted = AnnouncementManager.deleteAnnouncement(announcement.id)
-                if (deleted) {
-                    target.sendMessage(LanguageManager.getMessage(target, "announce.delete_success"))
-                    playOperationSound(target, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.9f)
-                } else {
-                    target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                    playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
-                }
-                openAnnouncementMenu(target, openedFromMenuArgument = false)
-            },
-            ClickCallback.Options.builder().uses(1).build()
-        )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_confirm")
-        ).action(deleteAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_cancel")
-        ).build()
-
         val body = LanguageManager.getStringListWithPlaceholders(
             player,
             "announce.delete_dialog_body",
@@ -652,19 +609,37 @@ class AnnounceListener : Listener {
             body.addAll(contentLines)
         }
 
-        val bodyText = body.joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(bodyText))))
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-delete",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_title"),
+                body = listOf(Component.text(body.joinToString("\n"))),
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_confirm"),
+                    MenuDialogHandler { target, _ ->
+                        val deleted = AnnouncementManager.deleteAnnouncement(announcement.id)
+                        if (deleted) {
+                            target.sendMessage(LanguageManager.getMessage(target, "announce.delete_success"))
+                        }
+                        openAnnouncementMenu(target, openedFromMenuArgument = false)
+                        if (deleted) {
+                            MenuActionResult.Success(
+                                MenuUpdate.None,
+                                MenuSoundPolicy.Custom(MenuSound("ENTITY_EXPERIENCE_ORB_PICKUP", pitch = 0.9f))
+                            )
+                        } else {
+                            MenuActionResult.Rejected(
+                                LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                            )
+                        }
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.delete_dialog_cancel"),
+            )
+        )
     }
 
     private fun openAddDialog(
@@ -676,121 +651,103 @@ class AnnounceListener : Listener {
     ) {
         val titleLabel = buildTitleLabel(player, titleWarningKey)
         val endAtLabel = buildEndAtLabel(player, endAtWarningKey)
-        val inputs = listOf(
-            DialogInput.text("title", titleLabel).initial(formState.title).width(310).maxLength(64).build(),
-            DialogInput.text("content_1", Component.text("内容1")).initial(formState.content1).width(310).maxLength(128).build(),
-            DialogInput.text("content_2", Component.text("内容2")).initial(formState.content2).width(310).maxLength(128).build(),
-            DialogInput.text("content_3", Component.text("内容3")).initial(formState.content3).width(310).maxLength(128).build(),
-            DialogInput.text("duration", endAtLabel).initial(formState.endAtRaw).width(310).maxLength(128).build(),
-            DialogInput.bool("indefinite", Component.text("無期限にする")).initial(formState.indefinite).build()
-        )
+        val inputs = createAnnouncementInputs(titleLabel, endAtLabel, formState)
 
-        val saveAction = DialogAction.customClick(
-            { response, audience ->
-                val target = audience as? Player ?: return@customClick
-
-                val title = response.getText("title") ?: ""
-                val contentLines = listOf(
-                    response.getText("content_1") ?: "",
-                    response.getText("content_2") ?: "",
-                    response.getText("content_3") ?: ""
-                )
-                val durationRaw = response.getText("duration")
-                val indefinite = response.getBoolean("indefinite") ?: false
-                val nextState = AnnounceFormState(
-                    title = title,
-                    content1 = contentLines.getOrElse(0) { "" },
-                    content2 = contentLines.getOrElse(1) { "" },
-                    content3 = contentLines.getOrElse(2) { "" },
-                    endAtRaw = durationRaw ?: "",
-                    indefinite = indefinite
-                )
-
-                when (AnnouncementManager.addAnnouncement(title, iconType, contentLines, durationRaw, indefinite)) {
+        val body = LanguageManager.getStringList(player, "announce.dialog_body")
+            .ifEmpty { listOf("お知らせを追加します。") }
+            .joinToString("\n")
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-add",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_title"),
+                body = listOf(Component.text(body)),
+                inputs = inputs,
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_confirm"),
+                    MenuDialogHandler { target, response ->
+                        val nextState = response.toAnnounceFormState()
+                        val contentLines = nextState.contentLines()
+                        when (AnnouncementManager.addAnnouncement(
+                            nextState.title,
+                            iconType,
+                            contentLines,
+                            nextState.endAtRaw,
+                            nextState.indefinite
+                        )) {
                     AnnouncementManager.AddResult.SUCCESS -> {
                         target.sendMessage(LanguageManager.getMessage(target, "announce.add_success"))
-                        notifyAnnouncementIssuedToOthers(target, title)
-                        playOperationSound(target, Sound.ENTITY_PLAYER_LEVELUP, 1.3f)
+                                notifyAnnouncementIssuedToOthers(target, nextState.title)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Success(
+                                    MenuUpdate.None,
+                                    MenuSoundPolicy.Custom(MenuSound("ENTITY_PLAYER_LEVELUP", pitch = 1.3f))
+                                )
                     }
 
                     AnnouncementManager.AddResult.NOT_FOUND -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.LIMIT_REACHED -> {
-                        target.sendMessage(
+                                MenuActionResult.Rejected(
                             LanguageManager.getMessage(
                                 target,
                                 "announce.add_limit_reached",
                                 "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()
-                            )
+                                    ),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
                         )
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                     }
 
                     AnnouncementManager.AddResult.INVALID_END_AT_FORMAT -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_duration"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.invalid_format"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_duration"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.END_AT_NOT_FUTURE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.end_at_not_future"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.not_future"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.end_at_not_future"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_TITLE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_title"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             titleWarningKey = "announce.title_warning.required"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_title"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
                 }
-            },
-            ClickCallback.Options.builder().uses(1).build()
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.dialog_cancel"),
+            )
         )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_confirm")
-        ).action(saveAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_cancel")
-        ).build()
-
-        val body = LanguageManager.getStringList(player, "announce.dialog_body")
-            .ifEmpty { listOf("お知らせを追加します。") }
-            .joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(body))))
-                        .inputs(inputs)
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
     }
 
     private fun buildTitleLabel(player: Player, warningKey: String?): Component {
@@ -804,6 +761,35 @@ class AnnounceListener : Listener {
             .append(Component.text(" "))
             .append(LanguageManager.deserializeLegacy(warning))
     }
+
+    private fun createAnnouncementInputs(
+        titleLabel: Component,
+        endAtLabel: Component,
+        state: AnnounceFormState,
+    ): List<MenuDialogInput> = listOf(
+        MenuDialogInput.Text("title", titleLabel, state.title, width = 310, maxLength = 64),
+        MenuDialogInput.Text("content_1", Component.text("内容1"), state.content1, width = 310, maxLength = 128),
+        MenuDialogInput.Text("content_2", Component.text("内容2"), state.content2, width = 310, maxLength = 128),
+        MenuDialogInput.Text("content_3", Component.text("内容3"), state.content3, width = 310, maxLength = 128),
+        MenuDialogInput.Text("duration", endAtLabel, state.endAtRaw, width = 310, maxLength = 128),
+        MenuDialogInput.BooleanInput("indefinite", Component.text("無期限にする"), state.indefinite),
+    )
+
+    private fun MenuDialogResponse.toAnnounceFormState(): AnnounceFormState = AnnounceFormState(
+        title = textValue("title"),
+        content1 = textValue("content_1"),
+        content2 = textValue("content_2"),
+        content3 = textValue("content_3"),
+        endAtRaw = textValue("duration"),
+        indefinite = booleanValue("indefinite"),
+    )
+
+    private fun AnnounceFormState.contentLines(): List<String> = listOf(content1, content2, content3)
+
+    private fun closeDialogButton(player: Player, labelKey: String): MenuDialogButton = MenuDialogButton(
+        LanguageManager.getMessageWithoutPrefix(player, labelKey),
+        MenuDialogHandler { _, _ -> MenuActionResult.Success(MenuUpdate.Close) },
+    )
 
     private fun buildEndAtLabel(player: Player, warningKey: String?): Component {
         val base = "終了時刻"
