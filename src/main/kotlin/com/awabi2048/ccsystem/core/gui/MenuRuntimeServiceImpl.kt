@@ -79,8 +79,17 @@ internal class MenuRuntimeServiceImpl(
     fun onInventoryClick(event: InventoryClickEvent) {
         val holder = event.view.topInventory.holder as? MenuRuntimeHolder ?: return
         val player = event.whoClicked as? Player ?: return
+        val policy = holder.guiInventoryPolicy()
+        if (holder.playerId != player.uniqueId) {
+            event.isCancelled = true
+            return
+        }
+        if (event.clickedInventory != event.view.topInventory) {
+            if (!policy.allowPlayerInventoryInteraction) event.isCancelled = true
+            return
+        }
+        if (policy.acceptsTopSlot(event.rawSlot)) return
         event.isCancelled = true
-        if (holder.playerId != player.uniqueId || event.clickedInventory != event.view.topInventory) return
 
         val session = sessions[player.uniqueId] ?: return
         if (session.route != holder.route) return
