@@ -9,6 +9,7 @@ import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.gui.MenuDialogService
+import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
@@ -30,6 +31,7 @@ import com.awabi2048.ccsystem.core.gui.MenuCommandServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuFormServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
@@ -80,6 +82,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         plugin.server.pluginManager.registerEvents(it, plugin)
     }
     private val menuDialogService = MenuDialogServiceImpl(menuSoundService, menuRuntimeService)
+    private val menuFormService = MenuFormServiceImpl(plugin, menuSoundService, menuRuntimeService)
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
     private val configSchemaService = ConfigSchemaServiceImpl()
     private val itemGrantService = ItemGrantServiceImpl()
@@ -251,6 +254,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     override fun getMenuDialogService(): MenuDialogService {
         return menuDialogService
     }
+
+    override fun getMenuFormService(): MenuFormService = menuFormService
 
     override fun getPlayerInteractionClaimService(): PlayerInteractionClaimService {
         return playerInteractionClaimService

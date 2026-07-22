@@ -9,6 +9,7 @@ softdepend:
   - LuckPerms
   - WorldGuard
   - LWC
+  - floodgate
 
 commands:
   cc:
