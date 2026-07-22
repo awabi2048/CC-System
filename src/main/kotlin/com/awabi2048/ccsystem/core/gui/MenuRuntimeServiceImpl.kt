@@ -175,6 +175,7 @@ internal class MenuRuntimeServiceImpl(
                     MenuUpdate.Refresh -> refresh(player)
                     MenuUpdate.Close -> player.closeInventory()
                     MenuUpdate.Back -> if (!navigation.openPrevious(player)) player.closeInventory()
+                    is MenuUpdate.Replace -> navigation.open(player, update.route)
                     is MenuUpdate.Navigate -> navigation.pushAndOpen(player, session.route, update.route)
                 }
             }

@@ -87,6 +87,7 @@ sealed interface MenuUpdate {
     data object Refresh : MenuUpdate
     data object Close : MenuUpdate
     data object Back : MenuUpdate
+    data class Replace(val route: MenuRoute) : MenuUpdate
     data class Navigate(val route: MenuRoute) : MenuUpdate
 }
 
