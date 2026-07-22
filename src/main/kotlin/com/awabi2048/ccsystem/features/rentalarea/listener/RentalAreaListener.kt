@@ -1,20 +1,19 @@
 package com.awabi2048.ccsystem.features.rentalarea.listener
 
+import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.gui.MenuActionResult
+import com.awabi2048.ccsystem.api.gui.MenuDialogButton
+import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
+import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.data.PlacedBlockLedgerManager
 import com.awabi2048.ccsystem.core.item.CustomItemFactory
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.rentalarea.storage.RemainedItemManager
-import io.papermc.paper.dialog.Dialog
-import io.papermc.paper.registry.data.dialog.ActionButton
-import io.papermc.paper.registry.data.dialog.DialogBase
-import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
-import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -363,22 +362,6 @@ class RentalAreaListener : Listener {
     ) {
         val expireDate = LocalDate.now().plusDays(days.toLong()).toString()
 
-        val confirmAction = DialogAction.customClick(
-            { _, audience ->
-                val dialogPlayer = audience as? org.bukkit.entity.Player ?: return@customClick
-                processContract(dialogPlayer, areaId, days, hand)
-            },
-            ClickCallback.Options.builder().uses(1).build()
-        )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessage(player, "rental_area_contract_confirm_yes")
-        ).action(confirmAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessage(player, "rental_area_contract_confirm_no")
-        ).build()
-
         val title = LanguageManager.getRawString(player, "rental_area_contract_confirm_title")
         val bodyLines = LanguageManager.getStringListWithPlaceholders(
             player,
@@ -388,19 +371,26 @@ class RentalAreaListener : Listener {
             "days" to days.toString(),
             "expire_date" to expireDate
         )
-        val bodyText = bodyLines.joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(Component.text(title))
-                        .body(listOf(DialogBody.plainMessage(Component.text(bodyText))))
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = "cc-system",
+                id = "rental-area-contract",
+                title = Component.text(title),
+                body = listOf(Component.text(bodyLines.joinToString("\n"))),
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessage(player, "rental_area_contract_confirm_yes"),
+                    MenuDialogHandler { dialogPlayer, _ ->
+                        processContract(dialogPlayer, areaId, days, hand)
+                        MenuActionResult.Success(MenuUpdate.Close)
+                    },
+                ),
+                cancel = MenuDialogButton(
+                    LanguageManager.getMessage(player, "rental_area_contract_confirm_no"),
+                    MenuDialogHandler { _, _ -> MenuActionResult.Success(MenuUpdate.Close) },
+                ),
+            )
+        )
     }
 
     private fun processContract(player: org.bukkit.entity.Player, areaId: String, days: Int, hand: EquipmentSlot) {

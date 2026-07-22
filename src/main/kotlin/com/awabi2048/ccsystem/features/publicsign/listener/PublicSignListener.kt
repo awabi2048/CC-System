@@ -1,17 +1,16 @@
 package com.awabi2048.ccsystem.features.publicsign.listener
 
+import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.gui.MenuActionResult
+import com.awabi2048.ccsystem.api.gui.MenuDialogButton
+import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogInput
+import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
+import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
-import io.papermc.paper.dialog.Dialog
-import io.papermc.paper.registry.data.dialog.ActionButton
-import io.papermc.paper.registry.data.dialog.DialogBase
-import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
-import io.papermc.paper.registry.data.dialog.input.DialogInput
-import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -145,40 +144,38 @@ class PublicSignListener : Listener {
     ) {
         val inputCount = ConfigManager.getPublicSignContentLines()
         val inputs = (0 until inputCount).map { index ->
-            DialogInput.text("content_${index + 1}", Component.text("内容${index + 1}"))
-                .initial(data.content.getOrElse(index) { "" })
-                .maxLength(128)
-                .build()
+            MenuDialogInput.Text(
+                id = "content_${index + 1}",
+                label = Component.text("内容${index + 1}"),
+                initial = data.content.getOrElse(index) { "" },
+                maxLength = 128,
+            )
         }
 
-        val saveAction = DialogAction.customClick(
-            { response, audience ->
-                val editPlayer = audience as? Player ?: return@customClick
-                val values = (0 until inputCount).map { index ->
-                    response.getText("content_${index + 1}") ?: ""
-                }
-                saveDialogInput(editPlayer, location, values)
-            },
-            ClickCallback.Options.builder().uses(1).build()
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = "cc-system",
+                id = "public-sign-edit",
+                title = Component.text("PublicSign編集"),
+                body = listOf(Component.text("PublicSignの内容を編集します")),
+                inputs = inputs,
+                confirm = MenuDialogButton(
+                    Component.text("保存"),
+                    MenuDialogHandler { editPlayer, response ->
+                        val values = (0 until inputCount).map { index ->
+                        response.textValue("content_${index + 1}")
+                        }
+                        saveDialogInput(editPlayer, location, values)
+                        MenuActionResult.Success(MenuUpdate.Close)
+                    },
+                ),
+                cancel = MenuDialogButton(
+                    Component.text("キャンセル"),
+                    MenuDialogHandler { _, _ -> MenuActionResult.Success(MenuUpdate.Close) },
+                ),
+            ),
         )
-
-        val yesButton = ActionButton.builder(Component.text("保存"))
-            .action(saveAction)
-            .build()
-        val noButton = ActionButton.builder(Component.text("キャンセル")).build()
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(Component.text("PublicSign編集"))
-                        .body(listOf(DialogBody.plainMessage(Component.text("PublicSignの内容を編集します"))))
-                        .inputs(inputs)
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
     }
 
     private fun saveDialogInput(
