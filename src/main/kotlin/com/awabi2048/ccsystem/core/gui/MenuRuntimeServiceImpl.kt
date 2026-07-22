@@ -124,6 +124,7 @@ internal class MenuRuntimeServiceImpl(
         if (session.route != holder.route) return
         val element = session.elements[event.rawSlot] ?: return
         val actionId = element.actionId ?: return
+        if (!MenuClickAcceptance.accepts(event.click)) return
         val definition = definition(holder.route.owner, holder.route.id) ?: return
         val clickType = clickType(element.role)
         if (!element.enabled) {
@@ -260,5 +261,14 @@ internal class MenuRuntimeServiceImpl(
     private data class Session(
         val route: MenuRoute,
         val elements: Map<Int, com.awabi2048.ccsystem.api.gui.MenuElement>,
+    )
+}
+
+internal object MenuClickAcceptance {
+    fun accepts(click: org.bukkit.event.inventory.ClickType): Boolean = click in setOf(
+        org.bukkit.event.inventory.ClickType.LEFT,
+        org.bukkit.event.inventory.ClickType.RIGHT,
+        org.bukkit.event.inventory.ClickType.SHIFT_LEFT,
+        org.bukkit.event.inventory.ClickType.SHIFT_RIGHT,
     )
 }

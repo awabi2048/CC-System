@@ -1,5 +1,5 @@
 name: CC-System
-version: 2.1.1
+version: 2.1.2
 author: awabi2048
 main: com.awabi2048.ccsystem.CCSystem
 api-version: 26.1.2
