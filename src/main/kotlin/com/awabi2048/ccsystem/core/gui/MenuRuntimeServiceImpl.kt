@@ -13,6 +13,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -29,6 +30,7 @@ internal class MenuRuntimeServiceImpl(
     private val plugin: JavaPlugin,
     private val navigation: MenuNavigationService,
     private val sounds: MenuSoundService,
+    private val layouts: GuiLayoutService,
 ) : MenuRuntimeService, Listener {
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
@@ -97,7 +99,7 @@ internal class MenuRuntimeServiceImpl(
         if (!executing.add(player.uniqueId)) return
 
         val result = try {
-            handler.handle(MenuActionContext(player, holder.route, actionId, event.click))
+            handler.handle(MenuActionContext(player, holder.route, actionId, element.actionPayload, event.click))
         } catch (failure: Throwable) {
             plugin.logger.log(
                 Level.SEVERE,
@@ -134,6 +136,7 @@ internal class MenuRuntimeServiceImpl(
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
+        if (view.standardFrame) layouts.applyStandardFrame(inventory)
         view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot })
         if (playOpenSound) sounds.onMenuOpen(player, definition.routeId)

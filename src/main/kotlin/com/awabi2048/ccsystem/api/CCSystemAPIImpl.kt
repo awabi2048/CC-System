@@ -69,7 +69,12 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     private val menuSoundService = MenuSoundServiceImpl()
-    private val menuRuntimeService = MenuRuntimeServiceImpl(plugin, menuNavigationService, menuSoundService).also {
+    private val menuRuntimeService = MenuRuntimeServiceImpl(
+        plugin,
+        menuNavigationService,
+        menuSoundService,
+        guiLayoutService,
+    ).also {
         plugin.server.pluginManager.registerEvents(it, plugin)
     }
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()

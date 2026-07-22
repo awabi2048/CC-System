@@ -30,12 +30,14 @@ data class MenuElement(
     val item: ItemStack,
     val role: GuiElementRole,
     val actionId: String? = null,
+    val actionPayload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
     val sounds: MenuActionSoundPolicy? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
         require(actionId?.isNotBlank() != false) { "actionId must not be blank" }
+        require(actionId != null || actionPayload.isEmpty()) { "display-only elements cannot have action payload" }
         require(role != GuiElementRole.DECORATION || actionId == null) {
             "decoration elements cannot have an action"
         }
@@ -46,6 +48,7 @@ data class InventoryMenuView(
     val size: Int,
     val title: Component,
     val elements: List<MenuElement>,
+    val standardFrame: Boolean = true,
     val inputSlots: Set<Int> = emptySet(),
     val allowPlayerInventoryInteraction: Boolean = false,
 ) {
@@ -71,6 +74,7 @@ data class MenuActionContext(
     val player: Player,
     val route: MenuRoute,
     val actionId: String,
+    val payload: Map<String, String>,
     val click: ClickType,
 )
 
