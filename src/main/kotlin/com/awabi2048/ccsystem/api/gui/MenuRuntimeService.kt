@@ -17,5 +17,7 @@ interface MenuRuntimeService {
 
     fun refresh(player: Player): Boolean
 
+    fun back(player: Player): Boolean
+
     fun closeOwnedMenus(owner: String): Int
 }

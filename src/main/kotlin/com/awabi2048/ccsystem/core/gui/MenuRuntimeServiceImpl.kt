@@ -71,6 +71,8 @@ internal class MenuRuntimeServiceImpl(
         return openDirect(player, session.route, playOpenSound = false)
     }
 
+    override fun back(player: Player): Boolean = navigation.openPrevious(player)
+
     override fun closeOwnedMenus(owner: String): Int = closeMatching(owner, null)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
