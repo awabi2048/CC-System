@@ -119,8 +119,8 @@ internal class MenuFormServiceImpl(
             MenuUpdate.None, MenuUpdate.Close -> Unit
             MenuUpdate.Refresh -> refresh()
             MenuUpdate.Back -> runtime.back(player)
-            is MenuUpdate.Navigate -> runtime.open(player, update.route)
-            is MenuUpdate.Replace -> runtime.open(player, update.route)
+            is MenuUpdate.Navigate -> runtime.navigate(player, update.route)
+            is MenuUpdate.Replace -> runtime.replace(player, update.route)
         }
     }
 

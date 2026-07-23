@@ -15,6 +15,10 @@ interface MenuRuntimeService {
 
     fun open(player: Player, route: MenuRoute): Boolean
 
+    fun replace(player: Player, route: MenuRoute): Boolean
+
+    fun navigate(player: Player, route: MenuRoute): Boolean
+
     fun refresh(player: Player): Boolean
 
     fun back(player: Player): Boolean

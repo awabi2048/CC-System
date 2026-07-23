@@ -36,6 +36,7 @@ internal class MenuRuntimeServiceImpl(
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
+    private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
 
     override fun register(definition: InventoryMenuDefinition) {
         val key = RouteKey(definition.owner, definition.id)
@@ -44,7 +45,7 @@ internal class MenuRuntimeServiceImpl(
         }
         navigation.registerOpener(definition.owner, definition.id) { player, route ->
             if (definitions[key] == null) return@registerOpener false
-            openDirect(player, route, playOpenSound = true)
+            openDirect(player, route, playOpenSound = player.uniqueId !in suppressOpenSound)
         }
     }
 
@@ -66,6 +67,14 @@ internal class MenuRuntimeServiceImpl(
         definitions[RouteKey(owner, id)]
 
     override fun open(player: Player, route: MenuRoute): Boolean = navigation.open(player, route)
+
+    override fun replace(player: Player, route: MenuRoute): Boolean =
+        withoutOpenSound(player) { navigation.open(player, route) }
+
+    override fun navigate(player: Player, route: MenuRoute): Boolean {
+        val currentRoute = navigation.currentRoute(player) ?: return replace(player, route)
+        return navigateFrom(player, currentRoute, route)
+    }
 
     override fun refresh(player: Player): Boolean {
         val session = sessions[player.uniqueId] ?: return false
@@ -100,7 +109,8 @@ internal class MenuRuntimeServiceImpl(
         return true
     }
 
-    override fun back(player: Player): Boolean = navigation.openPrevious(player)
+    override fun back(player: Player): Boolean =
+        withoutOpenSound(player) { navigation.openPrevious(player) }
 
     override fun closeOwnedMenus(owner: String): Int = closeMatching(owner, null)
 
@@ -160,8 +170,8 @@ internal class MenuRuntimeServiceImpl(
         val player = event.player as? Player ?: return
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val activeHolder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
-            if (activeHolder == null || activeHolder.route != holder.route) {
-                sessions.remove(player.uniqueId, sessions[player.uniqueId])
+            sessions.computeIfPresent(player.uniqueId) { _, session ->
+                if (MenuSessionClosePolicy.shouldRemove(holder.route, activeHolder?.route, session.route)) null else session
             }
         })
     }
@@ -219,11 +229,23 @@ internal class MenuRuntimeServiceImpl(
                     MenuUpdate.None -> Unit
                     MenuUpdate.Refresh -> refresh(player)
                     MenuUpdate.Close -> player.closeInventory()
-                    MenuUpdate.Back -> if (!navigation.openPrevious(player)) player.closeInventory()
-                    is MenuUpdate.Replace -> navigation.open(player, update.route)
-                    is MenuUpdate.Navigate -> navigation.pushAndOpen(player, session.route, update.route)
+                    MenuUpdate.Back -> if (!back(player)) player.closeInventory()
+                    is MenuUpdate.Replace -> replace(player, update.route)
+                    is MenuUpdate.Navigate -> navigateFrom(player, session.route, update.route)
                 }
             }
+        }
+    }
+
+    private fun navigateFrom(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean =
+        withoutOpenSound(player) { navigation.pushAndOpen(player, currentRoute, targetRoute) }
+
+    private fun <T> withoutOpenSound(player: Player, action: () -> T): T {
+        suppressOpenSound.add(player.uniqueId)
+        return try {
+            action()
+        } finally {
+            suppressOpenSound.remove(player.uniqueId)
         }
     }
 
@@ -271,4 +293,9 @@ internal object MenuClickAcceptance {
         org.bukkit.event.inventory.ClickType.SHIFT_LEFT,
         org.bukkit.event.inventory.ClickType.SHIFT_RIGHT,
     )
+}
+
+internal object MenuSessionClosePolicy {
+    fun shouldRemove(closedRoute: MenuRoute, activeRoute: MenuRoute?, sessionRoute: MenuRoute): Boolean =
+        sessionRoute == closedRoute && activeRoute != closedRoute
 }
