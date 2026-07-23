@@ -66,7 +66,7 @@ internal class MenuRuntimeServiceImpl(
     override fun definition(owner: String, id: String): InventoryMenuDefinition? =
         definitions[RouteKey(owner, id)]
 
-    override fun open(player: Player, route: MenuRoute): Boolean = navigation.open(player, route)
+    override fun open(player: Player, route: MenuRoute): Boolean = navigation.openRoot(player, route)
 
     override fun replace(player: Player, route: MenuRoute): Boolean =
         withoutOpenSound(player) { navigation.open(player, route) }
@@ -170,9 +170,16 @@ internal class MenuRuntimeServiceImpl(
         val player = event.player as? Player ?: return
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val activeHolder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
+            var removed = false
             sessions.computeIfPresent(player.uniqueId) { _, session ->
-                if (MenuSessionClosePolicy.shouldRemove(holder.route, activeHolder?.route, session.route)) null else session
+                if (MenuSessionClosePolicy.shouldRemove(holder.route, activeHolder?.route, session.route)) {
+                    removed = true
+                    null
+                } else {
+                    session
+                }
             }
+            if (removed) navigation.clear(player)
         })
     }
 
