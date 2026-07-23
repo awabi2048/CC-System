@@ -28,8 +28,8 @@ messages:
   world_creation_processing: §aワールドを作成しています...
   template_creation_cost_paid: '§6🛖 §e{cost} §aポイントを消費しました。(残り: §6🛖 §e{remaining}§a)'
   world_not_found: §cワールドが見つかりませんでした。
-  spawn_set_start: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
-  spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設置したい場所を向いてクリックしてください。
+  spawn_set_start: §e{type}スポーン地点の設定を開始しました。設定したい地点のブロックを左クリックまたは右クリックしてください。
+  spawn_setting_started: §e{type}スポーン地点の設定を開始しました。設定したい地点のブロックを左クリックまたは右クリックしてください。
   spawn_guest_set: §aゲスト用のスポーン位置を設定しました！
   spawn_member_set: §aメンバー用のスポーン位置を設定しました！
   spawn_both_set: §aゲスト/メンバー共通のスポーン位置を設定しました！

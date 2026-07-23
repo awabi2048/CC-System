@@ -28,8 +28,8 @@ messages:
   world_creation_processing: §aCreating world...
   template_creation_cost_paid: '§aSpent §6🛖 §e{cost} §apoints. (Remaining: §6🛖 §e{remaining}§a)'
   world_not_found: §c World not found.
-  spawn_set_start: §aSetting spawn point for {type}. Left-click a block while facing the desired direction.
-  spawn_setting_started: §aSetting spawn point for {type}. Click a block while facing the desired direction.
+  spawn_set_start: §aSetting spawn point for {type}. Left-click or right-click the target block while facing the desired direction.
+  spawn_setting_started: §aSetting spawn point for {type}. Left-click or right-click the target block while facing the desired direction.
   spawn_guest_set: §aGuest spawn point set.
   spawn_member_set: §aMember spawn point set.
   spawn_both_set: §aShared guest/member spawn point set.
