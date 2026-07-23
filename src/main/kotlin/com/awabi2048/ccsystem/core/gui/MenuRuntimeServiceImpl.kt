@@ -101,7 +101,7 @@ internal class MenuRuntimeServiceImpl(
         navigation.registerInventory(request.route.owner, request.inventory, request.policy)
         presentedInventories[request.inventory] = ManagedPresentation(player.uniqueId, request.route)
         when (val openSound = request.openSound) {
-            MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.key())
+            MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.id)
             MenuSoundPolicy.Silent -> Unit
             is MenuSoundPolicy.Custom -> sounds.play(player, openSound.sound)
         }
@@ -122,7 +122,7 @@ internal class MenuRuntimeServiceImpl(
             is MenuSoundPolicy.Custom -> sounds.play(player, resolved.sound)
             MenuSoundPolicy.Default -> when (fallback) {
                 is MenuSoundPolicy.Custom -> sounds.play(player, fallback.sound)
-                else -> sounds.onMenuClick(player, route?.key(), interaction.clickType)
+                else -> sounds.onMenuClick(player, route?.id, interaction.clickType)
             }
         }
     }
@@ -271,7 +271,7 @@ internal class MenuRuntimeServiceImpl(
         holder.backingInventory = inventory
         applyView(inventory, view)
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot })
-        if (playOpenSound) sounds.onMenuOpen(player, definition.routeId)
+        if (playOpenSound) sounds.onMenuOpen(player, route.id)
         player.openInventory(inventory)
         return true
     }

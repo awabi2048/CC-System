@@ -108,6 +108,27 @@ data class ManagedInventoryMenuRequest(
     val openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
 )
 
+object MenuRouteIds {
+    fun fromInventory(inventory: Inventory): String {
+        val holderName = inventory.holder?.javaClass?.simpleName
+            ?.takeIf(String::isNotBlank)
+            ?: return "inventory"
+        return fromHolderName(holderName)
+    }
+
+    fun fromHolderName(holderName: String): String {
+        require(holderName.isNotBlank()) { "holderName must not be blank" }
+        val withoutSuffix = holderName
+            .removeSuffix("InventoryHolder")
+            .removeSuffix("Holder")
+            .ifBlank { holderName }
+        return withoutSuffix
+            .replace(Regex("([a-z0-9])([A-Z])"), "$1_$2")
+            .replace(Regex("([A-Z]+)([A-Z][a-z])"), "$1_$2")
+            .lowercase()
+    }
+}
+
 enum class ManagedMenuInteractionOutcome {
     SUCCESS,
     REJECTED,
