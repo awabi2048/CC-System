@@ -83,12 +83,17 @@ internal class MenuRuntimeServiceImpl(
 
     override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
         when (request.transition) {
-            ManagedMenuTransition.ROOT -> navigation.clear(player)
-            ManagedMenuTransition.REPLACE -> Unit
-            ManagedMenuTransition.NAVIGATE -> navigation.currentRoute(player)?.let { navigation.push(player, it) }
+            ManagedMenuTransition.ROOT -> {
+                navigation.clear(player)
+                navigation.recordCurrentRoute(player, request.route)
+            }
+            ManagedMenuTransition.REPLACE -> navigation.recordCurrentRoute(player, request.route)
+            ManagedMenuTransition.NAVIGATE -> {
+                navigation.currentRoute(player)?.let { navigation.push(player, it) }
+                navigation.recordCurrentRoute(player, request.route)
+            }
             ManagedMenuTransition.PRESERVE_HISTORY -> Unit
         }
-        navigation.recordCurrentRoute(player, request.route)
         navigation.registerInventory(request.route.owner, request.inventory, request.policy)
         presentedInventories[request.inventory] = request.route
         when (val openSound = request.openSound) {
@@ -131,6 +136,10 @@ internal class MenuRuntimeServiceImpl(
         inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
         sessions[player.uniqueId] = Session(session.route, view.elements.associateBy { it.slot })
         return true
+    }
+
+    override fun close(player: Player) {
+        player.closeInventory()
     }
 
     override fun back(player: Player): Boolean =

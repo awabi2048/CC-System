@@ -23,6 +23,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
+import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.util.cancelWithDebug
@@ -406,7 +407,7 @@ class AnnounceListener : Listener {
         }
 
         pendingIconSelection.remove(player.uniqueId)
-        player.closeInventory()
+        ManagedMenuPresenter.close(player)
         playOperationSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.2f)
         openAddDialog(player, selectedItem.type)
     }
@@ -460,7 +461,7 @@ class AnnounceListener : Listener {
         val announcement = announcementId?.let(AnnouncementManager::getAnnouncementById)
             ?: return MenuActionResult.Rejected()
         pendingIconSelection.remove(player.uniqueId)
-        player.closeInventory()
+        ManagedMenuPresenter.close(player)
         if (click.isRightClick) openDeleteConfirmDialog(player, announcement)
         else openEditDialog(player, announcement)
         return MenuActionResult.Success(MenuUpdate.None)

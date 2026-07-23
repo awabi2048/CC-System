@@ -25,5 +25,7 @@ interface MenuRuntimeService {
 
     fun back(player: Player): Boolean
 
+    fun close(player: Player)
+
     fun closeOwnedMenus(owner: String): Int
 }

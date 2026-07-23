@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.features.rentalarea.storage
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -125,7 +126,7 @@ object RemainedItemManager {
         playerInventories.getOrPut(playerId) { mutableMapOf() }[areaId] = items.toMutableList()
         openInventories[playerId] = areaId
 
-        player.openInventory(inventory)
+        ManagedMenuPresenter.open(player, inventory)
         return inventory
     }
 
