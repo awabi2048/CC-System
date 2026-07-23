@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.LoreService
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -38,7 +39,7 @@ class LoreServiceImpl : LoreService {
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {
         if (lines.isEmpty()) return emptyList()
         val separator = RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true)
-        val content = lines.map(::renderLine)
+        val content = lines.flatMap(::renderLine)
         val framed = buildList {
             if ((frame == GuiLoreFrame.TOP || frame == GuiLoreFrame.BOTH) &&
                 content.firstOrNull()?.separator != true
@@ -72,14 +73,62 @@ class LoreServiceImpl : LoreService {
             .map { normalize(it.component) }
     }
 
-    private fun renderLine(line: GuiLoreLine): RenderedLine = when (line) {
-        GuiLoreLine.Spacer -> RenderedLine(Component.empty(), spacer = true)
-        GuiLoreLine.Separator -> RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true)
-        is GuiLoreLine.Component -> RenderedLine(line.value)
-        is GuiLoreLine.ComponentData -> RenderedLine(LoreFormatter.dataComponent(line.label, line.value, line.valueColor))
-        is GuiLoreLine.StyledText -> RenderedLine(LoreFormatter.styledText(line.text, line.color, line.italic))
-        is GuiLoreLine.UserText -> RenderedLine(LoreFormatter.component(line.text))
-        else -> RenderedLine(LoreFormatter.component(renderFormattedLine(line)))
+    private fun renderLine(line: GuiLoreLine): List<RenderedLine> = when (line) {
+        GuiLoreLine.Spacer -> listOf(RenderedLine(Component.empty(), spacer = true))
+        GuiLoreLine.Separator ->
+            listOf(RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true))
+        is GuiLoreLine.Component -> listOf(RenderedLine(line.value))
+        is GuiLoreLine.ComponentData ->
+            listOf(RenderedLine(LoreFormatter.dataComponent(line.label, line.value, line.valueColor)))
+        is GuiLoreLine.StyledText ->
+            listOf(RenderedLine(LoreFormatter.styledText(line.text, line.color, line.italic)))
+        is GuiLoreLine.ProgressPath -> renderProgressPath(line)
+        is GuiLoreLine.UserText -> listOf(RenderedLine(LoreFormatter.component(line.text)))
+        else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
+    }
+
+    private fun renderProgressPath(path: GuiLoreLine.ProgressPath): List<RenderedLine> {
+        val uniformFont = Key.key("minecraft", "uniform")
+        var markerLine = Component.text("  ", NamedTextColor.GRAY)
+        path.labels.forEachIndexed { index, _ ->
+            val markerColor = when {
+                index < path.currentIndex -> NamedTextColor.GREEN
+                index == path.currentIndex -> NamedTextColor.YELLOW
+                else -> NamedTextColor.GRAY
+            }
+            val marker = if (index == path.currentIndex) "◆" else if (index < path.currentIndex) "●" else "○"
+            markerLine = markerLine.append(Component.text(marker, markerColor))
+            if (index < path.labels.lastIndex) {
+                val pathColor =
+                    if (index < path.currentIndex) NamedTextColor.GREEN else NamedTextColor.GRAY
+                val pathText = if (index < path.currentIndex) "━━━" else "───"
+                markerLine = markerLine.append(Component.text(pathText, pathColor))
+            }
+        }
+
+        var labelLine = Component.empty()
+        path.labels.forEachIndexed { index, label ->
+            if (index > 0) {
+                labelLine = labelLine.append(Component.text("  ", NamedTextColor.GRAY))
+            }
+            val labelColor = when {
+                index < path.currentIndex -> NamedTextColor.GREEN
+                index == path.currentIndex -> NamedTextColor.YELLOW
+                else -> NamedTextColor.GRAY
+            }
+            val displayWidth = label.codePointCount(0, label.length)
+            val halfWidthPadding = ((3 - displayWidth).coerceAtLeast(0)) * 2
+            val leading = halfWidthPadding / 2
+            val trailing = halfWidthPadding - leading
+            labelLine = labelLine.append(
+                Component.text(" ".repeat(leading) + label + " ".repeat(trailing), labelColor)
+            )
+        }
+
+        return listOf(
+            RenderedLine(markerLine.font(uniformFont)),
+            RenderedLine(labelLine.font(uniformFont))
+        )
     }
 
     private fun renderFormattedLine(line: GuiLoreLine): String = when (line) {
@@ -101,6 +150,7 @@ class LoreServiceImpl : LoreService {
         GuiLoreLine.Spacer,
         is GuiLoreLine.ComponentData,
         is GuiLoreLine.StyledText,
+        is GuiLoreLine.ProgressPath,
         is GuiLoreLine.UserText,
         is GuiLoreLine.Component -> error("Non-formatted lore line reached formatted renderer")
     }

@@ -164,4 +164,24 @@ class LoreServiceTest {
         assertEquals(1, rendered.size());
         assertNotNull(rendered.getFirst().hoverEvent());
     }
+
+    @Test
+    void progressPathRendersAlignedMarkersAndLabelsFromSemanticState() {
+        List<Component> rendered = new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(
+                List.of(new GuiLoreLine.ProgressPath(
+                    List.of("新規", "訪問者", "開拓者", "冒険者", "達成者"),
+                    2
+                )),
+                GuiLoreFrame.NONE
+            )
+        );
+
+        assertEquals(List.of(
+            "  ●━━━●━━━◆───○───○",
+            " 新規   訪問者  開拓者  冒険者  達成者"
+        ), plain(rendered));
+        assertEquals("minecraft:uniform", rendered.get(0).font().asString());
+        assertEquals("minecraft:uniform", rendered.get(1).font().asString());
+    }
 }
