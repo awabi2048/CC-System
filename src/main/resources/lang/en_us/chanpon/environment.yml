@@ -83,6 +83,11 @@ chanpon:
         enabled: "§aFlight is allowed in this world."
         disabled: "§cFlight is not allowed in this world."
         restored_default: "§7You left the world, so your flight setting has been restored."
+    freecam:
+      description: "Controls whether FreeCam can be started in this world."
+      display: "FreeCam"
+      enabled: "Allowed"
+      disabled: "Not allowed"
     protection:
       display: "Build Access"
       description: "Sets who may build in this world."
