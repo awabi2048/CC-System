@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.GuiStatusTone
 import com.awabi2048.ccsystem.api.gui.LoreService
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -82,9 +83,19 @@ class LoreServiceImpl : LoreService {
             listOf(RenderedLine(LoreFormatter.dataComponent(line.label, line.value, line.valueColor)))
         is GuiLoreLine.StyledText ->
             listOf(RenderedLine(LoreFormatter.styledText(line.text, line.color, line.italic)))
+        is GuiLoreLine.StatusComment -> listOf(RenderedLine(renderStatusComment(line)))
         is GuiLoreLine.ProgressPath -> renderProgressPath(line)
         is GuiLoreLine.UserText -> listOf(RenderedLine(LoreFormatter.component(line.text)))
         else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
+    }
+
+    private fun renderStatusComment(line: GuiLoreLine.StatusComment): Component {
+        val markerColor = when (line.tone) {
+            GuiStatusTone.COMPLETE -> NamedTextColor.GREEN
+            GuiStatusTone.INCOMPLETE -> NamedTextColor.RED
+        }
+        return Component.text("❙", markerColor)
+            .append(Component.text(" ${line.text}", NamedTextColor.GRAY))
     }
 
     private fun renderProgressPath(path: GuiLoreLine.ProgressPath): List<RenderedLine> {
@@ -150,6 +161,7 @@ class LoreServiceImpl : LoreService {
         GuiLoreLine.Spacer,
         is GuiLoreLine.ComponentData,
         is GuiLoreLine.StyledText,
+        is GuiLoreLine.StatusComment,
         is GuiLoreLine.ProgressPath,
         is GuiLoreLine.UserText,
         is GuiLoreLine.Component -> error("Non-formatted lore line reached formatted renderer")

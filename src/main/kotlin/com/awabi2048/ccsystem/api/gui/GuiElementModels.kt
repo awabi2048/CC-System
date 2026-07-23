@@ -35,6 +35,11 @@ enum class GuiLoreFrame {
     BOTH
 }
 
+enum class GuiStatusTone {
+    COMPLETE,
+    INCOMPLETE
+}
+
 sealed interface GuiLoreLine {
     data object Spacer : GuiLoreLine
     data object Separator : GuiLoreLine
@@ -62,6 +67,11 @@ sealed interface GuiLoreLine {
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
     data class StyledText(val text: String, val color: String, val italic: Boolean) : GuiLoreLine
+    /** 状態を文章へ重ねず、先頭マーカーの色だけで補助表示する短い説明。 */
+    data class StatusComment(
+        val text: String,
+        val tone: GuiStatusTone
+    ) : GuiLoreLine
     /**
      * 複数段階の進行状況を、等幅のPathとラベルとして2行で描画する。
      * 図形、空白、色はCC-Systemが現在位置から決定する。

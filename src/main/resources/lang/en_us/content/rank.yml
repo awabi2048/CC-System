@@ -76,7 +76,6 @@ rank:
     title: §6{player} §7- §e{rank}
     complete_title: §a§lAll tasks complete!
     complete_lore: §7There are no additional requirements for this rank
-    status_label: Status
     category:
       play_time: §ePlay Time
       exploration: §bExploration
@@ -85,6 +84,14 @@ rank:
       vanilla_exp: §eVanilla EXP
       items: §bCollection and Crafting
       milestones: §bMilestones
+    comment:
+      play_time: Time spent playing on the server.
+      exploration: Explore the target worlds.
+      combat: Defeat the specified enemies.
+      mining: Mine the specified blocks.
+      vanilla_exp: Collect vanilla experience.
+      items: Collect the specified items.
+      milestones: Complete key steps in your adventure.
   prestige:
     cannot: §cプレステージ条件を満たしていません。
     failed: §cプレステージの実行に失敗しました

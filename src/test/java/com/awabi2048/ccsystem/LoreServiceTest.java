@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreFrame;
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock;
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine;
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec;
+import com.awabi2048.ccsystem.api.gui.GuiStatusTone;
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 class LoreServiceTest {
     private static List<String> plain(List<Component> lines) {
@@ -183,5 +185,27 @@ class LoreServiceTest {
         ), plain(rendered));
         assertEquals("minecraft:uniform", rendered.get(0).font().asString());
         assertEquals("minecraft:uniform", rendered.get(1).font().asString());
+    }
+
+    @Test
+    void statusCommentUsesOnlyTheMarkerColorForCompletionState() {
+        List<Component> rendered = new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(
+                List.of(
+                    new GuiLoreLine.StatusComment("このカテゴリの短い説明です。", GuiStatusTone.COMPLETE),
+                    new GuiLoreLine.StatusComment("未完了の説明です。", GuiStatusTone.INCOMPLETE)
+                ),
+                GuiLoreFrame.NONE
+            )
+        );
+
+        assertEquals(List.of(
+            "❙ このカテゴリの短い説明です。",
+            "❙ 未完了の説明です。"
+        ), plain(rendered));
+        assertEquals(NamedTextColor.GREEN, rendered.get(0).color());
+        assertEquals(NamedTextColor.RED, rendered.get(1).color());
+        assertEquals(NamedTextColor.GRAY, rendered.get(0).children().getFirst().color());
+        assertEquals(NamedTextColor.GRAY, rendered.get(1).children().getFirst().color());
     }
 }

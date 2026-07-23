@@ -97,7 +97,6 @@ rank:
     title: §6{player} §7- §e{rank}
     complete_title: §a§lすべてのタスク完了！
     complete_lore: §7現在のランクでは追加要件はありません
-    status_label: 状態
     category:
       play_time: §eプレイ時間
       exploration: §b探索
@@ -106,6 +105,14 @@ rank:
       vanilla_exp: §eバニラEXP
       items: §b収集・クラフト
       milestones: §b到達イベント
+    comment:
+      play_time: サーバーで遊んだ時間です。
+      exploration: 対象のワールドを探索します。
+      combat: 指定された敵を討伐します。
+      mining: 指定されたブロックを採掘します。
+      vanilla_exp: バニラ経験値を集めます。
+      items: 指定されたアイテムを集めます。
+      milestones: 冒険の節目となる行動です。
 message:
   rank_up: §a§l【ランクアップ！】§r§a{rank} になりました
   profession_selected: §a§l【職業選択】§r§a職業 {profession} を選択しました
