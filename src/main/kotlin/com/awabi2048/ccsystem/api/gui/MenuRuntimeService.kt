@@ -19,6 +19,8 @@ interface MenuRuntimeService {
 
     fun navigate(player: Player, route: MenuRoute): Boolean
 
+    fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean
+
     fun refresh(player: Player): Boolean
 
     fun back(player: Player): Boolean

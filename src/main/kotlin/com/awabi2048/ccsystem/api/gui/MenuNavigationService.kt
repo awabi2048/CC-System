@@ -18,6 +18,10 @@ interface MenuNavigationService {
 
     fun unregisterInventoryPolicy(owner: String)
 
+    fun registerInventory(owner: String, inventory: Inventory, policy: GuiInventoryPolicy)
+
+    fun unregisterInventory(inventory: Inventory)
+
     fun inventoryPolicy(inventory: Inventory): GuiInventoryPolicy?
 
     fun isManagedInventory(inventory: Inventory): Boolean
@@ -29,6 +33,8 @@ interface MenuNavigationService {
     fun clear(player: Player)
 
     fun currentRoute(player: Player): MenuRoute?
+
+    fun recordCurrentRoute(player: Player, route: MenuRoute)
 
     fun persistCurrentRoute(player: Player)
 

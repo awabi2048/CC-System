@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Inventory
 
 /** CC-Systemが管理するメニューの表示方式。 */
 enum class MenuSurface {
@@ -90,6 +91,21 @@ sealed interface MenuUpdate {
     data class Replace(val route: MenuRoute) : MenuUpdate
     data class Navigate(val route: MenuRoute) : MenuUpdate
 }
+
+enum class ManagedMenuTransition {
+    ROOT,
+    REPLACE,
+    NAVIGATE,
+    PRESERVE_HISTORY,
+}
+
+data class ManagedInventoryMenuRequest(
+    val route: MenuRoute,
+    val inventory: Inventory,
+    val transition: ManagedMenuTransition = ManagedMenuTransition.PRESERVE_HISTORY,
+    val policy: GuiInventoryPolicy = GuiInventoryPolicy(),
+    val openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
+)
 
 sealed interface MenuActionResult {
     data class Success(

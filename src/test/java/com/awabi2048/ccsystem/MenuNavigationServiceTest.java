@@ -1,15 +1,18 @@
 package com.awabi2048.ccsystem;
 
 import com.awabi2048.ccsystem.api.gui.MenuRoute;
+import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy;
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MenuNavigationServiceTest {
     @Test
@@ -33,6 +36,19 @@ class MenuNavigationServiceTest {
         assertEquals(otherRoot, service.currentRoute(player));
     }
 
+    @Test
+    void inventoryInstancePolicyIsRegisteredAndRemovedByIdentity() {
+        var service = new MenuNavigationServiceImpl();
+        var inventory = inventory();
+        var policy = new GuiInventoryPolicy(java.util.Set.of(4), true);
+
+        service.registerInventory("test", inventory, policy);
+        assertEquals(policy, service.inventoryPolicy(inventory));
+
+        service.unregisterInventory(inventory);
+        assertNull(service.inventoryPolicy(inventory));
+    }
+
     private static Player player(UUID playerId) {
         return (Player) Proxy.newProxyInstance(
                 Player.class.getClassLoader(),
@@ -49,5 +65,19 @@ class MenuNavigationServiceTest {
 
     private static MenuRoute route(String id) {
         return new MenuRoute("test", id, Map.of());
+    }
+
+    private static Inventory inventory() {
+        return (Inventory) Proxy.newProxyInstance(
+                Inventory.class.getClassLoader(),
+                new Class<?>[]{Inventory.class},
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "getHolder" -> null;
+                    case "hashCode" -> System.identityHashCode(proxy);
+                    case "equals" -> proxy == args[0];
+                    case "toString" -> "TestInventory";
+                    default -> throw new UnsupportedOperationException(method.getName());
+                }
+        );
     }
 }

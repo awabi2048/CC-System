@@ -7,6 +7,8 @@ import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
+import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
+import com.awabi2048.ccsystem.api.gui.ManagedMenuTransition
 import com.awabi2048.ccsystem.api.gui.MenuRenderContext
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
@@ -37,6 +39,9 @@ internal class MenuRuntimeServiceImpl(
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
+    private val presentedInventories = java.util.Collections.synchronizedMap(
+        java.util.IdentityHashMap<org.bukkit.inventory.Inventory, MenuRoute>()
+    )
 
     override fun register(definition: InventoryMenuDefinition) {
         val key = RouteKey(definition.owner, definition.id)
@@ -74,6 +79,25 @@ internal class MenuRuntimeServiceImpl(
     override fun navigate(player: Player, route: MenuRoute): Boolean {
         val currentRoute = navigation.currentRoute(player) ?: return replace(player, route)
         return navigateFrom(player, currentRoute, route)
+    }
+
+    override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
+        when (request.transition) {
+            ManagedMenuTransition.ROOT -> navigation.clear(player)
+            ManagedMenuTransition.REPLACE -> Unit
+            ManagedMenuTransition.NAVIGATE -> navigation.currentRoute(player)?.let { navigation.push(player, it) }
+            ManagedMenuTransition.PRESERVE_HISTORY -> Unit
+        }
+        navigation.recordCurrentRoute(player, request.route)
+        navigation.registerInventory(request.route.owner, request.inventory, request.policy)
+        presentedInventories[request.inventory] = request.route
+        when (val openSound = request.openSound) {
+            MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.key())
+            MenuSoundPolicy.Silent -> Unit
+            is MenuSoundPolicy.Custom -> sounds.play(player, openSound.sound)
+        }
+        player.openInventory(request.inventory)
+        return true
     }
 
     override fun refresh(player: Player): Boolean {
@@ -166,6 +190,10 @@ internal class MenuRuntimeServiceImpl(
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onInventoryClose(event: InventoryCloseEvent) {
+        if (presentedInventories.remove(event.inventory) != null) {
+            navigation.unregisterInventory(event.inventory)
+            return
+        }
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
         val player = event.player as? Player ?: return
         Bukkit.getScheduler().runTask(plugin, Runnable {
