@@ -70,6 +70,11 @@ chanpon:
         enabled: "§aこのワールドではフライが許可されています。"
         disabled: "§cこのワールドではフライが許可されていません。"
         restored_default: "§7ワールドから抜けたため、フライ設定を元に戻しました。"
+    freecam:
+      description: "このワールドでFreeCamを開始できるかを設定します。"
+      display: "FreeCam"
+      enabled: "許可"
+      disabled: "不許可"
     protection:
       display: "§e建築許可"
       description: "ほかのプレイヤーがこのワールドで建築できる条件を設定します。"

@@ -237,6 +237,21 @@ gui:
       action:
         normal: Invite member
         force: Force add member
+    admin_owner_reset:
+      name: §cReset Owner
+      current_owner: Current Owner
+      action: Choose a new owner
+      dialog:
+        title: Reset Owner
+        body: "The current owner of “{world}” is {owner}. Enter the player name of the new owner."
+        input: New Owner
+        confirm: §cReset
+        cancel: §aCancel
+      error:
+        empty: §cEnter a player name.
+        not_found: §cPlayer “{player}” was not found.
+        same_owner: §cThat player is already the owner.
+      success: §aThe owner has been reset to {player}.
     remove_confirm:
       title: Confirm Removal
       question: Really remove this member?

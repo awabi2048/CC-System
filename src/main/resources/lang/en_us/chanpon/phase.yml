@@ -1,8 +1,28 @@
 chanpon:
-  phase:
-    selector:
-      display: "Availability phase"
+  controls:
+    build:
+      display: "Building permission"
       current: "Current"
+      allowed: "Allowed"
+      denied: "Denied"
+      allowed_description: "Non-administrator players can build."
+      denied_description: "Non-administrator players cannot build."
+      allow_action: "Allow building"
+      deny_action: "Deny building"
+    creation:
+      display: "World creation availability"
+      current: "Current"
+      next_action: "Next setting"
+      previous_action: "Previous setting"
+      denied:
+        display: "Deny all"
+        description: "Standard and production worlds cannot be created."
+      non_production:
+        display: "Allow non-production"
+        description: "Only standard worlds can be created."
+      production:
+        display: "Allow production"
+        description: "Standard and production worlds can be created."
     command:
       no_permission: "§cChanpon administrator permission is required."
       player_only: "§cThis command can only be used by a player."
@@ -17,15 +37,3 @@ chanpon:
       archive_unzip_failed: "§cArchive extraction failed: §f{reason}"
     creation_denied: "§cWorld creation is currently unavailable."
     production_denied: "§cProduction world creation and switching are currently unavailable."
-    state:
-      next_action: "Next phase"
-      previous_action: "Previous phase"
-      build_locked:
-        display: "Phase 1: Build and Creation Locked"
-        description: "Building and world creation are disabled."
-      creation_allowed:
-        display: "Phase 2: Standard Creation"
-        description: "Building and standard world creation are allowed."
-      production_allowed:
-        display: "Phase 3: Production Release"
-        description: "Production world creation and switching are allowed."
