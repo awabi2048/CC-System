@@ -237,6 +237,21 @@ gui:
       action:
         normal: 招待
         force: 強制追加
+    admin_owner_reset:
+      name: §cオーナーを再設定
+      current_owner: 現在のオーナー
+      action: 新しいオーナーを指定
+      dialog:
+        title: オーナーを再設定
+        body: "ワールド「{world}」の現在のオーナーは {owner} です。新しいオーナーのプレイヤー名を入力してください。"
+        input: 新しいオーナー
+        confirm: §c再設定
+        cancel: §aキャンセル
+      error:
+        empty: §cプレイヤー名を入力してください。
+        not_found: §cプレイヤー「{player}」が見つかりません。
+        same_owner: §cそのプレイヤーは既にオーナーです。
+      success: §aオーナーを {player} に再設定しました。
     remove_confirm:
       title: 確認
       question: 本当に削除しますか？
