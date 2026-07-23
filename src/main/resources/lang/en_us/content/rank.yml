@@ -76,23 +76,15 @@ rank:
     title: §6{player} §7- §e{rank}
     complete_title: §a§lAll tasks complete!
     complete_lore: §7There are no additional requirements for this rank
+    status_label: Status
     category:
       play_time: §ePlay Time
-      exploration: '{status} §bExploration'
-      combat: '{status} §bCombat'
-      mining: '{status} §bMining'
+      exploration: §bExploration
+      combat: §bCombat
+      mining: §bMining
       vanilla_exp: §eVanilla EXP
-      items: '{status} §bCollection and Crafting'
-      milestones: '{status} §bMilestones'
-    line:
-      progress_time: '{status} §7Progress: {current} / {required}'
-      named_progress_time: '{status} §7{label}: {current} / {required}'
-      named_progress: '{status} §7{label}: {current}/{required}'
-      state: '{status} §7{label}'
-      progress_exp: '{status} §7Progress: {current}/{required}'
-      percent: §8({percent}%)
-      target_prefix: '{status} '
-      target_suffix: '§7: {current}/{required}'
+      items: §bCollection and Crafting
+      milestones: §bMilestones
   prestige:
     cannot: §cプレステージ条件を満たしていません。
     failed: §cプレステージの実行に失敗しました
