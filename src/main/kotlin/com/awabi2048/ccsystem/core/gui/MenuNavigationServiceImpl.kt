@@ -8,6 +8,8 @@ import com.awabi2048.ccsystem.api.gui.MenuResumeResult
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRouteOpener
 import java.io.File
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.entity.Player
@@ -18,6 +20,9 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
     private val openers = ConcurrentHashMap<RouteKey, MenuRouteOpener>()
     private val menuMatchers = ConcurrentHashMap<String, GuiMenuMatcher>()
     private val inventoryPolicies = ConcurrentHashMap<String, GuiInventoryPolicy>()
+    private val inventoryInstances = Collections.synchronizedMap(
+        IdentityHashMap<Inventory, InventoryRegistration>()
+    )
     private val currentRoutes = ConcurrentHashMap<UUID, MenuRoute>()
     private val pendingRoutes = ConcurrentHashMap<UUID, MenuRoute>()
     private val stateStore = dataFile?.let(::MenuRouteStateStore)
@@ -36,6 +41,9 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
         openers.keys.removeIf { it.owner == owner }
         menuMatchers.remove(owner)
         inventoryPolicies.remove(owner)
+        synchronized(inventoryInstances) {
+            inventoryInstances.entries.removeIf { it.value.owner == owner }
+        }
         history.removeOwner(owner)
     }
 
@@ -53,8 +61,18 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
         inventoryPolicies.remove(owner)
     }
 
+    override fun registerInventory(owner: String, inventory: Inventory, policy: GuiInventoryPolicy) {
+        require(owner.isNotBlank()) { "owner must not be blank" }
+        inventoryInstances[inventory] = InventoryRegistration(owner, policy)
+    }
+
+    override fun unregisterInventory(inventory: Inventory) {
+        inventoryInstances.remove(inventory)
+    }
+
     override fun inventoryPolicy(inventory: Inventory): GuiInventoryPolicy? {
         (inventory.holder as? GuiInventoryPolicyProvider)?.let { return it.guiInventoryPolicy() }
+        inventoryInstances[inventory]?.let { return it.policy }
         inventoryPolicies.entries.firstOrNull { (owner, _) -> matchesOwner(owner, inventory) }?.value?.let { return it }
         // matcherだけを登録した既存メニューも、GUIアイテムをプレイヤー側へ移さない既定動作にする。
         return menuMatchers.values.firstOrNull { matcher ->
@@ -67,13 +85,18 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
     }
 
     override fun closeOwnedMenus(owner: String, players: Collection<Player>): Int {
-        val matcher = menuMatchers[owner] ?: return 0
-        return closeMatchingMenus(players) { matcher.matches(it) }
+        val matcher = menuMatchers[owner]
+        return closeMatchingMenus(players) { inventory ->
+            inventoryInstances[inventory]?.owner == owner ||
+                matcher?.let { runCatching { it.matches(inventory) }.getOrDefault(false) } == true
+        }
     }
 
     override fun closeAllMenus(players: Collection<Player>): Int {
         val matchers = menuMatchers.values.toList()
-        return closeMatchingMenus(players) { inventory -> matchers.any { it.matches(inventory) } }
+        return closeMatchingMenus(players) { inventory ->
+            inventoryInstances.containsKey(inventory) || matchers.any { it.matches(inventory) }
+        }
     }
 
     override fun clear(player: Player) {
@@ -84,6 +107,10 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
 
     override fun currentRoute(player: Player): MenuRoute? {
         return currentRoutes[player.uniqueId]
+    }
+
+    override fun recordCurrentRoute(player: Player, route: MenuRoute) {
+        currentRoutes[player.uniqueId] = route
     }
 
     override fun persistCurrentRoute(player: Player) {
@@ -176,5 +203,10 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
     private data class RouteKey(
         val owner: String,
         val id: String
+    )
+
+    private data class InventoryRegistration(
+        val owner: String,
+        val policy: GuiInventoryPolicy,
     )
 }

@@ -8,21 +8,29 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
+import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
+import com.awabi2048.ccsystem.api.gui.InventoryMenuView
+import com.awabi2048.ccsystem.api.gui.MenuActionResult
+import com.awabi2048.ccsystem.api.gui.MenuActionHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogButton
+import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
+import com.awabi2048.ccsystem.api.gui.MenuDialogInput
+import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
+import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
+import com.awabi2048.ccsystem.api.gui.MenuElement
+import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.MenuSound
+import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
+import com.awabi2048.ccsystem.api.gui.MenuUpdate
+import com.awabi2048.ccsystem.core.gui.GuiItemMarker
+import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
-import io.papermc.paper.dialog.Dialog
-import io.papermc.paper.registry.data.dialog.ActionButton
-import io.papermc.paper.registry.data.dialog.DialogBase
-import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
-import io.papermc.paper.registry.data.dialog.input.DialogInput
-import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -37,7 +45,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.Locale
@@ -46,7 +53,26 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class AnnounceListener : Listener {
+    init {
+        CCSystem.getAPI().getMenuRuntimeService().register(
+            InventoryMenuDefinition(
+                owner = MENU_OWNER,
+                id = MENU_ID,
+                renderer = { context -> createMenuView(context.player, context.route) },
+                actions = mapOf(
+                    "menu-command" to MenuActionHandler { context -> executeMenuCommandAction(context.player) },
+                    "select-icon" to MenuActionHandler { context -> beginIconSelection(context.player) },
+                    "announcement" to MenuActionHandler { context ->
+                        openAnnouncementAction(context.player, context.payload["id"], context.click)
+                    }
+                )
+            )
+        )
+    }
+
     companion object {
+        private const val MENU_OWNER = "cc-system"
+        private const val MENU_ID = "announcement"
         private const val MENU_SIZE = 54
         private val LEGACY = LegacyComponentSerializer.legacySection()
         private val pendingIconSelection = mutableSetOf<UUID>()
@@ -61,11 +87,52 @@ class AnnounceListener : Listener {
 
         fun openAnnouncementMenu(player: Player, openedFromMenuArgument: Boolean) {
             pendingIconSelection.remove(player.uniqueId)
+            CCSystem.getAPI().getMenuRuntimeService().open(
+                player,
+                MenuRoute(MENU_OWNER, MENU_ID, mapOf("fromMenu" to openedFromMenuArgument.toString()))
+            )
+        }
+
+        private fun createMenuView(player: Player, route: MenuRoute): InventoryMenuView {
+            val openedFromMenuArgument = route.payload["fromMenu"].toBoolean()
             val highlightIds = getHighlightAnnouncementIds(player)
             val inventory = createMenuInventory(player, openedFromMenuArgument, highlightIds)
-            player.openInventory(inventory)
-            PlayerDataManager.set(player.uniqueId, AnnouncementManager.PLAYER_DATA_LAST_CHECKED_AT, Instant.now().toString())
-            playOperationSound(player, Sound.UI_BUTTON_CLICK)
+            val announcements = AnnouncementManager.getAnnouncementsForMenu()
+            val elements = buildList {
+                for (slot in 0 until inventory.size) {
+                    val item = inventory.getItem(slot) ?: continue
+                    val announcement = announcements.getOrNull(INTERIOR_SLOTS.indexOf(slot))
+                    val actionId = when {
+                        slot == 45 && openedFromMenuArgument -> "menu-command"
+                        slot == 49 && hasManagePermission(player) -> "select-icon"
+                        announcement != null && hasManagePermission(player) -> "announcement"
+                        else -> null
+                    }
+                    add(
+                        MenuElement(
+                            slot = slot,
+                            item = item,
+                            role = GuiItemMarker.role(item) ?: GuiElementRole.CONTENT,
+                            actionId = actionId,
+                            actionPayload = if (actionId == "announcement") {
+                                mapOf("id" to requireNotNull(announcement).id)
+                            } else emptyMap()
+                        )
+                    )
+                }
+            }
+            PlayerDataManager.set(
+                player.uniqueId,
+                AnnouncementManager.PLAYER_DATA_LAST_CHECKED_AT,
+                Instant.now().toString()
+            )
+            return InventoryMenuView(
+                size = MENU_SIZE,
+                title = LEGACY.deserialize(LanguageManager.getRawString(player, "announce.menu_title")),
+                elements = elements,
+                standardFrame = false,
+                allowPlayerInventoryInteraction = true
+            )
         }
 
         private fun createMenuInventory(
@@ -73,10 +140,8 @@ class AnnounceListener : Listener {
             openedFromMenuArgument: Boolean,
             highlightAnnouncementIds: Set<String>
         ): Inventory {
-            val holder = AnnouncementMenuHolder(openedFromMenuArgument)
             val title = LanguageManager.getRawString(player, "announce.menu_title")
-            val inventory = Bukkit.createInventory(holder, MENU_SIZE, LegacyComponentSerializer.legacySection().deserialize(title))
-            holder.bind(inventory)
+            val inventory = Bukkit.createInventory(null, MENU_SIZE, LegacyComponentSerializer.legacySection().deserialize(title))
 
             val blackPane = createPane(Material.BLACK_STAINED_GLASS_PANE)
             val grayPane = createPane(Material.GRAY_STAINED_GLASS_PANE)
@@ -318,70 +383,10 @@ class AnnounceListener : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInventoryClick(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
-        val topHolder = event.view.topInventory.holder
-
-        if (topHolder !is AnnouncementMenuHolder) {
-            return
-        }
-
-        event.cancelWithDebug("AnnounceListener.onInventoryClick: menu interaction")
+        if (!isAnnouncementRoute(player)) return
         val clickedInventory = event.clickedInventory ?: return
-
-        if (clickedInventory == event.view.topInventory) {
-            if (event.slot == 45 && topHolder.openedFromMenuArgument) {
-                executeMenuCommand(player)
-                return
-            }
-
-            if (event.slot == 49 && hasManagePermission(player)) {
-                if (AnnouncementManager.getAnnouncementCount() >= AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS) {
-                    player.sendMessage(
-                        LanguageManager.getMessage(
-                            player,
-                            "announce.add_limit_reached",
-                            "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()
-                        )
-                    )
-                    playOperationSound(player, Sound.BLOCK_NOTE_BLOCK_BASS)
-                    return
-                }
-
-                pendingIconSelection.add(player.uniqueId)
-                player.sendMessage(LanguageManager.getMessage(player, "announce.icon_select_instruction"))
-                playOperationSound(player, Sound.ITEM_BOOK_PAGE_TURN)
-                return
-            }
-
-            if (!hasManagePermission(player)) {
-                return
-            }
-
-            val announcement = getAnnouncementByMenuSlot(event.slot) ?: return
-            when {
-                event.isLeftClick -> {
-                    pendingIconSelection.remove(player.uniqueId)
-                    player.closeInventory()
-                    playOperationSound(player, Sound.UI_BUTTON_CLICK)
-                    openEditDialog(player, announcement)
-                }
-
-                event.isRightClick -> {
-                    pendingIconSelection.remove(player.uniqueId)
-                    player.closeInventory()
-                    playOperationSound(player, Sound.UI_BUTTON_CLICK)
-                    openDeleteConfirmDialog(player, announcement)
-                }
-            }
-            return
-        }
-
-        if (clickedInventory != player.inventory) {
-            return
-        }
-
-        if (!pendingIconSelection.contains(player.uniqueId)) {
-            return
-        }
+        if (clickedInventory != player.inventory || !pendingIconSelection.contains(player.uniqueId)) return
+        event.cancelWithDebug("AnnounceListener.onInventoryClick: icon selection")
 
         val selectedItem = event.currentItem
         if (selectedItem == null || selectedItem.type == Material.AIR) {
@@ -402,51 +407,80 @@ class AnnounceListener : Listener {
         }
 
         pendingIconSelection.remove(player.uniqueId)
-        player.closeInventory()
+        ManagedMenuPresenter.close(player)
         playOperationSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.2f)
         openAddDialog(player, selectedItem.type)
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInventoryDrag(event: InventoryDragEvent) {
-        val holder = event.view.topInventory.holder
-        if (holder is AnnouncementMenuHolder) {
+        val player = event.whoClicked as? Player ?: return
+        if (isAnnouncementRoute(player)) {
             event.isCancelled = true
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onInventoryClose(event: InventoryCloseEvent) {
-        val holder = event.view.topInventory.holder
-        if (holder is AnnouncementMenuHolder) {
+        val player = event.player as? Player ?: return
+        if (isAnnouncementRoute(player)) {
             pendingIconSelection.remove(event.player.uniqueId)
         }
     }
 
-    private fun executeMenuCommand(player: Player) {
-        val menuCommand = ConfigManager.getAnnounceMenuCommand().trim().removePrefix("/")
-        if (menuCommand.isBlank()) {
-            player.sendMessage(LanguageManager.getMessage(player, "announce.menu_command_not_configured"))
-            return
-        }
-
-        val success = player.performCommand(menuCommand)
-        if (!success) {
-            player.sendMessage(LanguageManager.getMessage(player, "announce.menu_command_failed"))
-            playOperationSound(player, Sound.BLOCK_NOTE_BLOCK_BASS)
-            return
-        }
-        playOperationSound(player, Sound.UI_BUTTON_CLICK)
+    private fun isAnnouncementRoute(player: Player): Boolean {
+        val route = CCSystem.getAPI().getMenuNavigationService().currentRoute(player) ?: return false
+        return route.owner == MENU_OWNER && route.id == MENU_ID
     }
 
-    private fun getAnnouncementByMenuSlot(slot: Int): AnnouncementManager.Announcement? {
-        val index = INTERIOR_SLOTS.indexOf(slot)
-        if (index < 0) {
-            return null
+    private fun beginIconSelection(player: Player): MenuActionResult {
+        if (AnnouncementManager.getAnnouncementCount() >= AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS) {
+            return MenuActionResult.Rejected(
+                LanguageManager.getMessage(
+                    player,
+                    "announce.add_limit_reached",
+                    "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()
+                ),
+                MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+            )
         }
+        pendingIconSelection.add(player.uniqueId)
+        player.sendMessage(LanguageManager.getMessage(player, "announce.icon_select_instruction"))
+        return MenuActionResult.Success(
+            MenuUpdate.None,
+            MenuSoundPolicy.Custom(MenuSound("ITEM_BOOK_PAGE_TURN"))
+        )
+    }
 
-        val announcements = AnnouncementManager.getAnnouncementsForMenu()
-        return announcements.getOrNull(index)
+    private fun openAnnouncementAction(
+        player: Player,
+        announcementId: String?,
+        click: org.bukkit.event.inventory.ClickType
+    ): MenuActionResult {
+        if (!hasManagePermission(player)) return MenuActionResult.Rejected()
+        val announcement = announcementId?.let(AnnouncementManager::getAnnouncementById)
+            ?: return MenuActionResult.Rejected()
+        pendingIconSelection.remove(player.uniqueId)
+        ManagedMenuPresenter.close(player)
+        if (click.isRightClick) openDeleteConfirmDialog(player, announcement)
+        else openEditDialog(player, announcement)
+        return MenuActionResult.Success(MenuUpdate.None)
+    }
+
+    private fun executeMenuCommandAction(player: Player): MenuActionResult {
+        val menuCommand = ConfigManager.getAnnounceMenuCommand().trim().removePrefix("/")
+        if (menuCommand.isBlank()) {
+            return MenuActionResult.Rejected(
+                LanguageManager.getMessage(player, "announce.menu_command_not_configured")
+            )
+        }
+        if (!player.performCommand(menuCommand)) {
+            return MenuActionResult.Rejected(
+                LanguageManager.getMessage(player, "announce.menu_command_failed"),
+                MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+            )
+        }
+        return MenuActionResult.Success(MenuUpdate.Close)
     }
 
     private fun openEditDialog(
@@ -465,142 +499,102 @@ class AnnounceListener : Listener {
     ) {
         val titleLabel = buildTitleLabel(player, titleWarningKey)
         val endAtLabel = buildEndAtLabel(player, endAtWarningKey)
-        val inputs = listOf(
-            DialogInput.text("title", titleLabel).initial(formState.title).width(310).maxLength(64).build(),
-            DialogInput.text("content_1", Component.text("内容1")).initial(formState.content1).width(310).maxLength(128).build(),
-            DialogInput.text("content_2", Component.text("内容2")).initial(formState.content2).width(310).maxLength(128).build(),
-            DialogInput.text("content_3", Component.text("内容3")).initial(formState.content3).width(310).maxLength(128).build(),
-            DialogInput.text("duration", endAtLabel).initial(formState.endAtRaw).width(310).maxLength(128).build(),
-            DialogInput.bool("indefinite", Component.text("無期限にする")).initial(formState.indefinite).build()
-        )
+        val inputs = createAnnouncementInputs(titleLabel, endAtLabel, formState)
 
-        val saveAction = DialogAction.customClick(
-            { response, audience ->
-                val target = audience as? Player ?: return@customClick
-
-                val title = response.getText("title") ?: ""
-                val contentLines = listOf(
-                    response.getText("content_1") ?: "",
-                    response.getText("content_2") ?: "",
-                    response.getText("content_3") ?: ""
-                )
-                val endAtRaw = response.getText("duration")
-                val indefinite = response.getBoolean("indefinite") ?: false
-                val nextState = AnnounceFormState(
-                    title = title,
-                    content1 = contentLines.getOrElse(0) { "" },
-                    content2 = contentLines.getOrElse(1) { "" },
-                    content3 = contentLines.getOrElse(2) { "" },
-                    endAtRaw = endAtRaw ?: "",
-                    indefinite = indefinite
-                )
-
-                when (AnnouncementManager.updateAnnouncement(announcement.id, title, contentLines, endAtRaw, indefinite)) {
+        val body = LanguageManager.getStringList(player, "announce.edit_dialog_body")
+            .ifEmpty { listOf("お知らせを編集します。") }
+            .joinToString("\n")
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-edit",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_title"),
+                body = listOf(Component.text(body)),
+                inputs = inputs,
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_confirm"),
+                    MenuDialogHandler { target, response ->
+                        val nextState = response.toAnnounceFormState()
+                        val contentLines = nextState.contentLines()
+                        when (AnnouncementManager.updateAnnouncement(
+                            announcement.id,
+                            nextState.title,
+                            contentLines,
+                            nextState.endAtRaw,
+                            nextState.indefinite
+                        )) {
                     AnnouncementManager.AddResult.SUCCESS -> {
                         target.sendMessage(LanguageManager.getMessage(target, "announce.edit_success"))
-                        playOperationSound(target, Sound.ENTITY_PLAYER_LEVELUP, 1.2f)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Success(
+                                    MenuUpdate.None,
+                                    MenuSoundPolicy.Custom(MenuSound("ENTITY_PLAYER_LEVELUP", pitch = 1.2f))
+                                )
                     }
 
                     AnnouncementManager.AddResult.NOT_FOUND -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_END_AT_FORMAT -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_duration"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.invalid_format"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_duration"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.END_AT_NOT_FUTURE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.end_at_not_future"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.not_future"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.end_at_not_future"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_TITLE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_title"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openEditDialog(
                             target,
                             announcement,
                             nextState,
                             titleWarningKey = "announce.title_warning.required"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_title"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.LIMIT_REACHED -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.add_limit_reached", "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.add_limit_reached", "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
                 }
-            },
-            ClickCallback.Options.builder().uses(1).build()
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.dialog_cancel"),
+            )
         )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_confirm")
-        ).action(saveAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_cancel")
-        ).build()
-
-        val body = LanguageManager.getStringList(player, "announce.edit_dialog_body")
-            .ifEmpty { listOf("お知らせを編集します。") }
-            .joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.edit_dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(body))))
-                        .inputs(inputs)
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
     }
 
     private fun openDeleteConfirmDialog(player: Player, announcement: AnnouncementManager.Announcement) {
-        val deleteAction = DialogAction.customClick(
-            { _, audience ->
-                val target = audience as? Player ?: return@customClick
-                val deleted = AnnouncementManager.deleteAnnouncement(announcement.id)
-                if (deleted) {
-                    target.sendMessage(LanguageManager.getMessage(target, "announce.delete_success"))
-                    playOperationSound(target, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.9f)
-                } else {
-                    target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                    playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
-                }
-                openAnnouncementMenu(target, openedFromMenuArgument = false)
-            },
-            ClickCallback.Options.builder().uses(1).build()
-        )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_confirm")
-        ).action(deleteAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_cancel")
-        ).build()
-
         val body = LanguageManager.getStringListWithPlaceholders(
             player,
             "announce.delete_dialog_body",
@@ -616,19 +610,37 @@ class AnnounceListener : Listener {
             body.addAll(contentLines)
         }
 
-        val bodyText = body.joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(bodyText))))
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-delete",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_title"),
+                body = listOf(Component.text(body.joinToString("\n"))),
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.delete_dialog_confirm"),
+                    MenuDialogHandler { target, _ ->
+                        val deleted = AnnouncementManager.deleteAnnouncement(announcement.id)
+                        if (deleted) {
+                            target.sendMessage(LanguageManager.getMessage(target, "announce.delete_success"))
+                        }
+                        openAnnouncementMenu(target, openedFromMenuArgument = false)
+                        if (deleted) {
+                            MenuActionResult.Success(
+                                MenuUpdate.None,
+                                MenuSoundPolicy.Custom(MenuSound("ENTITY_EXPERIENCE_ORB_PICKUP", pitch = 0.9f))
+                            )
+                        } else {
+                            MenuActionResult.Rejected(
+                                LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                            )
+                        }
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.delete_dialog_cancel"),
+            )
+        )
     }
 
     private fun openAddDialog(
@@ -640,121 +652,103 @@ class AnnounceListener : Listener {
     ) {
         val titleLabel = buildTitleLabel(player, titleWarningKey)
         val endAtLabel = buildEndAtLabel(player, endAtWarningKey)
-        val inputs = listOf(
-            DialogInput.text("title", titleLabel).initial(formState.title).width(310).maxLength(64).build(),
-            DialogInput.text("content_1", Component.text("内容1")).initial(formState.content1).width(310).maxLength(128).build(),
-            DialogInput.text("content_2", Component.text("内容2")).initial(formState.content2).width(310).maxLength(128).build(),
-            DialogInput.text("content_3", Component.text("内容3")).initial(formState.content3).width(310).maxLength(128).build(),
-            DialogInput.text("duration", endAtLabel).initial(formState.endAtRaw).width(310).maxLength(128).build(),
-            DialogInput.bool("indefinite", Component.text("無期限にする")).initial(formState.indefinite).build()
-        )
+        val inputs = createAnnouncementInputs(titleLabel, endAtLabel, formState)
 
-        val saveAction = DialogAction.customClick(
-            { response, audience ->
-                val target = audience as? Player ?: return@customClick
-
-                val title = response.getText("title") ?: ""
-                val contentLines = listOf(
-                    response.getText("content_1") ?: "",
-                    response.getText("content_2") ?: "",
-                    response.getText("content_3") ?: ""
-                )
-                val durationRaw = response.getText("duration")
-                val indefinite = response.getBoolean("indefinite") ?: false
-                val nextState = AnnounceFormState(
-                    title = title,
-                    content1 = contentLines.getOrElse(0) { "" },
-                    content2 = contentLines.getOrElse(1) { "" },
-                    content3 = contentLines.getOrElse(2) { "" },
-                    endAtRaw = durationRaw ?: "",
-                    indefinite = indefinite
-                )
-
-                when (AnnouncementManager.addAnnouncement(title, iconType, contentLines, durationRaw, indefinite)) {
+        val body = LanguageManager.getStringList(player, "announce.dialog_body")
+            .ifEmpty { listOf("お知らせを追加します。") }
+            .joinToString("\n")
+        CCSystem.getAPI().getMenuDialogService().show(
+            player,
+            MenuDialogRequest(
+                owner = MENU_OWNER,
+                id = "announcement-add",
+                title = LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_title"),
+                body = listOf(Component.text(body)),
+                inputs = inputs,
+                confirm = MenuDialogButton(
+                    LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_confirm"),
+                    MenuDialogHandler { target, response ->
+                        val nextState = response.toAnnounceFormState()
+                        val contentLines = nextState.contentLines()
+                        when (AnnouncementManager.addAnnouncement(
+                            nextState.title,
+                            iconType,
+                            contentLines,
+                            nextState.endAtRaw,
+                            nextState.indefinite
+                        )) {
                     AnnouncementManager.AddResult.SUCCESS -> {
                         target.sendMessage(LanguageManager.getMessage(target, "announce.add_success"))
-                        notifyAnnouncementIssuedToOthers(target, title)
-                        playOperationSound(target, Sound.ENTITY_PLAYER_LEVELUP, 1.3f)
+                                notifyAnnouncementIssuedToOthers(target, nextState.title)
                         openAnnouncementMenu(target, openedFromMenuArgument = false)
+                                MenuActionResult.Success(
+                                    MenuUpdate.None,
+                                    MenuSoundPolicy.Custom(MenuSound("ENTITY_PLAYER_LEVELUP", pitch = 1.3f))
+                                )
                     }
 
                     AnnouncementManager.AddResult.NOT_FOUND -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.edit_target_not_found"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.edit_target_not_found"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.LIMIT_REACHED -> {
-                        target.sendMessage(
+                                MenuActionResult.Rejected(
                             LanguageManager.getMessage(
                                 target,
                                 "announce.add_limit_reached",
                                 "max" to AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS.toString()
-                            )
+                                    ),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
                         )
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                     }
 
                     AnnouncementManager.AddResult.INVALID_END_AT_FORMAT -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_duration"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.invalid_format"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_duration"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.END_AT_NOT_FUTURE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.end_at_not_future"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             endAtWarningKey = "announce.end_at_warning.not_future"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.end_at_not_future"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
 
                     AnnouncementManager.AddResult.INVALID_TITLE -> {
-                        target.sendMessage(LanguageManager.getMessage(target, "announce.invalid_title"))
-                        playOperationSound(target, Sound.BLOCK_NOTE_BLOCK_BASS)
                         openAddDialog(
                             target,
                             iconType,
                             nextState,
                             titleWarningKey = "announce.title_warning.required"
                         )
+                                MenuActionResult.Rejected(
+                                    LanguageManager.getMessage(target, "announce.invalid_title"),
+                                    MenuSoundPolicy.Custom(MenuSound("BLOCK_NOTE_BLOCK_BASS"))
+                                )
                     }
                 }
-            },
-            ClickCallback.Options.builder().uses(1).build()
+                    },
+                ),
+                cancel = closeDialogButton(player, "announce.dialog_cancel"),
+            )
         )
-
-        val yesButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_confirm")
-        ).action(saveAction).build()
-
-        val noButton = ActionButton.builder(
-            LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_cancel")
-        ).build()
-
-        val body = LanguageManager.getStringList(player, "announce.dialog_body")
-            .ifEmpty { listOf("お知らせを追加します。") }
-            .joinToString("\n")
-
-        val dialog = Dialog.create { factory ->
-            factory.empty()
-                .base(
-                    DialogBase.builder(LanguageManager.getMessageWithoutPrefix(player, "announce.dialog_title"))
-                        .body(listOf(DialogBody.plainMessage(Component.text(body))))
-                        .inputs(inputs)
-                        .build()
-                )
-                .type(DialogType.confirmation(yesButton, noButton))
-        }
-
-        player.showDialog(dialog)
     }
 
     private fun buildTitleLabel(player: Player, warningKey: String?): Component {
@@ -768,6 +762,35 @@ class AnnounceListener : Listener {
             .append(Component.text(" "))
             .append(LanguageManager.deserializeLegacy(warning))
     }
+
+    private fun createAnnouncementInputs(
+        titleLabel: Component,
+        endAtLabel: Component,
+        state: AnnounceFormState,
+    ): List<MenuDialogInput> = listOf(
+        MenuDialogInput.Text("title", titleLabel, state.title, width = 310, maxLength = 64),
+        MenuDialogInput.Text("content_1", Component.text("内容1"), state.content1, width = 310, maxLength = 128),
+        MenuDialogInput.Text("content_2", Component.text("内容2"), state.content2, width = 310, maxLength = 128),
+        MenuDialogInput.Text("content_3", Component.text("内容3"), state.content3, width = 310, maxLength = 128),
+        MenuDialogInput.Text("duration", endAtLabel, state.endAtRaw, width = 310, maxLength = 128),
+        MenuDialogInput.BooleanInput("indefinite", Component.text("無期限にする"), state.indefinite),
+    )
+
+    private fun MenuDialogResponse.toAnnounceFormState(): AnnounceFormState = AnnounceFormState(
+        title = textValue("title"),
+        content1 = textValue("content_1"),
+        content2 = textValue("content_2"),
+        content3 = textValue("content_3"),
+        endAtRaw = textValue("duration"),
+        indefinite = booleanValue("indefinite"),
+    )
+
+    private fun AnnounceFormState.contentLines(): List<String> = listOf(content1, content2, content3)
+
+    private fun closeDialogButton(player: Player, labelKey: String): MenuDialogButton = MenuDialogButton(
+        LanguageManager.getMessageWithoutPrefix(player, labelKey),
+        MenuDialogHandler { _, _ -> MenuActionResult.Success(MenuUpdate.Close) },
+    )
 
     private fun buildEndAtLabel(player: Player, warningKey: String?): Component {
         val base = "終了時刻"
@@ -790,17 +813,4 @@ class AnnounceListener : Listener {
         val indefinite: Boolean = false
     )
 
-    private class AnnouncementMenuHolder(
-        val openedFromMenuArgument: Boolean
-    ) : InventoryHolder {
-        private var inventory: Inventory? = null
-
-        fun bind(inventory: Inventory) {
-            this.inventory = inventory
-        }
-
-        override fun getInventory(): Inventory {
-            return inventory ?: Bukkit.createInventory(null, MENU_SIZE)
-        }
-    }
 }

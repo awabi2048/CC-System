@@ -1,5 +1,5 @@
 name: CC-System
-version: 2.0.0
+version: ${project.version}
 author: awabi2048
 main: com.awabi2048.ccsystem.CCSystem
 api-version: 26.1.2
@@ -9,6 +9,7 @@ softdepend:
   - LuckPerms
   - WorldGuard
   - LWC
+  - floodgate
 
 commands:
   cc:
