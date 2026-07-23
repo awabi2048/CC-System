@@ -14,7 +14,7 @@ internal object ManagedMenuPresenter {
         player: Player,
         inventory: Inventory,
         menuId: String = inventory.holder?.javaClass?.simpleName ?: "inventory",
-        transition: ManagedMenuTransition = ManagedMenuTransition.PRESERVE_HISTORY,
+        transition: ManagedMenuTransition = ManagedMenuTransition.AUTOMATIC,
         policy: GuiInventoryPolicy = GuiInventoryPolicy(),
         openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
     ): Boolean = CCSystem.getAPI().getMenuRuntimeService().present(

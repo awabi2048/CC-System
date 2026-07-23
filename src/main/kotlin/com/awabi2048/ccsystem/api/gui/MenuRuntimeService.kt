@@ -21,6 +21,8 @@ interface MenuRuntimeService {
 
     fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean
 
+    fun feedback(player: Player, interaction: ManagedMenuInteraction)
+
     fun refresh(player: Player): Boolean
 
     fun back(player: Player): Boolean

@@ -93,6 +93,7 @@ sealed interface MenuUpdate {
 }
 
 enum class ManagedMenuTransition {
+    AUTOMATIC,
     ROOT,
     REPLACE,
     NAVIGATE,
@@ -102,9 +103,20 @@ enum class ManagedMenuTransition {
 data class ManagedInventoryMenuRequest(
     val route: MenuRoute,
     val inventory: Inventory,
-    val transition: ManagedMenuTransition = ManagedMenuTransition.PRESERVE_HISTORY,
+    val transition: ManagedMenuTransition = ManagedMenuTransition.AUTOMATIC,
     val policy: GuiInventoryPolicy = GuiInventoryPolicy(),
     val openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
+)
+
+enum class ManagedMenuInteractionOutcome {
+    SUCCESS,
+    REJECTED,
+}
+
+data class ManagedMenuInteraction(
+    val outcome: ManagedMenuInteractionOutcome,
+    val clickType: MenuClickType = MenuClickType.DEFAULT,
+    val sound: MenuSoundPolicy = MenuSoundPolicy.Default,
 )
 
 sealed interface MenuActionResult {

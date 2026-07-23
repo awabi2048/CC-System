@@ -8,6 +8,8 @@ import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
+import com.awabi2048.ccsystem.api.gui.ManagedMenuInteraction
+import com.awabi2048.ccsystem.api.gui.ManagedMenuInteractionOutcome
 import com.awabi2048.ccsystem.api.gui.ManagedMenuTransition
 import com.awabi2048.ccsystem.api.gui.MenuRenderContext
 import com.awabi2048.ccsystem.api.gui.MenuRoute
@@ -40,7 +42,7 @@ internal class MenuRuntimeServiceImpl(
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val presentedInventories = java.util.Collections.synchronizedMap(
-        java.util.IdentityHashMap<org.bukkit.inventory.Inventory, MenuRoute>()
+        java.util.IdentityHashMap<org.bukkit.inventory.Inventory, ManagedPresentation>()
     )
 
     override fun register(definition: InventoryMenuDefinition) {
@@ -82,7 +84,9 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
-        when (request.transition) {
+        val transition = resolveTransition(player, request)
+        when (transition) {
+            ManagedMenuTransition.AUTOMATIC -> error("AUTOMATIC transition must be resolved before presentation")
             ManagedMenuTransition.ROOT -> {
                 navigation.clear(player)
                 navigation.recordCurrentRoute(player, request.route)
@@ -95,7 +99,7 @@ internal class MenuRuntimeServiceImpl(
             ManagedMenuTransition.PRESERVE_HISTORY -> Unit
         }
         navigation.registerInventory(request.route.owner, request.inventory, request.policy)
-        presentedInventories[request.inventory] = request.route
+        presentedInventories[request.inventory] = ManagedPresentation(player.uniqueId, request.route)
         when (val openSound = request.openSound) {
             MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.key())
             MenuSoundPolicy.Silent -> Unit
@@ -103,6 +107,24 @@ internal class MenuRuntimeServiceImpl(
         }
         player.openInventory(request.inventory)
         return true
+    }
+
+    override fun feedback(player: Player, interaction: ManagedMenuInteraction) {
+        val route = currentPresentedRoute(player) ?: navigation.currentRoute(player)
+        val fallback = when (interaction.outcome) {
+            ManagedMenuInteractionOutcome.SUCCESS -> MenuSoundPolicy.Default
+            ManagedMenuInteractionOutcome.REJECTED -> MenuSoundPolicy.Custom(
+                com.awabi2048.ccsystem.api.gui.MenuSound("BLOCK_NOTE_BLOCK_BASS", pitch = 0.8f)
+            )
+        }
+        when (val resolved = interaction.sound) {
+            MenuSoundPolicy.Silent -> Unit
+            is MenuSoundPolicy.Custom -> sounds.play(player, resolved.sound)
+            MenuSoundPolicy.Default -> when (fallback) {
+                is MenuSoundPolicy.Custom -> sounds.play(player, fallback.sound)
+                else -> sounds.onMenuClick(player, route?.key(), interaction.clickType)
+            }
+        }
     }
 
     override fun refresh(player: Player): Boolean {
@@ -199,8 +221,24 @@ internal class MenuRuntimeServiceImpl(
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onInventoryClose(event: InventoryCloseEvent) {
-        if (presentedInventories.remove(event.inventory) != null) {
+        val presentation = presentedInventories.remove(event.inventory)
+        if (presentation != null) {
             navigation.unregisterInventory(event.inventory)
+            val player = event.player as? Player ?: return
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                val activeRoute = currentPresentedRoute(player)
+                if (
+                    ManagedPresentationClosePolicy.shouldClear(
+                        player.uniqueId,
+                        presentation.playerId,
+                        activeRoute,
+                        navigation.currentRoute(player),
+                        presentation.route,
+                    )
+                ) {
+                    navigation.clear(player)
+                }
+            })
             return
         }
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
@@ -309,6 +347,21 @@ internal class MenuRuntimeServiceImpl(
         else -> MenuClickType.DEFAULT
     }
 
+    private fun resolveTransition(
+        player: Player,
+        request: ManagedInventoryMenuRequest,
+    ): ManagedMenuTransition {
+        val current = currentPresentedRoute(player)
+            ?: (player.openInventory.topInventory.holder as? MenuRuntimeHolder)?.route
+            ?: navigation.currentRoute(player)
+        return ManagedTransitionResolver.resolve(request.transition, current, request.route)
+    }
+
+    private fun currentPresentedRoute(player: Player): MenuRoute? =
+        presentedInventories[player.openInventory.topInventory]
+            ?.takeIf { it.playerId == player.uniqueId }
+            ?.route
+
     private fun closeMatching(owner: String, id: String?): Int {
         var closed = 0
         plugin.server.onlinePlayers.forEach { player ->
@@ -328,6 +381,11 @@ internal class MenuRuntimeServiceImpl(
         val route: MenuRoute,
         val elements: Map<Int, com.awabi2048.ccsystem.api.gui.MenuElement>,
     )
+
+    private data class ManagedPresentation(
+        val playerId: UUID,
+        val route: MenuRoute,
+    )
 }
 
 internal object MenuClickAcceptance {
@@ -342,4 +400,32 @@ internal object MenuClickAcceptance {
 internal object MenuSessionClosePolicy {
     fun shouldRemove(closedRoute: MenuRoute, activeRoute: MenuRoute?, sessionRoute: MenuRoute): Boolean =
         sessionRoute == closedRoute && activeRoute != closedRoute
+}
+
+internal object ManagedTransitionResolver {
+    fun resolve(
+        requested: ManagedMenuTransition,
+        current: MenuRoute?,
+        target: MenuRoute,
+    ): ManagedMenuTransition {
+        if (requested != ManagedMenuTransition.AUTOMATIC) return requested
+        return when {
+            current == null -> ManagedMenuTransition.ROOT
+            current == target -> ManagedMenuTransition.REPLACE
+            else -> ManagedMenuTransition.NAVIGATE
+        }
+    }
+}
+
+internal object ManagedPresentationClosePolicy {
+    fun shouldClear(
+        closingPlayerId: UUID,
+        presentationPlayerId: UUID,
+        activeRoute: MenuRoute?,
+        currentRoute: MenuRoute?,
+        closedRoute: MenuRoute,
+    ): Boolean =
+        closingPlayerId == presentationPlayerId &&
+            activeRoute == null &&
+            currentRoute == closedRoute
 }
