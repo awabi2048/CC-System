@@ -18,16 +18,22 @@ tutorial_rank:
       - "§d§lAttainerに到達しました！"
       - "§7チュートリアルランクは完了です。職業を選ぶ準備ができました。"
       - "§7職業メニューは別導線から開いてください。"
+  progress:
+    name: "進行状況"
+    description: "チュートリアル全体の進行状況です。"
+    current_rank: "現在のランク"
+    next_rank: "次のランク"
+    rank:
+      newbie: "新規"
+      visitor: "訪問者"
+      pioneer: "開拓者"
+      adventurer: "冒険者"
+      attainer: "達成者"
   task:
     nether_locked: "§cネザーへ行くには、先にPioneerへ到達してください。"
     end_locked: "§cエンドへ行くには、先にAdventurerへ到達してください。"
     no_requirement: "このランクの到達条件はありません"
     system_not_initialized: "タスク定義が初期化されていません"
-    page_hint: "NewbieからAttainerまでの進行を1画面で確認できます"
-    page_previous: "前のページへ"
-    page_next: "次のページへ"
-    page_arrow_hint: "クリックでページを移動"
-    page_unavailable: "これ以上移動できません"
     label:
       play_time: "サーバーで遊ぶ"
       active_overworld: "オーバーワールドを探索する"
