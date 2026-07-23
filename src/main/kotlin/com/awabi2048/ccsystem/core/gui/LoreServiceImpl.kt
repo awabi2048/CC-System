@@ -83,19 +83,33 @@ class LoreServiceImpl : LoreService {
             listOf(RenderedLine(LoreFormatter.dataComponent(line.label, line.value, line.valueColor)))
         is GuiLoreLine.StyledText ->
             listOf(RenderedLine(LoreFormatter.styledText(line.text, line.color, line.italic)))
-        is GuiLoreLine.StatusComment -> listOf(RenderedLine(renderStatusComment(line)))
+        is GuiLoreLine.StatusData -> listOf(RenderedLine(renderStatusData(line)))
+        is GuiLoreLine.StatusComponentData -> listOf(RenderedLine(renderStatusComponentData(line)))
         is GuiLoreLine.ProgressPath -> renderProgressPath(line)
         is GuiLoreLine.UserText -> listOf(RenderedLine(LoreFormatter.component(line.text)))
         else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
     }
 
-    private fun renderStatusComment(line: GuiLoreLine.StatusComment): Component {
-        val markerColor = when (line.tone) {
+    private fun statusMarker(tone: GuiStatusTone): Component {
+        val markerColor = when (tone) {
             GuiStatusTone.COMPLETE -> NamedTextColor.GREEN
             GuiStatusTone.INCOMPLETE -> NamedTextColor.RED
         }
         return Component.text("❙", markerColor)
-            .append(Component.text(" ${line.text}", NamedTextColor.GRAY))
+    }
+
+    private fun renderStatusData(line: GuiLoreLine.StatusData): Component {
+        return statusMarker(line.tone)
+            .append(Component.text(" ${line.label} ", NamedTextColor.GRAY))
+            .append(LoreFormatter.component("${line.valueColor}${line.value ?: ""}"))
+    }
+
+    private fun renderStatusComponentData(line: GuiLoreLine.StatusComponentData): Component {
+        return statusMarker(line.tone)
+            .append(Component.text(" ", NamedTextColor.GRAY))
+            .append(line.label.colorIfAbsent(NamedTextColor.GRAY))
+            .append(Component.text(" ", NamedTextColor.GRAY))
+            .append(line.value)
     }
 
     private fun renderProgressPath(path: GuiLoreLine.ProgressPath): List<RenderedLine> {
@@ -161,7 +175,8 @@ class LoreServiceImpl : LoreService {
         GuiLoreLine.Spacer,
         is GuiLoreLine.ComponentData,
         is GuiLoreLine.StyledText,
-        is GuiLoreLine.StatusComment,
+        is GuiLoreLine.StatusData,
+        is GuiLoreLine.StatusComponentData,
         is GuiLoreLine.ProgressPath,
         is GuiLoreLine.UserText,
         is GuiLoreLine.Component -> error("Non-formatted lore line reached formatted renderer")

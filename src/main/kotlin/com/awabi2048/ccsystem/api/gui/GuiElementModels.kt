@@ -67,9 +67,16 @@ sealed interface GuiLoreLine {
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
     data class StyledText(val text: String, val color: String, val italic: Boolean) : GuiLoreLine
-    /** 状態を文章へ重ねず、先頭マーカーの色だけで補助表示する短い説明。 */
-    data class StatusComment(
-        val text: String,
+    /** タスク内容の先頭マーカーだけを状態色で描画するデータ行。 */
+    data class StatusData(
+        val label: String,
+        val value: Any?,
+        val valueColor: String,
+        val tone: GuiStatusTone
+    ) : GuiLoreLine
+    data class StatusComponentData(
+        val label: net.kyori.adventure.text.Component,
+        val value: net.kyori.adventure.text.Component,
         val tone: GuiStatusTone
     ) : GuiLoreLine
     /**

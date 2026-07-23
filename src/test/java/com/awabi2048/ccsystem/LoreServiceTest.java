@@ -188,23 +188,27 @@ class LoreServiceTest {
     }
 
     @Test
-    void statusCommentUsesOnlyTheMarkerColorForCompletionState() {
+    void statusDataUsesOnlyTheTaskMarkerForCompletionState() {
         List<Component> rendered = new LoreServiceImpl().render(
             new GuiLoreSpec.Rich(
                 List.of(
-                    new GuiLoreLine.StatusComment("このカテゴリの短い説明です。", GuiStatusTone.COMPLETE),
-                    new GuiLoreLine.StatusComment("未完了の説明です。", GuiStatusTone.INCOMPLETE)
+                    new GuiLoreLine.StatusData("採掘", "12 / 20", "§c", GuiStatusTone.INCOMPLETE),
+                    new GuiLoreLine.StatusComponentData(
+                        Component.text("ゾンビ"),
+                        Component.text("3 / 3", NamedTextColor.GREEN),
+                        GuiStatusTone.COMPLETE
+                    )
                 ),
                 GuiLoreFrame.NONE
             )
         );
 
         assertEquals(List.of(
-            "❙ このカテゴリの短い説明です。",
-            "❙ 未完了の説明です。"
+            "❙ 採掘 12 / 20",
+            "❙ ゾンビ 3 / 3"
         ), plain(rendered));
-        assertEquals(NamedTextColor.GREEN, rendered.get(0).color());
-        assertEquals(NamedTextColor.RED, rendered.get(1).color());
+        assertEquals(NamedTextColor.RED, rendered.get(0).color());
+        assertEquals(NamedTextColor.GREEN, rendered.get(1).color());
         assertEquals(NamedTextColor.GRAY, rendered.get(0).children().getFirst().color());
         assertEquals(NamedTextColor.GRAY, rendered.get(1).children().getFirst().color());
     }
