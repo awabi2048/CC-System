@@ -163,6 +163,13 @@ gui:
           action: 報酬を受け取る
           resolved_action: クリックで報酬を受け取る
   profession:
+    guild:
+      title: "§8職業ギルド"
+      info:
+        name: "§e§l職業選択について"
+        lore:
+        - "§7職業は一度だけ選択できます。"
+        - "§e選択前に仕事内容を確認してください。"
     selection:
       title: §8職業を選択してください
       main_menu_title: §8職業メインメニュー

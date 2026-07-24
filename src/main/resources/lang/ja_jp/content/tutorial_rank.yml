@@ -14,6 +14,11 @@ tutorial_rank:
   attainer:
     name: "Attainer"
     description: "チュートリアル達成者"
+    guild_guide:
+      name: "§e§l職業について"
+      completed: "チュートリアルを完了しました。"
+      description: "職業は職業ギルドで選択できます。"
+      location: "ギルドの案内場所を探してみましょう。"
     reached_messages:
       - "§d§lAttainerに到達しました！"
       - "§7チュートリアルランクは完了です。職業を選ぶ準備ができました。"

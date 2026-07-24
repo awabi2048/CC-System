@@ -163,6 +163,13 @@ gui:
           action: claim the reward
           resolved_action: Click to claim the reward
   profession:
+    guild:
+      title: "§8Profession Guild"
+      info:
+        name: "§e§lChoosing a profession"
+        lore:
+        - "§7You can choose a profession only once."
+        - "§eReview each profession before choosing."
     selection:
       title: §8職業を選択してください
       main_menu_title: §8職業メインメニュー
