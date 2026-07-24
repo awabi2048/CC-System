@@ -55,11 +55,7 @@ rank:
             brief: Brief
             detail: Detailed
             hidden: Hidden
-    hint_button: '&7Profession hint'
-    hint_button_lore:
-    - '&cCurrently in preparation'
   skill:
-    usage: '&cUsage: /rank skill'
     player_only: '&cThis command can only be executed by a player'
     gui:
       title: '&8{profession} Skill Tree'

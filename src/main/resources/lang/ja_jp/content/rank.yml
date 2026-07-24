@@ -55,11 +55,7 @@ rank:
             brief: 簡易
             detail: 詳細
             hidden: 表示しない
-    hint_button: '&7職業のヒント'
-    hint_button_lore:
-    - '&c現在準備中です'
   skill:
-    usage: '&c使用法: /rankmenu skill'
     player_only: '&cこのコマンドはプレイヤーのみ実行できます'
     gui:
       title: '&8{profession} スキルツリー'
