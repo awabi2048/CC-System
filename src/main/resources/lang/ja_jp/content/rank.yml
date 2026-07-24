@@ -29,6 +29,32 @@ rank:
         action: 切り替え
         enabled: 有効
         disabled: 無効
+      feature:
+        state:
+          enabled: 有効
+          disabled: 無効
+        batch:
+          title: '&6一括処理'
+          action: 切り替える
+        leaf_cleanup:
+          title: '&a葉の後処理'
+          action: 切り替える
+        automatic_replant:
+          title: '&a自動植え直し'
+          action: 切り替える
+        area_tilling:
+          title: '&6範囲耕作'
+          action: 切り替える
+        area_harvest:
+          title: '&e範囲収穫'
+          action: 切り替える
+        fishing_information:
+          title: '&b釣り情報表示'
+          action: 表示量を切り替える
+          mode:
+            brief: 簡易
+            detail: 詳細
+            hidden: 表示しない
     hint_button: '&7職業のヒント'
     hint_button_lore:
     - '&c現在準備中です'
