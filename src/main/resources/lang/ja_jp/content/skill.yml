@@ -13,8 +13,8 @@ skill:
       name: 森を読む者
       description: 木の流れを見極め 伐採がさらに冴える
     harvest_2:
-      name: 年輪の恵み
-      description: 木々から受け取る恵みがさらに増える
+      name: 木材を見極める
+      description: 板材と角材を見分け 林産物を鑑定できる
     cut_all_1:
       name: 伐り拓く
       description: まとめて伐る術を身につける
@@ -28,8 +28,8 @@ skill:
       name: 森は巡る
       description: 伐ったあとにも 次の芽吹きを残せる
     harvest_3:
-      name: 森の返礼
-      description: 木々から受け取る恵みが大きく増える
+      name: 森の目利き
+      description: 林産物の発見率が上がり 素材を詳しく鑑定できる
     cut_all_3:
       name: 深き森へ
       description: 伐採の極みに近づき 回収までこなせる
@@ -53,17 +53,17 @@ skill:
       name: 豊かな実り
       description: 作物から得られる恵みがさらに増える
     tool:
-      name: 畑仕事の相棒
-      description: 新たな道具へ手を伸ばせるようになる
+      name: 採集鎌
+      description: 天然植生を調べ 季節の植物を採集できる
     harvest_3:
       name: 実りの最盛期
       description: 作物から得られる恵みが大きく増える
     special_loot_table_1:
-      name: 珍しき収穫
-      description: いつもとは違う実りに 出会えるようになる
+      name: 植生鑑定
+      description: 採集候補と植生の特徴を詳しく確認できる
     special_loot_table_2:
-      name: 秘めたる収穫
-      description: 農の道の先にある 特別な実りへ届く
+      name: 季節の恵み
+      description: 専門植物の採集量と副産物の発見率が上がる
   brewer:
     initial:
       name: 泡立つ薬瓶
@@ -115,17 +115,17 @@ skill:
       name: 思わぬ収穫
       description: 鉱石から受け取る恵みが少し増える
     speed_2:
-      name: 岩を穿つ者
-      description: 石を読む目が育ち 採掘がさらに冴える
+      name: 坑道を拓く
+      description: 採掘速度が上がり 一括採掘の道へ進める
     fortune_2:
-      name: 鉱脈を追って
-      description: 鉱石から受け取る恵みがさらに増える
+      name: 精密鑑定
+      description: 鉱脈を詳しく鑑定し ノミの判定精度が上がる
     durability_1:
       name: 使い慣れた一振り
       description: 道具を長く使う術を覚える
     fortune_3:
-      name: 地底の寵愛
-      description: 鉱石から受け取る恵みが大きく増える
+      name: 鉱石鑑定の極意
+      description: 高評価時の特殊素材を増やし 最低品質を保証する
     mineall_1:
       name: 掘り進め！
       description: まとめて掘り抜く術を身につける
@@ -302,10 +302,10 @@ skill:
       description: 水面を読み 釣り人としての一歩を踏み出す
     patient_cast:
       name: 待つ者の余裕
-      description: アタリを捉えられる時間が20%長くなる
+      description: 待ち時間を短縮し アタリを捉える時間が長くなる
     deep_water:
       name: 深みを読む
-      description: 魚の抵抗を15%抑え 釣り合いを保ちやすくなる
+      description: 魚の抵抗を抑え 餌と候補魚の情報を確認できる
     master_angler:
       name: 釣り上げる一瞬
-      description: 魚との格闘時間が15%短くなる
+      description: 格闘時間を短縮し 候補魚と餌の適性を詳しく確認できる
