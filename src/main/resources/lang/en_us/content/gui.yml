@@ -214,6 +214,7 @@ gui:
       cancel_button: §c§lキャンセル
     error:
       already_has_profession: §c既に職業を選択しています
+      selection_failed: §cFailed to select the profession
 gui_buttons:
   cancel: §cキャンセル
   confirm: §a確認

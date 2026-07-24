@@ -1,73 +1,77 @@
 rank:
   gui:
-    tree_button: '&aSkill Tree'
+    tree_button: '&aスキルツリー'
     tree_button_lore:
-    - '&7Open the skill tree'
-    - '&eClick to open'
-    settings_button: '&7Settings'
+    - '&7取得できるスキルを確認します'
+    - '&eクリックで開く'
+    settings_button: '&7設定'
     settings_button_lore:
-    - '&7Change profession options'
-    - '&eClick to open'
-    settings_title: '&8Profession Settings'
+    - '&7職業に関する表示を設定します'
+    - '&eクリックで開く'
+    settings_title: '&8職業設定'
+    max_level: 最大レベル
+    player_info:
+      profession: 職業
+      level: レベル
     settings:
       current_label: 現在
-      back: '&cBack'
-      back_lore: '&7Return to profession main menu'
+      back: '&c戻る'
+      back_lore: '&7職業メインメニューへ戻ります'
       bossbar:
-        title: '&6Boss bar on EXP gain'
+        title: '&6経験値獲得時のボスバー'
         action: 切り替え
         mode:
-          short: Show short
-          long: Show long
-          hidden: Hidden
+          short: 短く表示
+          long: 長く表示
+          hidden: 表示しない
       level_up:
-        title: '&bLevel-up notification'
+        title: '&bレベルアップ通知'
         action: 切り替え
-        enabled: Enabled
-        disabled: Disabled
-    hint_button: '&7Profession hint'
+        enabled: 有効
+        disabled: 無効
+    hint_button: '&7職業のヒント'
     hint_button_lore:
-    - '&cCurrently in preparation'
+    - '&c現在準備中です'
   skill:
-    usage: '&cUsage: /rank skill'
-    player_only: '&cThis command can only be executed by a player'
+    usage: '&c使用法: /rankmenu skill'
+    player_only: '&cこのコマンドはプレイヤーのみ実行できます'
     gui:
-      title: '&8{profession} Skill Tree'
-      no_profession: '&cYou have not selected a profession'
-      tree_not_found: '&cSkill tree for {profession} was not found'
-      start_not_found: '&cStart skill was not found'
+      title: '&8{profession} スキルツリー'
+      no_profession: '&c職業を選択していません'
+      tree_not_found: '&c{profession} のスキルツリーが見つかりません'
+      start_not_found: '&c開始スキルが見つかりません'
       status:
-        prestige_unlocked: '&dPrestige'
-        acquired: '&aAcquired'
-        available: '&eAvailable'
-        locked: '&cLocked'
+        prestige_unlocked: '&dプレステージ'
+        acquired: '&a取得済み'
+        available: '&e取得可能'
+        locked: '&c未解放'
       lore:
-        required_level: '&7Required Lv: &e{level}'
-        current_level: '&7Current Lv: &e{level}'
-        status: '&7Status: {status}'
-        prestige_available: '&dPrestige skill available'
+        required_level: '&7必要レベル: &e{level}'
+        current_level: '&7現在レベル: &e{level}'
+        status: '&7状態: {status}'
+        prestige_available: '&dプレステージスキルを取得できます'
       route:
-        prev: Go Back
-        next: Go Forward
+        prev: 前へ戻る
+        next: 次へ進む
       dialog:
-        title: '&6Confirm Skill Unlock'
-        body: '&fUnlock {skill}? &7You cannot proceed to the other branch after this choice.'
-        confirm: '&aUnlock'
-        cancel: '&cCancel'
+        title: '&6スキル取得の確認'
+        body: '&f{skill} を取得しますか？ &7分岐を選ぶと、もう一方へは進めません。'
+        confirm: '&a取得する'
+        cancel: '&cキャンセル'
       unlock:
-        success: '&aUnlocked skill: {skill}'
-        already: '&eAlready unlocked: {skill}'
-        missing_prerequisite: '&cMissing prerequisite skills: {skills}'
-        level_shortage: '&cLevel requirement not met (required: {required}, current: {current})'
-        branch_locked: '&cThis branch is locked because the other branch was already chosen'
-        failed: '&cFailed to unlock skill'
+        success: '&aスキルを取得しました: {skill}'
+        already: '&e取得済みです: {skill}'
+        missing_prerequisite: '&c前提スキルが不足しています: {skills}'
+        level_shortage: '&c必要レベルに達していません（必要: {required}、現在: {current}）'
+        branch_locked: '&c別の分岐を選択済みのため取得できません'
+        failed: '&cスキルを取得できませんでした'
       prestige:
         dialog:
-          title: '&dConfirm Prestige Skill'
-          body: '&fUnlock prestige skill {skill}?'
+          title: '&dプレステージスキルの確認'
+          body: '&fプレステージスキル {skill} を取得しますか？'
         unlock:
-          success: '&dUnlocked prestige skill: {skill}'
-          failed: '&cFailed to unlock prestige skill'
+          success: '&dプレステージスキルを取得しました: {skill}'
+          failed: '&cプレステージスキルを取得できませんでした'
   prestige:
     cannot: §cプレステージ条件を満たしていません。
     failed: §cプレステージの実行に失敗しました

@@ -9,6 +9,10 @@ rank:
     - '&7Change profession options'
     - '&eClick to open'
     settings_title: '&8Profession Settings'
+    max_level: Max level
+    player_info:
+      profession: Profession
+      level: Level
     settings:
       current_label: Current
       back: '&cBack'
