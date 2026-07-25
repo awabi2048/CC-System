@@ -55,6 +55,8 @@ messages:
   owner_transferred: Ownership has been transferred to §a{old_owner}.
   owner_transfer_failed_limit: §cTarget player has no available world slots.
   invite_locked_error: §cYou cannot invite players to a locked world.
+  member_invite_target_offline: §cOffline players cannot be invited at this time.
+  member_invite_target_cannot_create: §cThis player cannot be invited because they cannot create worlds.
   portal_dest_locked: §cThe destination of this portal is currently locked.
   portal_warped: §aWarped to "{destination}" via portal.
   invite_expired: §cInvite not found or expired.
