@@ -29,11 +29,33 @@ rank:
         action: 切り替え
         enabled: 有効
         disabled: 無効
-    hint_button: '&7職業のヒント'
-    hint_button_lore:
-    - '&c現在準備中です'
+      feature:
+        state:
+          enabled: 有効
+          disabled: 無効
+        batch:
+          title: '&6一括処理'
+          action: 切り替える
+        leaf_cleanup:
+          title: '&a葉の後処理'
+          action: 切り替える
+        automatic_replant:
+          title: '&a自動植え直し'
+          action: 切り替える
+        area_tilling:
+          title: '&6範囲耕作'
+          action: 切り替える
+        area_harvest:
+          title: '&e範囲収穫'
+          action: 切り替える
+        fishing_information:
+          title: '&b釣り情報表示'
+          action: 表示量を切り替える
+          mode:
+            brief: 簡易
+            detail: 詳細
+            hidden: 表示しない
   skill:
-    usage: '&c使用法: /rankmenu skill'
     player_only: '&cこのコマンドはプレイヤーのみ実行できます'
     gui:
       title: '&8{profession} スキルツリー'
@@ -42,14 +64,19 @@ rank:
       start_not_found: '&c開始スキルが見つかりません'
       status:
         prestige_unlocked: '&dプレステージ'
+        prestige_available: '&dプレステージ取得可能'
         acquired: '&a取得済み'
         available: '&e取得可能'
         locked: '&c未解放'
       lore:
-        required_level: '&7必要レベル: &e{level}'
-        current_level: '&7現在レベル: &e{level}'
-        status: '&7状態: {status}'
-        prestige_available: '&dプレステージスキルを取得できます'
+        required_level_label: 解放レベル
+        level_value: Lv.{level}
+        level_locked: Lv.{level}になると取得できます
+        prerequisite_locked: 前提スキルを取得すると解放されます
+        branch_locked: 別の分岐を選択済みのため取得できません
+        click_operation: クリック
+        acquire_action: 取得する
+        acquire_prestige_action: プレステージ化する
       route:
         prev: 前へ戻る
         next: 次へ進む

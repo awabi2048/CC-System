@@ -29,11 +29,33 @@ rank:
         action: Switch
         enabled: Enabled
         disabled: Disabled
-    hint_button: '&7Profession hint'
-    hint_button_lore:
-    - '&cCurrently in preparation'
+      feature:
+        state:
+          enabled: Enabled
+          disabled: Disabled
+        batch:
+          title: '&6Batch processing'
+          action: Toggle
+        leaf_cleanup:
+          title: '&aLeaf cleanup'
+          action: Toggle
+        automatic_replant:
+          title: '&aAutomatic replanting'
+          action: Toggle
+        area_tilling:
+          title: '&6Area tilling'
+          action: Toggle
+        area_harvest:
+          title: '&eArea harvesting'
+          action: Toggle
+        fishing_information:
+          title: '&bFishing information'
+          action: Change detail level
+          mode:
+            brief: Brief
+            detail: Detailed
+            hidden: Hidden
   skill:
-    usage: '&cUsage: /rank skill'
     player_only: '&cThis command can only be executed by a player'
     gui:
       title: '&8{profession} Skill Tree'
@@ -42,14 +64,19 @@ rank:
       start_not_found: '&cStart skill was not found'
       status:
         prestige_unlocked: '&dPrestige'
+        prestige_available: '&dPrestige available'
         acquired: '&aAcquired'
         available: '&eAvailable'
         locked: '&cLocked'
       lore:
-        required_level: '&7Required Lv: &e{level}'
-        current_level: '&7Current Lv: &e{level}'
-        status: '&7Status: {status}'
-        prestige_available: '&dPrestige skill available'
+        required_level_label: Unlock level
+        level_value: Lv.{level}
+        level_locked: Available at Lv.{level}
+        prerequisite_locked: Acquire a prerequisite skill to unlock this
+        branch_locked: Unavailable because another branch was selected
+        click_operation: Click
+        acquire_action: Acquire
+        acquire_prestige_action: Acquire prestige
       route:
         prev: Go Back
         next: Go Forward
