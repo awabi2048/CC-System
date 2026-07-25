@@ -126,7 +126,7 @@ class LoreServiceImpl : LoreService {
             if (index < path.labels.lastIndex) {
                 val pathColor =
                     if (index < path.currentIndex) NamedTextColor.GREEN else NamedTextColor.GRAY
-                val pathText = if (index < path.currentIndex) "━━━" else "───"
+                val pathText = if (index < path.currentIndex) "━━━━━━" else "──────"
                 markerLine = markerLine.append(Component.text(pathText, pathColor))
             }
         }

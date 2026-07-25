@@ -180,7 +180,7 @@ class LoreServiceTest {
         );
 
         assertEquals(List.of(
-            "  ●━━━●━━━◆───○───○",
+            "  ●━━━━━━●━━━━━━◆──────○──────○",
             " 新規   訪問者  開拓者  冒険者  達成者"
         ), plain(rendered));
         assertEquals("minecraft:uniform", rendered.get(0).font().asString());
