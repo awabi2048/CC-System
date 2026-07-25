@@ -42,21 +42,33 @@ chanpon:
         description: "Switch to the MyWorldManager admin menu."
         action: "Switch"
     export_menu:
-      title: "§0World Data Export"
-      bulk:
-        display: "§aBulk Export"
-        description: "Export all production worlds as a ZIP file."
-        action: "Bulk export"
+      title: "§0Standalone World Export"
+      select_all:
+        display: "§aSelect All"
+        description: "Select every exportable world."
+        action: "Select all"
+      clear:
+        display: "§cClear Selection"
+        description: "Clear the current world selection."
+        action: "Clear selection"
+      execute:
+        display: "§aExport Selected Worlds"
+        selected_label: "Selected"
+        disabled: "Select at least one world."
+        action: "Export as one world"
       info:
         display: "§bExport Info"
         lore:
           - "§7Count: §f{count}"
+          - "§7Selected: §f{selected}"
           - "§7Page: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
         owner_label: "Owner"
         created_label: "Created"
-        action: "Export this world"
+        selected: "Selected"
+        not_selected: "Not selected"
+        action: "Toggle selection"
     automation_notice:
       backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
       rollback_warning: "§cScheduled rollback will start in §f{remaining}§c. You will be moved to spawn before it starts."

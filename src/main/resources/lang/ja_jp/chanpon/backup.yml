@@ -42,21 +42,33 @@ chanpon:
         description: "MyWorldManagerの管理メニューへ切り替えます。"
         action: "切り替え"
     export_menu:
-      title: "§0ワールドデータのエクスポート"
-      bulk:
-        display: "§a一括エクスポート"
-        description: "すべての本番用ワールドをZIPとして出力します。"
-        action: "一括エクスポート"
+      title: "§0単一ワールドのエクスポート"
+      select_all:
+        display: "§aすべて選択"
+        description: "出力可能なワールドをすべて選択します。"
+        action: "すべて選択"
+      clear:
+        display: "§c選択をすべて解除"
+        description: "現在の選択をすべて解除します。"
+        action: "すべて解除"
+      execute:
+        display: "§a選択したワールドを出力"
+        selected_label: "選択数"
+        disabled: "ワールドを1件以上選択してください。"
+        action: "単一ワールドとして出力"
       info:
         display: "§bエクスポート情報"
         lore:
           - "§7表示件数: §f{count}"
+          - "§7選択件数: §f{selected}"
           - "§7ページ: §f{page}§7/§f{pages}"
       world:
         display: "§e{world}"
         owner_label: "オーナー"
         created_label: "作成日"
-        action: "このワールドをエクスポート"
+        selected: "選択中"
+        not_selected: "未選択"
+        action: "選択状態を切り替え"
     automation_notice:
       backup_warning: "§e定時バックアップを §f{remaining} §e後に開始します。開始前にスポーンへ退避します。"
       rollback_warning: "§c定時ロールバックを §f{remaining} §c後に開始します。開始前にスポーンへ退避します。"
