@@ -69,6 +69,18 @@ chanpon:
         selected: "Selected"
         not_selected: "Not selected"
         action: "Toggle selection"
+      confirm:
+        title: "§0Confirm world export"
+        info:
+          display: "§eExport details"
+          primary_label: "Primary world"
+          count_label: "World count"
+          file_label: "Output file"
+          warning: "The primary world becomes the overworld. The portal block and the block above it are overwritten only in the exported copy."
+        execute:
+          display: "§aExport these worlds"
+          description: "Exports using the displayed primary world and order."
+          action: "Start export"
     automation_notice:
       backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
       rollback_warning: "§cScheduled rollback will start in §f{remaining}§c. You will be moved to spawn before it starts."

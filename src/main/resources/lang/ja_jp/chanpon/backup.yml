@@ -69,6 +69,18 @@ chanpon:
         selected: "選択中"
         not_selected: "未選択"
         action: "選択状態を切り替え"
+      confirm:
+        title: "§0ワールド出力の確認"
+        info:
+          display: "§e出力内容"
+          primary_label: "代表ワールド"
+          count_label: "出力ワールド数"
+          file_label: "出力ファイル名"
+          warning: "代表ワールドがoverworldになります。ポータル位置のブロックと、その上のブロックは出力先で上書きされます。"
+        execute:
+          display: "§aこの内容で出力"
+          description: "表示した代表ワールドと順序で出力します。"
+          action: "出力を開始"
     automation_notice:
       backup_warning: "§e定時バックアップを §f{remaining} §e後に開始します。開始前にスポーンへ退避します。"
       rollback_warning: "§c定時ロールバックを §f{remaining} §c後に開始します。開始前にスポーンへ退避します。"
