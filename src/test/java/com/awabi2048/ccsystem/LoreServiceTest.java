@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreFrame;
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock;
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine;
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec;
+import com.awabi2048.ccsystem.api.gui.GuiStatusTone;
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 class LoreServiceTest {
     private static List<String> plain(List<Component> lines) {
@@ -163,5 +165,51 @@ class LoreServiceTest {
 
         assertEquals(1, rendered.size());
         assertNotNull(rendered.getFirst().hoverEvent());
+    }
+
+    @Test
+    void progressPathRendersAlignedMarkersAndLabelsFromSemanticState() {
+        List<Component> rendered = new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(
+                List.of(new GuiLoreLine.ProgressPath(
+                    List.of("新規", "訪問者", "開拓者", "冒険者", "達成者"),
+                    2
+                )),
+                GuiLoreFrame.NONE
+            )
+        );
+
+        assertEquals(List.of(
+            "  ●━━━●━━━◆───○───○",
+            " 新規   訪問者  開拓者  冒険者  達成者"
+        ), plain(rendered));
+        assertEquals("minecraft:uniform", rendered.get(0).font().asString());
+        assertEquals("minecraft:uniform", rendered.get(1).font().asString());
+    }
+
+    @Test
+    void statusDataUsesOnlyTheTaskMarkerForCompletionState() {
+        List<Component> rendered = new LoreServiceImpl().render(
+            new GuiLoreSpec.Rich(
+                List.of(
+                    new GuiLoreLine.StatusData("採掘", "12 / 20", "§c", GuiStatusTone.INCOMPLETE),
+                    new GuiLoreLine.StatusComponentData(
+                        Component.text("ゾンビ"),
+                        Component.text("3 / 3", NamedTextColor.GREEN),
+                        GuiStatusTone.COMPLETE
+                    )
+                ),
+                GuiLoreFrame.NONE
+            )
+        );
+
+        assertEquals(List.of(
+            "❙ 採掘 12 / 20",
+            "❙ ゾンビ 3 / 3"
+        ), plain(rendered));
+        assertEquals(NamedTextColor.RED, rendered.get(0).color());
+        assertEquals(NamedTextColor.GREEN, rendered.get(1).color());
+        assertEquals(NamedTextColor.GRAY, rendered.get(0).children().getFirst().color());
+        assertEquals(NamedTextColor.GRAY, rendered.get(1).children().getFirst().color());
     }
 }

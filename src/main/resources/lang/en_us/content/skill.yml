@@ -13,8 +13,8 @@ skill:
       name: 森を読む者
       description: 木の流れを見極め 伐採がさらに冴える
     harvest_2:
-      name: 年輪の恵み
-      description: 木々から受け取る恵みがさらに増える
+      name: Timber Appraisal
+      description: Identify planks, timber, and inspect forest products
     cut_all_1:
       name: 伐り拓く
       description: まとめて伐る術を身につける
@@ -28,8 +28,8 @@ skill:
       name: 森は巡る
       description: 伐ったあとにも 次の芽吹きを残せる
     harvest_3:
-      name: 森の返礼
-      description: 木々から受け取る恵みが大きく増える
+      name: Forest Appraiser
+      description: Find more forest products and inspect exact materials
     cut_all_3:
       name: 深き森へ
       description: 伐採の極みに近づき 回収までこなせる
@@ -53,17 +53,17 @@ skill:
       name: 豊かな実り
       description: 作物から得られる恵みがさらに増える
     tool:
-      name: 畑仕事の相棒
-      description: 新たな道具へ手を伸ばせるようになる
+      name: Gathering Sickle
+      description: Inspect natural vegetation and gather seasonal plants
     harvest_3:
       name: 実りの最盛期
       description: 作物から得られる恵みが大きく増える
     special_loot_table_1:
-      name: 珍しき収穫
-      description: いつもとは違う実りに 出会えるようになる
+      name: Vegetation Appraisal
+      description: Inspect gathering candidates and vegetation details
     special_loot_table_2:
-      name: 秘めたる収穫
-      description: 農の道の先にある 特別な実りへ届く
+      name: Seasonal Bounty
+      description: Increase specialist plant yield and byproduct discovery
   brewer:
     initial:
       name: 泡立つ薬瓶
@@ -115,17 +115,17 @@ skill:
       name: 思わぬ収穫
       description: 鉱石から受け取る恵みが少し増える
     speed_2:
-      name: 岩を穿つ者
-      description: 石を読む目が育ち 採掘がさらに冴える
+      name: Open the Tunnel
+      description: Mine faster and advance toward batch mining
     fortune_2:
-      name: 鉱脈を追って
-      description: 鉱石から受け取る恵みがさらに増える
+      name: Precision Appraisal
+      description: Inspect veins in detail and improve chisel precision
     durability_1:
       name: 使い慣れた一振り
       description: 道具を長く使う術を覚える
     fortune_3:
-      name: 地底の寵愛
-      description: 鉱石から受け取る恵みが大きく増える
+      name: Master Ore Appraisal
+      description: Gain more special material on top results and guarantee minimum quality
     mineall_1:
       name: 掘り進め！
       description: まとめて掘り抜く術を身につける
@@ -302,10 +302,10 @@ skill:
       description: Read the water and begin the fisher profession
     patient_cast:
       name: Patient Timing
-      description: Extends the hook input window by 20%
+      description: Reduce waiting time and increase the hook input window
     deep_water:
       name: Read the Depths
-      description: Reduces fish resistance by 15%
+      description: Reduce fish resistance and reveal bait and candidate information
     master_angler:
       name: Master Angler
-      description: Shortens the fishing fight duration by 15%
+      description: Reduce fight duration and reveal detailed candidate and bait compatibility

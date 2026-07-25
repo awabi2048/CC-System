@@ -1,73 +1,104 @@
 rank:
   gui:
-    tree_button: '&aSkill Tree'
+    tree_button: '&aスキルツリー'
     tree_button_lore:
-    - '&7Open the skill tree'
-    - '&eClick to open'
-    settings_button: '&7Settings'
+    - '&7取得できるスキルを確認します'
+    - '&eクリックで開く'
+    settings_button: '&7設定'
     settings_button_lore:
-    - '&7Change profession options'
-    - '&eClick to open'
-    settings_title: '&8Profession Settings'
+    - '&7職業に関する表示を設定します'
+    - '&eクリックで開く'
+    settings_title: '&8職業設定'
+    max_level: 最大レベル
+    player_info:
+      profession: 職業
+      level: レベル
     settings:
       current_label: 現在
-      back: '&cBack'
-      back_lore: '&7Return to profession main menu'
+      back: '&c戻る'
+      back_lore: '&7職業メインメニューへ戻ります'
       bossbar:
-        title: '&6Boss bar on EXP gain'
+        title: '&6経験値獲得時のボスバー'
         action: 切り替え
         mode:
-          short: Show short
-          long: Show long
-          hidden: Hidden
+          short: 短く表示
+          long: 長く表示
+          hidden: 表示しない
       level_up:
-        title: '&bLevel-up notification'
+        title: '&bレベルアップ通知'
         action: 切り替え
-        enabled: Enabled
-        disabled: Disabled
-    hint_button: '&7Profession hint'
-    hint_button_lore:
-    - '&cCurrently in preparation'
+        enabled: 有効
+        disabled: 無効
+      feature:
+        state:
+          enabled: 有効
+          disabled: 無効
+        batch:
+          title: '&6一括処理'
+          action: 切り替える
+        leaf_cleanup:
+          title: '&a葉の後処理'
+          action: 切り替える
+        automatic_replant:
+          title: '&a自動植え直し'
+          action: 切り替える
+        area_tilling:
+          title: '&6範囲耕作'
+          action: 切り替える
+        area_harvest:
+          title: '&e範囲収穫'
+          action: 切り替える
+        fishing_information:
+          title: '&b釣り情報表示'
+          action: 表示量を切り替える
+          mode:
+            brief: 簡易
+            detail: 詳細
+            hidden: 表示しない
   skill:
-    usage: '&cUsage: /rank skill'
-    player_only: '&cThis command can only be executed by a player'
+    player_only: '&cこのコマンドはプレイヤーのみ実行できます'
     gui:
-      title: '&8{profession} Skill Tree'
-      no_profession: '&cYou have not selected a profession'
-      tree_not_found: '&cSkill tree for {profession} was not found'
-      start_not_found: '&cStart skill was not found'
+      title: '&8{profession} スキルツリー'
+      no_profession: '&c職業を選択していません'
+      tree_not_found: '&c{profession} のスキルツリーが見つかりません'
+      start_not_found: '&c開始スキルが見つかりません'
       status:
-        prestige_unlocked: '&dPrestige'
-        acquired: '&aAcquired'
-        available: '&eAvailable'
-        locked: '&cLocked'
+        prestige_unlocked: '&dプレステージ'
+        prestige_available: '&dプレステージ取得可能'
+        acquired: '&a取得済み'
+        available: '&e取得可能'
+        locked: '&c未解放'
       lore:
-        required_level: '&7Required Lv: &e{level}'
-        current_level: '&7Current Lv: &e{level}'
-        status: '&7Status: {status}'
-        prestige_available: '&dPrestige skill available'
+        required_level_label: 解放レベル
+        level_value: Lv.{level}
+        level_locked: Lv.{level}になると取得できます
+        prerequisite_locked: 前提スキルを取得すると解放されます
+        branch_locked: 別の分岐を選択済みのため取得できません
+        click_operation: クリック
+        acquire_action: 取得する
+        acquire_prestige_action: プレステージ化する
       route:
-        prev: Go Back
-        next: Go Forward
+        prev: 前へ戻る
+        next: 次へ進む
       dialog:
-        title: '&6Confirm Skill Unlock'
-        body: '&fUnlock {skill}? &7You cannot proceed to the other branch after this choice.'
-        confirm: '&aUnlock'
-        cancel: '&cCancel'
+        title: '&6スキル取得の確認'
+        body: '&f{skill} を取得しますか？ &7分岐を選ぶと、もう一方へは進めません。'
+        confirm: '&a取得する'
+        cancel: '&cキャンセル'
       unlock:
-        success: '&aUnlocked skill: {skill}'
-        already: '&eAlready unlocked: {skill}'
-        missing_prerequisite: '&cMissing prerequisite skills: {skills}'
-        level_shortage: '&cLevel requirement not met (required: {required}, current: {current})'
-        branch_locked: '&cThis branch is locked because the other branch was already chosen'
-        failed: '&cFailed to unlock skill'
+        success: '&aスキルを取得しました: {skill}'
+        already: '&e取得済みです: {skill}'
+        missing_prerequisite: '&c前提スキルが不足しています: {skills}'
+        level_shortage: '&c必要レベルに達していません（必要: {required}、現在: {current}）'
+        branch_locked: '&c別の分岐を選択済みのため取得できません'
+        failed: '&cスキルを取得できませんでした'
       prestige:
         dialog:
-          title: '&dConfirm Prestige Skill'
-          body: '&fUnlock prestige skill {skill}?'
+          title: '&dプレステージスキルの確認'
+          body: '&fプレステージスキル {skill} を取得しますか？'
         unlock:
-          success: '&dUnlocked prestige skill: {skill}'
-          failed: '&cFailed to unlock prestige skill'
+          success: '&dプレステージスキルを取得しました: {skill}'
+          failed: '&cプレステージスキルを取得できませんでした'
   prestige:
     cannot: §cプレステージ条件を満たしていません。
     failed: §cプレステージの実行に失敗しました
@@ -99,16 +130,20 @@ rank:
     complete_lore: §7現在のランクでは追加要件はありません
     category:
       play_time: §eプレイ時間
-      combat: '{status} §b討伐系'
-      mining: '{status} §b採掘'
+      exploration: §b探索
+      combat: §b討伐系
+      mining: §b採掘
       vanilla_exp: §eバニラEXP
-      items: '{status} §bアイテム所持'
-    line:
-      progress_time: '{status} §7進捗: {current} / {required}'
-      progress_exp: '{status} §7進捗: {current}/{required}'
-      percent: §8({percent}%)
-      target_prefix: '{status} '
-      target_suffix: '§7: {current}/{required}'
+      items: §b収集・クラフト
+      milestones: §b到達イベント
+    comment:
+      play_time: サーバーで遊んだ時間です。
+      exploration: 対象のワールドを探索します。
+      combat: 指定された敵を討伐します。
+      mining: 指定されたブロックを採掘します。
+      vanilla_exp: バニラ経験値を集めます。
+      items: 指定されたアイテムを集めます。
+      milestones: 冒険の節目となる行動です。
 message:
   rank_up: §a§l【ランクアップ！】§r§a{rank} になりました
   profession_selected: §a§l【職業選択】§r§a職業 {profession} を選択しました

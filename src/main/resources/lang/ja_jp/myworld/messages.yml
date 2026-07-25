@@ -55,6 +55,8 @@ messages:
   owner_transferred: §a{old_owner}さんへオーナー権限を譲渡しました。
   owner_transfer_failed_limit: §c譲渡先のプレイヤーのワールドスロットがいっぱいです
   invite_locked_error: §c閉鎖中のワールドには招待できません
+  member_invite_target_offline: §cオフラインのプレイヤーは現在招待できません。
+  member_invite_target_cannot_create: §cそのプレイヤーはワールドを作成できないため招待できません。
   portal_dest_locked: §cこのポータルの先は現在閉鎖されています！
   portal_warped: §aポータルで「{destination}」へワープしました！
   invite_expired: §c招待が見つからないか、期限切れです

@@ -35,6 +35,11 @@ enum class GuiLoreFrame {
     BOTH
 }
 
+enum class GuiStatusTone {
+    COMPLETE,
+    INCOMPLETE
+}
+
 sealed interface GuiLoreLine {
     data object Spacer : GuiLoreLine
     data object Separator : GuiLoreLine
@@ -62,6 +67,31 @@ sealed interface GuiLoreLine {
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
     data class StyledText(val text: String, val color: String, val italic: Boolean) : GuiLoreLine
+    /** タスク内容の先頭マーカーだけを状態色で描画するデータ行。 */
+    data class StatusData(
+        val label: String,
+        val value: Any?,
+        val valueColor: String,
+        val tone: GuiStatusTone
+    ) : GuiLoreLine
+    data class StatusComponentData(
+        val label: net.kyori.adventure.text.Component,
+        val value: net.kyori.adventure.text.Component,
+        val tone: GuiStatusTone
+    ) : GuiLoreLine
+    /**
+     * 複数段階の進行状況を、等幅のPathとラベルとして2行で描画する。
+     * 図形、空白、色はCC-Systemが現在位置から決定する。
+     */
+    data class ProgressPath(
+        val labels: List<String>,
+        val currentIndex: Int
+    ) : GuiLoreLine {
+        init {
+            require(labels.isNotEmpty()) { "Progress path must contain at least one label" }
+            require(currentIndex in labels.indices) { "Current progress index must reference a label" }
+        }
+    }
     /** プレイヤーが入力した装飾可能な本文。固定UI文言には使用しない。 */
     data class UserText(val text: String) : GuiLoreLine
     data class Component(val value: net.kyori.adventure.text.Component) : GuiLoreLine

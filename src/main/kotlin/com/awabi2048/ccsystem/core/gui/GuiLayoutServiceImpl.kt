@@ -122,6 +122,23 @@ class GuiLayoutServiceImpl(
         )
     }
 
+    override fun centeredSevenColumnSlots(row: Int, itemCount: Int): List<Int> {
+        require(row >= 0) { "Row must not be negative" }
+        require(itemCount in 0..7) { "Item count must be between 0 and 7" }
+        val columns = when (itemCount) {
+            0 -> emptyList()
+            1 -> listOf(4)
+            2 -> listOf(3, 5)
+            3 -> listOf(2, 4, 6)
+            4 -> listOf(1, 3, 5, 7)
+            5 -> listOf(2, 3, 4, 5, 6)
+            6 -> listOf(1, 2, 3, 5, 6, 7)
+            7 -> (1..7).toList()
+            else -> error("Validated item count reached an unsupported layout")
+        }
+        return columns.map { column -> row * 9 + column }
+    }
+
     override fun settings54(): GuiSettingsLayout {
         return GuiSettingsLayout(
             size = size54(),

@@ -24,6 +24,11 @@ interface GuiLayoutService {
 
     fun sevenColumnPage(totalItemCount: Int, requestedPage: Int): GuiSevenColumnPage
 
+    /**
+     * 左右1列を余白とする7列領域で、1行内の項目を件数に応じて中央配置する。
+     */
+    fun centeredSevenColumnSlots(row: Int, itemCount: Int): List<Int>
+
     fun settings54(): GuiSettingsLayout
 
     fun threeChoice45(): GuiThreeChoiceLayout
