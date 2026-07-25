@@ -52,6 +52,11 @@ tutorial_rank:
     suffix:
       defeat: "を討伐"
       collect: "を集める"
+    unit:
+      minute: "min"
+      item: "items"
+      entity: "mobs"
+      experience: "XP"
     status:
       completed: "達成済み"
       incomplete: "未達成"
