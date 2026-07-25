@@ -10,6 +10,10 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
+@Deprecated(
+    message = "InventoryMenuDefinitionとMenuRuntimeServiceを使用してください。",
+    level = DeprecationLevel.WARNING,
+)
 internal object ManagedMenuPresenter {
     fun open(
         player: Player,
