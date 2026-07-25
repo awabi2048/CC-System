@@ -83,6 +83,9 @@ internal class MenuRuntimeServiceImpl(
         return navigateFrom(player, currentRoute, route)
     }
 
+    override fun openEphemeral(player: Player, route: MenuRoute): Boolean =
+        openDirect(player, route, playOpenSound = true, preserveHistory = true)
+
     override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
         val transition = resolveTransition(player, request)
         when (transition) {
@@ -156,7 +159,11 @@ internal class MenuRuntimeServiceImpl(
         inventory.clear()
         applyView(inventory, view)
         inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
-        sessions[player.uniqueId] = Session(session.route, view.elements.associateBy { it.slot })
+        sessions[player.uniqueId] = Session(
+            session.route,
+            view.elements.associateBy { it.slot },
+            session.preserveHistory,
+        )
         return true
     }
 
@@ -254,11 +261,18 @@ internal class MenuRuntimeServiceImpl(
                     session
                 }
             }
-            if (removed) navigation.clear(player)
+            if (removed && MenuSessionClosePolicy.shouldClearNavigation(holder.preserveHistory)) {
+                navigation.clear(player)
+            }
         })
     }
 
-    private fun openDirect(player: Player, route: MenuRoute, playOpenSound: Boolean): Boolean {
+    private fun openDirect(
+        player: Player,
+        route: MenuRoute,
+        playOpenSound: Boolean,
+        preserveHistory: Boolean = false,
+    ): Boolean {
         val definition = definition(route.owner, route.id) ?: return false
         val view = runCatching { definition.renderer.render(MenuRenderContext(player, route)) }
             .onFailure { failure ->
@@ -266,11 +280,11 @@ internal class MenuRuntimeServiceImpl(
             }
             .getOrNull() ?: return false
         val policy = GuiInventoryPolicy(view.inputSlots, view.allowPlayerInventoryInteraction)
-        val holder = MenuRuntimeHolder(player.uniqueId, route, policy)
+        val holder = MenuRuntimeHolder(player.uniqueId, route, policy, preserveHistory)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
         applyView(inventory, view)
-        sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot })
+        sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot }, preserveHistory)
         if (playOpenSound) sounds.onMenuOpen(player, route.id)
         player.openInventory(inventory)
         return true
@@ -380,6 +394,7 @@ internal class MenuRuntimeServiceImpl(
     private data class Session(
         val route: MenuRoute,
         val elements: Map<Int, com.awabi2048.ccsystem.api.gui.MenuElement>,
+        val preserveHistory: Boolean,
     )
 
     private data class ManagedPresentation(
@@ -400,6 +415,8 @@ internal object MenuClickAcceptance {
 internal object MenuSessionClosePolicy {
     fun shouldRemove(closedRoute: MenuRoute, activeRoute: MenuRoute?, sessionRoute: MenuRoute): Boolean =
         sessionRoute == closedRoute && activeRoute != closedRoute
+
+    fun shouldClearNavigation(preserveHistory: Boolean): Boolean = !preserveHistory
 }
 
 internal object ManagedTransitionResolver {

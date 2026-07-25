@@ -19,6 +19,12 @@ interface MenuRuntimeService {
 
     fun navigate(player: Player, route: MenuRoute): Boolean
 
+    /**
+     * 現在のRouteと履歴を変更せず、一時画面を開く。
+     * 現地設定など、閉じた後も親画面の追跡状態を維持する画面で使用する。
+     */
+    fun openEphemeral(player: Player, route: MenuRoute): Boolean
+
     fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean
 
     fun feedback(player: Player, interaction: ManagedMenuInteraction)

@@ -34,4 +34,10 @@ class MenuSessionClosePolicyTest {
     private static MenuRoute route(String id) {
         return new MenuRoute("test", id, Map.of());
     }
+
+    @Test
+    void ephemeralSessionDoesNotClearParentNavigation() {
+        assertFalse(MenuSessionClosePolicy.INSTANCE.shouldClearNavigation(true));
+        assertTrue(MenuSessionClosePolicy.INSTANCE.shouldClearNavigation(false));
+    }
 }
