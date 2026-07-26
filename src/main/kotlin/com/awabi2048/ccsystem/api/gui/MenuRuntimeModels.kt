@@ -78,6 +78,7 @@ data class MenuActionContext(
     val payload: Map<String, String>,
     val click: ClickType,
     val item: ItemStack,
+    val cursor: ItemStack,
 )
 
 fun interface MenuActionHandler {

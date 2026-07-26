@@ -221,6 +221,7 @@ internal class MenuRuntimeServiceImpl(
                     element.actionPayload,
                     event.click,
                     (event.currentItem ?: element.item).clone(),
+                    event.cursor.clone(),
                 ),
             )
         } catch (failure: Throwable) {
