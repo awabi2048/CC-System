@@ -33,6 +33,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -196,7 +197,7 @@ internal class MenuRuntimeServiceImpl(
                 return
             }
             if (policy.playerInventoryInteraction == PlayerInventoryInteraction.INTERACTIVE) {
-                if (event.click.isShiftClick) event.isCancelled = true
+                if (PlayerInventoryTransferGuard.blocks(event.action)) event.isCancelled = true
                 return
             }
             val session = sessions[player.uniqueId] ?: return
@@ -514,6 +515,13 @@ internal object PlayerInventoryActionAcceptance {
             playerInventoryClicked &&
             handlerPresent &&
             MenuClickAcceptance.accepts(click)
+}
+
+internal object PlayerInventoryTransferGuard {
+    fun blocks(action: InventoryAction): Boolean =
+        action == InventoryAction.MOVE_TO_OTHER_INVENTORY ||
+            action == InventoryAction.COLLECT_TO_CURSOR ||
+            action == InventoryAction.UNKNOWN
 }
 
 internal object ManagedTransitionResolver {

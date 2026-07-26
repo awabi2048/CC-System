@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuResumeResult
 import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
+import com.awabi2048.ccsystem.core.gui.PlayerInventoryTransferGuard
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -60,7 +61,7 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
                 PlayerInventoryInteraction.BLOCKED,
                 PlayerInventoryInteraction.SELECTION -> event.isCancelled = true
                 PlayerInventoryInteraction.INTERACTIVE -> {
-                    if (event.click.isShiftClick) event.isCancelled = true
+                    if (PlayerInventoryTransferGuard.blocks(event.action)) event.isCancelled = true
                 }
             }
         }
