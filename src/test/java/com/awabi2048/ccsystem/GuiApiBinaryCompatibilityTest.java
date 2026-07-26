@@ -76,6 +76,22 @@ class GuiApiBinaryCompatibilityTest {
             MenuActionSoundPolicy.class,
             int.class,
             DefaultConstructorMarker.class
+        ).newInstance(
+            "legacy",
+            "definition",
+            (InventoryMenuRenderer) context -> new InventoryMenuView(
+                9,
+                Component.empty(),
+                List.of(),
+                true,
+                Set.of(),
+                Map.of(),
+                false
+            ),
+            Map.of(),
+            null,
+            0x10,
+            null
         ));
         assertDoesNotThrow(() -> InventoryMenuView.class.getDeclaredConstructor(
             int.class,
@@ -86,6 +102,15 @@ class GuiApiBinaryCompatibilityTest {
             boolean.class,
             int.class,
             DefaultConstructorMarker.class
+        ).newInstance(
+            9,
+            Component.empty(),
+            List.of(),
+            false,
+            null,
+            false,
+            0x38,
+            null
         ));
     }
 }

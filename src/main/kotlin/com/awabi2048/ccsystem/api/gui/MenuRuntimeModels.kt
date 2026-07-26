@@ -60,7 +60,7 @@ data class InventoryMenuView(
         title: Component,
         elements: List<MenuElement>,
         standardFrame: Boolean,
-        inputSlots: Set<Int>,
+        inputSlots: Set<Int>?,
         allowPlayerInventoryInteraction: Boolean,
         mask: Int,
         marker: kotlin.jvm.internal.DefaultConstructorMarker?,
@@ -69,7 +69,7 @@ data class InventoryMenuView(
         title = title,
         elements = elements,
         standardFrame = if (mask and 0x08 != 0) true else standardFrame,
-        inputSlots = if (mask and 0x10 != 0) emptySet() else inputSlots,
+        inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
         inputItems = emptyMap(),
         allowPlayerInventoryInteraction =
             if (mask and 0x20 != 0) false else allowPlayerInventoryInteraction,
@@ -209,7 +209,7 @@ data class InventoryMenuDefinition(
         id: String,
         renderer: InventoryMenuRenderer,
         actions: Map<String, MenuActionHandler>,
-        sounds: MenuActionSoundPolicy,
+        sounds: MenuActionSoundPolicy?,
         mask: Int,
         marker: kotlin.jvm.internal.DefaultConstructorMarker?,
     ) : this(
@@ -217,7 +217,7 @@ data class InventoryMenuDefinition(
         id = id,
         renderer = renderer,
         actions = actions,
-        sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else sounds,
+        sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else requireNotNull(sounds),
         onClose = null,
     )
 
