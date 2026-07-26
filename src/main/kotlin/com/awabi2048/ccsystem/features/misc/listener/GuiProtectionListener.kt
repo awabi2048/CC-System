@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.features.misc.listener
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuResumeResult
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -54,8 +55,14 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
         if (!clickedTop && currentIsGuiBeforeCleanup) {
             event.isCancelled = true
         }
-        if (!clickedTop && policy != null && !policy.allowPlayerInventoryInteraction) {
-            event.isCancelled = true
+        if (!clickedTop && policy != null) {
+            when (policy.playerInventoryInteraction) {
+                PlayerInventoryInteraction.BLOCKED,
+                PlayerInventoryInteraction.SELECTION -> event.isCancelled = true
+                PlayerInventoryInteraction.INTERACTIVE -> {
+                    if (event.click.isShiftClick) event.isCancelled = true
+                }
+            }
         }
         if (clickedTop && !currentIsGuiBeforeCleanup && policy != null && !policy.acceptsTopSlot(event.rawSlot)) {
             event.isCancelled = true
@@ -82,7 +89,7 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
         val policy = navigation.inventoryPolicy(event.view.topInventory)
         val policyViolation = policy != null && event.rawSlots.any { slot ->
             if (slot < topSize) !policy.acceptsTopSlot(slot)
-            else !policy.allowPlayerInventoryInteraction
+            else policy.playerInventoryInteraction != PlayerInventoryInteraction.INTERACTIVE
         }
         if (!guiInCursor && !guiInDraggedItems && removed == 0 && !policyViolation) return
 

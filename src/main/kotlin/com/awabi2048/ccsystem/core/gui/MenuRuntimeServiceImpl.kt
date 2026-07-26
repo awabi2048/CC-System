@@ -21,6 +21,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -83,7 +84,7 @@ internal class MenuRuntimeServiceImpl(
         withoutOpenSound(player) { navigation.open(player, route) }
 
     override fun navigate(player: Player, route: MenuRoute): Boolean {
-        val currentRoute = navigation.currentRoute(player) ?: return replace(player, route)
+        val currentRoute = navigation.currentRoute(player) ?: return open(player, route)
         return navigateFrom(player, currentRoute, route)
     }
 
@@ -149,7 +150,7 @@ internal class MenuRuntimeServiceImpl(
                 failure
             )
         }.getOrNull() ?: return false
-        val policy = GuiInventoryPolicy(view.inputSlots, view.allowPlayerInventoryInteraction)
+        val policy = inventoryPolicy(view, definition)
         if (
             player.openInventory.topInventory.size != view.size ||
             player.openInventory.title() != view.title ||
@@ -190,8 +191,12 @@ internal class MenuRuntimeServiceImpl(
             return
         }
         if (event.clickedInventory != event.view.topInventory) {
-            if (!policy.allowPlayerInventoryInteraction) {
+            if (policy.playerInventoryInteraction == PlayerInventoryInteraction.BLOCKED) {
                 event.isCancelled = true
+                return
+            }
+            if (policy.playerInventoryInteraction == PlayerInventoryInteraction.INTERACTIVE) {
+                if (event.click.isShiftClick) event.isCancelled = true
                 return
             }
             val session = sessions[player.uniqueId] ?: return
@@ -199,7 +204,7 @@ internal class MenuRuntimeServiceImpl(
             val definition = definition(holder.route.owner, holder.route.id) ?: return
             val handler = definition.actions[MenuRuntimeActions.PLAYER_INVENTORY_CLICK] ?: return
             if (!PlayerInventoryActionAcceptance.accepts(
-                    policy.allowPlayerInventoryInteraction,
+                    policy.capturesPlayerInventoryClick,
                     event.clickedInventory == player.inventory,
                     handlerPresent = true,
                     event.click,
@@ -344,7 +349,7 @@ internal class MenuRuntimeServiceImpl(
                 plugin.logger.log(Level.SEVERE, "メニュー描画に失敗しました: route=${definition.routeId}", failure)
             }
             .getOrNull() ?: return false
-        val policy = GuiInventoryPolicy(view.inputSlots, view.allowPlayerInventoryInteraction)
+        val policy = inventoryPolicy(view, definition)
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy, preserveHistory)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
@@ -359,6 +364,19 @@ internal class MenuRuntimeServiceImpl(
         if (view.standardFrame) layouts.applyStandardFrame(inventory)
         view.inputItems.forEach { (slot, item) -> inventory.setItem(slot, item.clone()) }
         view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
+    }
+
+    private fun inventoryPolicy(
+        view: InventoryMenuView,
+        definition: InventoryMenuDefinition,
+    ): GuiInventoryPolicy {
+        val interaction = when {
+            !view.allowPlayerInventoryInteraction -> PlayerInventoryInteraction.BLOCKED
+            definition.actions.containsKey(MenuRuntimeActions.PLAYER_INVENTORY_CLICK) ->
+                PlayerInventoryInteraction.SELECTION
+            else -> PlayerInventoryInteraction.INTERACTIVE
+        }
+        return GuiInventoryPolicy(view.inputSlots, interaction)
     }
 
     private fun applyResult(

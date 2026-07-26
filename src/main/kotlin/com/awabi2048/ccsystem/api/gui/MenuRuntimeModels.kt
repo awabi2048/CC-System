@@ -52,7 +52,7 @@ data class InventoryMenuView(
     val standardFrame: Boolean = true,
     val inputSlots: Set<Int> = emptySet(),
     val inputItems: Map<Int, ItemStack> = emptyMap(),
-    val allowPlayerInventoryInteraction: Boolean = false,
+    val allowPlayerInventoryInteraction: Boolean = true,
 ) {
     @Suppress("UNUSED_PARAMETER")
     constructor(
@@ -72,7 +72,7 @@ data class InventoryMenuView(
         inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
         inputItems = emptyMap(),
         allowPlayerInventoryInteraction =
-            if (mask and 0x20 != 0) false else allowPlayerInventoryInteraction,
+            if (mask and 0x20 != 0) true else allowPlayerInventoryInteraction,
     )
 
     init {
