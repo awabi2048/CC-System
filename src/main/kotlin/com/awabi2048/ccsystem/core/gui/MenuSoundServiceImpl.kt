@@ -22,7 +22,7 @@ class MenuSoundServiceImpl : MenuSoundService {
     private val providers = ConcurrentHashMap<String, MenuSoundProvider>()
 
     /** メニュー固有設定が無いときの開封音 */
-    private val defaultOpenSound = MenuSound("BLOCK_NOTE_BLOCK_HAT", pitch = 1.2f)
+    private val defaultOpenSound = MenuSound("minecraft:block.note_block.hat", pitch = 1.2f)
 
     /** クリック種別ごとのデフォルト音（メニュー固有設定が無いとき） */
     private val defaultClickSounds: Map<MenuClickType, MenuSound> = mapOf(
