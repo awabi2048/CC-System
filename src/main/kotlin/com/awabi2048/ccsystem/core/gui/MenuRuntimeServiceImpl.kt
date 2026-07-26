@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
+import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteraction
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteractionOutcome
@@ -250,6 +251,16 @@ internal class MenuRuntimeServiceImpl(
         }
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
         val player = event.player as? Player ?: return
+        definition(holder.route.owner, holder.route.id)?.onClose?.let { handler ->
+            runCatching { handler.handle(MenuCloseContext(player, holder.route)) }
+                .onFailure { failure ->
+                    plugin.logger.log(
+                        Level.SEVERE,
+                        "メニューClose処理に失敗しました: route=${holder.route.key()} player=${player.uniqueId}",
+                        failure,
+                    )
+                }
+        }
         Bukkit.getScheduler().runTask(plugin, Runnable {
             val activeHolder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
             var removed = false

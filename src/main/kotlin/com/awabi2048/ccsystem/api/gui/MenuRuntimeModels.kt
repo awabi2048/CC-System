@@ -83,6 +83,15 @@ fun interface MenuActionHandler {
     fun handle(context: MenuActionContext): MenuActionResult
 }
 
+data class MenuCloseContext(
+    val player: Player,
+    val route: MenuRoute,
+)
+
+fun interface MenuCloseHandler {
+    fun handle(context: MenuCloseContext)
+}
+
 sealed interface MenuUpdate {
     data object None : MenuUpdate
     data object Refresh : MenuUpdate
@@ -160,6 +169,7 @@ data class InventoryMenuDefinition(
     val renderer: InventoryMenuRenderer,
     val actions: Map<String, MenuActionHandler>,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
+    val onClose: MenuCloseHandler? = null,
 ) {
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
