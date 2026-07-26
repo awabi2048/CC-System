@@ -28,6 +28,7 @@ internal class MenuDialogServiceImpl(
     private val plugin: JavaPlugin,
     private val sounds: MenuSoundService,
     private val runtime: MenuRuntimeService,
+    private val presentations: MenuPresentationTracker,
 ) : MenuDialogService {
     override fun show(player: Player, request: MenuDialogRequest) {
         val inputs = request.inputs.map { input ->
@@ -82,6 +83,12 @@ internal class MenuDialogServiceImpl(
                 )
         }
         player.showDialog(dialog)
+        presentations.markOpened(
+            player,
+            com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG,
+            request.owner,
+            request.id,
+        )
     }
 
     private fun button(
@@ -101,6 +108,7 @@ internal class MenuDialogServiceImpl(
                     selections = request.inputs.filterIsInstance<MenuDialogInput.SingleOption>()
                         .associate { it.id to response.getText(it.id).orEmpty() },
                 )
+                val originRevision = presentations.current(target)?.revision
                 val result = runCatching { button.handler.handle(target, values) }
                     .getOrElse { failure ->
                         plugin.logger.log(
@@ -110,7 +118,7 @@ internal class MenuDialogServiceImpl(
                         )
                         MenuActionResult.Rejected()
                     }
-                applyResult(target, request, button, clickType, result)
+                applyResult(target, request, button, clickType, result, originRevision)
             },
             ClickCallback.Options.builder().uses(1).build(),
         )
@@ -123,6 +131,7 @@ internal class MenuDialogServiceImpl(
         button: MenuDialogButton,
         clickType: MenuClickType,
         result: MenuActionResult,
+        originRevision: Long?,
     ) {
         when (result) {
             MenuActionResult.Ignored -> return
@@ -133,7 +142,19 @@ internal class MenuDialogServiceImpl(
             is MenuActionResult.Success -> {
                 play(player, result.sound, button.sound.takeUnless { it == MenuSoundPolicy.Default }
                     ?: request.sounds.success, clickType)
-                when (val update = result.update) {
+                val update = result.update
+                if (
+                    update != MenuUpdate.None &&
+                    update != MenuUpdate.Close &&
+                    presentations.current(player)?.revision != originRevision
+                ) {
+                    plugin.logger.warning(
+                        "Dialog変更後の古いMenuUpdateを無視しました: " +
+                            "owner=${request.owner} id=${request.id} update=${update::class.simpleName}"
+                    )
+                    return
+                }
+                when (update) {
                     MenuUpdate.None, MenuUpdate.Close -> Unit
                     MenuUpdate.Refresh -> show(player, request)
                     MenuUpdate.Back -> runtime.back(player)

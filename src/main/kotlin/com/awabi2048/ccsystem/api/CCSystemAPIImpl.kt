@@ -73,16 +73,28 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     private val menuSoundService = MenuSoundServiceImpl()
+    private val menuPresentationTracker = com.awabi2048.ccsystem.core.gui.MenuPresentationTracker()
     private val menuRuntimeService = MenuRuntimeServiceImpl(
         plugin,
         menuNavigationService,
         menuSoundService,
         guiLayoutService,
+        menuPresentationTracker,
     ).also {
         plugin.server.pluginManager.registerEvents(it, plugin)
     }
-    private val menuDialogService = MenuDialogServiceImpl(plugin, menuSoundService, menuRuntimeService)
-    private val menuFormService = MenuFormServiceImpl(plugin, menuSoundService, menuRuntimeService)
+    private val menuDialogService = MenuDialogServiceImpl(
+        plugin,
+        menuSoundService,
+        menuRuntimeService,
+        menuPresentationTracker,
+    )
+    private val menuFormService = MenuFormServiceImpl(
+        plugin,
+        menuSoundService,
+        menuRuntimeService,
+        menuPresentationTracker,
+    )
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
     private val configSchemaService = ConfigSchemaServiceImpl()
     private val itemGrantService = ItemGrantServiceImpl()

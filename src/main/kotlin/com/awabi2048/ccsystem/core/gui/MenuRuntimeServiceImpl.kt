@@ -42,6 +42,7 @@ internal class MenuRuntimeServiceImpl(
     private val navigation: MenuNavigationService,
     private val sounds: MenuSoundService,
     private val layouts: GuiLayoutService,
+    private val presentations: MenuPresentationTracker,
 ) : MenuRuntimeService, Listener {
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
@@ -115,6 +116,12 @@ internal class MenuRuntimeServiceImpl(
             is MenuSoundPolicy.Custom -> sounds.play(player, openSound.sound)
         }
         player.openInventory(request.inventory)
+        presentations.markOpened(
+            player,
+            com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY,
+            request.route.owner,
+            request.route.id,
+        )
         return true
     }
 
@@ -175,6 +182,7 @@ internal class MenuRuntimeServiceImpl(
 
     override fun close(player: Player) {
         player.closeInventory()
+        presentations.markClosed(player)
     }
 
     override fun back(player: Player): Boolean =
@@ -213,6 +221,7 @@ internal class MenuRuntimeServiceImpl(
             ) return
             event.isCancelled = true
             if (!executing.add(player.uniqueId)) return
+            val originRevision = presentations.current(player)?.revision
             val result = try {
                 handler.handle(
                     MenuActionContext(
@@ -237,7 +246,7 @@ internal class MenuRuntimeServiceImpl(
             } finally {
                 executing.remove(player.uniqueId)
             }
-            applyResult(player, session, null, definition, MenuClickType.DEFAULT, result)
+            applyResult(player, session, null, definition, MenuClickType.DEFAULT, result, originRevision)
             return
         }
         if (policy.acceptsTopSlot(event.rawSlot)) return
@@ -261,6 +270,7 @@ internal class MenuRuntimeServiceImpl(
         }
         val handler = definition.actions[actionId] ?: return
         if (!executing.add(player.uniqueId)) return
+        val originRevision = presentations.current(player)?.revision
 
         val result = try {
             handler.handle(
@@ -284,7 +294,7 @@ internal class MenuRuntimeServiceImpl(
         } finally {
             executing.remove(player.uniqueId)
         }
-        applyResult(player, session, element.sounds, definition, clickType, result)
+        applyResult(player, session, element.sounds, definition, clickType, result, originRevision)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -358,6 +368,12 @@ internal class MenuRuntimeServiceImpl(
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot }, preserveHistory)
         if (playOpenSound) sounds.onMenuOpen(player, route.id)
         player.openInventory(inventory)
+        presentations.markOpened(
+            player,
+            com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY,
+            route.owner,
+            route.id,
+        )
         return true
     }
 
@@ -387,6 +403,7 @@ internal class MenuRuntimeServiceImpl(
         definition: InventoryMenuDefinition,
         clickType: MenuClickType,
         result: MenuActionResult,
+        originRevision: Long?,
     ) {
         when (result) {
             MenuActionResult.Ignored -> return
@@ -406,11 +423,27 @@ internal class MenuRuntimeServiceImpl(
                     MenuSoundPolicyResolver.successPolicy(elementSounds, definition.sounds),
                     clickType,
                 )
-                when (val update = result.update) {
+                val update = result.update
+                if (!MenuStaleUpdatePolicy.shouldApply(
+                        update,
+                        originRevision,
+                        presentations.current(player)?.revision,
+                    )
+                ) {
+                    val current = presentations.current(player)
+                    plugin.logger.warning(
+                        "画面変更後の古いMenuUpdateを無視しました: " +
+                            "route=${session.route.owner}:${session.route.id} update=${update::class.simpleName} " +
+                            "originRevision=$originRevision currentRevision=${current?.revision} " +
+                            "currentSurface=${current?.surface} current=${current?.owner}:${current?.id}"
+                    )
+                    return
+                }
+                when (update) {
                     MenuUpdate.None -> Unit
                     MenuUpdate.Refresh -> refresh(player)
-                    MenuUpdate.Close -> player.closeInventory()
-                    MenuUpdate.Back -> if (!back(player)) player.closeInventory()
+                    MenuUpdate.Close -> close(player)
+                    MenuUpdate.Back -> if (!back(player)) close(player)
                     is MenuUpdate.Replace -> replace(player, update.route)
                     is MenuUpdate.Navigate -> navigateFrom(player, session.route, update.route)
                 }
