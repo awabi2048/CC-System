@@ -70,6 +70,8 @@ data class MenuDialogRequest(
     val inputs: List<MenuDialogInput> = emptyList(),
     val confirm: MenuDialogButton,
     val cancel: MenuDialogButton,
+    val additionalActions: List<MenuDialogButton> = emptyList(),
+    val columns: Int = 1,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
 ) {
     init {
@@ -77,6 +79,7 @@ data class MenuDialogRequest(
         require(id.isNotBlank()) { "id must not be blank" }
         require(inputs.map { it.id }.all { it.isNotBlank() }) { "dialog input ids must not be blank" }
         require(inputs.map { it.id }.distinct().size == inputs.size) { "dialog input ids must be unique" }
+        require(columns > 0) { "dialog columns must be positive" }
     }
 
     val routeId: String

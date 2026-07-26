@@ -57,6 +57,9 @@ internal class MenuDialogServiceImpl(
         }
         val confirm = button(player, request, request.confirm, MenuClickType.CONFIRM)
         val cancel = button(player, request, request.cancel, MenuClickType.CANCEL)
+        val additionalActions = request.additionalActions.map {
+            button(player, request, it, MenuClickType.CONFIRM)
+        }
         val dialog = Dialog.create { factory ->
             factory.empty()
                 .base(
@@ -66,7 +69,17 @@ internal class MenuDialogServiceImpl(
                         .afterAction(DialogBase.DialogAfterAction.CLOSE)
                         .build()
                 )
-                .type(DialogType.confirmation(confirm, cancel))
+                .type(
+                    if (additionalActions.isEmpty()) {
+                        DialogType.confirmation(confirm, cancel)
+                    } else {
+                        DialogType.multiAction(
+                            listOf(confirm) + additionalActions,
+                            cancel,
+                            request.columns,
+                        )
+                    },
+                )
         }
         player.showDialog(dialog)
     }

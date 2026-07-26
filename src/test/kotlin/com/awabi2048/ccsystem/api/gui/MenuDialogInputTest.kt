@@ -44,4 +44,24 @@ class MenuDialogInputTest {
             )
         }
     }
+
+    @Test
+    fun `dialog rejects non-positive multi action columns`() {
+        val button = MenuDialogButton(
+            Component.text("決定"),
+            MenuDialogHandler { _, _ -> MenuActionResult.Success() },
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            MenuDialogRequest(
+                owner = "test",
+                id = "multi-action",
+                title = Component.text("確認"),
+                body = emptyList(),
+                confirm = button,
+                cancel = button,
+                additionalActions = listOf(button),
+                columns = 0,
+            )
+        }
+    }
 }
