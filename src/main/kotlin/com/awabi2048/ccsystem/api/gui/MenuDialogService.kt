@@ -20,14 +20,36 @@ sealed interface MenuDialogInput {
         override val label: Component,
         val initial: Boolean = false,
     ) : MenuDialogInput
+
+    data class SingleOption(
+        override val id: String,
+        override val label: Component,
+        val options: List<Option>,
+        val width: Int = 310,
+    ) : MenuDialogInput {
+        init {
+            require(options.isNotEmpty()) { "single option input must have at least one option" }
+            require(options.map { it.id }.all { it.isNotBlank() }) { "option ids must not be blank" }
+            require(options.map { it.id }.distinct().size == options.size) { "option ids must be unique" }
+            require(options.count { it.initial } <= 1) { "only one option can be initially selected" }
+        }
+
+        data class Option(
+            val id: String,
+            val label: Component,
+            val initial: Boolean = false,
+        )
+    }
 }
 
-data class MenuDialogResponse(
+data class MenuDialogResponse @JvmOverloads constructor(
     val text: Map<String, String>,
     val booleans: Map<String, Boolean>,
+    val selections: Map<String, String> = emptyMap(),
 ) {
     fun textValue(id: String): String = text[id].orEmpty()
     fun booleanValue(id: String): Boolean = booleans[id] ?: false
+    fun selectedValue(id: String): String = selections[id].orEmpty()
 }
 
 fun interface MenuDialogHandler {

@@ -17,6 +17,7 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
+import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Player
@@ -38,6 +39,19 @@ internal class MenuDialogServiceImpl(
                     .build()
                 is MenuDialogInput.BooleanInput -> DialogInput.bool(input.id, input.label)
                     .initial(input.initial)
+                    .build()
+                is MenuDialogInput.SingleOption -> DialogInput.singleOption(
+                    input.id,
+                    input.label,
+                    input.options.map { option ->
+                        SingleOptionDialogInput.OptionEntry.create(
+                            option.id,
+                            option.label,
+                            option.initial,
+                        )
+                    },
+                )
+                    .width(input.width)
                     .build()
             }
         }
@@ -71,6 +85,8 @@ internal class MenuDialogServiceImpl(
                         .associate { it.id to response.getText(it.id).orEmpty() },
                     booleans = request.inputs.filterIsInstance<MenuDialogInput.BooleanInput>()
                         .associate { it.id to (response.getBoolean(it.id) ?: false) },
+                    selections = request.inputs.filterIsInstance<MenuDialogInput.SingleOption>()
+                        .associate { it.id to response.getText(it.id).orEmpty() },
                 )
                 val result = runCatching { button.handler.handle(target, values) }
                     .getOrElse { failure ->
