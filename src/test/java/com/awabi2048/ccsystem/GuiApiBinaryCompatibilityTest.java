@@ -15,10 +15,20 @@ import com.awabi2048.ccsystem.api.gui.GuiMenuIconAction;
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconData;
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconOption;
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec;
+import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition;
+import com.awabi2048.ccsystem.api.gui.InventoryMenuRenderer;
+import com.awabi2048.ccsystem.api.gui.InventoryMenuView;
+import com.awabi2048.ccsystem.api.gui.MenuActionHandler;
+import com.awabi2048.ccsystem.api.gui.MenuActionSoundPolicy;
 import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.Set;
 import java.util.List;
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import net.kyori.adventure.text.Component;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class GuiApiBinaryCompatibilityTest {
@@ -54,5 +64,28 @@ class GuiApiBinaryCompatibilityTest {
                 assertFalse(hasMarker, model.getName() + " must not expose a Kotlin default constructor");
             }
         }
+    }
+
+    @Test
+    void runtimeModelsRetainPre218DefaultConstructorSignatures() {
+        assertDoesNotThrow(() -> InventoryMenuDefinition.class.getDeclaredConstructor(
+            String.class,
+            String.class,
+            InventoryMenuRenderer.class,
+            Map.class,
+            MenuActionSoundPolicy.class,
+            int.class,
+            DefaultConstructorMarker.class
+        ));
+        assertDoesNotThrow(() -> InventoryMenuView.class.getDeclaredConstructor(
+            int.class,
+            Component.class,
+            List.class,
+            boolean.class,
+            Set.class,
+            boolean.class,
+            int.class,
+            DefaultConstructorMarker.class
+        ));
     }
 }

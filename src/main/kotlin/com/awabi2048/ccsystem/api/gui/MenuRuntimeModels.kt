@@ -54,6 +54,27 @@ data class InventoryMenuView(
     val inputItems: Map<Int, ItemStack> = emptyMap(),
     val allowPlayerInventoryInteraction: Boolean = false,
 ) {
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>,
+        allowPlayerInventoryInteraction: Boolean,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = if (mask and 0x08 != 0) true else standardFrame,
+        inputSlots = if (mask and 0x10 != 0) emptySet() else inputSlots,
+        inputItems = emptyMap(),
+        allowPlayerInventoryInteraction =
+            if (mask and 0x20 != 0) false else allowPlayerInventoryInteraction,
+    )
+
     init {
         require(size > 0 && size % 9 == 0) { "inventory menu size must be a positive multiple of 9" }
         require(elements.all { it.slot < size }) { "menu element slot is outside the inventory" }
@@ -182,6 +203,24 @@ data class InventoryMenuDefinition(
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val onClose: MenuCloseHandler? = null,
 ) {
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        owner: String,
+        id: String,
+        renderer: InventoryMenuRenderer,
+        actions: Map<String, MenuActionHandler>,
+        sounds: MenuActionSoundPolicy,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        owner = owner,
+        id = id,
+        renderer = renderer,
+        actions = actions,
+        sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else sounds,
+        onClose = null,
+    )
+
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
