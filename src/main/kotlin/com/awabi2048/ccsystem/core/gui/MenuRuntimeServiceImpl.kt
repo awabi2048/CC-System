@@ -213,7 +213,16 @@ internal class MenuRuntimeServiceImpl(
         if (!executing.add(player.uniqueId)) return
 
         val result = try {
-            handler.handle(MenuActionContext(player, holder.route, actionId, element.actionPayload, event.click))
+            handler.handle(
+                MenuActionContext(
+                    player,
+                    holder.route,
+                    actionId,
+                    element.actionPayload,
+                    event.click,
+                    (event.currentItem ?: element.item).clone(),
+                ),
+            )
         } catch (failure: Throwable) {
             plugin.logger.log(
                 Level.SEVERE,
