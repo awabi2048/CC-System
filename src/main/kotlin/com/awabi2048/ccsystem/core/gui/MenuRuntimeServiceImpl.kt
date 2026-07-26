@@ -15,6 +15,7 @@ import com.awabi2048.ccsystem.api.gui.ManagedMenuTransition
 import com.awabi2048.ccsystem.api.gui.MenuRenderContext
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
@@ -24,12 +25,14 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
 internal class MenuRuntimeServiceImpl(
@@ -187,7 +190,48 @@ internal class MenuRuntimeServiceImpl(
             return
         }
         if (event.clickedInventory != event.view.topInventory) {
-            if (!policy.allowPlayerInventoryInteraction) event.isCancelled = true
+            if (!policy.allowPlayerInventoryInteraction) {
+                event.isCancelled = true
+                return
+            }
+            val session = sessions[player.uniqueId] ?: return
+            if (session.route != holder.route) return
+            val definition = definition(holder.route.owner, holder.route.id) ?: return
+            val handler = definition.actions[MenuRuntimeActions.PLAYER_INVENTORY_CLICK] ?: return
+            if (!PlayerInventoryActionAcceptance.accepts(
+                    policy.allowPlayerInventoryInteraction,
+                    event.clickedInventory == player.inventory,
+                    handlerPresent = true,
+                    event.click,
+                )
+            ) return
+            event.isCancelled = true
+            if (!executing.add(player.uniqueId)) return
+            val result = try {
+                handler.handle(
+                    MenuActionContext(
+                        player = player,
+                        route = holder.route,
+                        actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                        payload = mapOf(
+                            MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString(),
+                        ),
+                        click = event.click,
+                        item = (event.currentItem ?: ItemStack(Material.AIR)).clone(),
+                        cursor = event.cursor.clone(),
+                    ),
+                )
+            } catch (failure: Throwable) {
+                plugin.logger.log(
+                    Level.SEVERE,
+                    "プレイヤーインベントリActionの実行に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                    failure,
+                )
+                MenuActionResult.Rejected()
+            } finally {
+                executing.remove(player.uniqueId)
+            }
+            applyResult(player, session, null, definition, MenuClickType.DEFAULT, result)
             return
         }
         if (policy.acceptsTopSlot(event.rawSlot)) return
@@ -438,6 +482,19 @@ internal object MenuSessionClosePolicy {
         sessionRoute == closedRoute && activeRoute != closedRoute
 
     fun shouldClearNavigation(preserveHistory: Boolean): Boolean = !preserveHistory
+}
+
+internal object PlayerInventoryActionAcceptance {
+    fun accepts(
+        interactionAllowed: Boolean,
+        playerInventoryClicked: Boolean,
+        handlerPresent: Boolean,
+        click: org.bukkit.event.inventory.ClickType,
+    ): Boolean =
+        interactionAllowed &&
+            playerInventoryClicked &&
+            handlerPresent &&
+            MenuClickAcceptance.accepts(click)
 }
 
 internal object ManagedTransitionResolver {

@@ -81,6 +81,12 @@ data class MenuActionContext(
     val cursor: ItemStack,
 )
 
+/** Runtimeがプレイヤーインベントリ側の選択をActionへ渡す際に使用する予約Action。 */
+object MenuRuntimeActions {
+    const val PLAYER_INVENTORY_CLICK = "__player_inventory_click"
+    const val PLAYER_INVENTORY_SLOT_PAYLOAD = "slot"
+}
+
 fun interface MenuActionHandler {
     fun handle(context: MenuActionContext): MenuActionResult
 }
