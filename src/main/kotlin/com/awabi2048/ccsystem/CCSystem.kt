@@ -416,7 +416,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(GuiProtectionListener(_api.getMenuNavigationService()), this)
-        server.pluginManager.registerEvents(AnnounceListener(), this)
+        AnnounceListener()
         server.pluginManager.registerEvents(announcementNotificationListener, this)
         server.pluginManager.registerEvents(PlayerLeftClickTriggerListener(), this)
         server.pluginManager.registerEvents(NaturalOriginListener(), this)

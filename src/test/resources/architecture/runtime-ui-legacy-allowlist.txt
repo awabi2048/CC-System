@@ -1,10 +1,6 @@
 # CC-SystemのRuntime実装本体と、今後移行する既存機能だけを一時許可する。
 CREATE_INVENTORY|1|src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt
-CREATE_INVENTORY|1|src/main/kotlin/com/awabi2048/ccsystem/features/announce/listener/AnnounceListener.kt
-CREATE_INVENTORY|1|src/main/kotlin/com/awabi2048/ccsystem/features/rentalarea/storage/RemainedItemManager.kt
 CUMULUS_FORM|5|src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuFormServiceImpl.kt
 DIALOG_CREATE|1|src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuDialogServiceImpl.kt
 INVENTORY_CLICK_EVENT|2|src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt
-INVENTORY_CLICK_EVENT|2|src/main/kotlin/com/awabi2048/ccsystem/features/announce/listener/AnnounceListener.kt
 INVENTORY_CLICK_EVENT|2|src/main/kotlin/com/awabi2048/ccsystem/features/misc/listener/GuiProtectionListener.kt
-INVENTORY_CLICK_EVENT|2|src/main/kotlin/com/awabi2048/ccsystem/util/CancellationDebugger.kt

@@ -306,7 +306,7 @@ internal class MenuRuntimeServiceImpl(
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
         val player = event.player as? Player ?: return
         definition(holder.route.owner, holder.route.id)?.onClose?.let { handler ->
-            runCatching { handler.handle(MenuCloseContext(player, holder.route)) }
+            runCatching { handler.handle(MenuCloseContext(player, holder.route, event.inventory)) }
                 .onFailure { failure ->
                     plugin.logger.log(
                         Level.SEVERE,
@@ -357,6 +357,7 @@ internal class MenuRuntimeServiceImpl(
 
     private fun applyView(inventory: org.bukkit.inventory.Inventory, view: InventoryMenuView) {
         if (view.standardFrame) layouts.applyStandardFrame(inventory)
+        view.inputItems.forEach { (slot, item) -> inventory.setItem(slot, item.clone()) }
         view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
     }
 

@@ -19,14 +19,13 @@ import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
 import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
 import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
 import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
-import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
@@ -38,13 +37,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.inventory.InventoryDragEvent
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.Locale
@@ -52,7 +44,7 @@ import java.util.UUID
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class AnnounceListener : Listener {
+class AnnounceListener {
     init {
         CCSystem.getAPI().getMenuRuntimeService().register(
             InventoryMenuDefinition(
@@ -64,8 +56,12 @@ class AnnounceListener : Listener {
                     "select-icon" to MenuActionHandler { context -> beginIconSelection(context.player) },
                     "announcement" to MenuActionHandler { context ->
                         openAnnouncementAction(context.player, context.payload["id"], context.click)
-                    }
-                )
+                    },
+                    MenuRuntimeActions.PLAYER_INVENTORY_CLICK to MenuActionHandler { context ->
+                        selectAnnouncementIcon(context.player, context.item)
+                    },
+                ),
+                onClose = { context -> pendingIconSelection.remove(context.player.uniqueId) },
             )
         )
     }
@@ -135,13 +131,20 @@ class AnnounceListener : Listener {
             )
         }
 
+        private class MenuItems(val size: Int) {
+            private val items = arrayOfNulls<ItemStack>(size)
+            fun setItem(slot: Int, item: ItemStack?) {
+                items[slot] = item
+            }
+            fun getItem(slot: Int): ItemStack? = items.getOrNull(slot)
+        }
+
         private fun createMenuInventory(
             player: Player,
             openedFromMenuArgument: Boolean,
             highlightAnnouncementIds: Set<String>
-        ): Inventory {
-            val title = LanguageManager.getRawString(player, "announce.menu_title")
-            val inventory = Bukkit.createInventory(null, MENU_SIZE, LegacyComponentSerializer.legacySection().deserialize(title))
+        ): MenuItems {
+            val inventory = MenuItems(MENU_SIZE)
 
             val blackPane = createPane(Material.BLACK_STAINED_GLASS_PANE)
             val grayPane = createPane(Material.GRAY_STAINED_GLASS_PANE)
@@ -380,18 +383,11 @@ class AnnounceListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onInventoryClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as? Player ?: return
-        if (!isAnnouncementRoute(player)) return
-        val clickedInventory = event.clickedInventory ?: return
-        if (clickedInventory != player.inventory || !pendingIconSelection.contains(player.uniqueId)) return
-        event.cancelWithDebug("AnnounceListener.onInventoryClick: icon selection")
-
-        val selectedItem = event.currentItem
-        if (selectedItem == null || selectedItem.type == Material.AIR) {
-            return
+    private fun selectAnnouncementIcon(player: Player, selectedItem: ItemStack): MenuActionResult {
+        if (!isAnnouncementRoute(player) || !pendingIconSelection.contains(player.uniqueId)) {
+            return MenuActionResult.Ignored
         }
+        if (selectedItem.type == Material.AIR) return MenuActionResult.Ignored
 
         if (AnnouncementManager.getAnnouncementCount() >= AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS) {
             pendingIconSelection.remove(player.uniqueId)
@@ -403,29 +399,13 @@ class AnnounceListener : Listener {
                 )
             )
             playOperationSound(player, Sound.BLOCK_NOTE_BLOCK_BASS)
-            return
+            return MenuActionResult.Rejected()
         }
 
         pendingIconSelection.remove(player.uniqueId)
-        ManagedMenuPresenter.close(player)
         playOperationSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.2f)
         openAddDialog(player, selectedItem.type)
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onInventoryDrag(event: InventoryDragEvent) {
-        val player = event.whoClicked as? Player ?: return
-        if (isAnnouncementRoute(player)) {
-            event.isCancelled = true
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        val player = event.player as? Player ?: return
-        if (isAnnouncementRoute(player)) {
-            pendingIconSelection.remove(event.player.uniqueId)
-        }
+        return MenuActionResult.Success(MenuUpdate.Close, MenuSoundPolicy.Silent)
     }
 
     private fun isAnnouncementRoute(player: Player): Boolean {
@@ -461,7 +441,7 @@ class AnnounceListener : Listener {
         val announcement = announcementId?.let(AnnouncementManager::getAnnouncementById)
             ?: return MenuActionResult.Rejected()
         pendingIconSelection.remove(player.uniqueId)
-        ManagedMenuPresenter.close(player)
+        CCSystem.getAPI().getMenuRuntimeService().close(player)
         if (click.isRightClick) openDeleteConfirmDialog(player, announcement)
         else openEditDialog(player, announcement)
         return MenuActionResult.Success(MenuUpdate.None)

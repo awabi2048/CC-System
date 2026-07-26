@@ -51,6 +51,7 @@ data class InventoryMenuView(
     val elements: List<MenuElement>,
     val standardFrame: Boolean = true,
     val inputSlots: Set<Int> = emptySet(),
+    val inputItems: Map<Int, ItemStack> = emptyMap(),
     val allowPlayerInventoryInteraction: Boolean = false,
 ) {
     init {
@@ -59,6 +60,7 @@ data class InventoryMenuView(
         require(elements.map { it.slot }.distinct().size == elements.size) { "menu element slots must be unique" }
         require(inputSlots.all { it in 0 until size }) { "input slot is outside the inventory" }
         require(elements.none { it.slot in inputSlots }) { "input slots cannot contain rendered menu elements" }
+        require(inputItems.keys.all { it in inputSlots }) { "input items must be placed in declared input slots" }
     }
 }
 
@@ -94,6 +96,7 @@ fun interface MenuActionHandler {
 data class MenuCloseContext(
     val player: Player,
     val route: MenuRoute,
+    val inventory: Inventory,
 )
 
 fun interface MenuCloseHandler {
