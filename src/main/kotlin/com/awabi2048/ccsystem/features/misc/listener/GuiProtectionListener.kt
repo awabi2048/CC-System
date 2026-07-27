@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
@@ -148,17 +147,6 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
         if (!GuiItemMarker.isMarked(event.mainHandItem) && !GuiItemMarker.isMarked(event.offHandItem)) return
         event.isCancelled = true
         removeLeakedPlayerItems(event.player, "オフハンド操作")
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        val player = event.player as? Player ?: return
-        // 画面遷移中のcloseイベントで新しい画面のルートを消さないよう、次tickの画面を確認する。
-        Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
-            if (player.isOnline && !navigation.isManagedInventory(player.openInventory.topInventory)) {
-                navigation.clear(player)
-            }
-        })
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

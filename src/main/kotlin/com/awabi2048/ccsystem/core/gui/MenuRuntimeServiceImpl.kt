@@ -332,6 +332,13 @@ internal class MenuRuntimeServiceImpl(
                 }
         }
         Bukkit.getScheduler().runTask(plugin, Runnable {
+            val activePresentation = presentations.current(player)
+            if (
+                activePresentation != null &&
+                activePresentation.surface != com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY
+            ) {
+                return@Runnable
+            }
             val activeHolder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
             var removed = false
             sessions.computeIfPresent(player.uniqueId) { _, session ->

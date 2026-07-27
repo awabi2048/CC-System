@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuntimeArchitectureContractTest {
     private static final String ALLOWLIST_RESOURCE = "/architecture/runtime-ui-legacy-allowlist.txt";
@@ -52,6 +54,19 @@ class RuntimeArchitectureContractTest {
             actual,
             "Runtime迂回実装が変化しました。新規追加は禁止です。移行で削減した場合だけ許可リストも同時に減らしてください。"
         );
+    }
+
+    @Test
+    void inventoryCloseOwnershipBelongsToRuntime() throws Exception {
+        String protection = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/features/misc/listener/GuiProtectionListener.kt")
+        );
+        String runtime = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt")
+        );
+
+        assertFalse(protection.contains("fun onInventoryClose("));
+        assertTrue(runtime.contains("activePresentation.surface !="));
     }
 
     private static boolean isSourceFile(Path path) {
