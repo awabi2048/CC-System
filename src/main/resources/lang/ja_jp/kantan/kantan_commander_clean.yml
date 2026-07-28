@@ -8,6 +8,7 @@ kantan_commander_clean:
       action_get: "ディスクのコピーを作成する"
       action_edit: "編集する"
     editor:
+      save: "プログラム一覧へ保存"
       title: "コマンドディスク"
       select_command: "コマンドを選択"
       command_settings: "コマンドの設定"

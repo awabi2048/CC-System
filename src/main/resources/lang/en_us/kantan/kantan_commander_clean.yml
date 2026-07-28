@@ -8,6 +8,7 @@ kantan_commander_clean:
       action_get: "Create a disk copy"
       action_edit: "Edit"
     editor:
+      save: "Save to program list"
       title: "Command Disk"
       select_command: "Select Command"
       command_settings: "Command Settings"
