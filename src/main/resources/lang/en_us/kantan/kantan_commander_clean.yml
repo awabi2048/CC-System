@@ -239,6 +239,7 @@ kantan_commander_clean:
     place_created: "Placed the disk."
     saved: "Saved."
     reloaded: "Reloaded configuration."
+    reload_failed: "Configuration reload failed because the settings are invalid."
     max_commands: "Command limit reached. Max: {max}"
     no_placement_access: "You do not have permission to manage this placed disk."
     remove_from_menu: "Remove this block from its menu."

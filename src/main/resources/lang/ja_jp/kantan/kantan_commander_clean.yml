@@ -239,6 +239,7 @@ kantan_commander_clean:
     place_created: "ディスクを設置しました。"
     saved: "保存しました。"
     reloaded: "設定を再読み込みしました。"
+    reload_failed: "設定が不正なため、再読み込みできませんでした。"
     max_commands: "コマンド数の上限です。最大: {max}"
     no_placement_access: "この設置済みディスクを操作する権限がありません。"
     remove_from_menu: "ブロックのメニューから撤去してください。"
