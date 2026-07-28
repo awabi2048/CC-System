@@ -113,10 +113,12 @@ internal class MenuRuntimeServiceImpl(
         }
         navigation.registerInventory(request.route.owner, request.inventory, request.policy)
         presentedInventories[request.inventory] = ManagedPresentation(player.uniqueId, request.route)
-        when (val openSound = request.openSound) {
-            MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.id)
-            MenuSoundPolicy.Silent -> Unit
-            is MenuSoundPolicy.Custom -> sounds.play(player, openSound.sound)
+        if (!isDialogTransition(player)) {
+            when (val openSound = request.openSound) {
+                MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.id)
+                MenuSoundPolicy.Silent -> Unit
+                is MenuSoundPolicy.Custom -> sounds.play(player, openSound.sound)
+            }
         }
         player.openInventory(request.inventory)
         presentations.markOpened(
@@ -379,7 +381,7 @@ internal class MenuRuntimeServiceImpl(
         holder.backingInventory = inventory
         applyView(inventory, view)
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot }, preserveHistory)
-        if (playOpenSound) sounds.onMenuOpen(player, route.id)
+        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
         val previousInventory = player.openInventory.topInventory
         val previousIsManaged = previousInventory.holder is MenuRuntimeHolder
         if (previousIsManaged) {
@@ -517,6 +519,10 @@ internal class MenuRuntimeServiceImpl(
         presentedInventories[player.openInventory.topInventory]
             ?.takeIf { it.playerId == player.uniqueId }
             ?.route
+
+    private fun isDialogTransition(player: Player): Boolean =
+        presentations.current(player)?.surface ==
+            com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG
 
     private fun closeMatching(owner: String, id: String?): Int {
         var closed = 0
