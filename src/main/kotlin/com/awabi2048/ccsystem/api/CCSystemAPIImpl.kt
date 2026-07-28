@@ -85,7 +85,6 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
     private val menuDialogService = MenuDialogServiceImpl(
         plugin,
-        menuSoundService,
         menuRuntimeService,
         menuPresentationTracker,
     )

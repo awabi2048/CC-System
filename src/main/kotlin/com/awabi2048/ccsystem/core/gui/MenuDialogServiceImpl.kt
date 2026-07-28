@@ -1,15 +1,12 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
-import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuDialogButton
 import com.awabi2048.ccsystem.api.gui.MenuDialogInput
 import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
 import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
 import com.awabi2048.ccsystem.api.gui.MenuDialogService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
-import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
-import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
@@ -26,7 +23,6 @@ import java.util.logging.Level
 
 internal class MenuDialogServiceImpl(
     private val plugin: JavaPlugin,
-    private val sounds: MenuSoundService,
     private val runtime: MenuRuntimeService,
     private val presentations: MenuPresentationTracker,
 ) : MenuDialogService {
@@ -56,10 +52,10 @@ internal class MenuDialogServiceImpl(
                     .build()
             }
         }
-        val confirm = button(player, request, request.confirm, MenuClickType.CONFIRM)
-        val cancel = button(player, request, request.cancel, MenuClickType.CANCEL)
+        val confirm = button(request, request.confirm)
+        val cancel = button(request, request.cancel)
         val additionalActions = request.additionalActions.map {
-            button(player, request, it, MenuClickType.CONFIRM)
+            button(request, it)
         }
         val dialog = Dialog.create { factory ->
             factory.empty()
@@ -92,10 +88,8 @@ internal class MenuDialogServiceImpl(
     }
 
     private fun button(
-        player: Player,
         request: MenuDialogRequest,
         button: MenuDialogButton,
-        clickType: MenuClickType,
     ): ActionButton {
         val action = DialogAction.customClick(
             { response, audience ->
@@ -118,7 +112,7 @@ internal class MenuDialogServiceImpl(
                         )
                         MenuActionResult.Rejected()
                     }
-                applyResult(target, request, button, clickType, result, originRevision)
+                applyResult(target, request, result, originRevision)
             },
             ClickCallback.Options.builder().uses(1).build(),
         )
@@ -128,20 +122,15 @@ internal class MenuDialogServiceImpl(
     private fun applyResult(
         player: Player,
         request: MenuDialogRequest,
-        button: MenuDialogButton,
-        clickType: MenuClickType,
         result: MenuActionResult,
         originRevision: Long?,
     ) {
         when (result) {
             MenuActionResult.Ignored -> return
             is MenuActionResult.Rejected -> {
-                play(player, result.sound, request.sounds.rejected, clickType)
                 result.message?.let(player::sendMessage)
             }
             is MenuActionResult.Success -> {
-                play(player, result.sound, button.sound.takeUnless { it == MenuSoundPolicy.Default }
-                    ?: request.sounds.success, clickType)
                 val update = result.update
                 if (
                     update != MenuUpdate.None &&
@@ -163,9 +152,5 @@ internal class MenuDialogServiceImpl(
                 }
             }
         }
-    }
-
-    private fun play(player: Player, policy: MenuSoundPolicy, fallback: MenuSoundPolicy, type: MenuClickType) {
-        MenuSoundPolicyResolver.resolve(policy, fallback, type)?.let { sounds.play(player, it) }
     }
 }
