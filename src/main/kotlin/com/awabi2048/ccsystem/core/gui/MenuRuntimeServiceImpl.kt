@@ -233,6 +233,13 @@ internal class MenuRuntimeServiceImpl(
         presentations.markClosed(player)
     }
 
+    override fun clear(player: Player) {
+        completeExternal(player)
+        sessions.remove(player.uniqueId)
+        navigation.clear(player)
+        presentations.markClosed(player)
+    }
+
     override fun back(player: Player): Boolean {
         completeExternal(player)
         return withoutOpenSound(player) { navigation.openPrevious(player) }
