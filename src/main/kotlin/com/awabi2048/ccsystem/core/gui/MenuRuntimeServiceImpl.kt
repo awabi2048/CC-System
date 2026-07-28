@@ -50,6 +50,7 @@ internal class MenuRuntimeServiceImpl(
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val preserveCloseInventories = ConcurrentHashMap.newKeySet<Inventory>()
+    private val externalSuspensions = ConcurrentHashMap.newKeySet<UUID>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val presentedInventories = java.util.Collections.synchronizedMap(
@@ -84,10 +85,15 @@ internal class MenuRuntimeServiceImpl(
     override fun definition(owner: String, id: String): InventoryMenuDefinition? =
         definitions[RouteKey(owner, id)]
 
-    override fun open(player: Player, route: MenuRoute): Boolean = navigation.openRoot(player, route)
+    override fun open(player: Player, route: MenuRoute): Boolean {
+        completeExternal(player)
+        return navigation.openRoot(player, route)
+    }
 
-    override fun replace(player: Player, route: MenuRoute): Boolean =
-        withoutOpenSound(player) { navigation.open(player, route) }
+    override fun replace(player: Player, route: MenuRoute): Boolean {
+        completeExternal(player)
+        return withoutOpenSound(player) { navigation.open(player, route) }
+    }
 
     override fun reopenCurrent(player: Player): Boolean {
         val route = navigation.currentRoute(player) ?: return false
@@ -95,6 +101,7 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun navigate(player: Player, route: MenuRoute): Boolean {
+        completeExternal(player)
         val currentRoute = navigation.currentRoute(player) ?: return open(player, route)
         return navigateFrom(player, currentRoute, route)
     }
@@ -107,6 +114,24 @@ internal class MenuRuntimeServiceImpl(
         if (inventory.holder is MenuRuntimeHolder) {
             preserveCloseInventories += inventory
         }
+    }
+
+    override fun suspendForExternal(player: Player): Boolean {
+        if (navigation.currentRoute(player) == null) return false
+        externalSuspensions += player.uniqueId
+        preserveHistoryOnClose(player)
+        closeInventory(player, MenuCloseReason.ROUTE_REPLACED)
+        presentations.markClosed(player)
+        return true
+    }
+
+    override fun resumeFromExternal(player: Player): Boolean {
+        if (!externalSuspensions.remove(player.uniqueId)) return false
+        return reopenCurrent(player)
+    }
+
+    override fun completeExternal(player: Player) {
+        externalSuspensions.remove(player.uniqueId)
     }
 
     override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
@@ -203,12 +228,15 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun close(player: Player) {
+        completeExternal(player)
         closeInventory(player, MenuCloseReason.RUNTIME_CLOSED)
         presentations.markClosed(player)
     }
 
-    override fun back(player: Player): Boolean =
-        withoutOpenSound(player) { navigation.openPrevious(player) }
+    override fun back(player: Player): Boolean {
+        completeExternal(player)
+        return withoutOpenSound(player) { navigation.openPrevious(player) }
+    }
 
     override fun closeOwnedMenus(owner: String): Int = closeMatching(owner, null)
 
@@ -277,7 +305,6 @@ internal class MenuRuntimeServiceImpl(
         val session = sessions[player.uniqueId] ?: return
         if (session.route != holder.route) return
         val element = session.elements[event.rawSlot] ?: return
-        val actionId = element.actionId ?: return
         if (!MenuClickAcceptance.accepts(event.click)) return
         val definition = definition(holder.route.owner, holder.route.id) ?: return
         val clickType = clickType(element.role)
@@ -300,6 +327,7 @@ internal class MenuRuntimeServiceImpl(
             if (!back(player)) close(player)
             return
         }
+        val actionId = element.actionId ?: return
         val handler = definition.actions[actionId] ?: return
         if (!executing.add(player.uniqueId)) return
         val originRevision = presentations.current(player)?.revision
@@ -512,6 +540,7 @@ internal class MenuRuntimeServiceImpl(
                 when (update) {
                     MenuUpdate.None -> Unit
                     MenuUpdate.Refresh -> refresh(player)
+                    MenuUpdate.Resume -> resumeFromExternal(player)
                     MenuUpdate.Close -> close(player)
                     MenuUpdate.Back -> if (!back(player)) close(player)
                     is MenuUpdate.Replace -> replace(player, update.route)

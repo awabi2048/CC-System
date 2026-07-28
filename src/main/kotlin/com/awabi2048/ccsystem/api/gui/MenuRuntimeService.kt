@@ -37,6 +37,12 @@ interface MenuRuntimeService {
      */
     fun preserveHistoryOnClose(player: Player)
 
+    fun suspendForExternal(player: Player): Boolean
+
+    fun resumeFromExternal(player: Player): Boolean
+
+    fun completeExternal(player: Player)
+
     fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean
 
     fun feedback(player: Player, interaction: ManagedMenuInteraction)

@@ -141,6 +141,7 @@ fun interface MenuCloseHandler {
 sealed interface MenuUpdate {
     data object None : MenuUpdate
     data object Refresh : MenuUpdate
+    data object Resume : MenuUpdate
     data object Close : MenuUpdate
     data object Back : MenuUpdate
     data class Replace(val route: MenuRoute) : MenuUpdate

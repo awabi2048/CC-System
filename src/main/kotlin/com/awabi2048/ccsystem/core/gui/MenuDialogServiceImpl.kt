@@ -27,6 +27,7 @@ internal class MenuDialogServiceImpl(
     private val presentations: MenuPresentationTracker,
 ) : MenuDialogService {
     override fun show(player: Player, request: MenuDialogRequest) {
+        runtime.suspendForExternal(player)
         val inputs = request.inputs.map { input ->
             when (input) {
                 is MenuDialogInput.Text -> DialogInput.text(input.id, input.label)
@@ -144,8 +145,10 @@ internal class MenuDialogServiceImpl(
                     return
                 }
                 when (update) {
-                    MenuUpdate.None, MenuUpdate.Close -> Unit
+                    MenuUpdate.None -> runtime.completeExternal(player)
+                    MenuUpdate.Close -> runtime.close(player)
                     MenuUpdate.Refresh -> show(player, request)
+                    MenuUpdate.Resume -> runtime.resumeFromExternal(player)
                     MenuUpdate.Back -> runtime.back(player)
                     is MenuUpdate.Replace -> runtime.replace(player, update.route)
                     is MenuUpdate.Navigate -> runtime.navigate(player, update.route)

@@ -33,6 +33,7 @@ internal class MenuFormServiceImpl(
 
     override fun show(player: Player, request: MenuSimpleFormRequest): Boolean {
         if (!isAvailable(player) || request.buttons.isEmpty()) return false
+        runtime.suspendForExternal(player)
         val builder = SimpleForm.builder().title(request.title).content(request.content)
         request.buttons.forEach { button ->
             if (button.imagePath.isNullOrBlank()) builder.button(button.label) else {
@@ -70,11 +71,13 @@ internal class MenuFormServiceImpl(
                 request.id,
             )
         }
+        if (!shown) runtime.resumeFromExternal(player)
         return shown
     }
 
     override fun show(player: Player, request: MenuCustomFormRequest): Boolean {
         if (!isAvailable(player) || request.inputs.isEmpty()) return false
+        runtime.suspendForExternal(player)
         val builder = CustomForm.builder().title(request.title)
         request.inputs.forEach { input ->
             when (input) {
@@ -118,6 +121,7 @@ internal class MenuFormServiceImpl(
                 request.id,
             )
         }
+        if (!shown) runtime.resumeFromExternal(player)
         return shown
     }
 
@@ -152,8 +156,10 @@ internal class MenuFormServiceImpl(
             return
         }
         when (update) {
-            MenuUpdate.None, MenuUpdate.Close -> Unit
+            MenuUpdate.None -> runtime.completeExternal(player)
+            MenuUpdate.Close -> runtime.close(player)
             MenuUpdate.Refresh -> refresh()
+            MenuUpdate.Resume -> runtime.resumeFromExternal(player)
             MenuUpdate.Back -> runtime.back(player)
             is MenuUpdate.Navigate -> runtime.navigate(player, update.route)
             is MenuUpdate.Replace -> runtime.replace(player, update.route)
