@@ -16,7 +16,7 @@ kantan_commander_clean:
       insert: "コマンドを挿入する"
       activation: "起動条件"
       timer: "タイマー設定"
-      center: "中心に合わせる"
+      center: "コマンド先頭へ移動"
       info: "全体情報"
       navigate: "表示位置を移動"
       move_left: "左へ移動"

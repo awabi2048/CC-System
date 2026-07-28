@@ -16,7 +16,7 @@ kantan_commander_clean:
       insert: "Insert Command"
       activation: "Activation"
       timer: "Timer Settings"
-      center: "Center View"
+      center: "Go to Command Start"
       info: "Overview"
       navigate: "Move View"
       move_left: "Move Left"
