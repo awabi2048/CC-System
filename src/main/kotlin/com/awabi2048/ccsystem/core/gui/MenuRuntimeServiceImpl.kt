@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
+import com.awabi2048.ccsystem.api.gui.MenuCloseReason
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteraction
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteractionOutcome
@@ -35,6 +36,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.java.JavaPlugin
 
 internal class MenuRuntimeServiceImpl(
@@ -44,6 +46,7 @@ internal class MenuRuntimeServiceImpl(
     private val layouts: GuiLayoutService,
     private val presentations: MenuPresentationTracker,
 ) : MenuRuntimeService, Listener {
+    private val closeReasons = MenuCloseReasonTracker<Inventory>()
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
@@ -181,7 +184,7 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun close(player: Player) {
-        player.closeInventory()
+        closeInventory(player, MenuCloseReason.RUNTIME_CLOSED)
         presentations.markClosed(player)
     }
 
@@ -321,8 +324,11 @@ internal class MenuRuntimeServiceImpl(
         }
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
         val player = event.player as? Player ?: return
+        val closeReason = closeReasons.consume(event.inventory)
         definition(holder.route.owner, holder.route.id)?.onClose?.let { handler ->
-            runCatching { handler.handle(MenuCloseContext(player, holder.route, event.inventory)) }
+            runCatching {
+                handler.handle(MenuCloseContext(player, holder.route, event.inventory, closeReason))
+            }
                 .onFailure { failure ->
                     plugin.logger.log(
                         Level.SEVERE,
@@ -374,7 +380,18 @@ internal class MenuRuntimeServiceImpl(
         applyView(inventory, view)
         sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot }, preserveHistory)
         if (playOpenSound) sounds.onMenuOpen(player, route.id)
-        player.openInventory(inventory)
+        val previousInventory = player.openInventory.topInventory
+        val previousIsManaged = previousInventory.holder is MenuRuntimeHolder
+        if (previousIsManaged) {
+            closeReasons.mark(previousInventory, MenuCloseReason.ROUTE_REPLACED)
+        }
+        try {
+            player.openInventory(inventory)
+        } finally {
+            if (previousIsManaged) {
+                closeReasons.clear(previousInventory)
+            }
+        }
         presentations.markOpened(
             player,
             com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY,
@@ -506,12 +523,26 @@ internal class MenuRuntimeServiceImpl(
         plugin.server.onlinePlayers.forEach { player ->
             val holder = player.openInventory.topInventory.holder as? MenuRuntimeHolder ?: return@forEach
             if (holder.route.owner == owner && (id == null || holder.route.id == id)) {
-                player.closeInventory()
+                closeInventory(player, MenuCloseReason.RUNTIME_CLOSED)
                 sessions.remove(player.uniqueId)
                 closed++
             }
         }
         return closed
+    }
+
+    private fun closeInventory(player: Player, reason: MenuCloseReason) {
+        val inventory = player.openInventory.topInventory
+        if (inventory.holder !is MenuRuntimeHolder) {
+            player.closeInventory()
+            return
+        }
+        closeReasons.mark(inventory, reason)
+        try {
+            player.closeInventory()
+        } finally {
+            closeReasons.clear(inventory)
+        }
     }
 
     private data class RouteKey(val owner: String, val id: String)
@@ -526,6 +557,21 @@ internal class MenuRuntimeServiceImpl(
         val playerId: UUID,
         val route: MenuRoute,
     )
+}
+
+internal class MenuCloseReasonTracker<T : Any> {
+    private val reasons = ConcurrentHashMap<T, MenuCloseReason>()
+
+    fun mark(target: T, reason: MenuCloseReason) {
+        reasons[target] = reason
+    }
+
+    fun consume(target: T): MenuCloseReason =
+        reasons.remove(target) ?: MenuCloseReason.USER_DISMISSED
+
+    fun clear(target: T) {
+        reasons.remove(target)
+    }
 }
 
 internal object MenuClickAcceptance {

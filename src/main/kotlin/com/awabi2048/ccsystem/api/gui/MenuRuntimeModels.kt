@@ -114,11 +114,24 @@ fun interface MenuActionHandler {
     fun handle(context: MenuActionContext): MenuActionResult
 }
 
+enum class MenuCloseReason {
+    USER_DISMISSED,
+    ROUTE_REPLACED,
+    RUNTIME_CLOSED,
+}
+
 data class MenuCloseContext(
     val player: Player,
     val route: MenuRoute,
     val inventory: Inventory,
-)
+    val reason: MenuCloseReason,
+) {
+    constructor(
+        player: Player,
+        route: MenuRoute,
+        inventory: Inventory,
+    ) : this(player, route, inventory, MenuCloseReason.USER_DISMISSED)
+}
 
 fun interface MenuCloseHandler {
     fun handle(context: MenuCloseContext)
