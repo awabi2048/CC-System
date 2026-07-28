@@ -19,7 +19,7 @@ class MenuSoundPolicyResolverTest {
         );
 
         assertEquals("UI_BUTTON_CLICK", resolved.getSound());
-        assertEquals(1.6f, resolved.getPitch());
+        assertEquals(2.0f, resolved.getPitch());
     }
 
     @Test

@@ -408,6 +408,7 @@ internal class MenuRuntimeServiceImpl(
         val previousIsManaged = previousInventory.holder is MenuRuntimeHolder
         if (previousIsManaged) {
             closeReasons.mark(previousInventory, MenuCloseReason.ROUTE_REPLACED)
+            preserveCloseInventories += previousInventory
         }
         try {
             player.openInventory(inventory)
