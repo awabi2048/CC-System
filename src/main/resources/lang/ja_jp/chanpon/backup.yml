@@ -308,6 +308,7 @@ chanpon:
       restore_point_success: "§d復元ポイントを作成しました。"
       export_success: "§aワールドデータをエクスポートしました: §f{file}"
       export_failed: "§cワールドデータのエクスポートに失敗しました。"
+      export_failure_detail: "§c- {detail}"
       archive_locked: "§c年次更新処理中のため、現在マイワールドを利用できません。"
       world_creation_no_permission: "§cワールドを作成する権限がありません。"
       manual_operation_blocked: "§c定時バックアップまたは定時ロールバックの前後のため、現在は手動操作を実行できません。"
