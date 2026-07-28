@@ -89,6 +89,11 @@ internal class MenuRuntimeServiceImpl(
     override fun replace(player: Player, route: MenuRoute): Boolean =
         withoutOpenSound(player) { navigation.open(player, route) }
 
+    override fun reopenCurrent(player: Player): Boolean {
+        val route = navigation.currentRoute(player) ?: return false
+        return replace(player, route)
+    }
+
     override fun navigate(player: Player, route: MenuRoute): Boolean {
         val currentRoute = navigation.currentRoute(player) ?: return open(player, route)
         return navigateFrom(player, currentRoute, route)

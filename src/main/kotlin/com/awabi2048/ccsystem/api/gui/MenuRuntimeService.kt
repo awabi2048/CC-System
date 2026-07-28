@@ -17,6 +17,12 @@ interface MenuRuntimeService {
 
     fun replace(player: Player, route: MenuRoute): Boolean
 
+    /**
+     * 現在のルートを履歴へ積み直さず、open音も再生せずに再表示する。
+     * Dialog/Form/チャット入力を挟んで元画面へ復帰する場合に使用する。
+     */
+    fun reopenCurrent(player: Player): Boolean
+
     fun navigate(player: Player, route: MenuRoute): Boolean
 
     /**
