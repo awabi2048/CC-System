@@ -97,6 +97,9 @@ kantan_commander_clean:
       direct_value: "Enter Value"
       current_iteration: "Current Iteration Value"
       current_loop_count: "Current Loop Count"
+      sort_nearest: "Nearest First"
+      sort_furthest: "Furthest First"
+      sort_random: "Random"
     dialog:
       confirm: "Set"
       back: "Back"
@@ -245,6 +248,3 @@ kantan_commander_clean:
     remove_from_menu: "Remove this block from its menu."
     disk_output: "Output a written disk."
     placement_removed: "Output the disk and removed the block."
-    export_invalid_disk: "The disk UUID is invalid or does not exist."
-    export_success: "Exported the data pack: {path}"
-    export_failed: "Pre-export validation failed."

@@ -97,6 +97,9 @@ kantan_commander_clean:
       direct_value: "値を指定"
       current_iteration: "現在の反復値"
       current_loop_count: "現在のループ回数"
+      sort_nearest: "近い順"
+      sort_furthest: "遠い順"
+      sort_random: "ランダム"
     dialog:
       confirm: "設定"
       back: "戻る"
@@ -245,6 +248,3 @@ kantan_commander_clean:
     remove_from_menu: "ブロックのメニューから撤去してください。"
     disk_output: "書き込み済みディスクを出力しました。"
     placement_removed: "ディスクを出力し、ブロックを撤去しました。"
-    export_invalid_disk: "ディスクUUIDが不正、または存在しません。"
-    export_success: "データパックを出力しました: {path}"
-    export_failed: "出力前検証に失敗しました。"
