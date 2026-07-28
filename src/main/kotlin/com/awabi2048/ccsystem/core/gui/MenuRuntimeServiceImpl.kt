@@ -290,6 +290,16 @@ internal class MenuRuntimeServiceImpl(
             )
             return
         }
+        if (element.role == GuiElementRole.BACK) {
+            playResolved(
+                player,
+                MenuSoundPolicy.Default,
+                MenuSoundPolicyResolver.successPolicy(element.sounds, definition.sounds),
+                clickType,
+            )
+            if (!back(player)) close(player)
+            return
+        }
         val handler = definition.actions[actionId] ?: return
         if (!executing.add(player.uniqueId)) return
         val originRevision = presentations.current(player)?.revision
