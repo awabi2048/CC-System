@@ -179,6 +179,7 @@ kantan_commander_clean:
       start: "Start Value"
       end: "End Value"
       step: "Step"
+      inclusive_end: "Include end value"
       unset: "Unset"
       world_variable: "World Variable"
       entity_state: "State"

@@ -179,6 +179,7 @@ kantan_commander_clean:
       start: "開始値"
       end: "終了値"
       step: "増分"
+      inclusive_end: "終了値を含む"
       unset: "未設定"
       world_variable: "ワールド内変数"
       entity_state: "状態"
