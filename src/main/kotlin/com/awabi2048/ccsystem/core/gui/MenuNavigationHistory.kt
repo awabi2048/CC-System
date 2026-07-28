@@ -11,15 +11,24 @@ class MenuNavigationHistory(private val maxSize: Int = DEFAULT_MAX_SIZE) {
         histories.remove(playerId)
     }
 
-    fun push(playerId: UUID, route: MenuRoute) {
+    fun push(playerId: UUID, route: MenuRoute): Boolean {
         val history = histories.computeIfAbsent(playerId) { ArrayDeque() }
-        if (history.lastOrNull()?.key() == route.key()) return
+        if (history.lastOrNull()?.key() == route.key()) return false
 
         // 画面そのものではなく再オープン可能な経路だけを積み、DialogなどGUI外の状態遷移にも同じ戻り先を使う。
         history.addLast(route)
         while (history.size > maxSize) {
             history.removeFirst()
         }
+        return true
+    }
+
+    fun restore(playerId: UUID, routes: List<MenuRoute>) {
+        if (routes.isEmpty()) {
+            histories.remove(playerId)
+            return
+        }
+        histories[playerId] = ArrayDeque(routes)
     }
 
     fun popPrevious(playerId: UUID, opener: (MenuRoute) -> Boolean): MenuRoute? {

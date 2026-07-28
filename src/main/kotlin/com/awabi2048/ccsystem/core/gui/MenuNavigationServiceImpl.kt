@@ -158,9 +158,11 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
     }
 
     override fun pushAndOpen(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean {
-        if (!open(player, targetRoute)) return false
-        push(player, currentRoute)
-        return true
+        val previousHistory = history.snapshot(player.uniqueId)
+        history.push(player.uniqueId, currentRoute)
+        if (open(player, targetRoute)) return true
+        history.restore(player.uniqueId, previousHistory)
+        return false
     }
 
     override fun openRoot(player: Player, route: MenuRoute): Boolean {
@@ -171,6 +173,9 @@ class MenuNavigationServiceImpl(dataFile: File? = null) : MenuNavigationService 
     override fun openPrevious(player: Player): Boolean {
         return history.popPrevious(player.uniqueId) { route -> open(player, route) } != null
     }
+
+    override fun canGoBack(player: Player): Boolean =
+        history.snapshot(player.uniqueId).isNotEmpty()
 
     override fun breadcrumbs(player: Player): List<MenuRoute> {
         return history.snapshot(player.uniqueId)

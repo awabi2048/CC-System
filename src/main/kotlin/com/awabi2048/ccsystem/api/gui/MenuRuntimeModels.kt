@@ -88,6 +88,7 @@ data class InventoryMenuView(
 data class MenuRenderContext(
     val player: Player,
     val route: MenuRoute,
+    val canGoBack: Boolean = false,
 )
 
 fun interface InventoryMenuRenderer {

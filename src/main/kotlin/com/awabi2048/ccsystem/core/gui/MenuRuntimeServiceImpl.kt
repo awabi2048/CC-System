@@ -49,6 +49,7 @@ internal class MenuRuntimeServiceImpl(
     private val closeReasons = MenuCloseReasonTracker<Inventory>()
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
+    private val preserveCloseInventories = ConcurrentHashMap.newKeySet<Inventory>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val presentedInventories = java.util.Collections.synchronizedMap(
@@ -95,6 +96,13 @@ internal class MenuRuntimeServiceImpl(
 
     override fun openEphemeral(player: Player, route: MenuRoute): Boolean =
         openDirect(player, route, playOpenSound = true, preserveHistory = true)
+
+    override fun preserveHistoryOnClose(player: Player) {
+        val inventory = player.openInventory.topInventory
+        if (inventory.holder is MenuRuntimeHolder) {
+            preserveCloseInventories += inventory
+        }
+    }
 
     override fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean {
         val transition = resolveTransition(player, request)
@@ -155,14 +163,18 @@ internal class MenuRuntimeServiceImpl(
         if (holder.route != session.route) return false
         val definition = definition(session.route.owner, session.route.id) ?: return false
         val view = runCatching {
-            definition.renderer.render(MenuRenderContext(player, session.route))
+            definition.renderer.render(
+                MenuRenderContext(player, session.route, navigation.canGoBack(player))
+            )
         }.onFailure { failure ->
             plugin.logger.log(
                 Level.SEVERE,
                 "メニュー再描画に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                 failure
             )
-        }.getOrNull() ?: return false
+        }.getOrNull()
+            ?.withHistoryNavigation(player)
+            ?: return false
         val policy = inventoryPolicy(view, definition)
         if (
             player.openInventory.topInventory.size != view.size ||
@@ -357,7 +369,8 @@ internal class MenuRuntimeServiceImpl(
                     session
                 }
             }
-            if (removed && MenuSessionClosePolicy.shouldClearNavigation(holder.preserveHistory)) {
+            val preserveHistory = holder.preserveHistory || preserveCloseInventories.remove(event.inventory)
+            if (removed && MenuSessionClosePolicy.shouldClearNavigation(preserveHistory)) {
                 navigation.clear(player)
             }
         })
@@ -370,11 +383,15 @@ internal class MenuRuntimeServiceImpl(
         preserveHistory: Boolean = false,
     ): Boolean {
         val definition = definition(route.owner, route.id) ?: return false
-        val view = runCatching { definition.renderer.render(MenuRenderContext(player, route)) }
+        val view = runCatching {
+            definition.renderer.render(MenuRenderContext(player, route, navigation.canGoBack(player)))
+        }
             .onFailure { failure ->
                 plugin.logger.log(Level.SEVERE, "メニュー描画に失敗しました: route=${definition.routeId}", failure)
             }
-            .getOrNull() ?: return false
+            .getOrNull()
+            ?.withHistoryNavigation(player)
+            ?: return false
         val policy = inventoryPolicy(view, definition)
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy, preserveHistory)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
@@ -407,6 +424,17 @@ internal class MenuRuntimeServiceImpl(
         if (view.standardFrame) layouts.applyStandardFrame(inventory)
         view.inputItems.forEach { (slot, item) -> inventory.setItem(slot, item.clone()) }
         view.elements.forEach { element -> inventory.setItem(element.slot, element.item.clone()) }
+    }
+
+    /**
+     * 戻る要素の表示可否は画面実装へ委ねず、実際の履歴だけから決定する。
+     * これにより、古い表示フラグやダイアログ復帰後の再描画が誤っていても、
+     * 戻り先のないボタンや、戻り先があるのに消えるボタンをRuntime境界で防ぐ。
+     */
+    private fun InventoryMenuView.withHistoryNavigation(player: Player): InventoryMenuView {
+        if (navigation.canGoBack(player)) return this
+        val visibleElements = elements.filterNot { it.role == GuiElementRole.BACK }
+        return if (visibleElements.size == elements.size) this else copy(elements = visibleElements)
     }
 
     private fun inventoryPolicy(

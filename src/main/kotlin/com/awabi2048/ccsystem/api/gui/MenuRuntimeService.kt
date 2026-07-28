@@ -25,6 +25,12 @@ interface MenuRuntimeService {
      */
     fun openEphemeral(player: Player, route: MenuRoute): Boolean
 
+    /**
+     * ワープや外部画面への移行で現在Inventoryが閉じても、現在Routeとパンくずを保持する。
+     * 次に開く画面はreplaceまたはbackで現在Routeを再利用する。
+     */
+    fun preserveHistoryOnClose(player: Player)
+
     fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean
 
     fun feedback(player: Player, interaction: ManagedMenuInteraction)
