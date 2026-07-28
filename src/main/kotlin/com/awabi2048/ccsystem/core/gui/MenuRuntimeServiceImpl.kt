@@ -666,6 +666,7 @@ internal object MenuClickAcceptance {
         org.bukkit.event.inventory.ClickType.RIGHT,
         org.bukkit.event.inventory.ClickType.SHIFT_LEFT,
         org.bukkit.event.inventory.ClickType.SHIFT_RIGHT,
+        org.bukkit.event.inventory.ClickType.MIDDLE,
     )
 }
 

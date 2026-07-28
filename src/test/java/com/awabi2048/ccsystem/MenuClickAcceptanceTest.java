@@ -14,6 +14,7 @@ class MenuClickAcceptanceTest {
         assertTrue(MenuClickAcceptance.INSTANCE.accepts(ClickType.RIGHT));
         assertTrue(MenuClickAcceptance.INSTANCE.accepts(ClickType.SHIFT_LEFT));
         assertTrue(MenuClickAcceptance.INSTANCE.accepts(ClickType.SHIFT_RIGHT));
+        assertTrue(MenuClickAcceptance.INSTANCE.accepts(ClickType.MIDDLE));
     }
 
     @Test
@@ -24,6 +25,5 @@ class MenuClickAcceptanceTest {
         assertFalse(MenuClickAcceptance.INSTANCE.accepts(ClickType.DROP));
         assertFalse(MenuClickAcceptance.INSTANCE.accepts(ClickType.CONTROL_DROP));
         assertFalse(MenuClickAcceptance.INSTANCE.accepts(ClickType.CREATIVE));
-        assertFalse(MenuClickAcceptance.INSTANCE.accepts(ClickType.MIDDLE));
     }
 }
