@@ -135,7 +135,7 @@ chanpon:
         completed_label: "Completion"
         action_warp: "Warp"
         action_complete: "Toggle completion"
-        action_toggle_production: "Remove production flag"
+        action_remove_production: "Remove production flag"
     admin_list:
       title: "§0World List Management"
       unknown: "Unknown"

@@ -135,7 +135,7 @@ chanpon:
         completed_label: "完成状態"
         action_warp: "ワープ"
         action_complete: "完成状態を切り替え"
-        action_toggle_production: "本番用フラグを削除"
+        action_remove_production: "本番用フラグを削除"
     admin_list:
       title: "§0ワールド一覧管理"
       unknown: "不明"

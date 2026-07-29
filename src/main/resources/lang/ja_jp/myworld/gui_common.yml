@@ -206,6 +206,9 @@ gui:
         open: ツアー管理を開く
     menu:
       visitor_title: ツアー一覧
+      stop:
+        display: §c現在のツアーを中断
+        action: ツアーを中断する
       start_selection_title: 起点ツアー選択
       edit_title: ツアー編集
       single_edit_title: 'ツアー編集: {tour}'

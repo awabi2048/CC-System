@@ -30,6 +30,9 @@ gui:
         set_guest: ゲスト用スポーン地点を設定
         set_member: メンバー用スポーン地点を設定
         set_both: ゲスト/メンバー共通スポーン地点を設定
+        select_type: 設定するスポーン地点の種類を選択
+      form:
+        content: 設定するスポーン地点の種類を選択してください。
     error:
       must_be_in_world_lore: §c※この設定を変更するにはワールド内にいる必要があります
     icon:

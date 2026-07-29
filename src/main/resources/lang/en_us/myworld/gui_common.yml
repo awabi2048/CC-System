@@ -207,6 +207,9 @@ gui:
         open: Open tour management
     menu:
       visitor_title: Tour List
+      stop:
+        display: §cStop Current Tour
+        action: Stop the tour
       start_selection_title: Select Start Tour
       edit_title: Edit Tours
       single_edit_title: 'Edit Tour: {tour}'

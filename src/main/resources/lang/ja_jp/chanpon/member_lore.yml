@@ -5,12 +5,21 @@ chanpon:
     tool_permission_title: "ツールの使用権限"
     none: "なし"
     permission_menu:
+      title: "メンバーの権限設定"
       state_label: 状態
       enabled: オン
       disabled: オフ
       toggle_operation: クリック
       toggle_action: 切り替え
       toggle_resolved: クリックで切り替え
+      role:
+        display: "メンバー・モデレーター"
+        state_label: "現在の権限"
+        member: "メンバー"
+        moderator: "モデレーター"
+        operation: "クリック"
+        action: "権限を切り替える"
+        resolved: "クリックでメンバー・モデレーターを切り替え"
     click_edit_operation: "左クリック"
     click_edit_action: "ツールの使用権限を変更する"
     transfer_owner_operation: "Shift+左クリック"
