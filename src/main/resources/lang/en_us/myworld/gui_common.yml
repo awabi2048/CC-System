@@ -127,6 +127,10 @@ gui:
     cancel_desc: §7Back to selection
   pending_list:
     title: Pending Invites & Requests
+    info:
+      name: §ePending Invites & Requests
+      count_label: Pending
+      page_label: Page
     type:
       world_invite: World Invite
       member_invite: Member Invite
@@ -210,6 +214,12 @@ gui:
       stop:
         display: §cStop Current Tour
         action: Stop the tour
+      start_confirm:
+        replace_active: A tour is already in progress. Stop it and start this tour instead?
+      stop_confirm:
+        title: Confirm Tour Stop
+        question: Stop the tour currently in progress?
+        confirm: Stop the tour
       start_selection_title: Select Start Tour
       edit_title: Edit Tours
       single_edit_title: 'Edit Tour: {tour}'
