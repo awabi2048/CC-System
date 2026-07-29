@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.block.BlockState
@@ -36,7 +37,7 @@ object RemainedItemManager {
                         standardFrame = false,
                         inputSlots = (0 until 54).toSet(),
                         inputItems = items.mapIndexed { index, item -> index to item }.toMap(),
-                        allowPlayerInventoryInteraction = true,
+                        playerInventoryInteraction = PlayerInventoryInteraction.INTERACTIVE,
                     )
                 },
                 actions = emptyMap(),

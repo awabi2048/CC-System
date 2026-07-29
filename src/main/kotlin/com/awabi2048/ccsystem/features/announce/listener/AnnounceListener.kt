@@ -23,6 +23,7 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
 import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
@@ -127,7 +128,7 @@ class AnnounceListener {
                 title = LEGACY.deserialize(LanguageManager.getRawString(player, "announce.menu_title")),
                 elements = elements,
                 standardFrame = false,
-                allowPlayerInventoryInteraction = true
+                playerInventoryInteraction = PlayerInventoryInteraction.SELECTION
             )
         }
 

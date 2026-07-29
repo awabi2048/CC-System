@@ -52,8 +52,38 @@ data class InventoryMenuView(
     val standardFrame: Boolean = true,
     val inputSlots: Set<Int> = emptySet(),
     val inputItems: Map<Int, ItemStack> = emptyMap(),
-    val allowPlayerInventoryInteraction: Boolean = true,
+    val playerInventoryInteraction: PlayerInventoryInteraction = PlayerInventoryInteraction.INTERACTIVE,
 ) {
+    @Deprecated(
+        message = "playerInventoryInteractionで画面の入力モードを明示してください",
+        replaceWith = ReplaceWith("playerInventoryInteraction != PlayerInventoryInteraction.BLOCKED"),
+    )
+    val allowPlayerInventoryInteraction: Boolean
+        get() = playerInventoryInteraction != PlayerInventoryInteraction.BLOCKED
+
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>,
+        inputItems: Map<Int, ItemStack>,
+        allowPlayerInventoryInteraction: Boolean,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = standardFrame,
+        inputSlots = inputSlots,
+        inputItems = inputItems,
+        playerInventoryInteraction =
+            if (allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
+    )
+
     @Suppress("UNUSED_PARAMETER")
     constructor(
         size: Int,
@@ -71,8 +101,38 @@ data class InventoryMenuView(
         standardFrame = if (mask and 0x08 != 0) true else standardFrame,
         inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
         inputItems = emptyMap(),
-        allowPlayerInventoryInteraction =
-            if (mask and 0x20 != 0) true else allowPlayerInventoryInteraction,
+        playerInventoryInteraction =
+            if (mask and 0x20 != 0 || allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
+    )
+
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>?,
+        inputItems: Map<Int, ItemStack>?,
+        allowPlayerInventoryInteraction: Boolean,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = if (mask and 0x08 != 0) true else standardFrame,
+        inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
+        inputItems = if (mask and 0x20 != 0) emptyMap() else requireNotNull(inputItems),
+        playerInventoryInteraction =
+            if (mask and 0x40 != 0 || allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
     )
 
     init {

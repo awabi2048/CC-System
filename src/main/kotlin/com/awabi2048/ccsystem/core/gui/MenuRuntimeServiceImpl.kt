@@ -205,7 +205,7 @@ internal class MenuRuntimeServiceImpl(
         }.getOrNull()
             ?.withHistoryNavigation(player)
             ?: return false
-        val policy = inventoryPolicy(view, definition)
+        val policy = inventoryPolicy(view)
         if (
             player.openInventory.topInventory.size != view.size ||
             player.openInventory.title() != view.title ||
@@ -442,7 +442,7 @@ internal class MenuRuntimeServiceImpl(
             .getOrNull()
             ?.withHistoryNavigation(player)
             ?: return false
-        val policy = inventoryPolicy(view, definition)
+        val policy = inventoryPolicy(view)
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy, preserveHistory)
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
@@ -488,18 +488,8 @@ internal class MenuRuntimeServiceImpl(
         return if (visibleElements.size == elements.size) this else copy(elements = visibleElements)
     }
 
-    private fun inventoryPolicy(
-        view: InventoryMenuView,
-        definition: InventoryMenuDefinition,
-    ): GuiInventoryPolicy {
-        val interaction = when {
-            !view.allowPlayerInventoryInteraction -> PlayerInventoryInteraction.BLOCKED
-            definition.actions.containsKey(MenuRuntimeActions.PLAYER_INVENTORY_CLICK) ->
-                PlayerInventoryInteraction.SELECTION
-            else -> PlayerInventoryInteraction.INTERACTIVE
-        }
-        return GuiInventoryPolicy(view.inputSlots, interaction)
-    }
+    private fun inventoryPolicy(view: InventoryMenuView): GuiInventoryPolicy =
+        GuiInventoryPolicy(view.inputSlots, view.playerInventoryInteraction)
 
     private fun applyResult(
         player: Player,
