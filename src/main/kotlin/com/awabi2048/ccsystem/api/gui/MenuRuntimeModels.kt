@@ -26,6 +26,54 @@ data class MenuActionSoundPolicy(
 )
 
 /** Inventory上の1要素。actionIdがない要素は表示専用として扱う。 */
+sealed interface MenuInteraction {
+    data object DisplayOnly : MenuInteraction
+
+    data class Action(
+        val actionId: String,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val payload: Map<String, String> = emptyMap(),
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(actionId.isNotBlank()) { "actionId must not be blank" }
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
+    data class Unavailable(
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val message: Component? = null,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
+    data class Back(
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+}
+
+object MenuAcceptedClicks {
+    val STANDARD: Set<ClickType> = setOf(
+        ClickType.LEFT,
+        ClickType.RIGHT,
+        ClickType.SHIFT_LEFT,
+        ClickType.SHIFT_RIGHT,
+        ClickType.MIDDLE,
+    )
+    val LEFT: Set<ClickType> = setOf(ClickType.LEFT, ClickType.SHIFT_LEFT)
+    val RIGHT: Set<ClickType> = setOf(ClickType.RIGHT, ClickType.SHIFT_RIGHT)
+    val LEFT_RIGHT: Set<ClickType> = LEFT + RIGHT
+}
+
 data class MenuElement(
     val slot: Int,
     val item: ItemStack,
@@ -34,6 +82,7 @@ data class MenuElement(
     val actionPayload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
     val sounds: MenuActionSoundPolicy? = null,
+    val interaction: MenuInteraction? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -42,6 +91,19 @@ data class MenuElement(
         require(role != GuiElementRole.DECORATION || actionId == null) {
             "decoration elements cannot have an action"
         }
+        require(interaction !is MenuInteraction.Action || role != GuiElementRole.DECORATION) {
+            "decoration elements cannot have an interaction action"
+        }
+        require(interaction !is MenuInteraction.Back || role == GuiElementRole.BACK) {
+            "back interaction requires BACK role"
+        }
+    }
+
+    fun resolvedInteraction(): MenuInteraction = interaction ?: when {
+        role == GuiElementRole.BACK -> MenuInteraction.Back(sounds = sounds)
+        !enabled -> MenuInteraction.Unavailable(sounds = sounds)
+        actionId != null -> MenuInteraction.Action(actionId, payload = actionPayload, sounds = sounds)
+        else -> MenuInteraction.DisplayOnly
     }
 }
 

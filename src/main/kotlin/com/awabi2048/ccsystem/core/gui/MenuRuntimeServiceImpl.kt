@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
+import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseReason
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
@@ -315,26 +316,35 @@ internal class MenuRuntimeServiceImpl(
         if (!MenuClickAcceptance.accepts(event.click)) return
         val definition = definition(holder.route.owner, holder.route.id) ?: return
         val clickType = clickType(element.role)
-        if (!element.enabled) {
-            playResolved(
-                player,
-                MenuSoundPolicy.Default,
-                MenuSoundPolicyResolver.rejectedPolicy(element.sounds, definition.sounds),
-                clickType,
-            )
-            return
+        val interaction = element.resolvedInteraction()
+        when (interaction) {
+            MenuInteraction.DisplayOnly -> return
+            is MenuInteraction.Unavailable -> {
+                if (event.click !in interaction.acceptedClicks) return
+                playResolved(
+                    player,
+                    MenuSoundPolicy.Default,
+                    MenuSoundPolicyResolver.rejectedPolicy(interaction.sounds, definition.sounds),
+                    clickType,
+                )
+                interaction.message?.let(player::sendMessage)
+                return
+            }
+            is MenuInteraction.Back -> {
+                if (event.click !in interaction.acceptedClicks) return
+                playResolved(
+                    player,
+                    MenuSoundPolicy.Default,
+                    MenuSoundPolicyResolver.successPolicy(interaction.sounds, definition.sounds),
+                    clickType,
+                )
+                if (!back(player)) close(player)
+                return
+            }
+            is MenuInteraction.Action -> if (event.click !in interaction.acceptedClicks) return
         }
-        if (element.role == GuiElementRole.BACK) {
-            playResolved(
-                player,
-                MenuSoundPolicy.Default,
-                MenuSoundPolicyResolver.successPolicy(element.sounds, definition.sounds),
-                clickType,
-            )
-            if (!back(player)) close(player)
-            return
-        }
-        val actionId = element.actionId ?: return
+        val action = interaction
+        val actionId = action.actionId
         val handler = definition.actions[actionId] ?: return
         if (!executing.add(player.uniqueId)) return
         val originRevision = presentations.current(player)?.revision
@@ -345,7 +355,7 @@ internal class MenuRuntimeServiceImpl(
                     player,
                     holder.route,
                     actionId,
-                    element.actionPayload,
+                    action.payload,
                     event.click,
                     (event.currentItem ?: element.item).clone(),
                     event.cursor.clone(),
@@ -361,7 +371,7 @@ internal class MenuRuntimeServiceImpl(
         } finally {
             executing.remove(player.uniqueId)
         }
-        applyResult(player, session, element.sounds, definition, clickType, result, originRevision)
+        applyResult(player, session, action.sounds, definition, clickType, result, originRevision)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
