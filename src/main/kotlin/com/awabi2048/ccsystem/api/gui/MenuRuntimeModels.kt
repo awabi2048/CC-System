@@ -31,7 +31,7 @@ sealed interface MenuInteraction {
 
     data class Action(
         val actionId: String,
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
         val payload: Map<String, String> = emptyMap(),
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
@@ -42,7 +42,7 @@ sealed interface MenuInteraction {
     }
 
     data class Unavailable(
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
         val message: Component? = null,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
@@ -52,7 +52,7 @@ sealed interface MenuInteraction {
     }
 
     data class Back(
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
         init {
