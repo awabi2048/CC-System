@@ -2,11 +2,9 @@ package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
-import com.awabi2048.ccsystem.api.gui.MenuResumeResult
 import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
 import com.awabi2048.ccsystem.core.gui.PlayerInventoryTransferGuard
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -20,7 +18,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.Inventory
 
@@ -152,30 +149,6 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         removeLeakedPlayerItems(event.player, "ログイン時")
-        Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
-            when (navigation.resume(event.player)) {
-                MenuResumeResult.UNAVAILABLE -> retryResume(event.player, 3)
-                else -> Unit
-            }
-        })
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onPlayerQuit(event: PlayerQuitEvent) {
-        navigation.persistCurrentRoute(event.player)
-    }
-
-    private fun retryResume(player: Player, remaining: Int) {
-        Bukkit.getScheduler().runTaskLater(CCSystem.instance, Runnable {
-            if (!player.isOnline) return@Runnable
-            when (navigation.resume(player)) {
-                MenuResumeResult.UNAVAILABLE -> {
-                    if (remaining > 1) retryResume(player, remaining - 1)
-                    else player.sendMessage(CCSystem.getAPI().getI18nComponent(player, "gui.resume.unavailable"))
-                }
-                else -> Unit
-            }
-        }, 20L)
     }
 
     private fun removeLeakedPlayerItems(player: Player, context: String): Int {

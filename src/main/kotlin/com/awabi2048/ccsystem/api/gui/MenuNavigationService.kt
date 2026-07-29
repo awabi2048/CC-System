@@ -36,12 +36,6 @@ interface MenuNavigationService {
 
     fun recordCurrentRoute(player: Player, route: MenuRoute)
 
-    fun persistCurrentRoute(player: Player)
-
-    fun persistCurrentRoutes(players: Collection<Player>)
-
-    fun resume(player: Player): MenuResumeResult
-
     fun push(player: Player, route: MenuRoute)
 
     fun open(player: Player, route: MenuRoute): Boolean
@@ -60,10 +54,4 @@ interface MenuNavigationService {
      * 戻り処理では末尾から開き直すため、呼び出し側はInventory実体ではなく再生成可能なMenuRouteだけを積む。
      */
     fun breadcrumbs(player: Player): List<MenuRoute>
-}
-
-enum class MenuResumeResult {
-    NONE,
-    OPENED,
-    UNAVAILABLE
 }

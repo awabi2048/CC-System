@@ -446,7 +446,6 @@ class CCSystem : JavaPlugin() {
 
     override fun onDisable() {
         // 再起動前に現在画面をUUID単位で保存し、次回ログインの一回だけ復元できる状態にする。
-        _api.getMenuNavigationService().persistCurrentRoutes(server.onlinePlayers)
         _api.getMenuNavigationService().closeAllMenus(server.onlinePlayers)
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()

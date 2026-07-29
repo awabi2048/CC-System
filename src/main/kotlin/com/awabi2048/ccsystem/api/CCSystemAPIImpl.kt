@@ -65,9 +65,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         }
         NaturalOriginRuntime.initialize(dataFolder)
     }
-    private val menuNavigationService = MenuNavigationServiceImpl(
-        File(dataFolder, "data/gui/menu_routes.yml")
-    )
+    private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
     private val guiElementService = GuiElementServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
