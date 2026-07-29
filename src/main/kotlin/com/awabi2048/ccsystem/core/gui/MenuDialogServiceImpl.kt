@@ -28,6 +28,19 @@ internal class MenuDialogServiceImpl(
 ) : MenuDialogService {
     override fun show(player: Player, request: MenuDialogRequest) {
         runtime.suspendForExternal(player)
+        plugin.server.scheduler.runTask(
+            plugin,
+            Runnable {
+                if (player.isOnline) {
+                    showAfterInventoryClose(player, request)
+                } else {
+                    runtime.completeExternal(player)
+                }
+            },
+        )
+    }
+
+    private fun showAfterInventoryClose(player: Player, request: MenuDialogRequest) {
         val inputs = request.inputs.map { input ->
             when (input) {
                 is MenuDialogInput.Text -> DialogInput.text(input.id, input.label)
