@@ -35,25 +35,7 @@ internal class MenuDialogServiceImpl(
                 "owner=${request.owner} id=${request.id} suspended=$suspended " +
                 "openHolder=${player.openInventory.topInventory.holder?.javaClass?.name ?: "none"}",
         )
-        plugin.server.scheduler.runTask(
-            plugin,
-            Runnable {
-                if (player.isOnline) {
-                    plugin.logger.info(
-                        "[MenuDialogDebug] flow=$flowId stage=scheduled player=${player.name}/${player.uniqueId} " +
-                            "owner=${request.owner} id=${request.id} " +
-                            "openHolder=${player.openInventory.topInventory.holder?.javaClass?.name ?: "none"}",
-                    )
-                    showAfterInventoryClose(player, request, flowId)
-                } else {
-                    plugin.logger.info(
-                        "[MenuDialogDebug] flow=$flowId stage=offline_before_show player=${player.name}/${player.uniqueId} " +
-                            "owner=${request.owner} id=${request.id}",
-                    )
-                    runtime.completeExternal(player)
-                }
-            },
-        )
+        showAfterInventoryClose(player, request, flowId)
     }
 
     private fun showAfterInventoryClose(player: Player, request: MenuDialogRequest, flowId: Long) {
