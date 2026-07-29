@@ -2,6 +2,7 @@ chanpon:
   member_lore:
     last_online_label: "Last Online"
     online: "Online"
+    unknown: "Unknown"
     tool_permission_title: "Tool Permissions"
     none: "None"
     permission_menu:
@@ -21,7 +22,7 @@ chanpon:
         action: "Change role"
         resolved: "Click to switch between member and moderator"
     click_edit_operation: "Left Click"
-    click_edit_action: "Edit tool permissions"
+    click_edit_action: "Edit this member's permissions"
     transfer_owner_operation: "Shift+Left Click"
     transfer_owner_action: "Transfer ownership"
     remove_member_operation: "Shift+Right Click"

@@ -2,6 +2,7 @@ chanpon:
   member_lore:
     last_online_label: "最終オンライン"
     online: "オンライン"
+    unknown: "不明"
     tool_permission_title: "ツールの使用権限"
     none: "なし"
     permission_menu:
@@ -21,7 +22,7 @@ chanpon:
         action: "権限を切り替える"
         resolved: "クリックでメンバー・モデレーターを切り替え"
     click_edit_operation: "左クリック"
-    click_edit_action: "ツールの使用権限を変更する"
+    click_edit_action: "このメンバーの権限を編集する"
     transfer_owner_operation: "Shift+左クリック"
     transfer_owner_action: "オーナー権限を移譲"
     remove_member_operation: "Shift+右クリック"
