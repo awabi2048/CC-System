@@ -158,10 +158,11 @@ internal class MenuDialogServiceImpl(
             }
             is MenuActionResult.Success -> {
                 val update = result.update
-                if (
-                    update != MenuUpdate.None &&
-                    update != MenuUpdate.Close &&
-                    presentations.current(player)?.revision != originRevision
+                if (!MenuStaleUpdatePolicy.shouldApply(
+                        update,
+                        originRevision,
+                        presentations.current(player)?.revision,
+                    )
                 ) {
                     plugin.logger.warning(
                         "Dialog変更後の古いMenuUpdateを無視しました: " +
