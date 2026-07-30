@@ -355,6 +355,8 @@ internal class MenuRuntimeServiceImpl(
                 return
             }
             is MenuInteraction.Action -> if (event.click !in interaction.acceptedClicks) return
+            is MenuInteraction.Branches ->
+                if (interaction.branches.none { event.click in it.acceptedClicks }) return
             is MenuInteraction.Capability ->
                 if (event.click !in interaction.acceptedClicks) return
         }
@@ -371,6 +373,21 @@ internal class MenuRuntimeServiceImpl(
                             holder.route,
                             interaction.actionId,
                             interaction.payload,
+                            event.click,
+                            (event.currentItem ?: element.item).clone(),
+                            event.cursor.clone(),
+                        ),
+                    )
+                }
+                is MenuInteraction.Branches -> {
+                    val branch = interaction.branches.single { event.click in it.acceptedClicks }
+                    val handler = definition.actions[branch.actionId] ?: return
+                    handler.handle(
+                        MenuActionContext(
+                            player,
+                            holder.route,
+                            branch.actionId,
+                            branch.payload,
                             event.click,
                             (event.currentItem ?: element.item).clone(),
                             event.cursor.clone(),
@@ -398,6 +415,7 @@ internal class MenuRuntimeServiceImpl(
         }
         val interactionSounds = when (interaction) {
             is MenuInteraction.Action -> interaction.sounds
+            is MenuInteraction.Branches -> interaction.sounds
             is MenuInteraction.Capability -> interaction.sounds
         }
         applyResult(

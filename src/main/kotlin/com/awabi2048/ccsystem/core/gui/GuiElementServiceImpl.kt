@@ -7,6 +7,12 @@ import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuIconAction
+import com.awabi2048.ccsystem.api.gui.MenuActionBranch
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
+import com.awabi2048.ccsystem.api.gui.MenuElement
+import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
@@ -20,8 +26,12 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
 import org.bukkit.Bukkit
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 
-class GuiElementServiceImpl : GuiElementService {
+class GuiElementServiceImpl(
+    private val i18n: ((Player?, String, Map<String, Any>) -> String)? = null,
+) : GuiElementService {
     private val loreService = LoreServiceImpl()
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
@@ -85,6 +95,59 @@ class GuiElementServiceImpl : GuiElementService {
             item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
         }
         return item
+    }
+
+    override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
+        val enabledActions = spec.actions.filter { it.enabled }
+        val icon = menuIcon(
+            GuiMenuIconSpec(
+                material = spec.material,
+                name = spec.name,
+                role = spec.role,
+                amount = spec.amount,
+                description = spec.description,
+                data = spec.data,
+                options = spec.options,
+                warnings = spec.warnings,
+                dangers = spec.dangers,
+                actions = enabledActions.map { action ->
+                    val operation = clickLabel(player, action.acceptedClicks)
+                    GuiMenuIconAction(
+                        operation = operation,
+                        action = action.label,
+                        resolvedText = if (enabledActions.size == 1) {
+                            requireI18n(
+                                player,
+                                "lore.action_single_with_operation",
+                                mapOf("operation" to operation, "action" to action.label),
+                            )
+                        } else {
+                            null
+                        },
+                        enabled = true,
+                    )
+                },
+                glint = spec.glint,
+            ),
+        )
+        val interaction = when {
+            enabledActions.isEmpty() -> MenuInteraction.DisplayOnly
+            enabledActions.size == 1 -> enabledActions.single().let { action ->
+                MenuInteraction.Action(
+                    actionId = action.actionId,
+                    acceptedClicks = action.acceptedClicks,
+                    payload = action.payload,
+                    sounds = spec.sounds,
+                )
+            }
+            else -> MenuInteraction.Branches(
+                branches = enabledActions.map { action ->
+                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload)
+                },
+                sounds = spec.sounds,
+            )
+        }
+        return MenuElement(spec.slot, icon, spec.role, interaction = interaction)
     }
 
     override fun menuCapability(presentation: MenuCapabilityPresentation): ItemStack {
@@ -180,4 +243,25 @@ class GuiElementServiceImpl : GuiElementService {
         is GuiNameSpec.Text -> this.name(name.text, name.style)
         is GuiNameSpec.Component -> normalizeComponent(name.value)
     }
+
+    private fun clickLabel(player: Player?, clicks: Set<ClickType>): String {
+        val key = when (clicks) {
+            MenuAcceptedClicks.LEFT -> "lore.click.left"
+            MenuAcceptedClicks.RIGHT -> "lore.click.right"
+            MenuAcceptedClicks.LEFT_RIGHT -> "lore.click.left_right"
+            setOf(ClickType.SHIFT_LEFT) -> "lore.click.shift_left"
+            setOf(ClickType.SHIFT_RIGHT) -> "lore.click.shift_right"
+            setOf(ClickType.MIDDLE) -> "lore.click.middle"
+            else -> error("Unsupported menu action click set: $clicks")
+        }
+        return requireI18n(player, key, emptyMap())
+    }
+
+    private fun requireI18n(
+        player: Player?,
+        key: String,
+        arguments: Map<String, Any>,
+    ): String = requireNotNull(i18n) {
+        "GuiElementService instance does not support translated menu entries"
+    }(player, key, arguments)
 }

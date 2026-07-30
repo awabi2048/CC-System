@@ -41,6 +41,23 @@ sealed interface MenuInteraction {
         }
     }
 
+    /**
+     * クリック種別ごとに異なるActionへ分岐する宣言。
+     * 表示案内とクリック受付を同じBranch群から生成するために使用する。
+     */
+    data class Branches(
+        val branches: List<MenuActionBranch>,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(branches.isNotEmpty()) { "branches must not be empty" }
+            val accepted = branches.flatMap(MenuActionBranch::acceptedClicks)
+            require(accepted.size == accepted.distinct().size) {
+                "a click type cannot be assigned to multiple action branches"
+            }
+        }
+    }
+
     data class Capability(
         val capabilityId: String,
         val arguments: Map<String, String> = emptyMap(),
@@ -71,6 +88,17 @@ sealed interface MenuInteraction {
         init {
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
         }
+    }
+}
+
+data class MenuActionBranch(
+    val actionId: String,
+    val acceptedClicks: Set<ClickType>,
+    val payload: Map<String, String> = emptyMap(),
+) {
+    init {
+        require(actionId.isNotBlank()) { "actionId must not be blank" }
+        require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
     }
 }
 

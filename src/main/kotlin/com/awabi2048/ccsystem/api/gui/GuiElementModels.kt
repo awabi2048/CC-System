@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api.gui
 
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.event.inventory.ClickType
 
 enum class GuiNameStyle(val colorCode: String) {
     DEFAULT("\u00A7f"),
@@ -169,6 +170,55 @@ data class GuiMenuIconSpec(
     val actions: List<GuiMenuIconAction>,
     val glint: Boolean?
 )
+
+/**
+ * 外部システムが宣言できる操作の意味情報。
+ * 操作案内、クリック受付、Runtime分岐はCC-Systemがこの宣言から同時生成する。
+ */
+data class GuiMenuEntryAction(
+    val actionId: String,
+    val acceptedClicks: Set<ClickType>,
+    val label: String,
+    val payload: Map<String, String> = emptyMap(),
+    val enabled: Boolean = true,
+) {
+    init {
+        require(actionId.isNotBlank()) { "actionId must not be blank" }
+        require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        require(label.isNotBlank()) { "action label must not be blank" }
+    }
+}
+
+/**
+ * 表示と操作を一体で宣言するメニュー要素。
+ * 外部システムはItemStack、Lore、クリック案内を生成しない。
+ */
+data class GuiMenuEntrySpec(
+    val slot: Int,
+    val material: Material,
+    val name: GuiNameSpec,
+    val role: GuiElementRole,
+    val amount: Int = 1,
+    val description: List<String> = emptyList(),
+    val data: List<GuiMenuIconData> = emptyList(),
+    val options: List<GuiMenuIconOption> = emptyList(),
+    val warnings: List<String> = emptyList(),
+    val dangers: List<String> = emptyList(),
+    val actions: List<GuiMenuEntryAction> = emptyList(),
+    val glint: Boolean? = null,
+    val sounds: MenuActionSoundPolicy? = null,
+) {
+    init {
+        require(slot >= 0) { "slot must not be negative" }
+        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        require(accepted.size == accepted.distinct().size) {
+            "a click type cannot be assigned to multiple menu actions"
+        }
+        require(role != GuiElementRole.DECORATION || actions.isEmpty()) {
+            "decoration entries cannot have actions"
+        }
+    }
+}
 
 sealed interface GuiFrameSection {
     data object None : GuiFrameSection

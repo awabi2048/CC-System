@@ -73,7 +73,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
-    private val guiElementService = GuiElementServiceImpl()
+    private val guiElementService = GuiElementServiceImpl(::getI18nString)
     private val guiActionService = GuiActionServiceImpl(::getI18nString)
     private val menuCapabilityService = MenuCapabilityServiceImpl(guiActionService)
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
