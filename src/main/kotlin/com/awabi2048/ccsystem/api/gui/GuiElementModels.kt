@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.api.gui
 
+import java.util.UUID
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
@@ -228,6 +229,7 @@ data class GuiMenuEntrySpec(
     val actions: List<GuiMenuEntryAction> = emptyList(),
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
+    val playerHeadOwner: UUID? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }

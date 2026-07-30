@@ -142,7 +142,14 @@ class GuiElementServiceImpl(
                 },
                 glint = spec.glint,
             ),
-        )
+        ).also { item ->
+            spec.playerHeadOwner?.let { owner ->
+                val meta = item.itemMeta as? SkullMeta
+                    ?: error("playerHeadOwner requires a player head material")
+                meta.owningPlayer = Bukkit.getOfflinePlayer(owner)
+                item.itemMeta = meta
+            }
+        }
         val interaction = when {
             enabledActions.isEmpty() -> MenuInteraction.DisplayOnly
             enabledActions.size == 1 -> enabledActions.single().let { action ->
