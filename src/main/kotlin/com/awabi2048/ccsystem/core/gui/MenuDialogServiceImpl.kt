@@ -19,7 +19,6 @@ import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.concurrent.atomic.AtomicLong
 import java.util.logging.Level
 
 internal class MenuDialogServiceImpl(
@@ -28,17 +27,11 @@ internal class MenuDialogServiceImpl(
     private val presentations: MenuPresentationTracker,
 ) : MenuDialogService {
     override fun show(player: Player, request: MenuDialogRequest) {
-        val flowId = dialogFlowSequence.incrementAndGet()
-        val suspended = runtime.suspendForExternal(player)
-        plugin.logger.info(
-            "[MenuDialogDebug] flow=$flowId stage=requested player=${player.name}/${player.uniqueId} " +
-                "owner=${request.owner} id=${request.id} suspended=$suspended " +
-                "openHolder=${player.openInventory.topInventory.holder?.javaClass?.name ?: "none"}",
-        )
-        showAfterInventoryClose(player, request, flowId)
+        runtime.suspendForExternal(player)
+        showAfterInventoryClose(player, request)
     }
 
-    private fun showAfterInventoryClose(player: Player, request: MenuDialogRequest, flowId: Long) {
+    private fun showAfterInventoryClose(player: Player, request: MenuDialogRequest) {
         val inputs = request.inputs.map { input ->
             when (input) {
                 is MenuDialogInput.Text -> DialogInput.text(input.id, input.label)
@@ -64,10 +57,10 @@ internal class MenuDialogServiceImpl(
                     .build()
             }
         }
-        val confirm = button(request, request.confirm, flowId, "confirm")
-        val cancel = button(request, request.cancel, flowId, "cancel")
+        val confirm = button(request, request.confirm)
+        val cancel = button(request, request.cancel)
         val additionalActions = request.additionalActions.map {
-            button(request, it, flowId, "additional")
+            button(request, it)
         }
         val dialog = Dialog.create { factory ->
             factory.empty()
@@ -91,10 +84,6 @@ internal class MenuDialogServiceImpl(
                 )
         }
         player.showDialog(dialog)
-        plugin.logger.info(
-            "[MenuDialogDebug] flow=$flowId stage=shown player=${player.name}/${player.uniqueId} " +
-                "owner=${request.owner} id=${request.id}",
-        )
         presentations.markOpened(
             player,
             com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG,
@@ -106,16 +95,10 @@ internal class MenuDialogServiceImpl(
     private fun button(
         request: MenuDialogRequest,
         button: MenuDialogButton,
-        flowId: Long,
-        actionName: String,
     ): ActionButton {
         val action = DialogAction.customClick(
             { response, audience ->
                 val target = audience as? Player ?: return@customClick
-                plugin.logger.info(
-                    "[MenuDialogDebug] flow=$flowId stage=response player=${target.name}/${target.uniqueId} " +
-                        "owner=${request.owner} id=${request.id} action=$actionName",
-                )
                 val values = MenuDialogResponse(
                     text = request.inputs.filterIsInstance<MenuDialogInput.Text>()
                         .associate { it.id to response.getText(it.id).orEmpty() },
@@ -139,10 +122,6 @@ internal class MenuDialogServiceImpl(
             ClickCallback.Options.builder().uses(1).build(),
         )
         return ActionButton.builder(button.label).action(action).build()
-    }
-
-    private companion object {
-        val dialogFlowSequence = AtomicLong()
     }
 
     private fun applyResult(
