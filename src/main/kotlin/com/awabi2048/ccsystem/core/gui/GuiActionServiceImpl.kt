@@ -38,6 +38,20 @@ class GuiActionServiceImpl(
             i18n(player, "gui.common.action.cycle", emptyMap()),
         )
 
+    override fun menuSingleClick(
+        player: Player?,
+        action: String,
+        enabled: Boolean,
+    ): com.awabi2048.ccsystem.api.gui.GuiMenuIconAction {
+        val line = singleClick(player, action)
+        return com.awabi2048.ccsystem.api.gui.GuiMenuIconAction(
+            line.operation,
+            line.action,
+            line.resolvedText,
+            enabled,
+        )
+    }
+
     override fun clickLabel(
         player: Player?,
         click: GuiClickLabel,

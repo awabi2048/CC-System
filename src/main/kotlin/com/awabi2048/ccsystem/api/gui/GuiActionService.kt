@@ -14,6 +14,12 @@ interface GuiActionService {
 
     fun cycle(player: Player?): GuiLoreLine.Action
 
+    fun menuSingleClick(
+        player: Player?,
+        action: String,
+        enabled: Boolean = true,
+    ): GuiMenuIconAction
+
     fun clickLabel(player: Player?, click: GuiClickLabel): String
 }
 
