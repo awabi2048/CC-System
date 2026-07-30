@@ -3,7 +3,6 @@ chanpon:
     common:
       "on": On
       "off": Off
-      middle_click: "Middle-Click"
     creation:
       display: "§eSet as production world"
       lore:

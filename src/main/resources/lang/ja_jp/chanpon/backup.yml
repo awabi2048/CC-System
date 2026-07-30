@@ -6,7 +6,6 @@ chanpon:
       prev: "§e前のページ"
       next: "§e次のページ"
       back: "§7戻る"
-      middle_click: "ホイールクリック"
     kind:
       user_manual: "§aユーザー手動"
       admin_manual: "§e管理者手動"

@@ -3,7 +3,6 @@ chanpon:
     common:
       "on": オン
       "off": オフ
-      middle_click: "ホイールクリック"
     creation:
       display: "§e本番用ワールドに設定する"
       lore:

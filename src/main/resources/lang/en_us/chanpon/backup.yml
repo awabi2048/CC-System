@@ -6,7 +6,6 @@ chanpon:
       prev: "§ePrevious page"
       next: "§eNext page"
       back: "§7Back"
-      middle_click: "Middle-Click"
     kind:
       user_manual: "§aUser manual"
       admin_manual: "§eAdmin manual"
