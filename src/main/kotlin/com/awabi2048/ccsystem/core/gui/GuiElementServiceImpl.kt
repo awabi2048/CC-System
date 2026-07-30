@@ -106,8 +106,21 @@ class GuiElementServiceImpl(
                 role = spec.role,
                 amount = spec.amount,
                 description = spec.description,
-                data = spec.data,
-                options = spec.options,
+                data = spec.data.map {
+                    com.awabi2048.ccsystem.api.gui.GuiMenuIconData(
+                        it.label,
+                        it.value,
+                        it.tone.colorCode,
+                    )
+                },
+                options = spec.options.map {
+                    com.awabi2048.ccsystem.api.gui.GuiMenuIconOption(
+                        it.label,
+                        it.selected,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
+                    )
+                },
                 warnings = spec.warnings,
                 dangers = spec.dangers,
                 actions = enabledActions.map { action ->

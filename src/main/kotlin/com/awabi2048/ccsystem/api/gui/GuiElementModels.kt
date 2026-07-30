@@ -171,6 +171,27 @@ data class GuiMenuIconSpec(
     val glint: Boolean?
 )
 
+enum class GuiValueTone(val colorCode: String) {
+    DEFAULT("\u00A7f"),
+    MUTED("\u00A77"),
+    PRIMARY("\u00A7e"),
+    INFO("\u00A7b"),
+    SUCCESS("\u00A7a"),
+    WARNING("\u00A76"),
+    DANGER("\u00A7c"),
+}
+
+data class GuiMenuEntryData(
+    val label: String,
+    val value: Any?,
+    val tone: GuiValueTone = GuiValueTone.DEFAULT,
+)
+
+data class GuiMenuEntryOption(
+    val label: String,
+    val selected: Boolean,
+)
+
 /**
  * 外部システムが宣言できる操作の意味情報。
  * 操作案内、クリック受付、Runtime分岐はCC-Systemがこの宣言から同時生成する。
@@ -200,8 +221,8 @@ data class GuiMenuEntrySpec(
     val role: GuiElementRole,
     val amount: Int = 1,
     val description: List<String> = emptyList(),
-    val data: List<GuiMenuIconData> = emptyList(),
-    val options: List<GuiMenuIconOption> = emptyList(),
+    val data: List<GuiMenuEntryData> = emptyList(),
+    val options: List<GuiMenuEntryOption> = emptyList(),
     val warnings: List<String> = emptyList(),
     val dangers: List<String> = emptyList(),
     val actions: List<GuiMenuEntryAction> = emptyList(),
