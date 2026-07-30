@@ -5,15 +5,17 @@ import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiFrameSection
 import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
+import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
+import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
-import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
-import com.awabi2048.ccsystem.api.gui.GuiMenuIconAction
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
 import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation
+import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import net.kyori.adventure.text.Component
@@ -32,7 +34,7 @@ import org.bukkit.event.inventory.ClickType
 class GuiElementServiceImpl(
     private val i18n: ((Player?, String, Map<String, Any>) -> String)? = null,
 ) : GuiElementService {
-    private val loreService = LoreServiceImpl()
+    private val loreService = LoreServiceImpl(i18n)
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
 
@@ -81,68 +83,24 @@ class GuiElementServiceImpl(
         return item
     }
 
-    override fun menuIcon(spec: GuiMenuIconSpec): ItemStack {
-        val item = item(
+    override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
+        val enabledActions = spec.actions.filter { it.enabled }
+        val icon = item(
             GuiItemSpec(
                 material = spec.material,
                 name = spec.name,
-                lore = GuiMenuIconLoreFactory.build(spec),
-                role = spec.role,
-                amount = spec.amount
-            )
-        )
-        spec.glint?.let { enabled ->
-            item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
-        }
-        return item
-    }
-
-    override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
-        val enabledActions = spec.actions.filter { it.enabled }
-        val icon = menuIcon(
-            GuiMenuIconSpec(
-                material = spec.material,
-                name = spec.name,
+                lore = GuiMenuEntryLoreFactory.build(
+                    spec,
+                    enabledActions,
+                    player,
+                ),
                 role = spec.role,
                 amount = spec.amount,
-                description = spec.description,
-                data = spec.data.map {
-                    com.awabi2048.ccsystem.api.gui.GuiMenuIconData(
-                        it.label,
-                        it.value,
-                        it.tone.colorCode,
-                    )
-                },
-                options = spec.options.map {
-                    com.awabi2048.ccsystem.api.gui.GuiMenuIconOption(
-                        it.label,
-                        it.selected,
-                        com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
-                        com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
-                    )
-                },
-                warnings = spec.warnings,
-                dangers = spec.dangers,
-                actions = enabledActions.map { action ->
-                    val operation = clickLabel(player, action.acceptedClicks)
-                    GuiMenuIconAction(
-                        operation = operation,
-                        action = action.label,
-                        resolvedText = if (enabledActions.size == 1) {
-                            requireI18n(
-                                player,
-                                "lore.action_single_with_operation",
-                                mapOf("operation" to operation, "action" to action.label),
-                            )
-                        } else {
-                            null
-                        },
-                        enabled = true,
-                    )
-                },
-                glint = spec.glint,
             ),
         ).also { item ->
+            spec.glint?.let { enabled ->
+                item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
+            }
             spec.playerHeadOwner?.let { owner ->
                 val meta = item.itemMeta as? SkullMeta
                     ?: error("playerHeadOwner requires a player head material")
@@ -170,8 +128,23 @@ class GuiElementServiceImpl(
         return MenuElement(spec.slot, icon, spec.role, interaction = interaction)
     }
 
-    override fun menuCapability(presentation: MenuCapabilityPresentation): ItemStack {
-        val item = item(presentation.item)
+    override fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack {
+        val presentation = capability.presentation
+        val actions = capability.actions.map { action ->
+            GuiMenuEntryAction(
+                actionId = action.id,
+                acceptedClicks = action.trigger.clicks,
+                label = action.text,
+            )
+        }
+        val actionLines = GuiMenuEntryLoreFactory.actionLines(
+            actions,
+            player,
+        )
+        val itemSpec = presentation.item.copy(
+            lore = appendActionLore(presentation.item.lore, actionLines),
+        )
+        val item = item(itemSpec)
         presentation.glint?.let { enabled ->
             item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
         }
@@ -181,6 +154,20 @@ class GuiElementServiceImpl(
             item.itemMeta = meta
         }
         return item
+    }
+
+    private fun appendActionLore(base: GuiLoreSpec, actionLines: List<GuiLoreLine>): GuiLoreSpec {
+        if (actionLines.isEmpty() || base == GuiLoreSpec.NameOnly) return base
+        val actionBlock = GuiLoreBlock(actionLines)
+        return when (base) {
+            GuiLoreSpec.None -> GuiLoreSpec.Blocks(listOf(actionBlock))
+            GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
+            is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(base.blocks + actionBlock)
+            is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
+                base.lines + GuiLoreLine.Spacer + actionLines,
+                base.frame,
+            )
+        }
     }
 
     override fun applyFrame(inventory: Inventory, spec: GuiFrameSpec) {
@@ -265,18 +252,7 @@ class GuiElementServiceImpl(
     }
 
     private fun clickLabel(player: Player?, clicks: Set<ClickType>): String {
-        val key = when (clicks) {
-            MenuAcceptedClicks.LEFT -> "lore.click.left"
-            MenuAcceptedClicks.RIGHT -> "lore.click.right"
-            MenuAcceptedClicks.LEFT_RIGHT -> "lore.click.left_right"
-            MenuAcceptedClicks.PLAIN_LEFT -> "lore.click.left"
-            MenuAcceptedClicks.PLAIN_RIGHT -> "lore.click.right"
-            MenuAcceptedClicks.PLAIN_LEFT_RIGHT -> "lore.click.left_right"
-            setOf(ClickType.SHIFT_LEFT) -> "lore.click.shift_left"
-            setOf(ClickType.SHIFT_RIGHT) -> "lore.click.shift_right"
-            setOf(ClickType.MIDDLE) -> "lore.click.middle"
-            else -> error("Unsupported menu action click set: $clicks")
-        }
+        val key = GuiInteractionLabelResolver.languageKey(clicks)
         return requireI18n(player, key, emptyMap())
     }
 

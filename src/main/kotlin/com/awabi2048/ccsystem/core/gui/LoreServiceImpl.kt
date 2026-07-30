@@ -6,12 +6,15 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiStatusTone
 import com.awabi2048.ccsystem.api.gui.LoreService
+import com.awabi2048.ccsystem.core.config.LanguageManager
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
-class LoreServiceImpl : LoreService {
+class LoreServiceImpl(
+    private val i18n: ((org.bukkit.entity.Player?, String, Map<String, Any>) -> String)? = null,
+) : LoreService {
     private data class RenderedLine(
         val component: Component,
         val spacer: Boolean = false,
@@ -41,7 +44,8 @@ class LoreServiceImpl : LoreService {
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {
         if (lines.isEmpty()) return emptyList()
         val separator = RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true)
-        val content = lines.flatMap(::renderLine)
+        val interactionCount = lines.count { it is GuiLoreLine.Interaction }
+        val content = lines.flatMap { renderLine(it, interactionCount) }
         val framed = buildList {
             if ((frame == GuiLoreFrame.TOP || frame == GuiLoreFrame.BOTH) &&
                 content.firstOrNull()?.separator != true
@@ -75,7 +79,7 @@ class LoreServiceImpl : LoreService {
             .map { normalize(it.component) }
     }
 
-    private fun renderLine(line: GuiLoreLine): List<RenderedLine> = when (line) {
+    private fun renderLine(line: GuiLoreLine, interactionCount: Int): List<RenderedLine> = when (line) {
         GuiLoreLine.Spacer -> listOf(RenderedLine(Component.empty(), spacer = true))
         GuiLoreLine.Separator ->
             listOf(RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true))
@@ -88,6 +92,27 @@ class LoreServiceImpl : LoreService {
         is GuiLoreLine.StatusComponentData -> listOf(RenderedLine(renderStatusComponentData(line)))
         is GuiLoreLine.ProgressPath -> renderProgressPath(line)
         is GuiLoreLine.UserText -> listOf(RenderedLine(LoreFormatter.component(line.text)))
+        is GuiLoreLine.Interaction -> {
+            val resolver = requireNotNull(i18n) {
+                "LoreService instance does not support translated interaction hints"
+            }
+            val operation = resolver(
+                line.viewer,
+                GuiInteractionLabelResolver.languageKey(line.acceptedClicks),
+                emptyMap(),
+            )
+            val rendered = if (interactionCount == 1) {
+                val resolved = resolver(
+                    line.viewer,
+                    "lore.action_single_with_operation",
+                    mapOf("operation" to operation, "action" to line.label),
+                )
+                LoreFormatter.singleActionLine(resolved)
+            } else {
+                LoreFormatter.actionLine(operation, line.label)
+            }
+            listOf(RenderedLine(LoreFormatter.component(rendered)))
+        }
         else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
     }
 
@@ -158,8 +183,6 @@ class LoreServiceImpl : LoreService {
     }
 
     private fun renderFormattedLine(line: GuiLoreLine): String = when (line) {
-        is GuiLoreLine.Action -> LoreFormatter.actionLine(line.operation, line.action)
-        is GuiLoreLine.SingleAction -> LoreFormatter.singleActionLine(line.resolvedText)
         is GuiLoreLine.Option -> LoreFormatter.optionLine(
             line.label,
             line.selected,
@@ -180,6 +203,7 @@ class LoreServiceImpl : LoreService {
         is GuiLoreLine.StatusComponentData,
         is GuiLoreLine.ProgressPath,
         is GuiLoreLine.UserText,
+        is GuiLoreLine.Interaction,
         is GuiLoreLine.Component -> error("Non-formatted lore line reached formatted renderer")
     }
 

@@ -4,8 +4,8 @@ import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -15,8 +15,6 @@ import org.bukkit.persistence.PersistentDataType
 
 object CustomItemFactory {
     private const val RENTAL_TICKET_ITEM_ID = "rental_ticket"
-
-    private val loreService = LoreServiceImpl()
 
     private val itemIdKey: NamespacedKey
         get() = NamespacedKey(CCSystem.instance, "custom_item_id")
@@ -32,11 +30,10 @@ object CustomItemFactory {
 
         val daysLabel = LanguageManager.getRawString(player, "rental_ticket_days")
         val daysUnit = LanguageManager.getRawString(player, "rental_ticket_days_unit")
-        val operation = LanguageManager.getRawString(player, "lore.click.right")
         val action = LanguageManager.getRawString(player, "rental_ticket_action")
-        meta.lore(loreService.render(GuiLoreSpec.Blocks(listOf(
+        meta.lore(CCSystem.getAPI().getLoreService().render(GuiLoreSpec.Blocks(listOf(
             GuiLoreBlock(listOf(GuiLoreLine.Data(daysLabel, "$days$daysUnit", "§e"))),
-            GuiLoreBlock(listOf(GuiLoreLine.Action(operation, action)))
+            GuiLoreBlock(listOf(GuiLoreLine.Interaction(player, MenuAcceptedClicks.RIGHT, action)))
         ))))
 
         meta.persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, RENTAL_TICKET_ITEM_ID)

@@ -18,15 +18,13 @@ interface GuiElementService {
     /** 直接生成したアイテムの表示を変更せず、GUI保護マーカーだけを付与する。 */
     fun mark(item: ItemStack, role: GuiElementRole = GuiElementRole.CONTENT): ItemStack
 
-    fun menuIcon(spec: GuiMenuIconSpec): ItemStack
-
     /**
      * 意味情報から表示とRuntime操作を同時生成する。
      * 外部システムは生成後のItemStackやLoreを変更しない。
      */
     fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement
 
-    fun menuCapability(presentation: MenuCapabilityPresentation): ItemStack
+    fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack
 
     fun applyFrame(inventory: Inventory, spec: GuiFrameSpec)
 

@@ -53,12 +53,19 @@ sealed interface GuiLoreLine {
     ) : GuiLoreLine
     data class SubData(val label: String, val value: Any?) : GuiLoreLine
     data class Metadata(val label: String, val value: Any?) : GuiLoreLine
-    data class Action(val operation: String, val action: String) : GuiLoreLine
-    data class SingleAction(
-        val operation: String,
-        val action: String,
-        val resolvedText: String
-    ) : GuiLoreLine
+    /**
+     * 受付クリックと操作内容だけを宣言し、操作名と表示書式はCC-Systemが生成する。
+     */
+    data class Interaction(
+        val viewer: org.bukkit.entity.Player?,
+        val acceptedClicks: Set<ClickType>,
+        val label: String,
+    ) : GuiLoreLine {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "interaction clicks must not be empty" }
+            require(label.isNotBlank()) { "interaction label must not be blank" }
+        }
+    }
     data class Option(
         val label: String,
         val selected: Boolean,
@@ -133,43 +140,6 @@ data class GuiItemSpec(
     val lore: GuiLoreSpec,
     val role: GuiElementRole,
     val amount: Int
-)
-
-data class GuiMenuIconAction(
-    val operation: String,
-    val action: String,
-    val resolvedText: String?,
-    val enabled: Boolean
-)
-
-data class GuiMenuIconData(
-    val label: String,
-    val value: Any?,
-    val valueColor: String
-)
-
-data class GuiMenuIconOption(
-    val label: String,
-    val selected: Boolean,
-    val selectedColor: String,
-    val inactiveColor: String
-)
-
-/**
- * メニュー画面は表示情報だけを渡し、区切り・Lore行・グリントはCC-Systemが組み立てる。
- */
-data class GuiMenuIconSpec(
-    val material: Material,
-    val name: GuiNameSpec,
-    val role: GuiElementRole,
-    val amount: Int,
-    val description: List<String>,
-    val data: List<GuiMenuIconData>,
-    val options: List<GuiMenuIconOption>,
-    val warnings: List<String>,
-    val dangers: List<String>,
-    val actions: List<GuiMenuIconAction>,
-    val glint: Boolean?
 )
 
 enum class GuiValueTone(val colorCode: String) {

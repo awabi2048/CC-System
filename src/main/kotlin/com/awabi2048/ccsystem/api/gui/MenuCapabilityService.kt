@@ -42,14 +42,13 @@ fun interface MenuCapabilityActionTextProvider {
 
 enum class MenuCapabilityTrigger(
     val clicks: Set<ClickType>,
-    val clickLabel: GuiClickLabel,
 ) {
-    LEFT(setOf(ClickType.LEFT), GuiClickLabel.LEFT),
-    RIGHT(setOf(ClickType.RIGHT), GuiClickLabel.RIGHT),
-    SHIFT_LEFT(setOf(ClickType.SHIFT_LEFT), GuiClickLabel.SHIFT_LEFT),
-    SHIFT_RIGHT(setOf(ClickType.SHIFT_RIGHT), GuiClickLabel.SHIFT_RIGHT),
-    LEFT_RIGHT(setOf(ClickType.LEFT, ClickType.RIGHT), GuiClickLabel.LEFT_RIGHT),
-    ANY(MenuAcceptedClicks.STANDARD, GuiClickLabel.ANY),
+    LEFT(setOf(ClickType.LEFT)),
+    RIGHT(setOf(ClickType.RIGHT)),
+    SHIFT_LEFT(setOf(ClickType.SHIFT_LEFT)),
+    SHIFT_RIGHT(setOf(ClickType.SHIFT_RIGHT)),
+    LEFT_RIGHT(setOf(ClickType.LEFT, ClickType.RIGHT)),
+    ANY(MenuAcceptedClicks.STANDARD),
 }
 
 data class MenuCapabilityAction(

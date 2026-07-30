@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuActionHandler
 import com.awabi2048.ccsystem.api.gui.MenuDialogButton
 import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
@@ -204,8 +205,8 @@ class AnnounceListener {
 
                     blocks.add(GuiLoreBlock(metadataBlock))
                     blocks.add(GuiLoreBlock(listOf(
-                        GuiLoreLine.Action(rawText(player, "lore.click.left"), rawText(player, "announce.lore.edit")),
-                        GuiLoreLine.Action(rawText(player, "lore.click.right"), rawText(player, "announce.lore.delete"))
+                        GuiLoreLine.Interaction(player, MenuAcceptedClicks.LEFT, rawText(player, "announce.lore.edit")),
+                        GuiLoreLine.Interaction(player, MenuAcceptedClicks.RIGHT, rawText(player, "announce.lore.delete"))
                     )))
                 }
 
@@ -351,17 +352,12 @@ class AnnounceListener {
 
         private fun rawText(player: Player?, key: String): String = LanguageManager.getRawString(player, key)
 
-        private fun singleClickLine(player: Player, actionKey: String): GuiLoreLine.SingleAction {
-            val operation = rawText(player, "lore.click.any")
-            val action = rawText(player, actionKey)
-            val resolved = LanguageManager.getRawString(
+        private fun singleClickLine(player: Player, actionKey: String): GuiLoreLine.Interaction =
+            GuiLoreLine.Interaction(
                 player,
-                "lore.action_single_with_operation",
-                "operation" to operation,
-                "action" to action
+                MenuAcceptedClicks.STANDARD,
+                rawText(player, actionKey),
             )
-            return GuiLoreLine.SingleAction(operation, action, resolved)
-        }
 
         private fun playOperationSound(player: Player, sound: Sound, pitch: Float = 1.0f) {
             player.playSound(player.location, sound, 0.8f, pitch)

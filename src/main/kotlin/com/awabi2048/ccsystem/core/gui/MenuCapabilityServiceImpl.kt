@@ -5,20 +5,14 @@ import com.awabi2048.ccsystem.api.gui.MenuCapabilityActionContext
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityDefinition
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityService
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
-import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
-import com.awabi2048.ccsystem.api.gui.GuiLoreLine
-import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapabilityAction
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
-import com.awabi2048.ccsystem.api.gui.GuiActionService
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 
-class MenuCapabilityServiceImpl(
-    private val actions: GuiActionService,
-) : MenuCapabilityService {
+class MenuCapabilityServiceImpl : MenuCapabilityService {
     private val definitions = ConcurrentHashMap<String, MenuCapabilityDefinition>()
 
     override fun register(definition: MenuCapabilityDefinition) {
@@ -61,20 +55,9 @@ class MenuCapabilityServiceImpl(
             }
             ResolvedMenuCapabilityAction(action.id, action.trigger, text)
         }
-        val actionLines = resolvedActions.map { action ->
-            val operation = actions.clickLabel(player, action.trigger.clickLabel)
-            if (resolvedActions.size == 1) {
-                actions.single(player, operation, action.text)
-            } else {
-                GuiLoreLine.Action(operation, action.text)
-            }
-        }
         return ResolvedMenuCapability(
             capabilityId = capabilityId,
-            presentation = withActionLore(
-                definition.presentationProvider.resolve(context),
-                actionLines,
-            ),
+            presentation = definition.presentationProvider.resolve(context),
             actions = resolvedActions,
         )
     }
@@ -107,56 +90,6 @@ class MenuCapabilityServiceImpl(
             if (result.sound == MenuSoundPolicy.Default) result.copy(sound = sounds.success) else result
         is MenuActionResult.Rejected ->
             if (result.sound == MenuSoundPolicy.Default) result.copy(sound = sounds.rejected) else result
-    }
-
-    private fun withActionLore(
-        presentation: com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation,
-        actionLines: List<GuiLoreLine>,
-    ): com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation {
-        if (actionLines.isEmpty()) return presentation
-        val actionBlock = GuiLoreBlock(actionLines)
-        val item = presentation.item
-        val lore = when (val current = item.lore) {
-            GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
-            GuiLoreSpec.None ->
-                if (actionLines.size == 1) {
-                    GuiLoreSpec.Blocks(listOf(actionBlock))
-                } else {
-                    GuiLoreSpec.Blocks(listOf(actionBlock))
-                }
-            is GuiLoreSpec.Blocks ->
-                if (actionLines.size == 1) {
-                    GuiLoreSpec.Blocks(
-                        current.blocks.dropLast(1) +
-                            GuiLoreBlock(
-                                current.blocks.last().lines +
-                                    GuiLoreLine.Spacer +
-                                    actionLines,
-                            ),
-                    )
-                } else {
-                    GuiLoreSpec.Blocks(current.blocks + actionBlock)
-                }
-            is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
-                current.lines + GuiLoreLine.Spacer + actionLines,
-                current.frame,
-            )
-        }
-        return presentation.copy(
-            item = item.copy(lore = lore),
-            embeddedLoreBlocks = if (presentation.embeddedLoreBlocks.isEmpty()) {
-                presentation.embeddedLoreBlocks
-            } else if (actionLines.size == 1) {
-                presentation.embeddedLoreBlocks.dropLast(1) +
-                    GuiLoreBlock(
-                        presentation.embeddedLoreBlocks.last().lines +
-                            GuiLoreLine.Spacer +
-                            actionLines,
-                    )
-            } else {
-                presentation.embeddedLoreBlocks + actionBlock
-            },
-        )
     }
 
     private companion object {
