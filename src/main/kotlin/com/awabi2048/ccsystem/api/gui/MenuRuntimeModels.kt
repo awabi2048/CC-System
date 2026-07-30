@@ -121,7 +121,7 @@ object MenuAcceptedClicks {
     val MIDDLE: Set<ClickType> = setOf(ClickType.MIDDLE)
 }
 
-data class MenuElement(
+data class MenuElement internal constructor(
     val slot: Int,
     val item: ItemStack,
     val role: GuiElementRole,
