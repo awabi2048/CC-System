@@ -10,20 +10,11 @@ chanpon:
       state_label: State
       enabled: On
       disabled: Off
-      toggle_operation: Click
       toggle_action: Toggle
-      toggle_resolved: Click to toggle
       role:
         display: "Member / Moderator"
         state_label: "Current role"
         member: "Member"
         moderator: "Moderator"
-        operation: "Click"
         action: "Change role"
-        resolved: "Click to switch between member and moderator"
-    click_edit_operation: "Left Click"
     click_edit_action: "Edit this member's permissions"
-    transfer_owner_operation: "Shift+Left Click"
-    transfer_owner_action: "Transfer ownership"
-    remove_member_operation: "Shift+Right Click"
-    remove_member_action: "Remove member"

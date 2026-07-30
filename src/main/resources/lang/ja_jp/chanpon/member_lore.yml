@@ -10,20 +10,11 @@ chanpon:
       state_label: 状態
       enabled: オン
       disabled: オフ
-      toggle_operation: クリック
       toggle_action: 切り替え
-      toggle_resolved: クリックで切り替え
       role:
         display: "メンバー・モデレーター"
         state_label: "現在の権限"
         member: "メンバー"
         moderator: "モデレーター"
-        operation: "クリック"
         action: "権限を切り替える"
-        resolved: "クリックでメンバー・モデレーターを切り替え"
-    click_edit_operation: "左クリック"
     click_edit_action: "このメンバーの権限を編集する"
-    transfer_owner_operation: "Shift+左クリック"
-    transfer_owner_action: "オーナー権限を移譲"
-    remove_member_operation: "Shift+右クリック"
-    remove_member_action: "メンバーを削除"
