@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
 import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuElement
@@ -126,6 +127,26 @@ class GuiElementServiceImpl(
             )
         }
         return MenuElement(spec.slot, icon, spec.role, interaction = interaction)
+    }
+
+    override fun menuDisplay(spec: GuiMenuDisplaySpec): MenuElement {
+        val icon = item(spec.item).also { item ->
+            spec.glint?.let { enabled ->
+                item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
+            }
+            spec.playerHeadOwner?.let { owner ->
+                val meta = item.itemMeta as? SkullMeta
+                    ?: error("playerHeadOwner requires a player head material")
+                meta.owningPlayer = Bukkit.getOfflinePlayer(owner)
+                item.itemMeta = meta
+            }
+        }
+        return MenuElement(
+            slot = spec.slot,
+            item = icon,
+            role = spec.item.role,
+            interaction = MenuInteraction.DisplayOnly,
+        )
     }
 
     override fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack {

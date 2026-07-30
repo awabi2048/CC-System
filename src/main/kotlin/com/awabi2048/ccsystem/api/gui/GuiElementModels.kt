@@ -235,6 +235,24 @@ data class GuiMenuEntrySpec(
     }
 }
 
+/**
+ * 操作を持たない表示専用メニュー要素。
+ * 外部システムは完成ItemStackではなく、構造化した表示情報だけを渡す。
+ */
+data class GuiMenuDisplaySpec(
+    val slot: Int,
+    val item: GuiItemSpec,
+    val glint: Boolean? = null,
+    val playerHeadOwner: UUID? = null,
+) {
+    init {
+        require(slot >= 0) { "slot must not be negative" }
+        require(item.role != GuiElementRole.ACTION) {
+            "display-only menu elements cannot use ACTION role"
+        }
+    }
+}
+
 sealed interface GuiFrameSection {
     data object None : GuiFrameSection
     data class Row(val element: GuiItemSpec) : GuiFrameSection

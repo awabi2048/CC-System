@@ -121,6 +121,7 @@ object MenuAcceptedClicks {
     val MIDDLE: Set<ClickType> = setOf(ClickType.MIDDLE)
 }
 
+@ConsistentCopyVisibility
 data class MenuElement internal constructor(
     val slot: Int,
     val item: ItemStack,
