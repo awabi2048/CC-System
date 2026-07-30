@@ -28,8 +28,6 @@ interface GuiElementService {
 
     fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement
 
-    fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack
-
     fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement
 
     fun applyFrame(inventory: Inventory, spec: GuiFrameSpec)

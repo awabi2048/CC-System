@@ -3,11 +3,13 @@ package com.awabi2048.ccsystem.features.announce.listener
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
-import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
+import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
@@ -18,14 +20,12 @@ import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
 import com.awabi2048.ccsystem.api.gui.MenuDialogInput
 import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
 import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
-import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
 import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
-import com.awabi2048.ccsystem.core.gui.GuiItemMarker
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
@@ -94,29 +94,62 @@ class AnnounceListener {
         private fun createMenuView(player: Player, route: MenuRoute): InventoryMenuView {
             val openedFromMenuArgument = route.payload["fromMenu"].toBoolean()
             val highlightIds = getHighlightAnnouncementIds(player)
-            val inventory = createMenuInventory(player, openedFromMenuArgument, highlightIds)
+            val menuItems = createMenuInventory(player, openedFromMenuArgument, highlightIds)
             val announcements = AnnouncementManager.getAnnouncementsForMenu()
             val elements = buildList {
-                for (slot in 0 until inventory.size) {
-                    val item = inventory.getItem(slot) ?: continue
+                for (slot in 0 until menuItems.size) {
+                    val menuItem = menuItems.getItem(slot) ?: continue
                     val announcement = announcements.getOrNull(INTERIOR_SLOTS.indexOf(slot))
-                    val actionId = when {
-                        slot == 45 && openedFromMenuArgument -> "menu-command"
-                        slot == 49 && hasManagePermission(player) -> "select-icon"
-                        announcement != null && hasManagePermission(player) -> "announcement"
-                        else -> null
-                    }
-                    add(
-                        MenuElement(
-                            slot = slot,
-                            item = item,
-                            role = GuiItemMarker.role(item) ?: GuiElementRole.CONTENT,
-                            actionId = actionId,
-                            actionPayload = if (actionId == "announcement") {
-                                mapOf("id" to requireNotNull(announcement).id)
-                            } else emptyMap()
+                    val actions = when {
+                        slot == 45 && openedFromMenuArgument -> listOf(
+                            GuiMenuEntryAction(
+                                "menu-command",
+                                MenuAcceptedClicks.STANDARD,
+                                rawText(player, "announce.menu_command_item_lore"),
+                            )
                         )
-                    )
+                        slot == 49 && hasManagePermission(player) -> listOf(
+                            GuiMenuEntryAction(
+                                "select-icon",
+                                MenuAcceptedClicks.STANDARD,
+                                rawText(player, "announce.add_item_lore"),
+                            )
+                        )
+                        announcement != null && hasManagePermission(player) -> listOf(
+                            GuiMenuEntryAction(
+                                "announcement",
+                                MenuAcceptedClicks.LEFT,
+                                rawText(player, "announce.lore.edit"),
+                                payload = mapOf("id" to announcement.id),
+                            ),
+                            GuiMenuEntryAction(
+                                "announcement",
+                                MenuAcceptedClicks.RIGHT,
+                                rawText(player, "announce.lore.delete"),
+                                payload = mapOf("id" to announcement.id),
+                            ),
+                        )
+                        else -> emptyList()
+                    }
+                    if (actions.isEmpty()) {
+                        add(CCSystem.getAPI().getGuiElementService().menuDisplay(
+                            GuiMenuDisplaySpec(
+                                slot = slot,
+                                item = menuItem.spec,
+                                glint = menuItem.glint,
+                            )
+                        ))
+                    } else {
+                        add(CCSystem.getAPI().getGuiElementService().menuStructuredEntry(
+                            player,
+                            GuiStructuredMenuEntrySpec(
+                            slot = slot,
+                                item = menuItem.spec,
+                                actions = actions,
+                                glint = menuItem.glint,
+                            )
+                        ))
+                    }
                 }
             }
             PlayerDataManager.set(
@@ -133,12 +166,14 @@ class AnnounceListener {
             )
         }
 
+        private data class SemanticMenuItem(val spec: GuiItemSpec, val glint: Boolean? = null)
+
         private class MenuItems(val size: Int) {
-            private val items = arrayOfNulls<ItemStack>(size)
-            fun setItem(slot: Int, item: ItemStack?) {
+            private val items = arrayOfNulls<SemanticMenuItem>(size)
+            fun setItem(slot: Int, item: SemanticMenuItem?) {
                 items[slot] = item
             }
-            fun getItem(slot: Int): ItemStack? = items.getOrNull(slot)
+            fun getItem(slot: Int): SemanticMenuItem? = items.getOrNull(slot)
         }
 
         private fun createMenuInventory(
@@ -204,25 +239,19 @@ class AnnounceListener {
                     }
 
                     blocks.add(GuiLoreBlock(metadataBlock))
-                    blocks.add(GuiLoreBlock(listOf(
-                        GuiLoreLine.Interaction(player, MenuAcceptedClicks.LEFT, rawText(player, "announce.lore.edit")),
-                        GuiLoreLine.Interaction(player, MenuAcceptedClicks.RIGHT, rawText(player, "announce.lore.delete"))
-                    )))
                 }
 
-                val item = CCSystem.getAPI().getGuiElementService().item(
-                    GuiItemSpec(
+                val spec = GuiItemSpec(
                         material = announcement.icon,
                         name = GuiNameSpec.Component(noItalic(deserializeStyledUserText(titleLine))),
                         lore = if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks),
                         role = GuiElementRole.CONTENT,
                         amount = 1
                     )
+                inventory.setItem(
+                    slot,
+                    SemanticMenuItem(spec, glint = highlightAnnouncementIds.contains(announcement.id)),
                 )
-                if (highlightAnnouncementIds.contains(announcement.id)) {
-                    item.editMeta { meta -> meta.setEnchantmentGlintOverride(true) }
-                }
-                inventory.setItem(slot, item)
             }
 
             if (openedFromMenuArgument) {
@@ -236,8 +265,8 @@ class AnnounceListener {
             return inventory
         }
 
-        private fun createPane(material: Material): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createPane(material: Material): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = material,
                     name = GuiNameSpec.Component(noItalic(Component.text(" "))),
@@ -248,34 +277,28 @@ class AnnounceListener {
             )
         }
 
-        private fun createMenuCommandItem(player: Player): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createMenuCommandItem(player: Player): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = Material.REDSTONE,
                     name = GuiNameSpec.Component(
                         noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.menu_command_item_name"))
                     ),
-                    lore = GuiLoreSpec.Rich(
-                        listOf(singleClickLine(player, "announce.menu_command_item_lore")),
-                        GuiLoreFrame.NONE
-                    ),
+                    lore = GuiLoreSpec.None,
                     role = GuiElementRole.ACTION,
                     amount = 1
                 )
             )
         }
 
-        private fun createAddItem(player: Player): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createAddItem(player: Player): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = Material.WRITABLE_BOOK,
                     name = GuiNameSpec.Component(
                         noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.add_item_name"))
                     ),
-                    lore = GuiLoreSpec.Rich(
-                        listOf(singleClickLine(player, "announce.add_item_lore")),
-                        GuiLoreFrame.NONE
-                    ),
+                    lore = GuiLoreSpec.None,
                     role = GuiElementRole.ACTION,
                     amount = 1
                 )
@@ -351,13 +374,6 @@ class AnnounceListener {
         }
 
         private fun rawText(player: Player?, key: String): String = LanguageManager.getRawString(player, key)
-
-        private fun singleClickLine(player: Player, actionKey: String): GuiLoreLine.Interaction =
-            GuiLoreLine.Interaction(
-                player,
-                MenuAcceptedClicks.STANDARD,
-                rawText(player, actionKey),
-            )
 
         private fun playOperationSound(player: Player, sound: Sound, pitch: Float = 1.0f) {
             player.playSound(player.location, sound, 0.8f, pitch)

@@ -185,7 +185,7 @@ class GuiElementServiceImpl(
         return MenuElement(spec.slot, icon, spec.item.role, interaction = interaction)
     }
 
-    override fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack {
+    private fun capabilityItem(player: Player?, capability: ResolvedMenuCapability): ItemStack {
         val presentation = capability.presentation
         val actions = capability.actions.map { action ->
             GuiMenuEntryAction(
@@ -215,7 +215,7 @@ class GuiElementServiceImpl(
 
     override fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement {
         val capability = spec.capability
-        val item = menuCapability(player, capability)
+        val item = capabilityItem(player, capability)
         val acceptedClicks = capability.acceptedClicks
         return if (capability.actionable && acceptedClicks.isNotEmpty()) {
             MenuElement(
