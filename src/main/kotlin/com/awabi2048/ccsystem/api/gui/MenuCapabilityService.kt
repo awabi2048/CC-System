@@ -36,21 +36,33 @@ fun interface MenuCapabilityActionHandler {
     fun handle(context: MenuCapabilityActionContext): MenuActionResult
 }
 
-fun interface MenuCapabilityActionPresentationProvider {
-    fun resolve(context: MenuCapabilityContext): List<GuiLoreLine>
+fun interface MenuCapabilityActionTextProvider {
+    fun resolve(context: MenuCapabilityContext): String
+}
+
+enum class MenuCapabilityTrigger(
+    val clicks: Set<ClickType>,
+    val clickLabel: GuiClickLabel,
+) {
+    LEFT(setOf(ClickType.LEFT), GuiClickLabel.LEFT),
+    RIGHT(setOf(ClickType.RIGHT), GuiClickLabel.RIGHT),
+    SHIFT_LEFT(setOf(ClickType.SHIFT_LEFT), GuiClickLabel.SHIFT_LEFT),
+    SHIFT_RIGHT(setOf(ClickType.SHIFT_RIGHT), GuiClickLabel.SHIFT_RIGHT),
+    LEFT_RIGHT(setOf(ClickType.LEFT, ClickType.RIGHT), GuiClickLabel.LEFT_RIGHT),
+    ANY(MenuAcceptedClicks.STANDARD, GuiClickLabel.ANY),
 }
 
 data class MenuCapabilityAction(
     val id: String,
-    val clicks: Set<ClickType>,
-    val presentationProvider: MenuCapabilityActionPresentationProvider,
+    val trigger: MenuCapabilityTrigger,
+    val textProvider: MenuCapabilityActionTextProvider,
     val availability: MenuCapabilityAvailability =
         MenuCapabilityAvailability { true },
+    val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val handler: MenuCapabilityActionHandler,
 ) {
     init {
         require(id.isNotBlank()) { "action id must not be blank" }
-        require(clicks.isNotEmpty()) { "action clicks must not be empty" }
     }
 }
 
@@ -73,7 +85,7 @@ data class MenuCapabilityDefinition(
             "capability action ids must be unique"
         }
         val duplicateClicks = actions
-            .flatMap(MenuCapabilityAction::clicks)
+            .flatMap { it.trigger.clicks }
             .groupingBy { it }
             .eachCount()
             .filterValues { it > 1 }
@@ -86,8 +98,8 @@ data class MenuCapabilityDefinition(
 
 data class ResolvedMenuCapabilityAction(
     val id: String,
-    val clicks: Set<ClickType>,
-    val loreLines: List<GuiLoreLine>,
+    val trigger: MenuCapabilityTrigger,
+    val text: String,
 )
 
 data class ResolvedMenuCapability(
@@ -99,7 +111,7 @@ data class ResolvedMenuCapability(
         get() = actions.isNotEmpty()
 
     val acceptedClicks: Set<ClickType>
-        get() = actions.flatMapTo(linkedSetOf(), ResolvedMenuCapabilityAction::clicks)
+        get() = actions.flatMapTo(linkedSetOf()) { it.trigger.clicks }
 }
 
 interface MenuCapabilityService {

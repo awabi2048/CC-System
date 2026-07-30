@@ -103,6 +103,7 @@ gui:
     world_item:
       warp: このワールドへワープ
       settings: ワールド設定を開く
+      move_to_top: 一覧の先頭へ移動
       expired: このワールドはアーカイブされています
       expires_at: アーカイブまで
       expires_value: '{days}日（{date} にアーカイブ）'

@@ -10,11 +10,15 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapabilityAction
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
+import com.awabi2048.ccsystem.api.gui.GuiActionService
+import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 
-class MenuCapabilityServiceImpl : MenuCapabilityService {
+class MenuCapabilityServiceImpl(
+    private val actions: GuiActionService,
+) : MenuCapabilityService {
     private val definitions = ConcurrentHashMap<String, MenuCapabilityDefinition>()
 
     override fun register(definition: MenuCapabilityDefinition) {
@@ -48,21 +52,29 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
         val definition = definitions[capabilityId] ?: return null
         val context = MenuCapabilityContext(player, arguments, attributes)
         if (!definition.availability.isAvailable(context)) return null
-        val actions = definition.actions.mapNotNull { action ->
+        val resolvedActions = definition.actions.mapNotNull { action ->
             if (!action.availability.isAvailable(context)) return@mapNotNull null
-            val loreLines = action.presentationProvider.resolve(context)
-            require(loreLines.isNotEmpty()) {
-                "Capability action presentation must not be empty: $capabilityId:${action.id}"
+            val text = action.textProvider.resolve(context)
+            require(text.isNotBlank()) {
+                "Capability action text must not be blank: $capabilityId:${action.id}"
             }
-            ResolvedMenuCapabilityAction(action.id, action.clicks, loreLines)
+            ResolvedMenuCapabilityAction(action.id, action.trigger, text)
+        }
+        val actionLines = resolvedActions.map { action ->
+            val operation = actions.clickLabel(player, action.trigger.clickLabel)
+            if (resolvedActions.size == 1) {
+                actions.single(player, operation, action.text)
+            } else {
+                GuiLoreLine.Action(operation, action.text)
+            }
         }
         return ResolvedMenuCapability(
             capabilityId = capabilityId,
             presentation = withActionLore(
                 definition.presentationProvider.resolve(context),
-                actions.flatMap(ResolvedMenuCapabilityAction::loreLines),
+                actionLines,
             ),
-            actions = actions,
+            actions = resolvedActions,
         )
     }
 
@@ -77,9 +89,23 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
         val context = MenuCapabilityContext(player, arguments, attributes)
         if (!definition.availability.isAvailable(context)) return MenuActionResult.Ignored
         val action = definition.actions.firstOrNull {
-            click in it.clicks && it.availability.isAvailable(context)
+            click in it.trigger.clicks && it.availability.isAvailable(context)
         } ?: return MenuActionResult.Ignored
-        return action.handler.handle(MenuCapabilityActionContext(player, click, arguments, attributes))
+        return applyActionSounds(
+            action.handler.handle(MenuCapabilityActionContext(player, click, arguments, attributes)),
+            action.sounds,
+        )
+    }
+
+    private fun applyActionSounds(
+        result: MenuActionResult,
+        sounds: com.awabi2048.ccsystem.api.gui.MenuActionSoundPolicy,
+    ): MenuActionResult = when (result) {
+        MenuActionResult.Ignored -> result
+        is MenuActionResult.Success ->
+            if (result.sound == MenuSoundPolicy.Default) result.copy(sound = sounds.success) else result
+        is MenuActionResult.Rejected ->
+            if (result.sound == MenuSoundPolicy.Default) result.copy(sound = sounds.rejected) else result
     }
 
     private fun withActionLore(
