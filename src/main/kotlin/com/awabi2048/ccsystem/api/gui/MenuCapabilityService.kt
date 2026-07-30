@@ -36,16 +36,31 @@ fun interface MenuCapabilityActionHandler {
     fun handle(context: MenuCapabilityActionContext): MenuActionResult
 }
 
+fun interface MenuCapabilityActionPresentationProvider {
+    fun resolve(context: MenuCapabilityContext): List<GuiLoreLine>
+}
+
+data class MenuCapabilityAction(
+    val id: String,
+    val clicks: Set<ClickType>,
+    val presentationProvider: MenuCapabilityActionPresentationProvider,
+    val availability: MenuCapabilityAvailability =
+        MenuCapabilityAvailability { true },
+    val handler: MenuCapabilityActionHandler,
+) {
+    init {
+        require(id.isNotBlank()) { "action id must not be blank" }
+        require(clicks.isNotEmpty()) { "action clicks must not be empty" }
+    }
+}
+
 data class MenuCapabilityDefinition(
     val owner: String,
     val id: String,
     val placement: String,
     val availability: MenuCapabilityAvailability,
     val presentationProvider: MenuCapabilityPresentationProvider,
-    val actionAvailability: MenuCapabilityAvailability =
-        MenuCapabilityAvailability { true },
-    val actionHandler: MenuCapabilityActionHandler? = null,
-    val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT,
+    val actions: List<MenuCapabilityAction>,
 ) {
     val capabilityId: String
         get() = "$owner:$id"
@@ -54,16 +69,38 @@ data class MenuCapabilityDefinition(
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
         require(placement.isNotBlank()) { "placement must not be blank" }
-        require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        require(actions.map(MenuCapabilityAction::id).distinct().size == actions.size) {
+            "capability action ids must be unique"
+        }
+        val duplicateClicks = actions
+            .flatMap(MenuCapabilityAction::clicks)
+            .groupingBy { it }
+            .eachCount()
+            .filterValues { it > 1 }
+            .keys
+        require(duplicateClicks.isEmpty()) {
+            "capability actions must not accept the same click: $duplicateClicks"
+        }
     }
 }
+
+data class ResolvedMenuCapabilityAction(
+    val id: String,
+    val clicks: Set<ClickType>,
+    val loreLines: List<GuiLoreLine>,
+)
 
 data class ResolvedMenuCapability(
     val capabilityId: String,
     val presentation: MenuCapabilityPresentation,
-    val actionable: Boolean,
-    val acceptedClicks: Set<ClickType>,
-)
+    val actions: List<ResolvedMenuCapabilityAction>,
+) {
+    val actionable: Boolean
+        get() = actions.isNotEmpty()
+
+    val acceptedClicks: Set<ClickType>
+        get() = actions.flatMapTo(linkedSetOf(), ResolvedMenuCapabilityAction::clicks)
+}
 
 interface MenuCapabilityService {
     fun register(definition: MenuCapabilityDefinition)
