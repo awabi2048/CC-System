@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuIconSpec
+import com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import net.kyori.adventure.text.Component
@@ -17,6 +18,8 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
+import org.bukkit.Bukkit
+import org.bukkit.inventory.meta.SkullMeta
 
 class GuiElementServiceImpl : GuiElementService {
     private val loreService = LoreServiceImpl()
@@ -80,6 +83,19 @@ class GuiElementServiceImpl : GuiElementService {
         )
         spec.glint?.let { enabled ->
             item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
+        }
+        return item
+    }
+
+    override fun menuCapability(presentation: MenuCapabilityPresentation): ItemStack {
+        val item = item(presentation.item)
+        presentation.glint?.let { enabled ->
+            item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
+        }
+        presentation.playerHeadOwner?.let { owner ->
+            val meta = item.itemMeta as? SkullMeta ?: return@let
+            meta.owningPlayer = Bukkit.getOfflinePlayer(owner)
+            item.itemMeta = meta
         }
         return item
     }

@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api.gui
 
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
+import java.util.UUID
 
 data class MenuCapabilityContext(
     val player: Player,
@@ -15,6 +16,7 @@ fun interface MenuCapabilityAvailability {
 data class MenuCapabilityPresentation(
     val item: GuiItemSpec,
     val glint: Boolean? = null,
+    val playerHeadOwner: UUID? = null,
 )
 
 fun interface MenuCapabilityPresentationProvider {

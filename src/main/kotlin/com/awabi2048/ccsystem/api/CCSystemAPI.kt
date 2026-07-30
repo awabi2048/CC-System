@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.api
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.GuiActionService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
@@ -90,6 +91,8 @@ interface CCSystemAPI {
     fun unregisterI18nSource(sourceId: String)
 
     fun getGuiElementService(): GuiElementService
+
+    fun getGuiActionService(): GuiActionService
 
     fun getGuiLayoutService(): GuiLayoutService
 

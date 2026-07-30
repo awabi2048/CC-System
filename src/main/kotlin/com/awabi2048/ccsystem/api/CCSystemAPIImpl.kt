@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.api
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
 import com.awabi2048.ccsystem.api.gui.GuiElementService
+import com.awabi2048.ccsystem.api.gui.GuiActionService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
@@ -25,6 +26,7 @@ import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.cosmetic.CosmeticPlatformImpl
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
+import com.awabi2048.ccsystem.core.gui.GuiActionServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
@@ -71,6 +73,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     private val menuCommandService = MenuCommandServiceImpl()
     private val menuCapabilityService = MenuCapabilityServiceImpl()
     private val guiElementService = GuiElementServiceImpl()
+    private val guiActionService = GuiActionServiceImpl(::getI18nString)
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
     private val menuSoundService = MenuSoundServiceImpl()
@@ -239,6 +242,10 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
 
     override fun getGuiElementService(): GuiElementService {
         return guiElementService
+    }
+
+    override fun getGuiActionService(): GuiActionService {
+        return guiActionService
     }
 
     override fun getGuiLayoutService(): GuiLayoutService {

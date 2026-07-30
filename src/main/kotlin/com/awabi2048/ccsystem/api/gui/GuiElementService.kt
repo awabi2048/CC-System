@@ -19,6 +19,8 @@ interface GuiElementService {
 
     fun menuIcon(spec: GuiMenuIconSpec): ItemStack
 
+    fun menuCapability(presentation: MenuCapabilityPresentation): ItemStack
+
     fun applyFrame(inventory: Inventory, spec: GuiFrameSpec)
 
     fun fillEmpty(inventory: Inventory, element: GuiItemSpec)
