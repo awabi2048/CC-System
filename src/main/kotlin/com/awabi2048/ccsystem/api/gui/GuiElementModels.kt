@@ -254,6 +254,30 @@ data class GuiMenuDisplaySpec(
 }
 
 /**
+ * 既に構造化された表示情報とRuntime操作を一体で宣言する。
+ * 表示はGuiItemSpecのまま渡し、完成ItemStackの持ち込みは許可しない。
+ */
+data class GuiStructuredMenuEntrySpec(
+    val slot: Int,
+    val item: GuiItemSpec,
+    val actions: List<GuiMenuEntryAction>,
+    val glint: Boolean? = null,
+    val sounds: MenuActionSoundPolicy? = null,
+    val playerHeadOwner: UUID? = null,
+) {
+    init {
+        require(slot >= 0) { "slot must not be negative" }
+        require(item.role != GuiElementRole.DECORATION || actions.isEmpty()) {
+            "decoration entries cannot have actions"
+        }
+        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        require(accepted.size == accepted.distinct().size) {
+            "a click type cannot be assigned to multiple menu actions"
+        }
+    }
+}
+
+/**
  * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
  * 外部システムは描画後のItemStackへ操作情報を付け直さない。
  */

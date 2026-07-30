@@ -12,6 +12,7 @@ import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuCapabilitySpec
+import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
 import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuElement
@@ -148,6 +149,40 @@ class GuiElementServiceImpl(
             role = spec.item.role,
             interaction = MenuInteraction.DisplayOnly,
         )
+    }
+
+    override fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement {
+        val enabledActions = spec.actions.filter(GuiMenuEntryAction::enabled)
+        val actionLines = GuiMenuEntryLoreFactory.actionLines(enabledActions, player)
+        val icon = item(
+            spec.item.copy(lore = appendActionLore(spec.item.lore, actionLines)),
+        ).also { item ->
+            spec.glint?.let { enabled -> item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) } }
+            spec.playerHeadOwner?.let { owner ->
+                val meta = item.itemMeta as? SkullMeta
+                    ?: error("playerHeadOwner requires a player head material")
+                meta.owningPlayer = Bukkit.getOfflinePlayer(owner)
+                item.itemMeta = meta
+            }
+        }
+        val interaction = when {
+            enabledActions.isEmpty() -> MenuInteraction.DisplayOnly
+            enabledActions.size == 1 -> enabledActions.single().let { action ->
+                MenuInteraction.Action(
+                    action.actionId,
+                    action.acceptedClicks,
+                    action.payload,
+                    spec.sounds,
+                )
+            }
+            else -> MenuInteraction.Branches(
+                enabledActions.map { action ->
+                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload)
+                },
+                spec.sounds,
+            )
+        }
+        return MenuElement(spec.slot, icon, spec.item.role, interaction = interaction)
     }
 
     override fun menuCapability(player: Player?, capability: ResolvedMenuCapability): ItemStack {
