@@ -94,7 +94,11 @@ internal class MenuConfirmationServiceImpl(
                     ),
                 ),
                 elements.menuDisplay(
-                    GuiMenuDisplaySpec(layout.previewSlot, draft.previewItem),
+                    GuiMenuDisplaySpec(
+                        layout.previewSlot,
+                        draft.previewItem,
+                        playerHeadOwner = draft.previewPlayerHeadOwner,
+                    ),
                 ),
                 elements.menuStructuredEntry(
                     player,

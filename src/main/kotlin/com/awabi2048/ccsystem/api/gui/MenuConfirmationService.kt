@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api.gui
 
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import java.util.UUID
 
 data class MenuConfirmationDraft(
     val owner: String,
@@ -12,6 +13,7 @@ data class MenuConfirmationDraft(
     val cancelItem: GuiItemSpec,
     val confirmActionText: String,
     val cancelActionText: String,
+    val previewPlayerHeadOwner: UUID? = null,
     val onConfirm: () -> MenuActionResult,
     val onCancel: () -> MenuActionResult = {
         MenuActionResult.Success(MenuUpdate.Back)
