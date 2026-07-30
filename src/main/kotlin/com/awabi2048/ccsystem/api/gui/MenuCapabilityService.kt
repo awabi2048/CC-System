@@ -18,6 +18,7 @@ data class MenuCapabilityPresentation(
     val item: GuiItemSpec,
     val glint: Boolean? = null,
     val playerHeadOwner: UUID? = null,
+    val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
 )
 
 fun interface MenuCapabilityPresentationProvider {
