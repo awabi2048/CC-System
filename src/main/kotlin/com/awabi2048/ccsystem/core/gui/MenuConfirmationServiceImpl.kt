@@ -1,6 +1,9 @@
 package com.awabi2048.ccsystem.core.gui
 
-import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
+import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
@@ -12,7 +15,7 @@ import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseHandler
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationDraft
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
-import com.awabi2048.ccsystem.api.gui.MenuElement
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import java.util.UUID
@@ -32,11 +35,7 @@ internal class MenuConfirmationServiceImpl(
         val token = UUID.randomUUID()
         drafts[token] = OwnedDraft(
             player.uniqueId,
-            draft.copy(
-                previewItem = draft.previewItem.clone(),
-                confirmItem = draft.confirmItem.clone(),
-                cancelItem = draft.cancelItem.clone(),
-            ),
+            draft,
         )
         return MenuRoute(
             draft.owner,
@@ -63,7 +62,7 @@ internal class MenuConfirmationServiceImpl(
             InventoryMenuDefinition(
                 owner = owner,
                 id = ROUTE_ID,
-                renderer = { context -> render(context.route) },
+                renderer = { context -> render(context.player, context.route) },
                 actions = mapOf(
                     ACTION_CONFIRM to MenuActionHandler(::confirm),
                     ACTION_CANCEL to MenuActionHandler(::cancel),
@@ -73,31 +72,42 @@ internal class MenuConfirmationServiceImpl(
         )
     }
 
-    private fun render(route: MenuRoute): InventoryMenuView {
+    private fun render(player: Player, route: MenuRoute): InventoryMenuView {
         val draft = ownedDraft(route).draft
         val layout = layouts.confirmation45()
+        val elements = CCSystem.getAPI().getGuiElementService()
         return InventoryMenuView(
             size = layout.size,
             title = draft.title,
             elements = listOf(
-                MenuElement(
-                    layout.confirmSlot,
-                    draft.confirmItem.clone(),
-                    GuiElementRole.CONFIRM,
-                    ACTION_CONFIRM,
-                    sounds = MenuActionSoundPolicy(success = draft.confirmSound),
+                elements.menuStructuredEntry(
+                    player,
+                    GuiStructuredMenuEntrySpec(
+                        layout.confirmSlot,
+                        draft.confirmItem,
+                        listOf(GuiMenuEntryAction(
+                            ACTION_CONFIRM,
+                            MenuAcceptedClicks.LEFT_RIGHT,
+                            draft.confirmActionText,
+                        )),
+                        sounds = MenuActionSoundPolicy(success = draft.confirmSound),
+                    ),
                 ),
-                MenuElement(
-                    layout.previewSlot,
-                    draft.previewItem.clone(),
-                    GuiElementRole.CONTENT,
+                elements.menuDisplay(
+                    GuiMenuDisplaySpec(layout.previewSlot, draft.previewItem),
                 ),
-                MenuElement(
-                    layout.cancelSlot,
-                    draft.cancelItem.clone(),
-                    GuiElementRole.CANCEL,
-                    ACTION_CANCEL,
-                    sounds = MenuActionSoundPolicy(success = draft.cancelSound),
+                elements.menuStructuredEntry(
+                    player,
+                    GuiStructuredMenuEntrySpec(
+                        layout.cancelSlot,
+                        draft.cancelItem,
+                        listOf(GuiMenuEntryAction(
+                            ACTION_CANCEL,
+                            MenuAcceptedClicks.LEFT_RIGHT,
+                            draft.cancelActionText,
+                        )),
+                        sounds = MenuActionSoundPolicy(success = draft.cancelSound),
+                    ),
                 ),
             ),
         )
