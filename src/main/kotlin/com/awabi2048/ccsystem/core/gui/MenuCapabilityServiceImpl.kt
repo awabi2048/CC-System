@@ -39,9 +39,10 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
         capabilityId: String,
         player: Player,
         arguments: Map<String, String>,
+        attributes: Map<String, Any>,
     ): ResolvedMenuCapability? {
         val definition = definitions[capabilityId] ?: return null
-        val context = MenuCapabilityContext(player, arguments)
+        val context = MenuCapabilityContext(player, arguments, attributes)
         if (!definition.availability.isAvailable(context)) return null
         return ResolvedMenuCapability(
             capabilityId = capabilityId,
@@ -58,13 +59,14 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
         player: Player,
         click: ClickType,
         arguments: Map<String, String>,
+        attributes: Map<String, Any>,
     ): MenuActionResult {
         val definition = definitions[capabilityId] ?: return MenuActionResult.Ignored
-        val context = MenuCapabilityContext(player, arguments)
+        val context = MenuCapabilityContext(player, arguments, attributes)
         if (!definition.availability.isAvailable(context)) return MenuActionResult.Ignored
         if (click !in definition.acceptedClicks) return MenuActionResult.Ignored
         if (!definition.actionAvailability.isAvailable(context)) return MenuActionResult.Ignored
         val handler = definition.actionHandler ?: return MenuActionResult.Ignored
-        return handler.handle(MenuCapabilityActionContext(player, click, arguments))
+        return handler.handle(MenuCapabilityActionContext(player, click, arguments, attributes))
     }
 }

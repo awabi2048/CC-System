@@ -7,6 +7,7 @@ import java.util.UUID
 data class MenuCapabilityContext(
     val player: Player,
     val arguments: Map<String, String> = emptyMap(),
+    val attributes: Map<String, Any> = emptyMap(),
 )
 
 fun interface MenuCapabilityAvailability {
@@ -27,6 +28,7 @@ data class MenuCapabilityActionContext(
     val player: Player,
     val click: ClickType,
     val arguments: Map<String, String> = emptyMap(),
+    val attributes: Map<String, Any> = emptyMap(),
 )
 
 fun interface MenuCapabilityActionHandler {
@@ -77,6 +79,7 @@ interface MenuCapabilityService {
         capabilityId: String,
         player: Player,
         arguments: Map<String, String> = emptyMap(),
+        attributes: Map<String, Any> = emptyMap(),
     ): ResolvedMenuCapability?
 
     fun execute(
@@ -84,5 +87,6 @@ interface MenuCapabilityService {
         player: Player,
         click: ClickType,
         arguments: Map<String, String> = emptyMap(),
+        attributes: Map<String, Any> = emptyMap(),
     ): MenuActionResult
 }
