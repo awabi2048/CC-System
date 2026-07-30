@@ -253,6 +253,22 @@ data class GuiMenuDisplaySpec(
     }
 }
 
+/**
+ * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
+ * 外部システムは描画後のItemStackへ操作情報を付け直さない。
+ */
+data class GuiMenuCapabilitySpec(
+    val slot: Int,
+    val capability: ResolvedMenuCapability,
+    val actionId: String,
+    val actionPayload: Map<String, String> = emptyMap(),
+) {
+    init {
+        require(slot >= 0) { "slot must not be negative" }
+        require(actionId.isNotBlank()) { "actionId must not be blank" }
+    }
+}
+
 sealed interface GuiFrameSection {
     data object None : GuiFrameSection
     data class Row(val element: GuiItemSpec) : GuiFrameSection

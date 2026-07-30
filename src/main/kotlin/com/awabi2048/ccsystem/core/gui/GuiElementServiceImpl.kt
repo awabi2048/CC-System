@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuCapabilitySpec
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
 import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuElement
@@ -175,6 +176,31 @@ class GuiElementServiceImpl(
             item.itemMeta = meta
         }
         return item
+    }
+
+    override fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement {
+        val capability = spec.capability
+        val item = menuCapability(player, capability)
+        val acceptedClicks = capability.acceptedClicks
+        return if (capability.actionable && acceptedClicks.isNotEmpty()) {
+            MenuElement(
+                slot = spec.slot,
+                item = item,
+                role = GuiElementRole.ACTION,
+                interaction = MenuInteraction.Action(
+                    actionId = spec.actionId,
+                    acceptedClicks = acceptedClicks,
+                    payload = spec.actionPayload,
+                ),
+            )
+        } else {
+            MenuElement(
+                slot = spec.slot,
+                item = item,
+                role = GuiElementRole.CONTENT,
+                interaction = MenuInteraction.DisplayOnly,
+            )
+        }
     }
 
     private fun appendActionLore(base: GuiLoreSpec, actionLines: List<GuiLoreLine>): GuiLoreSpec {
