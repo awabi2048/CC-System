@@ -41,6 +41,19 @@ sealed interface MenuInteraction {
         }
     }
 
+    data class Capability(
+        val capabilityId: String,
+        val arguments: Map<String, String> = emptyMap(),
+        val attributes: Map<String, Any> = emptyMap(),
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
     data class Unavailable(
         val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
         val message: Component? = null,
@@ -91,7 +104,11 @@ data class MenuElement(
         require(role != GuiElementRole.DECORATION || actionId == null) {
             "decoration elements cannot have an action"
         }
-        require(interaction !is MenuInteraction.Action || role != GuiElementRole.DECORATION) {
+        require(
+            interaction !is MenuInteraction.Action &&
+                interaction !is MenuInteraction.Capability ||
+                role != GuiElementRole.DECORATION
+        ) {
             "decoration elements cannot have an interaction action"
         }
         require(interaction !is MenuInteraction.Back || role == GuiElementRole.BACK) {

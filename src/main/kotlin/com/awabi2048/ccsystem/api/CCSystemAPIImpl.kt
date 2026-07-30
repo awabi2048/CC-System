@@ -86,6 +86,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         menuSoundService,
         guiLayoutService,
         menuPresentationTracker,
+        menuCapabilityService,
     ).also {
         plugin.server.pluginManager.registerEvents(it, plugin)
     }

@@ -55,6 +55,7 @@ class MenuCapabilityServiceImpl(
         val resolvedActions = definition.actions.mapNotNull { action ->
             if (!action.availability.isAvailable(context)) return@mapNotNull null
             val text = action.textProvider.resolve(context)
+                .replace(LEGACY_FORMATTING, "")
             require(text.isNotBlank()) {
                 "Capability action text must not be blank: $capabilityId:${action.id}"
             }
@@ -116,10 +117,15 @@ class MenuCapabilityServiceImpl(
         val actionBlock = GuiLoreBlock(actionLines)
         val item = presentation.item
         val lore = when (val current = item.lore) {
-            GuiLoreSpec.None -> GuiLoreSpec.Blocks(listOf(actionBlock))
+            GuiLoreSpec.None ->
+                if (actionLines.size == 1) {
+                    GuiLoreSpec.Rich(actionLines, com.awabi2048.ccsystem.api.gui.GuiLoreFrame.NONE)
+                } else {
+                    GuiLoreSpec.Blocks(listOf(actionBlock))
+                }
             is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(current.blocks + actionBlock)
             is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
-                current.lines + GuiLoreLine.Separator + actionLines,
+                current.lines + GuiLoreLine.Spacer + actionLines,
                 current.frame,
             )
         }
@@ -131,5 +137,9 @@ class MenuCapabilityServiceImpl(
                 presentation.embeddedLoreBlocks + actionBlock
             },
         )
+    }
+
+    private companion object {
+        val LEGACY_FORMATTING = Regex("(?i)[§&][0-9A-FK-ORX]")
     }
 }

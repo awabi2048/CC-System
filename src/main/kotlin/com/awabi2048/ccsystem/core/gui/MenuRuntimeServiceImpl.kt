@@ -46,6 +46,7 @@ internal class MenuRuntimeServiceImpl(
     private val sounds: MenuSoundService,
     private val layouts: GuiLayoutService,
     private val presentations: MenuPresentationTracker,
+    private val capabilities: com.awabi2048.ccsystem.api.gui.MenuCapabilityService,
 ) : MenuRuntimeService, Listener {
     private val closeReasons = MenuCloseReasonTracker<Inventory>()
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
@@ -342,36 +343,60 @@ internal class MenuRuntimeServiceImpl(
                 return
             }
             is MenuInteraction.Action -> if (event.click !in interaction.acceptedClicks) return
+            is MenuInteraction.Capability ->
+                if (event.click !in interaction.acceptedClicks) return
         }
-        val action = interaction
-        val actionId = action.actionId
-        val handler = definition.actions[actionId] ?: return
         if (!executing.add(player.uniqueId)) return
         val originRevision = presentations.current(player)?.revision
 
         val result = try {
-            handler.handle(
-                MenuActionContext(
-                    player,
-                    holder.route,
-                    actionId,
-                    action.payload,
-                    event.click,
-                    (event.currentItem ?: element.item).clone(),
-                    event.cursor.clone(),
-                ),
-            )
+            when (interaction) {
+                is MenuInteraction.Action -> {
+                    val handler = definition.actions[interaction.actionId] ?: return
+                    handler.handle(
+                        MenuActionContext(
+                            player,
+                            holder.route,
+                            interaction.actionId,
+                            interaction.payload,
+                            event.click,
+                            (event.currentItem ?: element.item).clone(),
+                            event.cursor.clone(),
+                        ),
+                    )
+                }
+                is MenuInteraction.Capability ->
+                    capabilities.execute(
+                        interaction.capabilityId,
+                        player,
+                        event.click,
+                        interaction.arguments,
+                        interaction.attributes,
+                    )
+            }
         } catch (failure: Throwable) {
             plugin.logger.log(
                 Level.SEVERE,
-                "メニューActionの実行に失敗しました: route=${definition.routeId} action=$actionId player=${player.uniqueId}",
+                "メニュー操作の実行に失敗しました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId}",
                 failure,
             )
             MenuActionResult.Rejected()
         } finally {
             executing.remove(player.uniqueId)
         }
-        applyResult(player, session, action.sounds, definition, clickType, result, originRevision)
+        val interactionSounds = when (interaction) {
+            is MenuInteraction.Action -> interaction.sounds
+            is MenuInteraction.Capability -> interaction.sounds
+        }
+        applyResult(
+            player,
+            session,
+            interactionSounds,
+            definition,
+            clickType,
+            result,
+            originRevision,
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

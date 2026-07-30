@@ -103,7 +103,7 @@ gui:
     world_item:
       warp: Warp to this world
       settings: Open world settings
-      move_to_top: Move to the top of the list
+      move_to_top: Reorder
       expired: This world has been archived
       expires_at: Archive schedule
       expires_value: '{days} days (archived on {date})'
