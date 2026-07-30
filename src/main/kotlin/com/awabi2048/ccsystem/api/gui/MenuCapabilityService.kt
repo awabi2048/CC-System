@@ -2,7 +2,6 @@ package com.awabi2048.ccsystem.api.gui
 
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
-import org.bukkit.inventory.ItemStack
 
 data class MenuCapabilityContext(
     val player: Player,
@@ -13,8 +12,13 @@ fun interface MenuCapabilityAvailability {
     fun isAvailable(context: MenuCapabilityContext): Boolean
 }
 
-fun interface MenuCapabilityItemRenderer {
-    fun render(context: MenuCapabilityContext): ItemStack
+data class MenuCapabilityPresentation(
+    val item: GuiItemSpec,
+    val glint: Boolean? = null,
+)
+
+fun interface MenuCapabilityPresentationProvider {
+    fun resolve(context: MenuCapabilityContext): MenuCapabilityPresentation
 }
 
 data class MenuCapabilityActionContext(
@@ -32,7 +36,7 @@ data class MenuCapabilityDefinition(
     val id: String,
     val placement: String,
     val availability: MenuCapabilityAvailability,
-    val itemRenderer: MenuCapabilityItemRenderer,
+    val presentationProvider: MenuCapabilityPresentationProvider,
     val actionAvailability: MenuCapabilityAvailability =
         MenuCapabilityAvailability { true },
     val actionHandler: MenuCapabilityActionHandler? = null,
@@ -51,7 +55,7 @@ data class MenuCapabilityDefinition(
 
 data class ResolvedMenuCapability(
     val capabilityId: String,
-    val item: ItemStack,
+    val presentation: MenuCapabilityPresentation,
     val actionable: Boolean,
     val acceptedClicks: Set<ClickType>,
 )

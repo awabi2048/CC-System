@@ -45,7 +45,7 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
         if (!definition.availability.isAvailable(context)) return null
         return ResolvedMenuCapability(
             capabilityId = capabilityId,
-            item = definition.itemRenderer.render(context).clone(),
+            presentation = definition.presentationProvider.resolve(context),
             actionable =
                 definition.actionHandler != null &&
                     definition.actionAvailability.isAvailable(context),
