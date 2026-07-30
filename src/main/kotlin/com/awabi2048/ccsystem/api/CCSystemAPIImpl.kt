@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.MenuCapabilityService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.gui.MenuDialogService
@@ -28,6 +29,7 @@ import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuCommandServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuCapabilityServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
@@ -67,6 +69,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
+    private val menuCapabilityService = MenuCapabilityServiceImpl()
     private val guiElementService = GuiElementServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl()
@@ -251,6 +254,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
 
     override fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService = menuCommandService
+
+    override fun getMenuCapabilityService(): MenuCapabilityService = menuCapabilityService
 
     override fun getMenuSoundService(): MenuSoundService {
         return menuSoundService
