@@ -156,7 +156,7 @@ internal class MenuFormServiceImpl(
             return
         }
         when (update) {
-            MenuUpdate.None -> runtime.completeExternal(player)
+            MenuUpdate.None -> Unit
             MenuUpdate.Close -> runtime.close(player)
             MenuUpdate.Refresh -> refresh()
             MenuUpdate.Resume -> runtime.resumeFromExternal(player)

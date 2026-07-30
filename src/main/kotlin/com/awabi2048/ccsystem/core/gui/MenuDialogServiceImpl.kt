@@ -171,7 +171,7 @@ internal class MenuDialogServiceImpl(
                     return
                 }
                 when (update) {
-                    MenuUpdate.None -> runtime.completeExternal(player)
+                    MenuUpdate.None -> Unit
                     MenuUpdate.Close -> runtime.close(player)
                     MenuUpdate.Refresh -> show(player, request)
                     MenuUpdate.Resume -> runtime.resumeFromExternal(player)
