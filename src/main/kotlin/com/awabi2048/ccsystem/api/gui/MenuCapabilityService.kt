@@ -17,8 +17,14 @@ fun interface MenuCapabilityItemRenderer {
     fun render(context: MenuCapabilityContext): ItemStack
 }
 
-fun interface MenuCapabilityRouteResolver {
-    fun resolve(context: MenuCapabilityContext): MenuRoute?
+data class MenuCapabilityActionContext(
+    val player: Player,
+    val click: ClickType,
+    val arguments: Map<String, String> = emptyMap(),
+)
+
+fun interface MenuCapabilityActionHandler {
+    fun handle(context: MenuCapabilityActionContext): MenuActionResult
 }
 
 data class MenuCapabilityDefinition(
@@ -27,7 +33,9 @@ data class MenuCapabilityDefinition(
     val placement: String,
     val availability: MenuCapabilityAvailability,
     val itemRenderer: MenuCapabilityItemRenderer,
-    val routeResolver: MenuCapabilityRouteResolver,
+    val actionAvailability: MenuCapabilityAvailability =
+        MenuCapabilityAvailability { true },
+    val actionHandler: MenuCapabilityActionHandler? = null,
     val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT,
 ) {
     val capabilityId: String
@@ -44,7 +52,7 @@ data class MenuCapabilityDefinition(
 data class ResolvedMenuCapability(
     val capabilityId: String,
     val item: ItemStack,
-    val targetRoute: MenuRoute?,
+    val actionable: Boolean,
     val acceptedClicks: Set<ClickType>,
 )
 
@@ -64,4 +72,11 @@ interface MenuCapabilityService {
         player: Player,
         arguments: Map<String, String> = emptyMap(),
     ): ResolvedMenuCapability?
+
+    fun execute(
+        capabilityId: String,
+        player: Player,
+        click: ClickType,
+        arguments: Map<String, String> = emptyMap(),
+    ): MenuActionResult
 }
