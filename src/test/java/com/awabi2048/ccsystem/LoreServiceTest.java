@@ -24,8 +24,6 @@ class LoreServiceTest {
     private static LoreServiceImpl interactionLoreService() {
         return new LoreServiceImpl((player, key, arguments) -> switch (key) {
             case "lore.click.left" -> "左クリック";
-            case "lore.action_single_with_operation" ->
-                arguments.get("operation") + "で" + arguments.get("action");
             default -> throw new IllegalArgumentException(key);
         });
     }

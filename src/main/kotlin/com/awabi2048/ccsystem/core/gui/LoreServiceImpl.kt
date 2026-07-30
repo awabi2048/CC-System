@@ -106,18 +106,21 @@ class LoreServiceImpl(
                 is GuiInputGesture.Described -> gesture.operationLabel
             }
             val rendered = if (interactionCount == 1) {
-                val resolved = resolver(
-                    line.viewer,
-                    "lore.action_single_with_operation",
-                    mapOf("operation" to operation, "action" to line.label),
-                )
-                LoreFormatter.singleActionLine(resolved)
+                LoreFormatter.singleActionLine(composeSingleAction(line, operation))
             } else {
                 LoreFormatter.actionLine(operation, line.label)
             }
             listOf(RenderedLine(LoreFormatter.component(rendered)))
         }
         else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
+    }
+
+    private fun composeSingleAction(line: GuiLoreLine.Interaction, operation: String): String {
+        return if (line.viewer?.locale()?.language == "en") {
+            "$operation to ${line.label}"
+        } else {
+            "${operation}で${line.label}"
+        }
     }
 
     private fun statusMarker(tone: GuiStatusTone): Component {

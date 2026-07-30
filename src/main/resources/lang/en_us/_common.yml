@@ -107,7 +107,6 @@ gui:
     page_shift_prev: Jump 5 pages back
     status_display: 'Status: {color}{status}'
 lore:
-  action_single_with_operation: '{operation} to {action}'
   click:
     any: Click
     middle: Middle-Click
