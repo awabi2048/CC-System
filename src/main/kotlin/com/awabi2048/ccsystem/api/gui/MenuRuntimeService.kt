@@ -41,6 +41,14 @@ interface MenuRuntimeService {
 
     fun resumeFromExternal(player: Player): Boolean
 
+    /**
+     * 外部入力を完了し、保持している現在Routeを次tickに最新状態から再生成します。
+     *
+     * 対応する [suspendForExternal] が成立している場合だけ一度受理し、
+     * 同じ外部入力に対する重複完了では再表示しません。
+     */
+    fun finishExternal(player: Player): Boolean
+
     fun completeExternal(player: Player)
 
     fun present(player: Player, request: ManagedInventoryMenuRequest): Boolean

@@ -155,7 +155,7 @@ internal class MenuFormServiceImpl(
             MenuUpdate.None -> Unit
             MenuUpdate.Close -> runtime.close(player)
             MenuUpdate.Refresh -> refresh()
-            MenuUpdate.Resume -> runtime.resumeFromExternal(player)
+            MenuUpdate.Resume -> runtime.finishExternal(player)
             MenuUpdate.Back -> runtime.back(player)
             is MenuUpdate.Navigate -> runtime.navigate(player, update.route)
             is MenuUpdate.Replace -> runtime.replace(player, update.route)

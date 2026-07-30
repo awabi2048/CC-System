@@ -149,7 +149,7 @@ internal class MenuDialogServiceImpl(
                     MenuUpdate.None -> Unit
                     MenuUpdate.Close -> runtime.close(player)
                     MenuUpdate.Refresh -> show(player, request)
-                    MenuUpdate.Resume -> runtime.resumeFromExternal(player)
+                    MenuUpdate.Resume -> runtime.finishExternal(player)
                     MenuUpdate.Back -> runtime.back(player)
                     is MenuUpdate.Replace -> runtime.replace(player, update.route)
                     is MenuUpdate.Navigate -> runtime.navigate(player, update.route)

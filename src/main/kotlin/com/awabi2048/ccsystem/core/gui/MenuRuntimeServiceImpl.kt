@@ -52,7 +52,7 @@ internal class MenuRuntimeServiceImpl(
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val preserveCloseInventories = ConcurrentHashMap.newKeySet<Inventory>()
-    private val externalSuspensions = ConcurrentHashMap.newKeySet<UUID>()
+    private val externalSuspensions = ConcurrentHashMap<UUID, MenuRoute>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val presentedInventories = java.util.Collections.synchronizedMap(
@@ -119,8 +119,8 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun suspendForExternal(player: Player): Boolean {
-        if (navigation.currentRoute(player) == null) return false
-        externalSuspensions += player.uniqueId
+        val route = navigation.currentRoute(player) ?: return false
+        externalSuspensions[player.uniqueId] = route
         preserveHistoryOnClose(player)
         closeInventory(player, MenuCloseReason.ROUTE_REPLACED)
         presentations.markClosed(player)
@@ -128,8 +128,20 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun resumeFromExternal(player: Player): Boolean {
-        if (!externalSuspensions.remove(player.uniqueId)) return false
+        val route = externalSuspensions.remove(player.uniqueId) ?: return false
+        if (navigation.currentRoute(player) != route) return false
         return reopenCurrent(player)
+    }
+
+    override fun finishExternal(player: Player): Boolean {
+        val route = externalSuspensions.remove(player.uniqueId) ?: return false
+        if (navigation.currentRoute(player) != route) return false
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            if (player.isOnline && navigation.currentRoute(player) == route) {
+                reopenCurrent(player)
+            }
+        })
+        return true
     }
 
     override fun completeExternal(player: Player) {
@@ -565,7 +577,7 @@ internal class MenuRuntimeServiceImpl(
                 when (update) {
                     MenuUpdate.None -> Unit
                     MenuUpdate.Refresh -> refresh(player)
-                    MenuUpdate.Resume -> resumeFromExternal(player)
+                    MenuUpdate.Resume -> finishExternal(player)
                     MenuUpdate.Close -> close(player)
                     MenuUpdate.Back -> if (!back(player)) close(player)
                     is MenuUpdate.Replace -> replace(player, update.route)
