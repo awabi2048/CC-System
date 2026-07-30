@@ -27,6 +27,11 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
     override fun definitions(): List<MenuCapabilityDefinition> =
         definitions.values.sortedBy(MenuCapabilityDefinition::capabilityId)
 
+    override fun definitions(placement: String): List<MenuCapabilityDefinition> =
+        definitions.values
+            .filter { it.placement == placement }
+            .sortedBy(MenuCapabilityDefinition::capabilityId)
+
     override fun resolve(
         capabilityId: String,
         player: Player,

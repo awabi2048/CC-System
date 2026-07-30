@@ -24,6 +24,7 @@ fun interface MenuCapabilityRouteResolver {
 data class MenuCapabilityDefinition(
     val owner: String,
     val id: String,
+    val placement: String,
     val availability: MenuCapabilityAvailability,
     val itemRenderer: MenuCapabilityItemRenderer,
     val routeResolver: MenuCapabilityRouteResolver,
@@ -35,6 +36,7 @@ data class MenuCapabilityDefinition(
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
+        require(placement.isNotBlank()) { "placement must not be blank" }
         require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
     }
 }
@@ -54,6 +56,8 @@ interface MenuCapabilityService {
     fun definition(capabilityId: String): MenuCapabilityDefinition?
 
     fun definitions(): List<MenuCapabilityDefinition>
+
+    fun definitions(placement: String): List<MenuCapabilityDefinition>
 
     fun resolve(
         capabilityId: String,
