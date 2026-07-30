@@ -142,6 +142,7 @@ gui:
       description:
       - Review received invitations and requests.
       count_label: Pending
-      latest_label: Latest Received
+      latest_label: Latest Notification
       none: None
+      empty: "§7There are no pending invitations or requests"
       action: Open list

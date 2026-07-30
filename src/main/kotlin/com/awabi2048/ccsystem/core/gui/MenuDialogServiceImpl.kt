@@ -143,10 +143,6 @@ internal class MenuDialogServiceImpl(
                         presentations.current(player)?.revision,
                     )
                 ) {
-                    plugin.logger.warning(
-                        "Dialog変更後の古いMenuUpdateを無視しました: " +
-                            "owner=${request.owner} id=${request.id} update=${update::class.simpleName}"
-                    )
                     return
                 }
                 when (update) {

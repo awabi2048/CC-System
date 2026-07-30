@@ -99,6 +99,11 @@ sealed interface GuiLoreLine {
 
 sealed interface GuiLoreSpec {
     data object None : GuiLoreSpec
+    /**
+     * Nameだけを表示し、Capabilityが持つ操作案内もLoreへ合成しません。
+     * クリック契約自体は維持されます。
+     */
+    data object NameOnly : GuiLoreSpec
     data class Blocks(val blocks: List<GuiLoreBlock>) : GuiLoreSpec {
         init {
             require(blocks.isNotEmpty()) { "Lore blocks must not be empty" }

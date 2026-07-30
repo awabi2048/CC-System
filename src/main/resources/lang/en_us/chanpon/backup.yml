@@ -116,9 +116,6 @@ chanpon:
             - "§7It will also be used as the first-login visit destination."
     linked_portal:
       display: "§dGet this world's portal"
-      description:
-        - "Receive the world portal item previously"
-        - "linked to this world."
       action: "Get this world's portal"
       lore:
         - "§7Receive a world portal linked to {world}."

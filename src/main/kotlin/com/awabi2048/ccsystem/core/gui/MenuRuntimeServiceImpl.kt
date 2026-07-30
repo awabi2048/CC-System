@@ -560,13 +560,6 @@ internal class MenuRuntimeServiceImpl(
                         presentations.current(player)?.revision,
                     )
                 ) {
-                    val current = presentations.current(player)
-                    plugin.logger.warning(
-                        "画面変更後の古いMenuUpdateを無視しました: " +
-                            "route=${session.route.owner}:${session.route.id} update=${update::class.simpleName} " +
-                            "originRevision=$originRevision currentRevision=${current?.revision} " +
-                            "currentSurface=${current?.surface} current=${current?.owner}:${current?.id}"
-                    )
                     return
                 }
                 when (update) {

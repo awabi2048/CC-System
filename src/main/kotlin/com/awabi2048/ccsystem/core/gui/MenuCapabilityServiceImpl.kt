@@ -117,13 +117,26 @@ class MenuCapabilityServiceImpl(
         val actionBlock = GuiLoreBlock(actionLines)
         val item = presentation.item
         val lore = when (val current = item.lore) {
+            GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
             GuiLoreSpec.None ->
                 if (actionLines.size == 1) {
-                    GuiLoreSpec.Rich(actionLines, com.awabi2048.ccsystem.api.gui.GuiLoreFrame.NONE)
+                    GuiLoreSpec.Blocks(listOf(actionBlock))
                 } else {
                     GuiLoreSpec.Blocks(listOf(actionBlock))
                 }
-            is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(current.blocks + actionBlock)
+            is GuiLoreSpec.Blocks ->
+                if (actionLines.size == 1) {
+                    GuiLoreSpec.Blocks(
+                        current.blocks.dropLast(1) +
+                            GuiLoreBlock(
+                                current.blocks.last().lines +
+                                    GuiLoreLine.Spacer +
+                                    actionLines,
+                            ),
+                    )
+                } else {
+                    GuiLoreSpec.Blocks(current.blocks + actionBlock)
+                }
             is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
                 current.lines + GuiLoreLine.Spacer + actionLines,
                 current.frame,
@@ -133,6 +146,13 @@ class MenuCapabilityServiceImpl(
             item = item.copy(lore = lore),
             embeddedLoreBlocks = if (presentation.embeddedLoreBlocks.isEmpty()) {
                 presentation.embeddedLoreBlocks
+            } else if (actionLines.size == 1) {
+                presentation.embeddedLoreBlocks.dropLast(1) +
+                    GuiLoreBlock(
+                        presentation.embeddedLoreBlocks.last().lines +
+                            GuiLoreLine.Spacer +
+                            actionLines,
+                    )
             } else {
                 presentation.embeddedLoreBlocks + actionBlock
             },

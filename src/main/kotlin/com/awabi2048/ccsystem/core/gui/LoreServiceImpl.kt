@@ -21,6 +21,7 @@ class LoreServiceImpl : LoreService {
     override fun render(spec: GuiLoreSpec): List<Component> {
         return when (spec) {
             GuiLoreSpec.None -> emptyList()
+            GuiLoreSpec.NameOnly -> emptyList()
             is GuiLoreSpec.Blocks -> renderBlocks(spec.blocks)
             is GuiLoreSpec.Rich -> renderRich(spec.lines, spec.frame)
         }

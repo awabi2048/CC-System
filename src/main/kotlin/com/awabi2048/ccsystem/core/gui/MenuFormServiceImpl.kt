@@ -149,10 +149,6 @@ internal class MenuFormServiceImpl(
     private fun applyUpdate(player: Player, update: MenuUpdate, originRevision: Long?, refresh: () -> Unit) {
         val currentRevision = presentations.current(player)?.revision
         if (!MenuStaleUpdatePolicy.shouldApply(update, originRevision, currentRevision)) {
-            plugin.logger.warning(
-                "Bedrock Formの処理中に別画面へ遷移したため、古い画面更新を無視しました: " +
-                    "player=${player.uniqueId} update=$update origin=$originRevision current=$currentRevision"
-            )
             return
         }
         when (update) {

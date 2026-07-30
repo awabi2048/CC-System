@@ -141,7 +141,8 @@ gui:
       display: 招待・申請
       description:
       - 受信した招待と申請を確認します。
-      count_label: 未処理件数
-      latest_label: 最新受信日時
+      count_label: 保留中の件数
+      latest_label: 直近の通知
       none: なし
+      empty: "§7保留中の招待・申請はありません"
       action: 一覧を開く
