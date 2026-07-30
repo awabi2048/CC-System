@@ -159,13 +159,16 @@ chanpon:
       bulk_backup:
         display: "§aRun Bulk Backup"
         description: "Back up all production worlds."
+        action: "Run bulk backup"
       bulk_rollback:
         display: "§cRun Bulk Rollback"
         description: "Open bulk backup list."
+        action: "Open bulk backup list"
       annual_archive:
         display: "Annual Update"
         description: "Archive completed worlds and purge others."
         warning: "Full backup is created before execution."
+        action: "Run annual update"
       info:
         display: "§bList Info"
         lore:
@@ -198,16 +201,19 @@ chanpon:
       title: "§0Automation Settings"
       auto_backup:
         display: "§bAuto backup"
+        action: "Toggle setting"
         lore:
           - "§7Saves changed production worlds at the configured time."
           - "§7Current: §f{state}"
       auto_rollback:
         display: "§cAuto rollback"
+        action: "Toggle setting"
         lore:
           - "§7Restores the latest restore point at the configured time."
           - "§7Current: §f{state}"
       restore_point:
         display: "§dCreate Restore Point"
+        action: "Create restore point"
         lore:
           - "§7Save all production worlds as a restore point."
     owner_backup:

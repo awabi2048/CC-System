@@ -159,13 +159,16 @@ chanpon:
       bulk_backup:
         display: "§a一括バックアップの実行"
         description: "すべての本番用ワールドをバックアップします。"
+        action: "一括バックアップを実行"
       bulk_rollback:
         display: "§c一括ロールバックの実行"
         description: "全体バックアップ一覧を開きます。"
+        action: "全体バックアップ一覧を開く"
       annual_archive:
         display: "§5年次更新の実行"
         description: "完了ワールドをアーカイブし、未提出ワールドを抹消します。"
         warning: "実行前に全ワールドをバックアップします。"
+        action: "年次更新を実行"
       info:
         display: "§b一覧情報"
         lore:
@@ -198,16 +201,19 @@ chanpon:
       title: "§0自動処理の設定"
       auto_backup:
         display: "§b自動バックアップ"
+        action: "設定を切り替え"
         lore:
           - "§7configで指定した時刻に変更済み本番用ワールドを保存します。"
           - "§7現在: §f{state}"
       auto_rollback:
         display: "§c自動ロールバック"
+        action: "設定を切り替え"
         lore:
           - "§7configで指定した時刻に最新の復元ポイントへ戻します。"
           - "§7現在: §f{state}"
       restore_point:
         display: "§d復元ポイントを設定"
+        action: "復元ポイントを設定"
         lore:
           - "§7すべての本番用ワールドを復元ポイントとして保存します。"
     owner_backup:

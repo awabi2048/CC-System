@@ -103,11 +103,13 @@ chanpon:
       close:
         open:
           display: "§cClose submissions"
+          action: "Close submissions"
           lore:
             - "§7Close submissions."
             - "§7You can reopen submissions from this menu at any time."
         closed:
           display: "§eReopen submissions"
+          action: "Reopen submissions"
           lore:
             - "§7Reopen submissions."
             - "§7Players will be able to submit again."
