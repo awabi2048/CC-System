@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiStatusTone
+import com.awabi2048.ccsystem.api.gui.GuiInputGesture
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import net.kyori.adventure.key.Key
@@ -96,11 +97,14 @@ class LoreServiceImpl(
             val resolver = requireNotNull(i18n) {
                 "LoreService instance does not support translated interaction hints"
             }
-            val operation = resolver(
-                line.viewer,
-                GuiInteractionLabelResolver.languageKey(line.acceptedClicks),
-                emptyMap(),
-            )
+            val operation = when (val gesture = line.gesture) {
+                is GuiInputGesture.MenuClicks -> resolver(
+                    line.viewer,
+                    GuiInteractionLabelResolver.languageKey(gesture.acceptedClicks),
+                    emptyMap(),
+                )
+                is GuiInputGesture.Described -> gesture.operationLabel
+            }
             val rendered = if (interactionCount == 1) {
                 val resolved = resolver(
                     line.viewer,

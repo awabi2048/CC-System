@@ -58,11 +58,16 @@ sealed interface GuiLoreLine {
      */
     data class Interaction(
         val viewer: org.bukkit.entity.Player?,
-        val acceptedClicks: Set<ClickType>,
+        val gesture: GuiInputGesture,
         val label: String,
     ) : GuiLoreLine {
+        constructor(
+            viewer: org.bukkit.entity.Player?,
+            acceptedClicks: Set<ClickType>,
+            label: String,
+        ) : this(viewer, GuiInputGesture.MenuClicks(acceptedClicks), label)
+
         init {
-            require(acceptedClicks.isNotEmpty()) { "interaction clicks must not be empty" }
             require(label.isNotBlank()) { "interaction label must not be blank" }
         }
     }
@@ -150,6 +155,23 @@ enum class GuiValueTone(val colorCode: String) {
     SUCCESS("\u00A7a"),
     WARNING("\u00A76"),
     DANGER("\u00A7c"),
+}
+
+sealed interface GuiInputGesture {
+    data class MenuClicks(val acceptedClicks: Set<ClickType>) : GuiInputGesture {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "interaction clicks must not be empty" }
+        }
+    }
+
+    /**
+     * メニュークリックでは表現できないキー操作や複合入力の表示名。
+     */
+    data class Described(val operationLabel: String) : GuiInputGesture {
+        init {
+            require(operationLabel.isNotBlank()) { "operation label must not be blank" }
+        }
+    }
 }
 
 data class GuiMenuEntryData(
