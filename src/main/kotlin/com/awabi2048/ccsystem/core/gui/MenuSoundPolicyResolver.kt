@@ -6,13 +6,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 
 internal object MenuSoundPolicyResolver {
-    private val defaults = mapOf(
-        MenuClickType.DEFAULT to MenuSound("UI_BUTTON_CLICK", pitch = 2.0f),
-        MenuClickType.CONFIRM to MenuSound("UI_BUTTON_CLICK", pitch = 1.6f),
-        MenuClickType.CANCEL to MenuSound("UI_BUTTON_CLICK", pitch = 1.2f),
-        MenuClickType.NAVIGATION to MenuSound("UI_BUTTON_CLICK", pitch = 2.0f),
-        MenuClickType.INFO to MenuSound("UI_BUTTON_CLICK", pitch = 1.5f),
-    )
+    private val defaultClick = MenuSound("UI_BUTTON_CLICK", pitch = 2.0f)
 
     fun resolve(
         policy: MenuSoundPolicy,
@@ -20,7 +14,7 @@ internal object MenuSoundPolicyResolver {
         clickType: MenuClickType,
     ): MenuSound? = when (policy) {
             MenuSoundPolicy.Default -> when (fallback) {
-                MenuSoundPolicy.Default -> defaults.getValue(clickType)
+                MenuSoundPolicy.Default -> defaultClick
                 MenuSoundPolicy.Silent -> null
                 is MenuSoundPolicy.Custom -> fallback.sound
             }

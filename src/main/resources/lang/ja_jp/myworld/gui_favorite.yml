@@ -7,6 +7,7 @@ gui:
       name: §b現在のワールド
     world_item:
       warp: このワールドへワープ
+      preview: このワールドをプレビュー
       unfavorite: お気に入りを解除
       archived_label: §c【アーカイブされています】
     info:

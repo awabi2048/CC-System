@@ -31,7 +31,6 @@ import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockSpreadEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityExplodeEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -484,59 +483,4 @@ class RentalAreaListener : Listener {
         return true
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onJoin(event: PlayerJoinEvent) {
-        if (!ConfigManager.isRentalAreaEnabled()) {
-            return
-        }
-
-        val player = event.player
-        if (!RemainedItemManager.hasRemainedItems(player.uniqueId)) {
-            return
-        }
-
-        val areaIds = RemainedItemManager.getRemainedAreaIds(player.uniqueId)
-        val totalCount = RemainedItemManager.getTotalItemCount(player.uniqueId)
-
-        val areaList = areaIds.joinToString(", ")
-        val message = LanguageManager.getMessage(
-            player,
-            "rental_area_remained_items_notification",
-            "count" to totalCount.toString(),
-            "areas" to areaList
-        )
-
-        val clickText = LanguageManager.deserializeLegacy(
-            LanguageManager.getRawString(player, "rental_area_remained_items_click")
-        ).clickEvent(ClickEvent.runCommand("/rental-receive"))
-
-        val clickableMessage = message
-            .append(Component.space())
-            .append(clickText)
-
-        player.sendMessage(clickableMessage)
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        if (!ConfigManager.isRentalAreaEnabled()) {
-            return
-        }
-
-        val player = event.player
-        if (player !is org.bukkit.entity.Player) {
-            return
-        }
-
-        if (!RemainedItemManager.isOpenedStorage(player.uniqueId)) {
-            return
-        }
-
-        val title = event.view.title()
-        if (!title.toString().startsWith("§8回収アイテム:")) {
-            return
-        }
-
-        RemainedItemManager.onInventoryClose(player, event.inventory)
-    }
 }

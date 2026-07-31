@@ -37,8 +37,8 @@ class RentalReceiveCommand : CommandExecutor, TabCompleter {
             areaIds.first()
         }
 
-        val inventory = RemainedItemManager.openStorage(player, areaId)
-        if (inventory == null) {
+        val opened = RemainedItemManager.openStorage(player, areaId)
+        if (!opened) {
             player.sendMessage(LanguageManager.getMessage(player, "rental_area_no_remained_items"))
         }
 

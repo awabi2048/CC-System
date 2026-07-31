@@ -416,7 +416,7 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerDataListener(), this)
         server.pluginManager.registerEvents(PlayerDeathListener(), this)
         server.pluginManager.registerEvents(GuiProtectionListener(_api.getMenuNavigationService()), this)
-        server.pluginManager.registerEvents(AnnounceListener(), this)
+        AnnounceListener()
         server.pluginManager.registerEvents(announcementNotificationListener, this)
         server.pluginManager.registerEvents(PlayerLeftClickTriggerListener(), this)
         server.pluginManager.registerEvents(NaturalOriginListener(), this)
@@ -446,7 +446,6 @@ class CCSystem : JavaPlugin() {
 
     override fun onDisable() {
         // 再起動前に現在画面をUUID単位で保存し、次回ログインの一回だけ復元できる状態にする。
-        _api.getMenuNavigationService().persistCurrentRoutes(server.onlinePlayers)
         _api.getMenuNavigationService().closeAllMenus(server.onlinePlayers)
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()

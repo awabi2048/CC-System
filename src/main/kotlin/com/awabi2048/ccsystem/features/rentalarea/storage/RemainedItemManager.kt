@@ -1,9 +1,11 @@
 package com.awabi2048.ccsystem.features.rentalarea.storage
 
 import com.awabi2048.ccsystem.CCSystem
-import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
+import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
+import com.awabi2048.ccsystem.api.gui.InventoryMenuView
+import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockState
 import org.bukkit.block.Container
@@ -16,6 +18,33 @@ import java.io.File
 import java.util.UUID
 
 object RemainedItemManager {
+    private const val MENU_OWNER = "cc-system"
+    private const val MENU_ID = "rental-remained-items"
+
+    init {
+        CCSystem.getAPI().getMenuRuntimeService().register(
+            InventoryMenuDefinition(
+                owner = MENU_OWNER,
+                id = MENU_ID,
+                renderer = { context ->
+                    val areaId = context.route.payload.getValue("area")
+                    val items = loadAreaItems(context.player.uniqueId, areaId)
+                    InventoryMenuView(
+                        size = 54,
+                        title = LegacyComponentSerializer.legacySection()
+                            .deserialize("§8回収アイテム: $areaId"),
+                        elements = emptyList(),
+                        standardFrame = false,
+                        inputSlots = (0 until 54).toSet(),
+                        inputItems = items.mapIndexed { index, item -> index to item }.toMap(),
+                        playerInventoryInteraction = PlayerInventoryInteraction.INTERACTIVE,
+                    )
+                },
+                actions = emptyMap(),
+                onClose = { context -> onInventoryClose(context.player, context.inventory) },
+            ),
+        )
+    }
     private val storageDir: File by lazy {
         val dir = File(CCSystem.instance.dataFolder, "data/rental_area/remained_item")
         if (!dir.exists()) {
@@ -90,44 +119,32 @@ object RemainedItemManager {
         }
     }
 
-    fun openStorage(player: Player, areaId: String): Inventory? {
+    fun openStorage(player: Player, areaId: String): Boolean {
         val playerId = player.uniqueId
-        val file = getFile(playerId)
-        if (!file.exists()) {
-            return null
-        }
-
-        val config = YamlConfiguration.loadConfiguration(file)
-        val itemsSection = config.getConfigurationSection("$areaId.items")
-        if (itemsSection == null || itemsSection.getKeys(false).isEmpty()) {
-            return null
-        }
-
-        val items = mutableListOf<ItemStack>()
-        for (key in itemsSection.getKeys(false)) {
-            val item = itemsSection.getItemStack(key)
-            if (item != null && item.type != Material.AIR) {
-                items.add(item)
-            }
-        }
-
+        val items = loadAreaItems(playerId, areaId)
         if (items.isEmpty()) {
-            removeAreaSection(file, config, areaId)
-            return null
-        }
-
-        val title = "§8回収アイテム: $areaId"
-        val inventory = Bukkit.createInventory(null, 54, LegacyComponentSerializer.legacySection().deserialize(title))
-
-        for (item in items) {
-            inventory.addItem(item)
+            val file = getFile(playerId)
+            if (file.exists()) {
+                removeAreaSection(file, YamlConfiguration.loadConfiguration(file), areaId)
+            }
+            return false
         }
 
         playerInventories.getOrPut(playerId) { mutableMapOf() }[areaId] = items.toMutableList()
         openInventories[playerId] = areaId
+        return CCSystem.getAPI().getMenuRuntimeService().open(
+            player,
+            MenuRoute(MENU_OWNER, MENU_ID, mapOf("area" to areaId)),
+        )
+    }
 
-        ManagedMenuPresenter.open(player, inventory)
-        return inventory
+    private fun loadAreaItems(playerId: UUID, areaId: String): List<ItemStack> {
+        val file = getFile(playerId)
+        if (!file.exists()) return emptyList()
+        val section = YamlConfiguration.loadConfiguration(file)
+            .getConfigurationSection("$areaId.items") ?: return emptyList()
+        return section.getKeys(false).mapNotNull(section::getItemStack)
+            .filter { it.type != Material.AIR }
     }
 
     fun onInventoryClose(player: Player, inventory: Inventory) {

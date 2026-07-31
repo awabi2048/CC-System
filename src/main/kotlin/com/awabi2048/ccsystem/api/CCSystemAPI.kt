@@ -6,9 +6,11 @@ import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.MenuCapabilityService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.gui.MenuDialogService
+import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
@@ -98,11 +100,15 @@ interface CCSystemAPI {
 
     fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService
 
+    fun getMenuCapabilityService(): MenuCapabilityService
+
     fun getMenuSoundService(): MenuSoundService
 
     fun getMenuRuntimeService(): MenuRuntimeService
 
     fun getMenuDialogService(): MenuDialogService
+
+    fun getMenuConfirmationService(): MenuConfirmationService
 
     fun getMenuFormService(): MenuFormService
 

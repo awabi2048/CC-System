@@ -6,7 +6,6 @@ chanpon:
       prev: "§e前のページ"
       next: "§e次のページ"
       back: "§7戻る"
-      middle_click: "ホイールクリック"
     kind:
       user_manual: "§aユーザー手動"
       admin_manual: "§e管理者手動"
@@ -69,6 +68,18 @@ chanpon:
         selected: "選択中"
         not_selected: "未選択"
         action: "選択状態を切り替え"
+      confirm:
+        title: "§0ワールド出力の確認"
+        info:
+          display: "§e出力内容"
+          primary_label: "代表ワールド"
+          count_label: "出力ワールド数"
+          file_label: "出力ファイル名"
+          warning: "代表ワールドがoverworldになります。ポータル位置のブロックと、その上のブロックは出力先で上書きされます。"
+        execute:
+          display: "§aこの内容で出力"
+          description: "表示した代表ワールドと順序で出力します。"
+          action: "出力を開始"
     automation_notice:
       backup_warning: "§e定時バックアップを §f{remaining} §e後に開始します。開始前にスポーンへ退避します。"
       rollback_warning: "§c定時ロールバックを §f{remaining} §c後に開始します。開始前にスポーンへ退避します。"
@@ -104,6 +115,7 @@ chanpon:
             - "§7初回ログイン時の訪問先にもなります。"
     linked_portal:
       display: "§dこのワールドのワールドポータルを取得"
+      action: "このワールドのワールドポータルを取得"
       lore:
         - "§7{world} に紐付いたワールドポータルを取得します。"
       received: "§aワールドポータルを取得しました。"
@@ -146,13 +158,16 @@ chanpon:
       bulk_backup:
         display: "§a一括バックアップの実行"
         description: "すべての本番用ワールドをバックアップします。"
+        action: "一括バックアップを実行"
       bulk_rollback:
         display: "§c一括ロールバックの実行"
         description: "全体バックアップ一覧を開きます。"
+        action: "全体バックアップ一覧を開く"
       annual_archive:
         display: "§5年次更新の実行"
         description: "完了ワールドをアーカイブし、未提出ワールドを抹消します。"
         warning: "実行前に全ワールドをバックアップします。"
+        action: "年次更新を実行"
       info:
         display: "§b一覧情報"
         lore:
@@ -185,16 +200,19 @@ chanpon:
       title: "§0自動処理の設定"
       auto_backup:
         display: "§b自動バックアップ"
+        action: "設定を切り替え"
         lore:
           - "§7configで指定した時刻に変更済み本番用ワールドを保存します。"
           - "§7現在: §f{state}"
       auto_rollback:
         display: "§c自動ロールバック"
+        action: "設定を切り替え"
         lore:
           - "§7configで指定した時刻に最新の復元ポイントへ戻します。"
           - "§7現在: §f{state}"
       restore_point:
         display: "§d復元ポイントを設定"
+        action: "復元ポイントを設定"
         lore:
           - "§7すべての本番用ワールドを復元ポイントとして保存します。"
     owner_backup:
@@ -296,6 +314,7 @@ chanpon:
       restore_point_success: "§d復元ポイントを作成しました。"
       export_success: "§aワールドデータをエクスポートしました: §f{file}"
       export_failed: "§cワールドデータのエクスポートに失敗しました。"
+      export_failure_detail: "§c- {detail}"
       archive_locked: "§c年次更新処理中のため、現在マイワールドを利用できません。"
       world_creation_no_permission: "§cワールドを作成する権限がありません。"
       manual_operation_blocked: "§c定時バックアップまたは定時ロールバックの前後のため、現在は手動操作を実行できません。"

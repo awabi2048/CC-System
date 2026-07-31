@@ -36,12 +36,6 @@ interface MenuNavigationService {
 
     fun recordCurrentRoute(player: Player, route: MenuRoute)
 
-    fun persistCurrentRoute(player: Player)
-
-    fun persistCurrentRoutes(players: Collection<Player>)
-
-    fun resume(player: Player): MenuResumeResult
-
     fun push(player: Player, route: MenuRoute)
 
     fun open(player: Player, route: MenuRoute): Boolean
@@ -52,15 +46,12 @@ interface MenuNavigationService {
 
     fun openPrevious(player: Player): Boolean
 
+    /** 現在の画面から戻れる再生成可能なRouteが存在するかを返す。 */
+    fun canGoBack(player: Player): Boolean
+
     /**
      * GUI、Dialog、入力待ちをまたぐ戻り先を、CC-System共通のパンくずとして参照する。
      * 戻り処理では末尾から開き直すため、呼び出し側はInventory実体ではなく再生成可能なMenuRouteだけを積む。
      */
     fun breadcrumbs(player: Player): List<MenuRoute>
-}
-
-enum class MenuResumeResult {
-    NONE,
-    OPENED,
-    UNAVAILABLE
 }

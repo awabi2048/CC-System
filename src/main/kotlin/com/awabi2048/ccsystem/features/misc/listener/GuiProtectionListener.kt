@@ -2,15 +2,14 @@ package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
-import com.awabi2048.ccsystem.api.gui.MenuResumeResult
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker
-import org.bukkit.Bukkit
+import com.awabi2048.ccsystem.core.gui.PlayerInventoryTransferGuard
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
@@ -19,7 +18,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.Inventory
 
@@ -54,8 +52,14 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
         if (!clickedTop && currentIsGuiBeforeCleanup) {
             event.isCancelled = true
         }
-        if (!clickedTop && policy != null && !policy.allowPlayerInventoryInteraction) {
-            event.isCancelled = true
+        if (!clickedTop && policy != null) {
+            when (policy.playerInventoryInteraction) {
+                PlayerInventoryInteraction.BLOCKED,
+                PlayerInventoryInteraction.SELECTION -> event.isCancelled = true
+                PlayerInventoryInteraction.INTERACTIVE -> {
+                    if (PlayerInventoryTransferGuard.blocks(event.action)) event.isCancelled = true
+                }
+            }
         }
         if (clickedTop && !currentIsGuiBeforeCleanup && policy != null && !policy.acceptsTopSlot(event.rawSlot)) {
             event.isCancelled = true
@@ -82,7 +86,7 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
         val policy = navigation.inventoryPolicy(event.view.topInventory)
         val policyViolation = policy != null && event.rawSlots.any { slot ->
             if (slot < topSize) !policy.acceptsTopSlot(slot)
-            else !policy.allowPlayerInventoryInteraction
+            else policy.playerInventoryInteraction != PlayerInventoryInteraction.INTERACTIVE
         }
         if (!guiInCursor && !guiInDraggedItems && removed == 0 && !policyViolation) return
 
@@ -143,43 +147,8 @@ class GuiProtectionListener(private val navigation: MenuNavigationService) : Lis
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        val player = event.player as? Player ?: return
-        // 画面遷移中のcloseイベントで新しい画面のルートを消さないよう、次tickの画面を確認する。
-        Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
-            if (player.isOnline && !navigation.isManagedInventory(player.openInventory.topInventory)) {
-                navigation.clear(player)
-            }
-        })
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         removeLeakedPlayerItems(event.player, "ログイン時")
-        Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
-            when (navigation.resume(event.player)) {
-                MenuResumeResult.UNAVAILABLE -> retryResume(event.player, 3)
-                else -> Unit
-            }
-        })
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onPlayerQuit(event: PlayerQuitEvent) {
-        navigation.persistCurrentRoute(event.player)
-    }
-
-    private fun retryResume(player: Player, remaining: Int) {
-        Bukkit.getScheduler().runTaskLater(CCSystem.instance, Runnable {
-            if (!player.isOnline) return@Runnable
-            when (navigation.resume(player)) {
-                MenuResumeResult.UNAVAILABLE -> {
-                    if (remaining > 1) retryResume(player, remaining - 1)
-                    else player.sendMessage(CCSystem.getAPI().getI18nComponent(player, "gui.resume.unavailable"))
-                }
-                else -> Unit
-            }
-        }, 20L)
     }
 
     private fun removeLeakedPlayerItems(player: Player, context: String): Int {

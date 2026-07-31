@@ -103,6 +103,7 @@ gui:
     world_item:
       warp: Warp to this world
       settings: Open world settings
+      move_to_top: Reorder
       expired: This world has been archived
       expires_at: Archive schedule
       expires_value: '{days} days (archived on {date})'
@@ -141,6 +142,7 @@ gui:
       description:
       - Review received invitations and requests.
       count_label: Pending
-      latest_label: Latest Received
+      latest_label: Latest Notification
       none: None
+      empty: "§7There are no pending invitations or requests"
       action: Open list

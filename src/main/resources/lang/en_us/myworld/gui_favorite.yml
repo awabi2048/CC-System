@@ -7,6 +7,7 @@ gui:
       name: §bCurrent World
     world_item:
       warp: Warp to this world
+      preview: Preview this world
       unfavorite: Remove from favorites
       archived_label: §c§l[ARCHIVED]
     info:

@@ -6,7 +6,8 @@ chanpon_utilities:
     already: "&eこの本棚はリンクされていません"
   freecam:
     started:
-    - "&bFreeCamを開始しました！ \\ &7Shiftキーを2回押すか、/freecam stopコマンドで終了できます"
+    - "&bFreeCamを開始しました！"
+    - "&7Shiftキーを2回押すか、/freecam stopコマンドで終了できます"
     previous_camera_too_far:
     - "&7最後に使用した位置から離れたため、現在位置からFreeCamを開始しました"
     recovered: "&e未終了のFreeCam状態から身体の位置へ復旧しました。"

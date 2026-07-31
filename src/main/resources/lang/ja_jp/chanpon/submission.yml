@@ -3,7 +3,6 @@ chanpon:
     common:
       "on": オン
       "off": オフ
-      middle_click: "ホイールクリック"
     creation:
       display: "§e本番用ワールドに設定する"
       lore:
@@ -103,11 +102,13 @@ chanpon:
       close:
         open:
           display: "§c提出を締め切る"
+          action: "提出を締め切る"
           lore:
             - "§7提出を締め切ります。"
             - "§7締め切りはいつでもこのメニューから再開できます。"
         closed:
           display: "§e提出締切を解除"
+          action: "提出締切を解除"
           lore:
             - "§7提出締切を解除します。"
             - "§7解除後はプレイヤーが提出を再び行えます。"
@@ -135,7 +136,7 @@ chanpon:
         completed_label: "完成状態"
         action_warp: "ワープ"
         action_complete: "完成状態を切り替え"
-        action_toggle_production: "本番用フラグを切り替え"
+        action_remove_production: "本番用フラグを削除"
     admin_list:
       title: "§0ワールド一覧管理"
       unknown: "不明"

@@ -7,8 +7,6 @@ chanpon:
       name_body: "ワールド名を入力してください。"
       name_label: "ワールド名"
       name_required: "ワールド名を入力してください。"
-      platform_material_label: "足場ブロックID"
-      platform_material_invalid: "設置可能な固体ブロックのIDを入力してください。"
       next: "次へ"
       cancel: "キャンセル"
       confirm_title: "作成内容の確認"

@@ -14,6 +14,7 @@ chanpon:
       current: "Current"
       next_action: "Next setting"
       previous_action: "Previous setting"
+      cycle_action: "Change setting"
       denied:
         display: "Deny all"
         description: "Standard and production worlds cannot be created."

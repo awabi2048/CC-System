@@ -22,16 +22,10 @@ class MenuSoundServiceImpl : MenuSoundService {
     private val providers = ConcurrentHashMap<String, MenuSoundProvider>()
 
     /** メニュー固有設定が無いときの開封音 */
-    private val defaultOpenSound = MenuSound("BLOCK_NOTE_BLOCK_HAT", pitch = 1.2f)
+    private val defaultOpenSound = MenuSound("minecraft:block.note_block.hat", pitch = 1.2f)
 
     /** クリック種別ごとのデフォルト音（メニュー固有設定が無いとき） */
-    private val defaultClickSounds: Map<MenuClickType, MenuSound> = mapOf(
-        MenuClickType.DEFAULT to MenuSound("UI_BUTTON_CLICK", pitch = 2.0f),
-        MenuClickType.CONFIRM to MenuSound("UI_BUTTON_CLICK", pitch = 1.6f),
-        MenuClickType.CANCEL to MenuSound("UI_BUTTON_CLICK", pitch = 1.2f),
-        MenuClickType.NAVIGATION to MenuSound("UI_BUTTON_CLICK", pitch = 2.0f),
-        MenuClickType.INFO to MenuSound("UI_BUTTON_CLICK", pitch = 1.5f),
-    )
+    private val clickSound = MenuSound("UI_BUTTON_CLICK", pitch = 2.0f)
 
     override fun play(player: Player, sound: MenuSound) {
         playSound(player, sound)
@@ -46,22 +40,15 @@ class MenuSoundServiceImpl : MenuSoundService {
     }
 
     override fun onMenuClick(player: Player, menuId: String?, clickType: MenuClickType) {
-        val sound = (menuId?.let { resolveClickSound(it, clickType) })
-            ?: defaultClickSounds[clickType] ?: defaultClickSounds.getValue(MenuClickType.DEFAULT)
-        playSound(player, sound)
+        playSound(player, clickSound)
     }
 
     override fun onMenuIconClick(player: Player, menuId: String, iconId: String, clickType: MenuClickType) {
-        val sound = resolveIconSound(menuId, iconId)
-            ?: resolveClickSound(menuId, clickType)
-            ?: defaultClickSounds[clickType] ?: defaultClickSounds.getValue(MenuClickType.DEFAULT)
-        playSound(player, sound)
+        playSound(player, clickSound)
     }
 
     override fun onGenericClick(player: Player) {
-        val sound = providers.values.firstNotNullOfOrNull { it.genericClickSound() }
-            ?: defaultClickSounds.getValue(MenuClickType.DEFAULT)
-        playSound(player, sound)
+        playSound(player, clickSound)
     }
 
     override fun registerProvider(provider: MenuSoundProvider) {
@@ -75,14 +62,6 @@ class MenuSoundServiceImpl : MenuSoundService {
     private fun resolveOpenSound(menuId: String): MenuSound? {
         // 複数プロバイダが登録されている場合は最初に見つかった設定を採用（登録順は保証しない）
         return providers.values.firstNotNullOfOrNull { it.openSound(menuId) }
-    }
-
-    private fun resolveClickSound(menuId: String, clickType: MenuClickType): MenuSound? {
-        return providers.values.firstNotNullOfOrNull { it.clickSound(menuId, clickType) }
-    }
-
-    private fun resolveIconSound(menuId: String, iconId: String): MenuSound? {
-        return providers.values.firstNotNullOfOrNull { it.iconSound(menuId, iconId) }
     }
 
     private fun playSound(player: Player, sound: MenuSound) {

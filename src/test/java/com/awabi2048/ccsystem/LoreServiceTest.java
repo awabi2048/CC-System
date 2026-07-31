@@ -7,10 +7,12 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec;
 import com.awabi2048.ccsystem.api.gui.GuiStatusTone;
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.Test;
+import org.bukkit.event.inventory.ClickType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,6 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 class LoreServiceTest {
+    private static LoreServiceImpl interactionLoreService() {
+        return new LoreServiceImpl((player, key, arguments) -> switch (key) {
+            case "lore.click.left" -> "左クリック";
+            default -> throw new IllegalArgumentException(key);
+        });
+    }
+
     private static List<String> plain(List<Component> lines) {
         return lines.stream()
             .map(PlainTextComponentSerializer.plainText()::serialize)
@@ -27,7 +36,7 @@ class LoreServiceTest {
 
     @Test
     void richLoreCompressesRedundantSpacersWithoutChangingContentOrder() {
-        List<Component> rendered = new LoreServiceImpl().render(
+        List<Component> rendered = interactionLoreService().render(
             new GuiLoreSpec.Rich(
                 List.of(
                     new GuiLoreLine.Text("説明"),
@@ -35,7 +44,7 @@ class LoreServiceTest {
                     GuiLoreLine.Spacer.INSTANCE,
                     new GuiLoreLine.Data("現在値", 3, "§e"),
                     GuiLoreLine.Separator.INSTANCE,
-                    new GuiLoreLine.Action("左クリック", "変更")
+                    new GuiLoreLine.Interaction(null, Set.of(ClickType.LEFT), "変更")
                 ),
                 GuiLoreFrame.NONE
             )
@@ -47,12 +56,12 @@ class LoreServiceTest {
         assertEquals("", lines.get(1));
         assertTrue(lines.get(2).endsWith("現在値 3"));
         assertEquals(30, lines.get(3).codePointCount(0, lines.get(3).length()));
-        assertTrue(lines.get(4).endsWith("左クリック 変更"));
+        assertEquals("左クリックで変更", lines.get(4));
     }
 
     @Test
     void frameOnlyAddsRequestedOuterSeparators() {
-        List<String> lines = plain(new LoreServiceImpl().render(
+        List<String> lines = plain(interactionLoreService().render(
             new GuiLoreSpec.Rich(
                 List.of(new GuiLoreLine.Text("本文")),
                 GuiLoreFrame.BOTH
@@ -123,12 +132,12 @@ class LoreServiceTest {
 
     @Test
     void blocksUseOuterSeparatorsAndSingleSpacerBetweenBlocks() {
-        List<String> lines = plain(new LoreServiceImpl().render(
+        List<String> lines = plain(interactionLoreService().render(
             new GuiLoreSpec.Blocks(
                 List.of(
                     new GuiLoreBlock(List.of(new GuiLoreLine.Text("説明"))),
                     new GuiLoreBlock(List.of(new GuiLoreLine.Data("現在値", 3, "§e"))),
-                    new GuiLoreBlock(List.of(new GuiLoreLine.Action("左クリック", "変更")))
+                    new GuiLoreBlock(List.of(new GuiLoreLine.Interaction(null, Set.of(ClickType.LEFT), "変更")))
                 )
             )
         ));
@@ -139,7 +148,7 @@ class LoreServiceTest {
         assertEquals("", lines.get(2));
         assertTrue(lines.get(3).endsWith("現在値 3"));
         assertEquals("", lines.get(4));
-        assertTrue(lines.get(5).endsWith("左クリック 変更"));
+        assertEquals("左クリックで変更", lines.get(5));
         assertEquals(30, lines.get(6).codePointCount(0, lines.get(6).length()));
     }
 

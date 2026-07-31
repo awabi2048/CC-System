@@ -3,7 +3,6 @@ chanpon:
     common:
       "on": On
       "off": Off
-      middle_click: "Middle-Click"
     creation:
       display: "§eSet as production world"
       lore:
@@ -103,11 +102,13 @@ chanpon:
       close:
         open:
           display: "§cClose submissions"
+          action: "Close submissions"
           lore:
             - "§7Close submissions."
             - "§7You can reopen submissions from this menu at any time."
         closed:
           display: "§eReopen submissions"
+          action: "Reopen submissions"
           lore:
             - "§7Reopen submissions."
             - "§7Players will be able to submit again."
@@ -135,7 +136,7 @@ chanpon:
         completed_label: "Completion"
         action_warp: "Warp"
         action_complete: "Toggle completion"
-        action_toggle_production: "Toggle production flag"
+        action_remove_production: "Remove production flag"
     admin_list:
       title: "§0World List Management"
       unknown: "Unknown"

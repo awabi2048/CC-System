@@ -3,30 +3,31 @@ package com.awabi2048.ccsystem.features.announce.listener
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
-import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
+import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuActionHandler
 import com.awabi2048.ccsystem.api.gui.MenuDialogButton
 import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
 import com.awabi2048.ccsystem.api.gui.MenuDialogInput
 import com.awabi2048.ccsystem.api.gui.MenuDialogRequest
 import com.awabi2048.ccsystem.api.gui.MenuDialogResponse
-import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
 import com.awabi2048.ccsystem.api.gui.MenuSound
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
-import com.awabi2048.ccsystem.core.gui.GuiItemMarker
-import com.awabi2048.ccsystem.core.gui.ManagedMenuPresenter
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.LanguageManager
-import com.awabi2048.ccsystem.util.cancelWithDebug
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import com.awabi2048.ccsystem.features.announce.command.AnnounceCommand
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
@@ -38,13 +39,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.inventory.InventoryDragEvent
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.time.Instant
 import java.util.Locale
@@ -52,7 +46,7 @@ import java.util.UUID
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class AnnounceListener : Listener {
+class AnnounceListener {
     init {
         CCSystem.getAPI().getMenuRuntimeService().register(
             InventoryMenuDefinition(
@@ -64,8 +58,12 @@ class AnnounceListener : Listener {
                     "select-icon" to MenuActionHandler { context -> beginIconSelection(context.player) },
                     "announcement" to MenuActionHandler { context ->
                         openAnnouncementAction(context.player, context.payload["id"], context.click)
-                    }
-                )
+                    },
+                    MenuRuntimeActions.PLAYER_INVENTORY_CLICK to MenuActionHandler { context ->
+                        selectAnnouncementIcon(context.player, context.item)
+                    },
+                ),
+                onClose = { context -> pendingIconSelection.remove(context.player.uniqueId) },
             )
         )
     }
@@ -96,29 +94,62 @@ class AnnounceListener : Listener {
         private fun createMenuView(player: Player, route: MenuRoute): InventoryMenuView {
             val openedFromMenuArgument = route.payload["fromMenu"].toBoolean()
             val highlightIds = getHighlightAnnouncementIds(player)
-            val inventory = createMenuInventory(player, openedFromMenuArgument, highlightIds)
+            val menuItems = createMenuInventory(player, openedFromMenuArgument, highlightIds)
             val announcements = AnnouncementManager.getAnnouncementsForMenu()
             val elements = buildList {
-                for (slot in 0 until inventory.size) {
-                    val item = inventory.getItem(slot) ?: continue
+                for (slot in 0 until menuItems.size) {
+                    val menuItem = menuItems.getItem(slot) ?: continue
                     val announcement = announcements.getOrNull(INTERIOR_SLOTS.indexOf(slot))
-                    val actionId = when {
-                        slot == 45 && openedFromMenuArgument -> "menu-command"
-                        slot == 49 && hasManagePermission(player) -> "select-icon"
-                        announcement != null && hasManagePermission(player) -> "announcement"
-                        else -> null
-                    }
-                    add(
-                        MenuElement(
-                            slot = slot,
-                            item = item,
-                            role = GuiItemMarker.role(item) ?: GuiElementRole.CONTENT,
-                            actionId = actionId,
-                            actionPayload = if (actionId == "announcement") {
-                                mapOf("id" to requireNotNull(announcement).id)
-                            } else emptyMap()
+                    val actions = when {
+                        slot == 45 && openedFromMenuArgument -> listOf(
+                            GuiMenuEntryAction(
+                                "menu-command",
+                                MenuAcceptedClicks.STANDARD,
+                                rawText(player, "announce.menu_command_item_lore"),
+                            )
                         )
-                    )
+                        slot == 49 && hasManagePermission(player) -> listOf(
+                            GuiMenuEntryAction(
+                                "select-icon",
+                                MenuAcceptedClicks.STANDARD,
+                                rawText(player, "announce.add_item_lore"),
+                            )
+                        )
+                        announcement != null && hasManagePermission(player) -> listOf(
+                            GuiMenuEntryAction(
+                                "announcement",
+                                MenuAcceptedClicks.LEFT,
+                                rawText(player, "announce.lore.edit"),
+                                payload = mapOf("id" to announcement.id),
+                            ),
+                            GuiMenuEntryAction(
+                                "announcement",
+                                MenuAcceptedClicks.RIGHT,
+                                rawText(player, "announce.lore.delete"),
+                                payload = mapOf("id" to announcement.id),
+                            ),
+                        )
+                        else -> emptyList()
+                    }
+                    if (actions.isEmpty()) {
+                        add(CCSystem.getAPI().getGuiElementService().menuDisplay(
+                            GuiMenuDisplaySpec(
+                                slot = slot,
+                                item = menuItem.spec,
+                                glint = menuItem.glint,
+                            )
+                        ))
+                    } else {
+                        add(CCSystem.getAPI().getGuiElementService().menuStructuredEntry(
+                            player,
+                            GuiStructuredMenuEntrySpec(
+                            slot = slot,
+                                item = menuItem.spec,
+                                actions = actions,
+                                glint = menuItem.glint,
+                            )
+                        ))
+                    }
                 }
             }
             PlayerDataManager.set(
@@ -131,17 +162,26 @@ class AnnounceListener : Listener {
                 title = LEGACY.deserialize(LanguageManager.getRawString(player, "announce.menu_title")),
                 elements = elements,
                 standardFrame = false,
-                allowPlayerInventoryInteraction = true
+                playerInventoryInteraction = PlayerInventoryInteraction.SELECTION
             )
+        }
+
+        private data class SemanticMenuItem(val spec: GuiItemSpec, val glint: Boolean? = null)
+
+        private class MenuItems(val size: Int) {
+            private val items = arrayOfNulls<SemanticMenuItem>(size)
+            fun setItem(slot: Int, item: SemanticMenuItem?) {
+                items[slot] = item
+            }
+            fun getItem(slot: Int): SemanticMenuItem? = items.getOrNull(slot)
         }
 
         private fun createMenuInventory(
             player: Player,
             openedFromMenuArgument: Boolean,
             highlightAnnouncementIds: Set<String>
-        ): Inventory {
-            val title = LanguageManager.getRawString(player, "announce.menu_title")
-            val inventory = Bukkit.createInventory(null, MENU_SIZE, LegacyComponentSerializer.legacySection().deserialize(title))
+        ): MenuItems {
+            val inventory = MenuItems(MENU_SIZE)
 
             val blackPane = createPane(Material.BLACK_STAINED_GLASS_PANE)
             val grayPane = createPane(Material.GRAY_STAINED_GLASS_PANE)
@@ -199,25 +239,19 @@ class AnnounceListener : Listener {
                     }
 
                     blocks.add(GuiLoreBlock(metadataBlock))
-                    blocks.add(GuiLoreBlock(listOf(
-                        GuiLoreLine.Action(rawText(player, "lore.click.left"), rawText(player, "announce.lore.edit")),
-                        GuiLoreLine.Action(rawText(player, "lore.click.right"), rawText(player, "announce.lore.delete"))
-                    )))
                 }
 
-                val item = CCSystem.getAPI().getGuiElementService().item(
-                    GuiItemSpec(
+                val spec = GuiItemSpec(
                         material = announcement.icon,
                         name = GuiNameSpec.Component(noItalic(deserializeStyledUserText(titleLine))),
                         lore = if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks),
                         role = GuiElementRole.CONTENT,
                         amount = 1
                     )
+                inventory.setItem(
+                    slot,
+                    SemanticMenuItem(spec, glint = highlightAnnouncementIds.contains(announcement.id)),
                 )
-                if (highlightAnnouncementIds.contains(announcement.id)) {
-                    item.editMeta { meta -> meta.setEnchantmentGlintOverride(true) }
-                }
-                inventory.setItem(slot, item)
             }
 
             if (openedFromMenuArgument) {
@@ -231,8 +265,8 @@ class AnnounceListener : Listener {
             return inventory
         }
 
-        private fun createPane(material: Material): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createPane(material: Material): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = material,
                     name = GuiNameSpec.Component(noItalic(Component.text(" "))),
@@ -243,34 +277,28 @@ class AnnounceListener : Listener {
             )
         }
 
-        private fun createMenuCommandItem(player: Player): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createMenuCommandItem(player: Player): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = Material.REDSTONE,
                     name = GuiNameSpec.Component(
                         noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.menu_command_item_name"))
                     ),
-                    lore = GuiLoreSpec.Rich(
-                        listOf(singleClickLine(player, "announce.menu_command_item_lore")),
-                        GuiLoreFrame.NONE
-                    ),
+                    lore = GuiLoreSpec.None,
                     role = GuiElementRole.ACTION,
                     amount = 1
                 )
             )
         }
 
-        private fun createAddItem(player: Player): ItemStack {
-            return CCSystem.getAPI().getGuiElementService().item(
+        private fun createAddItem(player: Player): SemanticMenuItem {
+            return SemanticMenuItem(
                 GuiItemSpec(
                     material = Material.WRITABLE_BOOK,
                     name = GuiNameSpec.Component(
                         noItalic(LanguageManager.getMessageWithoutPrefix(player, "announce.add_item_name"))
                     ),
-                    lore = GuiLoreSpec.Rich(
-                        listOf(singleClickLine(player, "announce.add_item_lore")),
-                        GuiLoreFrame.NONE
-                    ),
+                    lore = GuiLoreSpec.None,
                     role = GuiElementRole.ACTION,
                     amount = 1
                 )
@@ -347,18 +375,6 @@ class AnnounceListener : Listener {
 
         private fun rawText(player: Player?, key: String): String = LanguageManager.getRawString(player, key)
 
-        private fun singleClickLine(player: Player, actionKey: String): GuiLoreLine.SingleAction {
-            val operation = rawText(player, "lore.click.any")
-            val action = rawText(player, actionKey)
-            val resolved = LanguageManager.getRawString(
-                player,
-                "lore.action_single_with_operation",
-                "operation" to operation,
-                "action" to action
-            )
-            return GuiLoreLine.SingleAction(operation, action, resolved)
-        }
-
         private fun playOperationSound(player: Player, sound: Sound, pitch: Float = 1.0f) {
             player.playSound(player.location, sound, 0.8f, pitch)
         }
@@ -380,18 +396,11 @@ class AnnounceListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onInventoryClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as? Player ?: return
-        if (!isAnnouncementRoute(player)) return
-        val clickedInventory = event.clickedInventory ?: return
-        if (clickedInventory != player.inventory || !pendingIconSelection.contains(player.uniqueId)) return
-        event.cancelWithDebug("AnnounceListener.onInventoryClick: icon selection")
-
-        val selectedItem = event.currentItem
-        if (selectedItem == null || selectedItem.type == Material.AIR) {
-            return
+    private fun selectAnnouncementIcon(player: Player, selectedItem: ItemStack): MenuActionResult {
+        if (!isAnnouncementRoute(player) || !pendingIconSelection.contains(player.uniqueId)) {
+            return MenuActionResult.Ignored
         }
+        if (selectedItem.type == Material.AIR) return MenuActionResult.Ignored
 
         if (AnnouncementManager.getAnnouncementCount() >= AnnouncementManager.MAX_VISIBLE_ANNOUNCEMENTS) {
             pendingIconSelection.remove(player.uniqueId)
@@ -403,29 +412,13 @@ class AnnounceListener : Listener {
                 )
             )
             playOperationSound(player, Sound.BLOCK_NOTE_BLOCK_BASS)
-            return
+            return MenuActionResult.Rejected()
         }
 
         pendingIconSelection.remove(player.uniqueId)
-        ManagedMenuPresenter.close(player)
         playOperationSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.2f)
         openAddDialog(player, selectedItem.type)
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun onInventoryDrag(event: InventoryDragEvent) {
-        val player = event.whoClicked as? Player ?: return
-        if (isAnnouncementRoute(player)) {
-            event.isCancelled = true
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        val player = event.player as? Player ?: return
-        if (isAnnouncementRoute(player)) {
-            pendingIconSelection.remove(event.player.uniqueId)
-        }
+        return MenuActionResult.Success(MenuUpdate.Close, MenuSoundPolicy.Silent)
     }
 
     private fun isAnnouncementRoute(player: Player): Boolean {
@@ -461,7 +454,7 @@ class AnnounceListener : Listener {
         val announcement = announcementId?.let(AnnouncementManager::getAnnouncementById)
             ?: return MenuActionResult.Rejected()
         pendingIconSelection.remove(player.uniqueId)
-        ManagedMenuPresenter.close(player)
+        CCSystem.getAPI().getMenuRuntimeService().close(player)
         if (click.isRightClick) openDeleteConfirmDialog(player, announcement)
         else openEditDialog(player, announcement)
         return MenuActionResult.Success(MenuUpdate.None)

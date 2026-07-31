@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem;
 
 import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy;
+import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction;
 import com.awabi2048.ccsystem.core.gui.GuiItemMarker;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,13 @@ class GuiProtectionModelTest {
 
         assertTrue(policy.acceptsTopSlot(10));
         assertFalse(policy.acceptsTopSlot(12));
+        assertEquals(PlayerInventoryInteraction.INTERACTIVE, policy.getPlayerInventoryInteraction());
+        assertFalse(policy.getCapturesPlayerInventoryClick());
+        var selection = new GuiInventoryPolicy(
+                java.util.Set.of(),
+                PlayerInventoryInteraction.SELECTION
+        );
+        assertTrue(selection.getCapturesPlayerInventoryClick());
         assertThrows(IllegalArgumentException.class, () -> new GuiInventoryPolicy(java.util.Set.of(-1), false));
     }
 }

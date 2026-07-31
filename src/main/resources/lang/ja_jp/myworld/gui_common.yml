@@ -126,6 +126,10 @@ gui:
     cancel_desc: §7選択画面に戻ります
   pending_list:
     title: 招待・申請通知
+    info:
+      name: §e招待・申請通知
+      count_label: 未処理件数
+      page_label: ページ
     type:
       world_invite: ワールド招待
       member_invite: メンバー招待
@@ -206,6 +210,15 @@ gui:
         open: ツアー管理を開く
     menu:
       visitor_title: ツアー一覧
+      stop:
+        display: §c現在のツアーを中断
+        action: ツアーを中断する
+      start_confirm:
+        replace_active: 現在進行中のツアーがあります。これを中断して、新しく開始しますか？
+      stop_confirm:
+        title: ツアー中断確認
+        question: 現在進行中のツアーを中断しますか？
+        confirm: ツアーを中断する
       start_selection_title: 起点ツアー選択
       edit_title: ツアー編集
       single_edit_title: 'ツアー編集: {tour}'

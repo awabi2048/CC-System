@@ -26,7 +26,103 @@ data class MenuActionSoundPolicy(
 )
 
 /** Inventory上の1要素。actionIdがない要素は表示専用として扱う。 */
-data class MenuElement(
+sealed interface MenuInteraction {
+    data object DisplayOnly : MenuInteraction
+
+    data class Action(
+        val actionId: String,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val payload: Map<String, String> = emptyMap(),
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(actionId.isNotBlank()) { "actionId must not be blank" }
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
+    /**
+     * クリック種別ごとに異なるActionへ分岐する宣言。
+     * 表示案内とクリック受付を同じBranch群から生成するために使用する。
+     */
+    data class Branches(
+        val branches: List<MenuActionBranch>,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(branches.isNotEmpty()) { "branches must not be empty" }
+            val accepted = branches.flatMap(MenuActionBranch::acceptedClicks)
+            require(accepted.size == accepted.distinct().size) {
+                "a click type cannot be assigned to multiple action branches"
+            }
+        }
+    }
+
+    data class Capability(
+        val capabilityId: String,
+        val arguments: Map<String, String> = emptyMap(),
+        val attributes: Map<String, Any> = emptyMap(),
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
+    data class Unavailable(
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val message: Component? = null,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+
+    data class Back(
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val sounds: MenuActionSoundPolicy? = null,
+    ) : MenuInteraction {
+        init {
+            require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        }
+    }
+}
+
+data class MenuActionBranch(
+    val actionId: String,
+    val acceptedClicks: Set<ClickType>,
+    val payload: Map<String, String> = emptyMap(),
+) {
+    init {
+        require(actionId.isNotBlank()) { "actionId must not be blank" }
+        require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+    }
+}
+
+object MenuAcceptedClicks {
+    val STANDARD: Set<ClickType> = setOf(
+        ClickType.LEFT,
+        ClickType.RIGHT,
+        ClickType.SHIFT_LEFT,
+        ClickType.SHIFT_RIGHT,
+        ClickType.MIDDLE,
+    )
+    val LEFT: Set<ClickType> = setOf(ClickType.LEFT, ClickType.SHIFT_LEFT)
+    val RIGHT: Set<ClickType> = setOf(ClickType.RIGHT, ClickType.SHIFT_RIGHT)
+    val LEFT_RIGHT: Set<ClickType> = LEFT + RIGHT
+    val PLAIN_LEFT: Set<ClickType> = setOf(ClickType.LEFT)
+    val PLAIN_RIGHT: Set<ClickType> = setOf(ClickType.RIGHT)
+    val PLAIN_LEFT_RIGHT: Set<ClickType> = PLAIN_LEFT + PLAIN_RIGHT
+    val SHIFT_LEFT: Set<ClickType> = setOf(ClickType.SHIFT_LEFT)
+    val SHIFT_RIGHT: Set<ClickType> = setOf(ClickType.SHIFT_RIGHT)
+    val MIDDLE: Set<ClickType> = setOf(ClickType.MIDDLE)
+}
+
+@ConsistentCopyVisibility
+data class MenuElement internal constructor(
     val slot: Int,
     val item: ItemStack,
     val role: GuiElementRole,
@@ -34,6 +130,7 @@ data class MenuElement(
     val actionPayload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
     val sounds: MenuActionSoundPolicy? = null,
+    val interaction: MenuInteraction? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -42,6 +139,23 @@ data class MenuElement(
         require(role != GuiElementRole.DECORATION || actionId == null) {
             "decoration elements cannot have an action"
         }
+        require(
+            interaction !is MenuInteraction.Action &&
+                interaction !is MenuInteraction.Capability ||
+                role != GuiElementRole.DECORATION
+        ) {
+            "decoration elements cannot have an interaction action"
+        }
+        require(interaction !is MenuInteraction.Back || role == GuiElementRole.BACK) {
+            "back interaction requires BACK role"
+        }
+    }
+
+    fun resolvedInteraction(): MenuInteraction = interaction ?: when {
+        role == GuiElementRole.BACK -> MenuInteraction.Back(sounds = sounds)
+        !enabled -> MenuInteraction.Unavailable(sounds = sounds)
+        actionId != null -> MenuInteraction.Action(actionId, payload = actionPayload, sounds = sounds)
+        else -> MenuInteraction.DisplayOnly
     }
 }
 
@@ -51,20 +165,104 @@ data class InventoryMenuView(
     val elements: List<MenuElement>,
     val standardFrame: Boolean = true,
     val inputSlots: Set<Int> = emptySet(),
-    val allowPlayerInventoryInteraction: Boolean = false,
+    val inputItems: Map<Int, ItemStack> = emptyMap(),
+    val playerInventoryInteraction: PlayerInventoryInteraction = PlayerInventoryInteraction.INTERACTIVE,
 ) {
+    @Deprecated(
+        message = "playerInventoryInteractionで画面の入力モードを明示してください",
+        replaceWith = ReplaceWith("playerInventoryInteraction != PlayerInventoryInteraction.BLOCKED"),
+    )
+    val allowPlayerInventoryInteraction: Boolean
+        get() = playerInventoryInteraction != PlayerInventoryInteraction.BLOCKED
+
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>,
+        inputItems: Map<Int, ItemStack>,
+        allowPlayerInventoryInteraction: Boolean,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = standardFrame,
+        inputSlots = inputSlots,
+        inputItems = inputItems,
+        playerInventoryInteraction =
+            if (allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
+    )
+
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>?,
+        allowPlayerInventoryInteraction: Boolean,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = if (mask and 0x08 != 0) true else standardFrame,
+        inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
+        inputItems = emptyMap(),
+        playerInventoryInteraction =
+            if (mask and 0x20 != 0 || allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
+    )
+
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>?,
+        inputItems: Map<Int, ItemStack>?,
+        allowPlayerInventoryInteraction: Boolean,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = if (mask and 0x08 != 0) true else standardFrame,
+        inputSlots = if (mask and 0x10 != 0) emptySet() else requireNotNull(inputSlots),
+        inputItems = if (mask and 0x20 != 0) emptyMap() else requireNotNull(inputItems),
+        playerInventoryInteraction =
+            if (mask and 0x40 != 0 || allowPlayerInventoryInteraction) {
+                PlayerInventoryInteraction.INTERACTIVE
+            } else {
+                PlayerInventoryInteraction.BLOCKED
+            },
+    )
+
     init {
         require(size > 0 && size % 9 == 0) { "inventory menu size must be a positive multiple of 9" }
         require(elements.all { it.slot < size }) { "menu element slot is outside the inventory" }
         require(elements.map { it.slot }.distinct().size == elements.size) { "menu element slots must be unique" }
         require(inputSlots.all { it in 0 until size }) { "input slot is outside the inventory" }
         require(elements.none { it.slot in inputSlots }) { "input slots cannot contain rendered menu elements" }
+        require(inputItems.keys.all { it in inputSlots }) { "input items must be placed in declared input slots" }
     }
 }
 
 data class MenuRenderContext(
     val player: Player,
     val route: MenuRoute,
+    val canGoBack: Boolean = false,
 )
 
 fun interface InventoryMenuRenderer {
@@ -77,15 +275,47 @@ data class MenuActionContext(
     val actionId: String,
     val payload: Map<String, String>,
     val click: ClickType,
+    val item: ItemStack,
+    val cursor: ItemStack,
 )
+
+/** Runtimeがプレイヤーインベントリ側の選択をActionへ渡す際に使用する予約Action。 */
+object MenuRuntimeActions {
+    const val PLAYER_INVENTORY_CLICK = "__player_inventory_click"
+    const val PLAYER_INVENTORY_SLOT_PAYLOAD = "slot"
+}
 
 fun interface MenuActionHandler {
     fun handle(context: MenuActionContext): MenuActionResult
 }
 
+enum class MenuCloseReason {
+    USER_DISMISSED,
+    ROUTE_REPLACED,
+    RUNTIME_CLOSED,
+}
+
+data class MenuCloseContext(
+    val player: Player,
+    val route: MenuRoute,
+    val inventory: Inventory,
+    val reason: MenuCloseReason,
+) {
+    constructor(
+        player: Player,
+        route: MenuRoute,
+        inventory: Inventory,
+    ) : this(player, route, inventory, MenuCloseReason.USER_DISMISSED)
+}
+
+fun interface MenuCloseHandler {
+    fun handle(context: MenuCloseContext)
+}
+
 sealed interface MenuUpdate {
     data object None : MenuUpdate
     data object Refresh : MenuUpdate
+    data object Resume : MenuUpdate
     data object Close : MenuUpdate
     data object Back : MenuUpdate
     data class Replace(val route: MenuRoute) : MenuUpdate
@@ -160,7 +390,26 @@ data class InventoryMenuDefinition(
     val renderer: InventoryMenuRenderer,
     val actions: Map<String, MenuActionHandler>,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
+    val onClose: MenuCloseHandler? = null,
 ) {
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        owner: String,
+        id: String,
+        renderer: InventoryMenuRenderer,
+        actions: Map<String, MenuActionHandler>,
+        sounds: MenuActionSoundPolicy?,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        owner = owner,
+        id = id,
+        renderer = renderer,
+        actions = actions,
+        sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else requireNotNull(sounds),
+        onClose = null,
+    )
+
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }

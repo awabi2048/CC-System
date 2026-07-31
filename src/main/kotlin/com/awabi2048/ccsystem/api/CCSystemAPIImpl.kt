@@ -6,9 +6,11 @@ import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
+import com.awabi2048.ccsystem.api.gui.MenuCapabilityService
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.gui.MenuDialogService
+import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
@@ -28,9 +30,11 @@ import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuCommandServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuCapabilityServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuConfirmationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuFormServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
@@ -65,24 +69,39 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         }
         NaturalOriginRuntime.initialize(dataFolder)
     }
-    private val menuNavigationService = MenuNavigationServiceImpl(
-        File(dataFolder, "data/gui/menu_routes.yml")
-    )
+    private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
-    private val guiElementService = GuiElementServiceImpl()
+    private val guiElementService = GuiElementServiceImpl(::getI18nString)
+    private val menuCapabilityService = MenuCapabilityServiceImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
-    private val loreService = LoreServiceImpl()
+    private val loreService = LoreServiceImpl(::getI18nString)
     private val menuSoundService = MenuSoundServiceImpl()
+    private val menuPresentationTracker = com.awabi2048.ccsystem.core.gui.MenuPresentationTracker()
     private val menuRuntimeService = MenuRuntimeServiceImpl(
         plugin,
         menuNavigationService,
         menuSoundService,
         guiLayoutService,
+        menuPresentationTracker,
+        menuCapabilityService,
     ).also {
         plugin.server.pluginManager.registerEvents(it, plugin)
     }
-    private val menuDialogService = MenuDialogServiceImpl(plugin, menuSoundService, menuRuntimeService)
-    private val menuFormService = MenuFormServiceImpl(plugin, menuSoundService, menuRuntimeService)
+    private val menuDialogService = MenuDialogServiceImpl(
+        plugin,
+        menuRuntimeService,
+        menuPresentationTracker,
+    )
+    private val menuConfirmationService = MenuConfirmationServiceImpl(
+        menuRuntimeService,
+        guiLayoutService,
+    )
+    private val menuFormService = MenuFormServiceImpl(
+        plugin,
+        menuSoundService,
+        menuRuntimeService,
+        menuPresentationTracker,
+    )
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
     private val configSchemaService = ConfigSchemaServiceImpl()
     private val itemGrantService = ItemGrantServiceImpl()
@@ -243,6 +262,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
 
     override fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService = menuCommandService
 
+    override fun getMenuCapabilityService(): MenuCapabilityService = menuCapabilityService
+
     override fun getMenuSoundService(): MenuSoundService {
         return menuSoundService
     }
@@ -254,6 +275,9 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     override fun getMenuDialogService(): MenuDialogService {
         return menuDialogService
     }
+
+    override fun getMenuConfirmationService(): MenuConfirmationService =
+        menuConfirmationService
 
     override fun getMenuFormService(): MenuFormService = menuFormService
 

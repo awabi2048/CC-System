@@ -107,7 +107,6 @@ gui:
     page_shift_prev: 5ページ戻る
     status_display: 'ステータス: {color}{status}'
 lore:
-  action_single_with_operation: '{operation}で{action}'
   click:
     any: クリック
     middle: ホイールクリック

@@ -6,7 +6,6 @@ chanpon:
       prev: "§ePrevious page"
       next: "§eNext page"
       back: "§7Back"
-      middle_click: "Middle-Click"
     kind:
       user_manual: "§aUser manual"
       admin_manual: "§eAdmin manual"
@@ -69,6 +68,18 @@ chanpon:
         selected: "Selected"
         not_selected: "Not selected"
         action: "Toggle selection"
+      confirm:
+        title: "§0Confirm world export"
+        info:
+          display: "§eExport details"
+          primary_label: "Primary world"
+          count_label: "World count"
+          file_label: "Output file"
+          warning: "The primary world becomes the overworld. The portal block and the block above it are overwritten only in the exported copy."
+        execute:
+          display: "§aExport these worlds"
+          description: "Exports using the displayed primary world and order."
+          action: "Start export"
     automation_notice:
       backup_warning: "§eScheduled backup will start in §f{remaining}§e. You will be moved to spawn before it starts."
       rollback_warning: "§cScheduled rollback will start in §f{remaining}§c. You will be moved to spawn before it starts."
@@ -104,6 +115,7 @@ chanpon:
             - "§7It will also be used as the first-login visit destination."
     linked_portal:
       display: "§dGet this world's portal"
+      action: "Get this world's portal"
       lore:
         - "§7Receive a world portal linked to {world}."
       received: "§aWorld portal received."
@@ -146,13 +158,16 @@ chanpon:
       bulk_backup:
         display: "§aRun Bulk Backup"
         description: "Back up all production worlds."
+        action: "Run bulk backup"
       bulk_rollback:
         display: "§cRun Bulk Rollback"
         description: "Open bulk backup list."
+        action: "Open bulk backup list"
       annual_archive:
         display: "Annual Update"
         description: "Archive completed worlds and purge others."
         warning: "Full backup is created before execution."
+        action: "Run annual update"
       info:
         display: "§bList Info"
         lore:
@@ -185,16 +200,19 @@ chanpon:
       title: "§0Automation Settings"
       auto_backup:
         display: "§bAuto backup"
+        action: "Toggle setting"
         lore:
           - "§7Saves changed production worlds at the configured time."
           - "§7Current: §f{state}"
       auto_rollback:
         display: "§cAuto rollback"
+        action: "Toggle setting"
         lore:
           - "§7Restores the latest restore point at the configured time."
           - "§7Current: §f{state}"
       restore_point:
         display: "§dCreate Restore Point"
+        action: "Create restore point"
         lore:
           - "§7Save all production worlds as a restore point."
     owner_backup:
@@ -296,6 +314,7 @@ chanpon:
       restore_point_success: "§dRestore point created."
       export_success: "§aWorld data export completed: §f{file}"
       export_failed: "§cWorld data export failed."
+      export_failure_detail: "§c- {detail}"
       archive_locked: "§cMyWorld is unavailable while the annual update is running."
       world_creation_no_permission: "§cYou do not have permission to create worlds."
       manual_operation_blocked: "§cManual operation is currently unavailable around scheduled backup or rollback."

@@ -11,6 +11,7 @@ internal class MenuRuntimeHolder(
     val playerId: UUID,
     val route: MenuRoute,
     private val policy: GuiInventoryPolicy,
+    val preserveHistory: Boolean = false,
 ) : InventoryHolder, GuiInventoryPolicyProvider {
     lateinit var backingInventory: Inventory
 

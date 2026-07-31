@@ -7,8 +7,6 @@ chanpon:
       name_body: "Enter a world name."
       name_label: "World name"
       name_required: "Enter a world name."
-      platform_material_label: "Platform block ID"
-      platform_material_invalid: "Enter the ID of a placeable solid block."
       next: "Next"
       cancel: "Cancel"
       confirm_title: "Confirm Creation"
