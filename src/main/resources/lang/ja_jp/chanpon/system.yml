@@ -98,7 +98,7 @@ chanpon:
         description: "直前の拡張を取り消します。"
         modified_warning: "拡張範囲に変更があります。"
     notification:
-      current_label: "現在"
+      current_label: "通知の設定"
       action: "切り替え"
     critical:
       display: "§c重大な設定"

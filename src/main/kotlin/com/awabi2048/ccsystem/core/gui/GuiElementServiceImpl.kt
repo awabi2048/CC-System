@@ -332,7 +332,7 @@ class GuiElementServiceImpl(
         val item = item(
             GuiItemSpec(
                 material = material,
-                name = GuiNameSpec.Text("§e§l$label", GuiNameStyle.DEFAULT),
+                name = GuiNameSpec.Text(label, GuiNameStyle.MUTED),
                 lore = GuiLoreSpec.NameOnly,
                 role = GuiElementRole.BACK,
                 amount = 1,
