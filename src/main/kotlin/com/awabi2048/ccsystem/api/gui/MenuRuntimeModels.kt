@@ -118,6 +118,7 @@ object MenuAcceptedClicks {
     val PLAIN_LEFT_RIGHT: Set<ClickType> = PLAIN_LEFT + PLAIN_RIGHT
     val SHIFT_LEFT: Set<ClickType> = setOf(ClickType.SHIFT_LEFT)
     val SHIFT_RIGHT: Set<ClickType> = setOf(ClickType.SHIFT_RIGHT)
+    val SHIFT_LEFT_RIGHT: Set<ClickType> = SHIFT_LEFT + SHIFT_RIGHT
     val MIDDLE: Set<ClickType> = setOf(ClickType.MIDDLE)
 }
 

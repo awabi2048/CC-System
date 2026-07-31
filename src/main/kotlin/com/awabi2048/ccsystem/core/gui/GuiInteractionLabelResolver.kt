@@ -14,6 +14,7 @@ internal object GuiInteractionLabelResolver {
         MenuAcceptedClicks.PLAIN_LEFT_RIGHT -> "lore.click.left_right"
         MenuAcceptedClicks.SHIFT_LEFT -> "lore.click.shift_left"
         MenuAcceptedClicks.SHIFT_RIGHT -> "lore.click.shift_right"
+        MenuAcceptedClicks.SHIFT_LEFT_RIGHT -> "lore.click.shift_any"
         MenuAcceptedClicks.MIDDLE -> "lore.click.middle"
         else -> error("Unsupported menu action click set: $clicks")
     }
