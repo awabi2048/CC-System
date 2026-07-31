@@ -67,6 +67,12 @@ sealed interface GuiLoreLine {
             label: String,
         ) : this(viewer, GuiInputGesture.MenuClicks(acceptedClicks), label)
 
+        constructor(
+            viewer: org.bukkit.entity.Player?,
+            gesture: MenuGesture,
+            label: String,
+        ) : this(viewer, GuiInputGesture.MenuClicks(gesture.clicks), label)
+
         init {
             require(label.isNotBlank()) { "interaction label must not be blank" }
         }

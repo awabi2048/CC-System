@@ -11,8 +11,8 @@ sealed interface GuiMenuActionIntent {
     /** A single action whose click contract is selected by semantic gesture. */
     data class GestureAction(
         val actionId: String,
-        val label: String,
         val gesture: MenuGesture,
+        val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
     ) : GuiMenuActionIntent
@@ -198,4 +198,10 @@ enum class MenuGesture {
             SHIFT_LEFT_RIGHT -> MenuAcceptedClicks.SHIFT_LEFT_RIGHT
             MIDDLE -> MenuAcceptedClicks.MIDDLE
         }
+
+    companion object {
+        fun fromClicks(clicks: Set<org.bukkit.event.inventory.ClickType>): MenuGesture =
+            entries.firstOrNull { it.clicks == clicks }
+                ?: error("Unsupported semantic menu click set: $clicks")
+    }
 }
