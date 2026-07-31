@@ -6,6 +6,9 @@ chanpon:
       prev: "§ePrevious page"
       next: "§eNext page"
       back: "§7Back"
+      prev_action: "Go to previous page"
+      next_action: "Go to next page"
+      back_action: "Go back"
     kind:
       user_manual: "§aUser manual"
       admin_manual: "§eAdmin manual"
@@ -17,18 +20,22 @@ chanpon:
       provider_display: "§bMWM-Chanpon"
       no_permission: "§cYou do not have permission to use this menu."
       submission:
+        action: "Open"
         display: "§aSubmission Status"
         lore:
           - "§7Manage submission status and completion marks."
       world_data:
+        action: "Open"
         display: "§eWorld Data"
         lore:
           - "§7Manage backups and rollbacks for production worlds."
       automation:
+        action: "Open"
         display: "§bAutomation Settings"
         lore:
           - "§7Configure automatic backup and rollback."
       export:
+        action: "Open"
         display: "§7World Data Export"
         lore:
           - "§7Export production world data as a ZIP file."
@@ -97,11 +104,13 @@ chanpon:
         - "§8━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     spawn_world:
       set:
+        action: "Set"
         display: "§aSet this world as spawn world"
         lore:
           - "§7Use the current MyWorld as the fallback spawn world."
           - "§7Players are evacuated here during backup and restore operations."
       change:
+        action: "Change"
         display: "§eChange spawn world to this world"
         lore:
           - "§7Change the fallback spawn world to the current MyWorld."
@@ -301,7 +310,9 @@ chanpon:
           - "§cThis backup cannot be restored after deletion."
       button:
         confirm: "§aRun"
+        confirm_action: "Run"
         cancel: "§cCancel"
+        cancel_action: "Cancel"
     message:
       backup_success: "§aBackup created."
       backup_failed: "§cBackup failed."

@@ -23,8 +23,10 @@ gui:
     - §7この操作は取り消せません。
     confirm: §cアーカイブする
     confirm_desc: §7このワールドをアーカイブします
+    confirm_action: アーカイブする
     cancel: §aキャンセル
     cancel_desc: §7前の画面に戻ります
+    cancel_action: キャンセル
   confirm:
     reset_expansion:
       title: 確認

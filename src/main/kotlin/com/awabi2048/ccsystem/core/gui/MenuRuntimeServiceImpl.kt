@@ -300,6 +300,7 @@ internal class MenuRuntimeServiceImpl(
                         player = player,
                         route = holder.route,
                         actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                        slot = event.slot,
                         payload = mapOf(
                             MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString(),
                         ),
@@ -373,6 +374,7 @@ internal class MenuRuntimeServiceImpl(
                             player,
                             holder.route,
                             interaction.actionId,
+                            event.slot,
                             interaction.payload,
                             event.click,
                             (event.currentItem ?: element.item).clone(),
@@ -388,6 +390,7 @@ internal class MenuRuntimeServiceImpl(
                             player,
                             holder.route,
                             branch.actionId,
+                            event.slot,
                             branch.payload,
                             event.click,
                             (event.currentItem ?: element.item).clone(),

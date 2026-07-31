@@ -11,6 +11,7 @@ chanpon:
       enabled: On
       disabled: Off
       toggle_action: Toggle
+      back: "Back"
       role:
         display: "Member / Moderator"
         state_label: "Current role"

@@ -274,6 +274,7 @@ data class MenuActionContext(
     val player: Player,
     val route: MenuRoute,
     val actionId: String,
+    val slot: Int,
     val payload: Map<String, String>,
     val click: ClickType,
     val item: ItemStack,
