@@ -208,7 +208,12 @@ class GuiElementServiceImpl(
             actions,
             player,
         )
-        val itemSpec = presentation.item.copy(
+        val baseItem = if (presentation.embeddedLoreBlocks.isNotEmpty()) {
+            presentation.item.copy(lore = GuiLoreSpec.Blocks(presentation.embeddedLoreBlocks))
+        } else {
+            presentation.item
+        }
+        val itemSpec = baseItem.copy(
             lore = appendActionLore(presentation.item.lore, actionLines),
         )
         val item = item(itemSpec)

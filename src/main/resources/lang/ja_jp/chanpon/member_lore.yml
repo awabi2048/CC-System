@@ -18,4 +18,4 @@ chanpon:
         member: "メンバー"
         moderator: "モデレーター"
         action: "権限を切り替える"
-    click_edit_action: "このメンバーの権限を編集する"
+    click_edit_action: "メニューを開く"
