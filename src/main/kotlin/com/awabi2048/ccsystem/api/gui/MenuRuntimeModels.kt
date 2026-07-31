@@ -123,7 +123,7 @@ object MenuAcceptedClicks {
 }
 
 @ConsistentCopyVisibility
-data class MenuElement internal constructor(
+data class MenuElement(
     val slot: Int,
     val item: ItemStack,
     val role: GuiElementRole,
