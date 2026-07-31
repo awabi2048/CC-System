@@ -31,7 +31,7 @@ sealed interface MenuInteraction {
 
     data class Action(
         val actionId: String,
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val payload: Map<String, String> = emptyMap(),
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
@@ -62,7 +62,7 @@ sealed interface MenuInteraction {
         val capabilityId: String,
         val arguments: Map<String, String> = emptyMap(),
         val attributes: Map<String, Any> = emptyMap(),
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
         init {
@@ -72,7 +72,7 @@ sealed interface MenuInteraction {
     }
 
     data class Unavailable(
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val message: Component? = null,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
@@ -82,7 +82,7 @@ sealed interface MenuInteraction {
     }
 
     data class Back(
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.LEFT_RIGHT,
+        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
         init {
@@ -392,6 +392,7 @@ data class InventoryMenuDefinition(
     val actions: Map<String, MenuActionHandler>,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val onClose: MenuCloseHandler? = null,
+    val actionContracts: Map<String, MenuActionContract> = emptyMap(),
 ) {
     @Suppress("UNUSED_PARAMETER")
     constructor(
@@ -409,12 +410,16 @@ data class InventoryMenuDefinition(
         actions = actions,
         sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else requireNotNull(sounds),
         onClose = null,
+        actionContracts = emptyMap(),
     )
 
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
         require(actions.keys.all { it.isNotBlank() }) { "action ids must not be blank" }
+        require(actionContracts.keys.all { it in actions }) {
+            "action contracts must reference registered handlers"
+        }
     }
 
     val routeId: String

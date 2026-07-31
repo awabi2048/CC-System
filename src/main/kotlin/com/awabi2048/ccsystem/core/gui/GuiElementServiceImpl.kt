@@ -87,7 +87,7 @@ class GuiElementServiceImpl(
     }
 
     override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
-        val enabledActions = spec.actions.filter { it.enabled }
+        val enabledActions = spec.expandedActions().filter { it.enabled }
         val icon = item(
             GuiItemSpec(
                 material = spec.material,
@@ -128,7 +128,12 @@ class GuiElementServiceImpl(
                 sounds = spec.sounds,
             )
         }
-        return MenuElement(spec.slot, icon, spec.role, interaction = interaction)
+        return MenuElement(
+            spec.slot,
+            icon,
+            spec.role,
+            interaction = if (enabledActions.isEmpty() && spec.role == GuiElementRole.BACK) null else interaction,
+        )
     }
 
     override fun menuDisplay(spec: GuiMenuDisplaySpec): MenuElement {
@@ -152,7 +157,7 @@ class GuiElementServiceImpl(
     }
 
     override fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement {
-        val enabledActions = spec.actions.filter(GuiMenuEntryAction::enabled)
+        val enabledActions = spec.expandedActions().filter(GuiMenuEntryAction::enabled)
         val actionLines = GuiMenuEntryLoreFactory.actionLines(enabledActions, player)
         val icon = item(
             spec.item.copy(lore = appendActionLore(spec.item.lore, actionLines)),
@@ -182,7 +187,12 @@ class GuiElementServiceImpl(
                 spec.sounds,
             )
         }
-        return MenuElement(spec.slot, icon, spec.item.role, interaction = interaction)
+        return MenuElement(
+            spec.slot,
+            icon,
+            spec.item.role,
+            interaction = if (enabledActions.isEmpty() && spec.item.role == GuiElementRole.BACK) null else interaction,
+        )
     }
 
     private fun capabilityItem(player: Player?, capability: ResolvedMenuCapability): ItemStack {
@@ -240,13 +250,22 @@ class GuiElementServiceImpl(
 
     private fun appendActionLore(base: GuiLoreSpec, actionLines: List<GuiLoreLine>): GuiLoreSpec {
         if (actionLines.isEmpty() || base == GuiLoreSpec.NameOnly) return base
+        if (actionLines.size == 1 && base is GuiLoreSpec.Blocks) {
+            val first = base.blocks.first()
+            if (first.lines.any { it is GuiLoreLine.Text || it is GuiLoreLine.Component }) {
+                return GuiLoreSpec.Blocks(
+                    listOf(first.copy(lines = first.lines + actionLines)) + base.blocks.drop(1)
+                )
+            }
+        }
         val actionBlock = GuiLoreBlock(actionLines)
         return when (base) {
             GuiLoreSpec.None -> GuiLoreSpec.Blocks(listOf(actionBlock))
             GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
             is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(base.blocks + actionBlock)
             is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
-                base.lines + GuiLoreLine.Spacer + actionLines,
+                if (actionLines.size == 1) base.lines + actionLines
+                else base.lines + GuiLoreLine.Spacer + actionLines,
                 base.frame,
             )
         }
@@ -301,6 +320,20 @@ class GuiElementServiceImpl(
                 amount = 1
             )
         )
+    }
+
+    override fun backEntry(player: Player?, slot: Int): MenuElement {
+        val label = requireI18n(player, "gui.common.return", emptyMap())
+        val item = item(
+            GuiItemSpec(
+                material = Material.REDSTONE,
+                name = GuiNameSpec.Text(label, GuiNameStyle.MUTED),
+                lore = GuiLoreSpec.NameOnly,
+                role = GuiElementRole.BACK,
+                amount = 1,
+            )
+        )
+        return MenuElement(slot = slot, item = item, role = GuiElementRole.BACK)
     }
 
     override fun confirmItem(name: String, confirm: Boolean): ItemStack {

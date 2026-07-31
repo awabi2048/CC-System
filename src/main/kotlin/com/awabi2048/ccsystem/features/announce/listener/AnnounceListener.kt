@@ -7,13 +7,12 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
-import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
+import com.awabi2048.ccsystem.api.gui.GuiMenuActionIntent
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
 import com.awabi2048.ccsystem.api.gui.InventoryMenuView
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
-import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuActionHandler
 import com.awabi2048.ccsystem.api.gui.MenuDialogButton
 import com.awabi2048.ccsystem.api.gui.MenuDialogHandler
@@ -102,31 +101,29 @@ class AnnounceListener {
                     val announcement = announcements.getOrNull(INTERIOR_SLOTS.indexOf(slot))
                     val actions = when {
                         slot == 45 && openedFromMenuArgument -> listOf(
-                            GuiMenuEntryAction(
+                            GuiMenuActionIntent.AnyClick(
                                 "menu-command",
-                                MenuAcceptedClicks.STANDARD,
                                 rawText(player, "announce.menu_command_item_lore"),
                             )
                         )
                         slot == 49 && hasManagePermission(player) -> listOf(
-                            GuiMenuEntryAction(
+                            GuiMenuActionIntent.AnyClick(
                                 "select-icon",
-                                MenuAcceptedClicks.STANDARD,
                                 rawText(player, "announce.add_item_lore"),
                             )
                         )
                         announcement != null && hasManagePermission(player) -> listOf(
-                            GuiMenuEntryAction(
-                                "announcement",
-                                MenuAcceptedClicks.LEFT,
-                                rawText(player, "announce.lore.edit"),
-                                payload = mapOf("id" to announcement.id),
-                            ),
-                            GuiMenuEntryAction(
-                                "announcement",
-                                MenuAcceptedClicks.RIGHT,
-                                rawText(player, "announce.lore.delete"),
-                                payload = mapOf("id" to announcement.id),
+                            GuiMenuActionIntent.LeftRight(
+                                left = GuiMenuActionIntent.AnyClick(
+                                    "announcement",
+                                    rawText(player, "announce.lore.edit"),
+                                    payload = mapOf("id" to announcement.id),
+                                ),
+                                right = GuiMenuActionIntent.AnyClick(
+                                    "announcement",
+                                    rawText(player, "announce.lore.delete"),
+                                    payload = mapOf("id" to announcement.id),
+                                ),
                             ),
                         )
                         else -> emptyList()

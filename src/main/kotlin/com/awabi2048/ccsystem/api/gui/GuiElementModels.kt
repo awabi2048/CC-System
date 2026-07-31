@@ -189,7 +189,7 @@ data class GuiMenuEntryOption(
  * 外部システムが宣言できる操作の意味情報。
  * 操作案内、クリック受付、Runtime分岐はCC-Systemがこの宣言から同時生成する。
  */
-data class GuiMenuEntryAction(
+internal data class GuiMenuEntryAction(
     val actionId: String,
     val acceptedClicks: Set<ClickType>,
     val label: String,
@@ -218,21 +218,26 @@ data class GuiMenuEntrySpec(
     val options: List<GuiMenuEntryOption> = emptyList(),
     val warnings: List<String> = emptyList(),
     val dangers: List<String> = emptyList(),
-    val actions: List<GuiMenuEntryAction> = emptyList(),
+    val actions: List<GuiMenuActionIntent> = emptyList(),
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        val accepted = expandedActions().filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
         require(accepted.size == accepted.distinct().size) {
             "a click type cannot be assigned to multiple menu actions"
         }
-        require(role != GuiElementRole.DECORATION || actions.isEmpty()) {
+        require(role != GuiElementRole.DECORATION || expandedActions().isEmpty()) {
             "decoration entries cannot have actions"
         }
+        require(actions.none { it is GuiMenuActionIntent.Back } || role == GuiElementRole.BACK) {
+            "back action intent requires BACK role"
+        }
     }
+
+    internal fun expandedActions(): List<GuiMenuEntryAction> = actions.flatMap(GuiMenuActionIntent::expand)
 }
 
 /**
@@ -260,21 +265,26 @@ data class GuiMenuDisplaySpec(
 data class GuiStructuredMenuEntrySpec(
     val slot: Int,
     val item: GuiItemSpec,
-    val actions: List<GuiMenuEntryAction>,
+    val actions: List<GuiMenuActionIntent>,
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        require(item.role != GuiElementRole.DECORATION || actions.isEmpty()) {
+        require(item.role != GuiElementRole.DECORATION || expandedActions().isEmpty()) {
             "decoration entries cannot have actions"
         }
-        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        val accepted = expandedActions().filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
         require(accepted.size == accepted.distinct().size) {
             "a click type cannot be assigned to multiple menu actions"
         }
+        require(actions.none { it is GuiMenuActionIntent.Back } || item.role == GuiElementRole.BACK) {
+            "back action intent requires BACK role"
+        }
     }
+
+    internal fun expandedActions(): List<GuiMenuEntryAction> = actions.flatMap(GuiMenuActionIntent::expand)
 }
 
 /**

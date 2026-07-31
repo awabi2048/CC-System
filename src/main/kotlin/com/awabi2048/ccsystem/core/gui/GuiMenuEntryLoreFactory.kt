@@ -13,7 +13,12 @@ internal object GuiMenuEntryLoreFactory {
         viewer: org.bukkit.entity.Player?,
     ): GuiLoreSpec {
         val blocks = buildList {
-            block(spec.description.map(GuiLoreLine::Text))
+            val descriptionLines = spec.description.map(GuiLoreLine::Text)
+            if (enabledActions.size == 1 && descriptionLines.isNotEmpty()) {
+                block(descriptionLines + actionLines(enabledActions, viewer))
+            } else {
+                block(descriptionLines)
+            }
             block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
             block(spec.options.map {
                 GuiLoreLine.Option(
@@ -25,7 +30,9 @@ internal object GuiMenuEntryLoreFactory {
             })
             block(spec.warnings.map(GuiLoreLine::Warning))
             block(spec.dangers.map(GuiLoreLine::Danger))
-            block(actionLines(enabledActions, viewer))
+            if (enabledActions.size != 1 || descriptionLines.isEmpty()) {
+                block(actionLines(enabledActions, viewer))
+            }
         }
         return if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
     }

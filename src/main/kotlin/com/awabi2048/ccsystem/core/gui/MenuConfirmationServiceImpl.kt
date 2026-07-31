@@ -2,7 +2,7 @@ package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
-import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
+import com.awabi2048.ccsystem.api.gui.GuiMenuActionIntent
 import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.InventoryMenuDefinition
@@ -15,7 +15,6 @@ import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseHandler
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationDraft
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
-import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import java.util.UUID
@@ -85,9 +84,8 @@ internal class MenuConfirmationServiceImpl(
                     GuiStructuredMenuEntrySpec(
                         layout.confirmSlot,
                         draft.confirmItem,
-                        listOf(GuiMenuEntryAction(
+                        listOf(GuiMenuActionIntent.Confirm(
                             ACTION_CONFIRM,
-                            MenuAcceptedClicks.LEFT_RIGHT,
                             draft.confirmActionText,
                         )),
                         sounds = MenuActionSoundPolicy(success = draft.confirmSound),
@@ -105,9 +103,8 @@ internal class MenuConfirmationServiceImpl(
                     GuiStructuredMenuEntrySpec(
                         layout.cancelSlot,
                         draft.cancelItem,
-                        listOf(GuiMenuEntryAction(
+                        listOf(GuiMenuActionIntent.Cancel(
                             ACTION_CANCEL,
-                            MenuAcceptedClicks.LEFT_RIGHT,
                             draft.cancelActionText,
                         )),
                         sounds = MenuActionSoundPolicy(success = draft.cancelSound),

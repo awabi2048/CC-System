@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseReason
+import com.awabi2048.ccsystem.api.gui.MenuContractValidator
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteraction
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteractionOutcome
@@ -505,6 +506,7 @@ internal class MenuRuntimeServiceImpl(
                 plugin.logger.log(Level.SEVERE, "メニュー描画に失敗しました: route=${definition.routeId}", failure)
             }
             .getOrNull()
+            ?.also { rendered -> MenuContractValidator.requireValid(definition, rendered) }
             ?.withHistoryNavigation(player)
             ?: return false
         val policy = inventoryPolicy(view)
