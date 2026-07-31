@@ -12,10 +12,13 @@ internal object GuiMenuEntryLoreFactory {
         enabledActions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
     ): GuiLoreSpec {
+        if (spec.semanticLoreBlocks.isNotEmpty()) {
+            return buildSemanticBlocks(spec.semanticLoreBlocks, enabledActions, viewer)
+        }
         val blocks = buildList {
             val descriptionLines = spec.description.map(GuiLoreLine::Text)
             if (enabledActions.size == 1 && descriptionLines.isNotEmpty()) {
-                block(descriptionLines + actionLines(enabledActions, viewer))
+                block(descriptionLines + GuiLoreLine.Spacer + actionLines(enabledActions, viewer))
             } else {
                 block(descriptionLines)
             }
@@ -35,6 +38,22 @@ internal object GuiMenuEntryLoreFactory {
             }
         }
         return if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
+    }
+
+    private fun buildSemanticBlocks(
+        source: List<GuiLoreBlock>,
+        enabledActions: List<GuiMenuEntryAction>,
+        viewer: org.bukkit.entity.Player?,
+    ): GuiLoreSpec {
+        if (enabledActions.isEmpty()) return GuiLoreSpec.Blocks(source)
+        val actionLines = actionLines(enabledActions, viewer)
+        if (enabledActions.size == 1) {
+            val last = source.last()
+            return GuiLoreSpec.Blocks(
+                source.dropLast(1) + last.copy(lines = last.lines + GuiLoreLine.Spacer + actionLines)
+            )
+        }
+        return GuiLoreSpec.Blocks(source + GuiLoreBlock(actionLines))
     }
 
     private fun MutableList<GuiLoreBlock>.block(lines: List<GuiLoreLine>) {

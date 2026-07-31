@@ -254,7 +254,7 @@ class GuiElementServiceImpl(
             val first = base.blocks.first()
             if (first.lines.any { it is GuiLoreLine.Text || it is GuiLoreLine.Component }) {
                 return GuiLoreSpec.Blocks(
-                    listOf(first.copy(lines = first.lines + actionLines)) + base.blocks.drop(1)
+                    listOf(first.copy(lines = first.lines + GuiLoreLine.Spacer + actionLines)) + base.blocks.drop(1)
                 )
             }
         }
@@ -264,7 +264,7 @@ class GuiElementServiceImpl(
             GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
             is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(base.blocks + actionBlock)
             is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
-                if (actionLines.size == 1) base.lines + actionLines
+                if (actionLines.size == 1) base.lines + GuiLoreLine.Spacer + actionLines
                 else base.lines + GuiLoreLine.Spacer + actionLines,
                 base.frame,
             )
@@ -322,12 +322,12 @@ class GuiElementServiceImpl(
         )
     }
 
-    override fun backEntry(player: Player?, slot: Int): MenuElement {
+    override fun backEntry(player: Player?, slot: Int, material: Material): MenuElement {
         val label = requireI18n(player, "gui.common.return", emptyMap())
         val item = item(
             GuiItemSpec(
-                material = Material.REDSTONE,
-                name = GuiNameSpec.Text(label, GuiNameStyle.MUTED),
+                material = material,
+                name = GuiNameSpec.Text("§e§l$label", GuiNameStyle.DEFAULT),
                 lore = GuiLoreSpec.NameOnly,
                 role = GuiElementRole.BACK,
                 amount = 1,

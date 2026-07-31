@@ -225,6 +225,11 @@ data class GuiMenuEntrySpec(
     val warnings: List<String> = emptyList(),
     val dangers: List<String> = emptyList(),
     val actions: List<GuiMenuActionIntent> = emptyList(),
+    /**
+     * 既に意味単位へ分割済みのLoreブロック。Capability等の提供元が完成順序を
+     * 宣言する場合に使用し、呼び出し側で行種別へ再分類しない。
+     */
+    val semanticLoreBlocks: List<GuiLoreBlock> = emptyList(),
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
@@ -240,6 +245,13 @@ data class GuiMenuEntrySpec(
         }
         require(actions.none { it is GuiMenuActionIntent.Back } || role == GuiElementRole.BACK) {
             "back action intent requires BACK role"
+        }
+        require(
+            semanticLoreBlocks.isEmpty() ||
+                (description.isEmpty() && data.isEmpty() && options.isEmpty() &&
+                    warnings.isEmpty() && dangers.isEmpty())
+        ) {
+            "semanticLoreBlocks cannot be combined with categorized lore fields"
         }
     }
 

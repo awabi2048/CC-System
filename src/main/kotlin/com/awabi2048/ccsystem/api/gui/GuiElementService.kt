@@ -39,7 +39,7 @@ interface GuiElementService {
     fun backItem(name: String, material: Material = Material.REDSTONE): ItemStack
 
     /** 共通の戻る項目。表示、STANDARD受付、BACK role、履歴戻りを一体で生成する。 */
-    fun backEntry(player: Player?, slot: Int): MenuElement
+    fun backEntry(player: Player?, slot: Int, material: Material = Material.REDSTONE): MenuElement
 
     fun confirmItem(name: String, confirm: Boolean): ItemStack
 }
