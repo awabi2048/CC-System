@@ -115,6 +115,8 @@ sealed interface GuiLoreLine {
     /** プレイヤーが入力した装飾可能な本文。固定UI文言には使用しない。 */
     data class UserText(val text: String) : GuiLoreLine
     data class Component(val value: net.kyori.adventure.text.Component) : GuiLoreLine
+    /** 既存ItemMeta Loreを意味解析せず、そのまま保持する行。 */
+    data class Opaque(val value: net.kyori.adventure.text.Component) : GuiLoreLine
 }
 
 sealed interface GuiLoreSpec {
@@ -133,6 +135,24 @@ sealed interface GuiLoreSpec {
         val lines: List<GuiLoreLine>,
         val frame: GuiLoreFrame
     ) : GuiLoreSpec
+    /** 既存Loreを意味解析せず保持する仕様。 */
+    data class Opaque(
+        val lines: List<net.kyori.adventure.text.Component>,
+        val frame: GuiLoreFrame = GuiLoreFrame.NONE,
+    ) : GuiLoreSpec {
+        init {
+            require(lines.isNotEmpty()) { "Opaque lore must not be empty" }
+        }
+    }
+    /** 意味内容と操作群を分離した合成仕様。 */
+    data class WithActions(
+        val base: GuiLoreSpec,
+        val actions: List<GuiLoreLine.Interaction>,
+    ) : GuiLoreSpec {
+        init {
+            require(actions.isNotEmpty()) { "Lore actions must not be empty" }
+        }
+    }
 }
 
 data class GuiLoreBlock(val lines: List<GuiLoreLine>) {
@@ -287,6 +307,8 @@ data class GuiStructuredMenuEntrySpec(
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
+    /** Capability提供元が確定した意味ブロック。item.loreとは併用しない。 */
+    val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -299,6 +321,9 @@ data class GuiStructuredMenuEntrySpec(
         }
         require(actions.none { it is GuiMenuActionIntent.Back } || item.role == GuiElementRole.BACK) {
             "back action intent requires BACK role"
+        }
+        require(embeddedLoreBlocks.isEmpty() || item.lore == GuiLoreSpec.None || item.lore == GuiLoreSpec.NameOnly) {
+            "embeddedLoreBlocks cannot be combined with item lore"
         }
     }
 

@@ -5,8 +5,6 @@ import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiFrameSection
 import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
-import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
-import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
@@ -159,8 +157,13 @@ class GuiElementServiceImpl(
     override fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement {
         val enabledActions = spec.expandedActions().filter(GuiMenuEntryAction::enabled)
         val actionLines = GuiMenuEntryLoreFactory.actionLines(enabledActions, player)
+        val baseItem = if (spec.embeddedLoreBlocks.isNotEmpty()) {
+            spec.item.copy(lore = GuiLoreSpec.Blocks(spec.embeddedLoreBlocks))
+        } else {
+            spec.item
+        }
         val icon = item(
-            spec.item.copy(lore = appendActionLore(spec.item.lore, actionLines)),
+            baseItem.copy(lore = GuiLoreComposer.compose(baseItem.lore, actionLines)),
         ).also { item ->
             spec.glint?.let { enabled -> item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) } }
             spec.playerHeadOwner?.let { owner ->
@@ -213,9 +216,7 @@ class GuiElementServiceImpl(
         } else {
             presentation.item
         }
-        val itemSpec = baseItem.copy(
-            lore = appendActionLore(presentation.item.lore, actionLines),
-        )
+        val itemSpec = baseItem.copy(lore = GuiLoreComposer.compose(baseItem.lore, actionLines))
         val item = item(itemSpec)
         presentation.glint?.let { enabled ->
             item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) }
@@ -249,29 +250,6 @@ class GuiElementServiceImpl(
                 item = item,
                 role = GuiElementRole.CONTENT,
                 interaction = MenuInteraction.DisplayOnly,
-            )
-        }
-    }
-
-    private fun appendActionLore(base: GuiLoreSpec, actionLines: List<GuiLoreLine>): GuiLoreSpec {
-        if (actionLines.isEmpty() || base == GuiLoreSpec.NameOnly) return base
-        if (actionLines.size == 1 && base is GuiLoreSpec.Blocks) {
-            val first = base.blocks.first()
-            if (first.lines.any { it is GuiLoreLine.Text || it is GuiLoreLine.Component }) {
-                return GuiLoreSpec.Blocks(
-                    listOf(first.copy(lines = first.lines + GuiLoreLine.Spacer + actionLines)) + base.blocks.drop(1)
-                )
-            }
-        }
-        val actionBlock = GuiLoreBlock(actionLines)
-        return when (base) {
-            GuiLoreSpec.None -> GuiLoreSpec.Blocks(listOf(actionBlock))
-            GuiLoreSpec.NameOnly -> GuiLoreSpec.NameOnly
-            is GuiLoreSpec.Blocks -> GuiLoreSpec.Blocks(base.blocks + actionBlock)
-            is GuiLoreSpec.Rich -> GuiLoreSpec.Rich(
-                if (actionLines.size == 1) base.lines + GuiLoreLine.Spacer + actionLines
-                else base.lines + GuiLoreLine.Spacer + actionLines,
-                base.frame,
             )
         }
     }

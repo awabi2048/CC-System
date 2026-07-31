@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.gui.GuiMenuEntryData
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryOption
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
+import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.GuiValueTone
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test
 
 class GuiMenuEntryLoreFactoryTest {
     @Test
-    fun `one action joins the description block`() {
+    fun `one action is the last independent block`() {
         val spec = GuiMenuEntrySpec(
             slot = 0,
             material = Material.STONE,
@@ -27,12 +28,11 @@ class GuiMenuEntryLoreFactoryTest {
         )
 
         val lore = GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null)
-        assertTrue(lore is GuiLoreSpec.Blocks)
-        val blocks = (lore as GuiLoreSpec.Blocks).blocks
-        assertEquals(1, blocks.size)
-        assertTrue(blocks.single().lines[0] is GuiLoreLine.Text)
-        assertEquals(GuiLoreLine.Spacer, blocks.single().lines[1])
-        assertTrue(blocks.single().lines[2] is GuiLoreLine.Interaction)
+        assertTrue(lore is GuiLoreSpec.WithActions)
+        val blocks = materializedBlocks(lore)
+        assertEquals(2, blocks.size)
+        assertTrue(blocks.first().lines.single() is GuiLoreLine.Text)
+        assertTrue(blocks.last().lines.single() is GuiLoreLine.Interaction)
     }
 
     @Test
@@ -47,7 +47,7 @@ class GuiMenuEntryLoreFactoryTest {
             actions = listOf(GuiMenuActionIntent.AnyClick("open", "開く")),
         )
 
-        val blocks = (GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null) as GuiLoreSpec.Blocks).blocks
+        val blocks = materializedBlocks(GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
         assertEquals(3, blocks.size)
         assertTrue(blocks.last().lines.single() is GuiLoreLine.Interaction)
     }
@@ -68,10 +68,50 @@ class GuiMenuEntryLoreFactoryTest {
             ),
         )
 
-        val blocks = (GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null) as GuiLoreSpec.Blocks).blocks
+        val blocks = materializedBlocks(GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
         assertEquals(2, blocks.size)
         assertEquals(1, blocks.first().lines.size)
         assertEquals(2, blocks.last().lines.size)
+    }
+
+    @Test
+    fun `single action follows every typed information block`() {
+        val spec = GuiMenuEntrySpec(
+            0, Material.STONE, GuiNameSpec.Empty, GuiElementRole.ACTION,
+            description = listOf("説明"),
+            data = listOf(GuiMenuEntryData("値", "3", GuiValueTone.DEFAULT)),
+            options = listOf(GuiMenuEntryOption("候補", true)),
+            warnings = listOf("警告"),
+            dangers = listOf("危険"),
+            actions = listOf(GuiMenuActionIntent.AnyClick("open", "開く")),
+        )
+
+        val blocks = materializedBlocks(GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
+        assertEquals(6, blocks.size)
+        assertTrue(blocks.last().lines.single() is GuiLoreLine.Interaction)
+        assertTrue(blocks.dropLast(1).none { block -> block.lines.any { it is GuiLoreLine.Interaction } })
+    }
+
+    @Test
+    fun `action-only lore has no leading spacer`() {
+        val spec = GuiMenuEntrySpec(
+            0, Material.STONE, GuiNameSpec.Empty, GuiElementRole.ACTION,
+            actions = listOf(GuiMenuActionIntent.AnyClick("open", "開く")),
+        )
+
+        val blocks = materializedBlocks(GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
+        assertEquals(1, blocks.size)
+        assertTrue(blocks.single().lines.single() is GuiLoreLine.Interaction)
+    }
+
+    private fun materializedBlocks(lore: GuiLoreSpec): List<GuiLoreBlock> = when (lore) {
+        is GuiLoreSpec.Blocks -> lore.blocks
+        is GuiLoreSpec.WithActions -> {
+            val base = lore.base as? GuiLoreSpec.Blocks
+            if (base != null) base.blocks + GuiLoreBlock(lore.actions)
+            else listOf(GuiLoreBlock(lore.actions))
+        }
+        else -> error("Expected block-based Lore: $lore")
     }
 
     @Test

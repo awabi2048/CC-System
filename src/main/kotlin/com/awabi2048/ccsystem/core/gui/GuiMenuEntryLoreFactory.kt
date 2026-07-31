@@ -12,48 +12,26 @@ internal object GuiMenuEntryLoreFactory {
         enabledActions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
     ): GuiLoreSpec {
-        if (spec.semanticLoreBlocks.isNotEmpty()) {
-            return buildSemanticBlocks(spec.semanticLoreBlocks, enabledActions, viewer)
-        }
-        val blocks = buildList {
-            val descriptionLines = spec.description.map(GuiLoreLine::Text)
-            if (enabledActions.size == 1 && descriptionLines.isNotEmpty()) {
-                block(descriptionLines + GuiLoreLine.Spacer + actionLines(enabledActions, viewer))
-            } else {
-                block(descriptionLines)
+        val base = if (spec.semanticLoreBlocks.isNotEmpty()) {
+            GuiLoreSpec.Blocks(spec.semanticLoreBlocks)
+        } else {
+            val blocks = buildList {
+                block(spec.description.map(GuiLoreLine::Text))
+                block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
+                block(spec.options.map {
+                    GuiLoreLine.Option(
+                        it.label,
+                        it.selected,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
+                    )
+                })
+                block(spec.warnings.map(GuiLoreLine::Warning))
+                block(spec.dangers.map(GuiLoreLine::Danger))
             }
-            block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
-            block(spec.options.map {
-                GuiLoreLine.Option(
-                    it.label,
-                    it.selected,
-                    com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
-                    com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
-                )
-            })
-            block(spec.warnings.map(GuiLoreLine::Warning))
-            block(spec.dangers.map(GuiLoreLine::Danger))
-            if (enabledActions.size != 1 || descriptionLines.isEmpty()) {
-                block(actionLines(enabledActions, viewer))
-            }
+            if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
         }
-        return if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
-    }
-
-    private fun buildSemanticBlocks(
-        source: List<GuiLoreBlock>,
-        enabledActions: List<GuiMenuEntryAction>,
-        viewer: org.bukkit.entity.Player?,
-    ): GuiLoreSpec {
-        if (enabledActions.isEmpty()) return GuiLoreSpec.Blocks(source)
-        val actionLines = actionLines(enabledActions, viewer)
-        if (enabledActions.size == 1) {
-            val last = source.last()
-            return GuiLoreSpec.Blocks(
-                source.dropLast(1) + last.copy(lines = last.lines + GuiLoreLine.Spacer + actionLines)
-            )
-        }
-        return GuiLoreSpec.Blocks(source + GuiLoreBlock(actionLines))
+        return GuiLoreComposer.compose(base, actionLines(enabledActions, viewer))
     }
 
     private fun MutableList<GuiLoreBlock>.block(lines: List<GuiLoreLine>) {
@@ -63,7 +41,7 @@ internal object GuiMenuEntryLoreFactory {
     fun actionLines(
         actions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
-    ): List<GuiLoreLine> {
+    ): List<GuiLoreLine.Interaction> {
         return actions.map { action ->
             GuiLoreLine.Interaction(viewer, action.acceptedClicks, action.label)
         }
