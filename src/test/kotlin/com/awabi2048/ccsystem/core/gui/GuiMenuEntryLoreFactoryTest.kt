@@ -31,7 +31,8 @@ class GuiMenuEntryLoreFactoryTest {
         val blocks = (lore as GuiLoreSpec.Blocks).blocks
         assertEquals(1, blocks.size)
         assertTrue(blocks.single().lines[0] is GuiLoreLine.Text)
-        assertTrue(blocks.single().lines[1] is GuiLoreLine.Interaction)
+        assertEquals(GuiLoreLine.Spacer, blocks.single().lines[1])
+        assertTrue(blocks.single().lines[2] is GuiLoreLine.Interaction)
     }
 
     @Test
