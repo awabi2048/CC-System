@@ -120,4 +120,25 @@ class GuiMenuEntryLoreFactoryTest {
         )
         assertEquals(1, page.expandedActions().size)
     }
+
+    @Test
+    fun `list gestures cover same left right shift and middle contracts`() {
+        val intents = listOf(
+            GuiMenuActionIntent.LeftRightSame("open", "開く"),
+            GuiMenuActionIntent.ShiftAny("force", "強制操作"),
+            GuiMenuActionIntent.MiddleClick("preview", "プレビュー"),
+        )
+        val expanded = intents.flatMap { intent ->
+            GuiMenuEntrySpec(
+                slot = 0,
+                material = Material.STONE,
+                name = GuiNameSpec.Empty,
+                role = GuiElementRole.ACTION,
+                actions = listOf(intent),
+            ).expandedActions()
+        }
+        assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.LEFT_RIGHT, expanded[0].acceptedClicks)
+        assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.SHIFT_LEFT_RIGHT, expanded[1].acceptedClicks)
+        assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.MIDDLE, expanded[2].acceptedClicks)
+    }
 }
