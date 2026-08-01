@@ -367,22 +367,6 @@ data class GuiMenuCapabilityInvocationSpec(
  * @deprecated Capabilityは[GuiMenuCapabilityInvocationSpec]で直接Runtimeへ渡してください。
  * この型は既存画面の段階移行だけに残します。
  */
-@Deprecated(
-    message = "CapabilityはGuiMenuCapabilityInvocationSpecで直接Runtimeへ渡してください",
-    replaceWith = ReplaceWith("GuiMenuCapabilityInvocationSpec(slot, capability, arguments = actionPayload)"),
-)
-data class GuiMenuCapabilitySpec(
-    val slot: Int,
-    val capability: ResolvedMenuCapability,
-    val actionId: String,
-    val actionPayload: Map<String, String> = emptyMap(),
-) {
-    init {
-        require(slot >= 0) { "slot must not be negative" }
-        require(actionId.isNotBlank()) { "actionId must not be blank" }
-    }
-}
-
 sealed interface GuiFrameSection {
     data object None : GuiFrameSection
     data class Row(val element: GuiItemSpec) : GuiFrameSection

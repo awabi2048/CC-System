@@ -30,6 +30,8 @@ interface MenuRuntimeService {
     /** GUI状態を変えず、playerの診断traceだけを削除します。 */
     fun clearClickTraces(player: Player)
 
+    fun inspect(player: Player, route: MenuRoute): MenuRuntimeInspectionResult
+
     fun open(player: Player, route: MenuRoute): Boolean
 
     /** [open]のBoolean互換APIでは失われる詳細な結果を返します。 */
@@ -46,6 +48,8 @@ interface MenuRuntimeService {
      */
     fun reopenCurrent(player: Player): Boolean
 
+    fun reopenCurrentResult(player: Player): MenuRuntimeOperationResult
+
     fun navigate(player: Player, route: MenuRoute): Boolean
 
     /** [navigate]のBoolean互換APIでは失われる詳細な結果を返します。 */
@@ -57,6 +61,8 @@ interface MenuRuntimeService {
      */
     fun openEphemeral(player: Player, route: MenuRoute): Boolean
 
+    fun openEphemeralResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
+
     /**
      * ワープや外部画面への移行で現在Inventoryが閉じても、現在Routeとパンくずを保持する。
      * 次に開く画面はreplaceまたはbackで現在Routeを再利用する。
@@ -67,6 +73,8 @@ interface MenuRuntimeService {
 
     fun resumeFromExternal(player: Player): Boolean
 
+    fun resumeFromExternalResult(player: Player): MenuRuntimeOperationResult
+
     /**
      * 外部入力を完了し、保持している現在Routeを次tickに最新状態から再生成します。
      *
@@ -74,6 +82,10 @@ interface MenuRuntimeService {
      * 同じ外部入力に対する重複完了では再表示しません。
      */
     fun finishExternal(player: Player): Boolean
+
+    fun finishExternalResult(player: Player): MenuRuntimeOperationResult
+
+    fun latestExternalFinishResult(player: Player): MenuRuntimeOperationResult?
 
     fun completeExternal(player: Player)
 
@@ -87,6 +99,8 @@ interface MenuRuntimeService {
     fun refreshResult(player: Player): MenuRuntimeOperationResult
 
     fun back(player: Player): Boolean
+
+    fun backResult(player: Player): MenuRuntimeOperationResult
 
     fun close(player: Player)
 

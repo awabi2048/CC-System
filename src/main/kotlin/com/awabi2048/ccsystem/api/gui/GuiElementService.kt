@@ -31,13 +31,6 @@ interface GuiElementService {
     /** 解決済みCapabilityを文字列Actionへ変換せず、Runtimeの共通Capability経路へ配置します。 */
     fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilityInvocationSpec): MenuElement
 
-    @Suppress("DEPRECATION")
-    @Deprecated(
-        message = "CapabilityはGuiMenuCapabilityInvocationSpecで直接Runtimeへ渡してください",
-        replaceWith = ReplaceWith("menuCapabilityEntry(player, GuiMenuCapabilityInvocationSpec(spec.slot, spec.capability, arguments = spec.actionPayload))"),
-    )
-    fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement
-
     fun applyFrame(inventory: Inventory, spec: GuiFrameSpec)
 
     fun fillEmpty(inventory: Inventory, element: GuiItemSpec)

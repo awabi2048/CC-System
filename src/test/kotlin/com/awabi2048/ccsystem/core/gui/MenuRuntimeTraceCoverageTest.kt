@@ -21,6 +21,8 @@ class MenuRuntimeTraceCoverageTest {
             "MenuRuntimeClickDisposition.BACK",
             "MenuRuntimeClickDisposition.EXCEPTION",
             "MenuRuntimeClickDisposition.HANDLED",
+            "MenuRuntimeInteractionKind.CLICK_BRANCHES",
+            "is MenuInteraction.ClickBranches ->",
             "recordClickTrace(",
         ).forEach { expected -> assertTrue(expected in source, "missing trace coverage: $expected") }
     }

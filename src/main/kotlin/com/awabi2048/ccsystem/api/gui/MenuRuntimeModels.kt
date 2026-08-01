@@ -82,6 +82,27 @@ sealed interface MenuInteraction {
         }
     }
 
+    /**
+     * clickごとに異なる最終interactionを選択する分岐です。
+     *
+     * [Branches]は既存のAction handler分岐として維持します。Capabilityを含む異種の
+     * interactionを同一slotへ置く場合だけ、この型を使用します。
+     */
+    data class ClickBranches(
+        val branches: List<MenuInteractionBranch>,
+    ) : MenuInteraction {
+        init {
+            require(branches.isNotEmpty()) { "branches must not be empty" }
+            val accepted = branches.flatMap(MenuInteractionBranch::acceptedClicks)
+            require(accepted.size == accepted.distinct().size) {
+                "a click type cannot be assigned to multiple interaction branches"
+            }
+        }
+
+        fun resolve(click: ClickType): MenuInteraction? =
+            branches.singleOrNull { click in it.acceptedClicks }?.interaction
+    }
+
     data class Capability(
         val capabilityId: String,
         val arguments: Map<String, String> = emptyMap(),
@@ -154,7 +175,32 @@ object MenuAcceptedClicks {
     val MIDDLE: Set<ClickType> = setOf(ClickType.MIDDLE)
 }
 
-@ConsistentCopyVisibility
+/** [MenuInteraction.ClickBranches]の1 click範囲と最終interactionです。 */
+data class MenuInteractionBranch(
+    val acceptedClicks: Set<ClickType>,
+    val interaction: MenuInteraction,
+) {
+    init {
+        require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        require(interaction !is MenuInteraction.Branches && interaction !is MenuInteraction.ClickBranches) {
+            "interaction branches must resolve to a final interaction"
+        }
+        require(interaction.acceptedClicksForBranch() == acceptedClicks) {
+            "interaction branch clicks must match its final interaction contract"
+        }
+    }
+}
+
+private fun MenuInteraction.acceptedClicksForBranch(): Set<ClickType> = when (this) {
+    MenuInteraction.DisplayOnly -> emptySet()
+    is MenuInteraction.Action -> acceptedClicks
+    is MenuInteraction.Branches,
+    is MenuInteraction.ClickBranches -> error("nested interaction branches are not final")
+    is MenuInteraction.Capability -> acceptedClicks
+    is MenuInteraction.Unavailable -> acceptedClicks
+    is MenuInteraction.Back -> acceptedClicks
+}
+
 data class MenuElement(
     val slot: Int,
     val item: ItemStack,
@@ -175,7 +221,8 @@ data class MenuElement(
         }
         require(
             interaction !is MenuInteraction.Action &&
-                interaction !is MenuInteraction.Capability ||
+                interaction !is MenuInteraction.Capability &&
+                interaction !is MenuInteraction.ClickBranches ||
                 role != GuiElementRole.DECORATION
         ) {
             "decoration elements cannot have an interaction action"

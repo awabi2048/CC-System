@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.api.gui
 
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 
 /** Runtime handlerが表示側へ提供する宣言的な契約。 */
@@ -26,6 +27,12 @@ data class MenuActionObservation(
     val interaction: MenuInteraction,
 )
 
+/** RuntimeがCapability registryと照合して画面契約を検証するための文脈です。 */
+data class MenuContractValidationContext(
+    val player: Player,
+    val capabilities: MenuCapabilityService,
+)
+
 /**
  * 画面を開く前に、表示された操作と登録済みHandlerの契約を検査する。
  * Handler本体の条件分岐は解析せず、宣言されたクリック集合だけを比較する。
@@ -34,14 +41,17 @@ object MenuContractValidator {
     fun validate(
         definition: InventoryMenuDefinition,
         view: InventoryMenuView,
+        context: MenuContractValidationContext? = null,
     ): List<MenuContractViolation> = validate(
         definition,
         view.elements.map { MenuActionObservation(it.slot, it.resolvedInteraction()) },
+        context,
     )
 
     fun validate(
         definition: InventoryMenuDefinition,
         observations: List<MenuActionObservation>,
+        context: MenuContractValidationContext? = null,
     ): List<MenuContractViolation> {
         val violations = mutableListOf<MenuContractViolation>()
         val acceptedByAction = mutableMapOf<String, MutableSet<ClickType>>()
@@ -68,15 +78,18 @@ object MenuContractValidator {
                         violations,
                     )
                 }
+                is MenuInteraction.ClickBranches -> interaction.branches.forEach { branch ->
+                    validateInteraction(
+                        definition,
+                        observation.slot,
+                        branch.interaction,
+                        context,
+                        acceptedByAction,
+                        violations,
+                    )
+                }
                 is MenuInteraction.Capability -> {
-                    if (interaction.capabilityId.isBlank()) {
-                        violations += MenuContractViolation(
-                            definition.routeId,
-                            observation.slot,
-                            null,
-                            "capability interaction must retain a capability id",
-                        )
-                    }
+                    validateCapability(definition, observation.slot, interaction, context, violations)
                 }
                 is MenuInteraction.Back,
                 is MenuInteraction.Unavailable,
@@ -134,6 +147,94 @@ object MenuContractValidator {
                 slot,
                 actionId,
                 "required payload is missing: $missing",
+            )
+        }
+    }
+
+    private fun validateInteraction(
+        definition: InventoryMenuDefinition,
+        slot: Int,
+        interaction: MenuInteraction,
+        context: MenuContractValidationContext?,
+        acceptedByAction: MutableMap<String, MutableSet<ClickType>>,
+        violations: MutableList<MenuContractViolation>,
+    ) {
+        when (interaction) {
+            is MenuInteraction.Action -> validateAction(
+                definition,
+                slot,
+                interaction.actionId,
+                interaction.payload,
+                interaction.acceptedClicks,
+                acceptedByAction,
+                violations,
+            )
+            is MenuInteraction.Capability ->
+                validateCapability(definition, slot, interaction, context, violations)
+            is MenuInteraction.Unavailable,
+            is MenuInteraction.Back,
+            MenuInteraction.DisplayOnly -> Unit
+            is MenuInteraction.Branches,
+            is MenuInteraction.ClickBranches -> error("interaction branches must resolve to a final interaction")
+        }
+    }
+
+    private fun validateCapability(
+        definition: InventoryMenuDefinition,
+        slot: Int,
+        interaction: MenuInteraction.Capability,
+        context: MenuContractValidationContext?,
+        violations: MutableList<MenuContractViolation>,
+    ) {
+        if (interaction.capabilityId.isBlank()) {
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability interaction must retain a capability id",
+            )
+            return
+        }
+        context ?: return
+        val resolved = runCatching {
+            context.capabilities.resolve(
+                interaction.capabilityId,
+                context.player,
+                interaction.arguments,
+                interaction.attributes,
+            )
+        }.getOrElse { failure ->
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability resolution failed: ${failure.javaClass.name}",
+            )
+            return
+        }
+        if (resolved == null) {
+            val message = if (context.capabilities.definition(interaction.capabilityId) == null) {
+                "capability is not registered: ${interaction.capabilityId}"
+            } else {
+                "capability does not resolve in this validation context: ${interaction.capabilityId}"
+            }
+            violations += MenuContractViolation(definition.routeId, slot, null, message)
+            return
+        }
+        if (resolved.acceptedClicks != interaction.acceptedClicks) {
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability accepted clicks differ: resolved=${resolved.acceptedClicks} rendered=${interaction.acceptedClicks}",
+            )
+        }
+        if (resolved.safety != interaction.safety || resolved.safetyByClick != interaction.safetyByClick) {
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability safety contract differs: resolved=${resolved.safety}/${resolved.safetyByClick} rendered=${interaction.safety}/${interaction.safetyByClick}",
             )
         }
     }

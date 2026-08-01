@@ -33,8 +33,9 @@ class GuiLoreCompositionTest {
         )
 
         val composed = spec as GuiLoreSpec.WithActions
-        assertEquals(2, (composed.base as GuiLoreSpec.Blocks).blocks.size)
-        assertEquals("説明", ((composed.base as GuiLoreSpec.Blocks).blocks.first().lines.single() as GuiLoreLine.Text).text)
+        val blocks = composed.base as GuiLoreSpec.Blocks
+        assertEquals(2, blocks.blocks.size)
+        assertEquals("説明", (blocks.blocks.first().lines.single() as GuiLoreLine.Text).text)
         assertEquals("開く", composed.actions.single().label)
         assertTrue(plain(service.render(spec)).any { it.contains("開く") })
     }

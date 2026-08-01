@@ -6,6 +6,12 @@ enum class MenuRuntimeOperation {
     REPLACE,
     NAVIGATE,
     REFRESH,
+    REOPEN_CURRENT,
+    OPEN_EPHEMERAL,
+    RESUME_EXTERNAL,
+    FINISH_EXTERNAL,
+    BACK,
+    INSPECT,
 }
 
 /** 画面操作が完了しなかった詳細な理由です。 */

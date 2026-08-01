@@ -35,6 +35,10 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionResult
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSlotSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuSurface
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
@@ -75,6 +79,7 @@ internal class MenuRuntimeServiceImpl(
     private val sessions = ConcurrentHashMap<UUID, Session>()
     private val preserveCloseInventories = ConcurrentHashMap.newKeySet<Inventory>()
     private val externalSuspensions = ConcurrentHashMap<UUID, MenuRoute>()
+    private val externalFinishResults = MenuRuntimeExternalFinishResultStore()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val clickTraces = MenuRuntimeClickTraceStore()
@@ -136,6 +141,16 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(player.uniqueId)
     }
 
+    override fun inspect(player: Player, route: MenuRoute): MenuRuntimeInspectionResult {
+        val definition = definition(route.owner, route.id)
+            ?: return inspectionFailure(route, MenuRuntimeOperationFailureReason.MISSING_DEFINITION)
+        return MenuRuntimeViewPreparation.inspect(
+            definition,
+            MenuRenderContext(player, route, navigation.canGoBack(player)),
+            capabilities,
+        ) { view -> inspectionSnapshot(player, route, view.withHistoryNavigation(player)) }
+    }
+
     override fun open(player: Player, route: MenuRoute): Boolean = openResult(player, route).successful
 
     override fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
@@ -152,9 +167,15 @@ internal class MenuRuntimeServiceImpl(
         }
     }
 
-    override fun reopenCurrent(player: Player): Boolean {
-        val route = navigation.currentRoute(player) ?: return false
-        return replace(player, route)
+    override fun reopenCurrent(player: Player): Boolean = reopenCurrentResult(player).successful
+
+    override fun reopenCurrentResult(player: Player): MenuRuntimeOperationResult {
+        val route = navigation.currentRoute(player) ?: return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.REOPEN_CURRENT,
+            null,
+            MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION,
+        )
+        return replaceResult(player, route).forOperation(MenuRuntimeOperation.REOPEN_CURRENT)
     }
 
     override fun navigate(player: Player, route: MenuRoute): Boolean = navigateResult(player, route).successful
@@ -167,7 +188,11 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun openEphemeral(player: Player, route: MenuRoute): Boolean =
-        openDirectResult(player, route, playOpenSound = true, preserveHistory = true).successful
+        openEphemeralResult(player, route).successful
+
+    override fun openEphemeralResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult =
+        openDirectResult(player, route, playOpenSound = true, preserveHistory = true)
+            .forOperation(MenuRuntimeOperation.OPEN_EPHEMERAL)
 
     override fun preserveHistoryOnClose(player: Player) {
         val inventory = player.openInventory.topInventory
@@ -185,22 +210,82 @@ internal class MenuRuntimeServiceImpl(
         return true
     }
 
-    override fun resumeFromExternal(player: Player): Boolean {
-        val route = externalSuspensions.remove(player.uniqueId) ?: return false
-        if (navigation.currentRoute(player) != route) return false
-        return reopenCurrent(player)
+    override fun resumeFromExternal(player: Player): Boolean = resumeFromExternalResult(player).successful
+
+    override fun resumeFromExternalResult(player: Player): MenuRuntimeOperationResult {
+        val route = externalSuspensions.remove(player.uniqueId) ?: return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.RESUME_EXTERNAL,
+            navigation.currentRoute(player),
+            MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION,
+        )
+        if (navigation.currentRoute(player) != route) {
+            return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.RESUME_EXTERNAL,
+                route,
+                MenuRuntimeOperationFailureReason.ROUTE_MISMATCH,
+            )
+        }
+        return reopenCurrentResult(player).forOperation(MenuRuntimeOperation.RESUME_EXTERNAL)
     }
 
-    override fun finishExternal(player: Player): Boolean {
-        val route = externalSuspensions.remove(player.uniqueId) ?: return false
-        if (navigation.currentRoute(player) != route) return false
-        Bukkit.getScheduler().runTask(plugin, Runnable {
-            if (player.isOnline && navigation.currentRoute(player) == route) {
-                reopenCurrent(player)
-            }
-        })
-        return true
+    override fun finishExternal(player: Player): Boolean = finishExternalResult(player).successful
+
+    override fun finishExternalResult(player: Player): MenuRuntimeOperationResult {
+        val route = externalSuspensions.remove(player.uniqueId) ?: return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.FINISH_EXTERNAL,
+            navigation.currentRoute(player),
+            MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION,
+        )
+        if (navigation.currentRoute(player) != route) {
+            return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.FINISH_EXTERNAL,
+                route,
+                MenuRuntimeOperationFailureReason.ROUTE_MISMATCH,
+            )
+        }
+        externalFinishResults.clear(player.uniqueId)
+        return try {
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                val completion = try {
+                    if (player.isOnline && navigation.currentRoute(player) == route) {
+                        reopenCurrentResult(player).forOperation(MenuRuntimeOperation.FINISH_EXTERNAL)
+                    } else {
+                        MenuRuntimeOperationResult.failed(
+                            MenuRuntimeOperation.FINISH_EXTERNAL,
+                            route,
+                            MenuRuntimeOperationFailureReason.ROUTE_MISMATCH,
+                        )
+                    }
+                } catch (failure: Throwable) {
+                    plugin.logger.log(
+                        Level.SEVERE,
+                        "外部画面終了後のメニュー再表示に失敗しました: route=${route.id} player=${player.uniqueId}",
+                        failure,
+                    )
+                    MenuRuntimeOperationResult.failed(
+                        MenuRuntimeOperation.FINISH_EXTERNAL,
+                        route,
+                        MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+                        exceptionType = failure.javaClass.name,
+                    )
+                }
+                externalFinishResults.record(player.uniqueId, completion)
+            })
+            MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.FINISH_EXTERNAL, route)
+        } catch (failure: Throwable) {
+            val result = MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.FINISH_EXTERNAL,
+                route,
+                MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+                exceptionType = failure.javaClass.name,
+            )
+            externalFinishResults.record(player.uniqueId, result)
+            result
+        }
     }
+
+    override fun latestExternalFinishResult(player: Player): MenuRuntimeOperationResult? =
+        externalFinishResults.latest(player.uniqueId)
 
     override fun completeExternal(player: Player) {
         externalSuspensions.remove(player.uniqueId)
@@ -284,6 +369,7 @@ internal class MenuRuntimeServiceImpl(
             val prepared = MenuRuntimeViewPreparation.renderValidated(
                 definition,
                 MenuRenderContext(player, session.route, navigation.canGoBack(player)),
+                capabilities,
             )
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
@@ -357,6 +443,7 @@ internal class MenuRuntimeServiceImpl(
 
     override fun clear(player: Player) {
         completeExternal(player)
+        externalFinishResults.clear(player.uniqueId)
         sessions.remove(player.uniqueId)
         navigation.clear(player)
         presentations.markClosed(player)
@@ -364,16 +451,16 @@ internal class MenuRuntimeServiceImpl(
 
     override fun back(player: Player): Boolean = backResult(player).successful
 
-    private fun backResult(player: Player): MenuRuntimeOperationResult {
+    override fun backResult(player: Player): MenuRuntimeOperationResult {
         completeExternal(player)
         return withoutOpenSound(player) {
             navigation.openPreviousResult(player)
                 ?: MenuRuntimeOperationResult.failed(
-                    MenuRuntimeOperation.NAVIGATE,
+                    MenuRuntimeOperation.BACK,
                     navigation.breadcrumbs(player).lastOrNull(),
                     MenuRuntimeOperationFailureReason.NO_HISTORY,
                 )
-        }
+        }.forOperation(MenuRuntimeOperation.BACK)
     }
 
     override fun closeOwnedMenus(owner: String): Int = closeMatching(owner, null)
@@ -545,7 +632,21 @@ internal class MenuRuntimeServiceImpl(
             return
         }
         val clickType = clickType(element.role)
-        val interaction = element.resolvedInteraction()
+        val declaredInteraction = element.resolvedInteraction()
+        val interaction = if (declaredInteraction is MenuInteraction.ClickBranches) {
+            declaredInteraction.resolve(event.click) ?: run {
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.UNACCEPTED,
+                    interaction = declaredInteraction,
+                )
+                return
+            }
+        } else {
+            declaredInteraction
+        }
         when (interaction) {
             MenuInteraction.DisplayOnly -> {
                 recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.DISPLAY_ONLY, interaction = interaction)
@@ -623,6 +724,7 @@ internal class MenuRuntimeServiceImpl(
                     recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
                     return
                 }
+            is MenuInteraction.ClickBranches -> error("click branches must resolve before execution")
         }
         if (!executing.add(player.uniqueId)) {
             recordClickTrace(
@@ -699,6 +801,7 @@ internal class MenuRuntimeServiceImpl(
                         interaction.arguments,
                         interaction.attributes,
                     )
+                is MenuInteraction.ClickBranches -> error("click branches must resolve before execution")
             }
         } catch (failure: Throwable) {
             actionFailure = failure
@@ -715,6 +818,7 @@ internal class MenuRuntimeServiceImpl(
             is MenuInteraction.Action -> interaction.sounds
             is MenuInteraction.Branches -> interaction.sounds
             is MenuInteraction.Capability -> interaction.sounds
+            is MenuInteraction.ClickBranches -> error("click branches must resolve before execution")
         }
         val application = applyResult(
             player,
@@ -804,6 +908,7 @@ internal class MenuRuntimeServiceImpl(
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         clickTraces.clear(event.player.uniqueId)
+        externalFinishResults.clear(event.player.uniqueId)
     }
 
     private fun openDirectResult(
@@ -822,6 +927,7 @@ internal class MenuRuntimeServiceImpl(
             val prepared = MenuRuntimeViewPreparation.renderValidated(
                 definition,
                 MenuRenderContext(player, route, navigation.canGoBack(player)),
+                capabilities,
             )
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
@@ -1172,6 +1278,52 @@ internal class MenuRuntimeServiceImpl(
         }
     }
 
+    private fun inspectionFailure(
+        route: MenuRoute,
+        reason: MenuRuntimeOperationFailureReason,
+        contractViolations: List<MenuContractViolation> = emptyList(),
+        exceptionType: String? = null,
+    ): MenuRuntimeInspectionResult = MenuRuntimeInspectionResult(
+        MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.INSPECT,
+            route,
+            reason,
+            contractViolations,
+            exceptionType,
+        ),
+    )
+
+    private fun inspectionSnapshot(
+        player: Player,
+        route: MenuRoute,
+        view: InventoryMenuView,
+    ): MenuRuntimeInspectionSnapshot = MenuRuntimeInspectionSnapshot(
+        route = route.runtimeSnapshot(),
+        breadcrumbs = navigation.breadcrumbs(player).map { it.runtimeSnapshot() },
+        canGoBack = navigation.canGoBack(player),
+        title = view.title,
+        size = view.size,
+        revision = presentations.current(player)?.revision ?: 0L,
+        slots = view.elements.sortedBy { it.slot }.map { element ->
+            val item = element.item
+            val meta = item.itemMeta
+            MenuRuntimeInspectionSlotSnapshot(
+                slot = element.slot,
+                material = item.type,
+                amount = item.amount,
+                name = meta?.displayName(),
+                lore = meta?.lore().orEmpty(),
+                glint = hasGlint(item),
+                role = element.role,
+                enabled = element.enabled,
+                interaction = element.resolvedInteraction().inspectionSnapshot(),
+            )
+        },
+    )
+
+    private fun MenuInteraction.inspectionSnapshot(): MenuRuntimeInspectionInteractionSnapshot =
+        MenuRuntimeInspectionInteractionSnapshotFactory.create(this)
+
     private fun snapshotCurrent(player: Player): MenuRuntimeSnapshot? {
         val top = player.openInventory.topInventory
         val holder = top.holder as? MenuRuntimeHolder
@@ -1227,6 +1379,7 @@ internal class MenuRuntimeServiceImpl(
             MenuInteraction.DisplayOnly -> MenuRuntimeSlotKind.DISPLAY_ONLY to MenuRuntimeInteractionKind.DISPLAY_ONLY
             is MenuInteraction.Action -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.ACTION
             is MenuInteraction.Branches -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.BRANCHES
+            is MenuInteraction.ClickBranches -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.CLICK_BRANCHES
             is MenuInteraction.Capability -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.CAPABILITY
             is MenuInteraction.Unavailable -> MenuRuntimeSlotKind.UNAVAILABLE to MenuRuntimeInteractionKind.UNAVAILABLE
             is MenuInteraction.Back -> MenuRuntimeSlotKind.BACK to MenuRuntimeInteractionKind.BACK
@@ -1251,6 +1404,7 @@ internal class MenuRuntimeServiceImpl(
         val acceptedClicks = when (interaction) {
             is MenuInteraction.Action -> interaction.acceptedClicks
             is MenuInteraction.Branches -> interaction.branches.flatMapTo(linkedSetOf()) { it.acceptedClicks }
+            is MenuInteraction.ClickBranches -> interaction.branches.flatMapTo(linkedSetOf()) { it.acceptedClicks }
             is MenuInteraction.Capability -> interaction.acceptedClicks
             is MenuInteraction.Unavailable -> interaction.acceptedClicks
             is MenuInteraction.Back -> interaction.acceptedClicks
@@ -1268,6 +1422,11 @@ internal class MenuRuntimeServiceImpl(
                 .distinct()
                 .singleOrNull()
                 ?: MenuActionSafety.UNSPECIFIED
+            is MenuInteraction.ClickBranches -> interaction.branches
+                .map { it.interaction.safetyForSnapshot() }
+                .distinct()
+                .singleOrNull()
+                ?: MenuActionSafety.UNSPECIFIED
             is MenuInteraction.Capability -> interaction.safety
             is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
             is MenuInteraction.Unavailable,
@@ -1279,6 +1438,13 @@ internal class MenuRuntimeServiceImpl(
             is MenuInteraction.Branches -> buildMap {
                 interaction.branches.forEach { branch ->
                     branch.acceptedClicks.forEach { click -> put(click, branch.safety) }
+                }
+            }.toSortedMap(compareBy(ClickType::name))
+            is MenuInteraction.ClickBranches -> buildMap {
+                interaction.branches.forEach { branch ->
+                    branch.acceptedClicks.forEach { click ->
+                        put(click, branch.interaction.safetyForSnapshot(click))
+                    }
                 }
             }.toSortedMap(compareBy(ClickType::name))
             is MenuInteraction.Capability -> interaction.safetyByClick.toSortedMap(compareBy(ClickType::name))
@@ -1434,6 +1600,16 @@ internal class MenuRuntimeServiceImpl(
                 branch?.safety ?: MenuActionSafety.UNSPECIFIED,
             )
         }
+        is MenuInteraction.ClickBranches -> {
+            val branch = branches.singleOrNull { click in it.acceptedClicks }
+            branch?.interaction?.traceDetails(click) ?: InteractionTraceDetails(
+                MenuRuntimeInteractionKind.CLICK_BRANCHES,
+                null,
+                null,
+                emptyMap(),
+                MenuActionSafety.UNSPECIFIED,
+            )
+        }
         is MenuInteraction.Capability -> InteractionTraceDetails(
             MenuRuntimeInteractionKind.CAPABILITY,
             null,
@@ -1455,6 +1631,26 @@ internal class MenuRuntimeServiceImpl(
             emptyMap(),
             MenuActionSafety.NAVIGATION_ONLY,
         )
+    }
+
+    private fun MenuInteraction.safetyForSnapshot(): MenuActionSafety = when (this) {
+        MenuInteraction.DisplayOnly,
+        is MenuInteraction.Unavailable -> MenuActionSafety.UNSPECIFIED
+        is MenuInteraction.Action -> safety
+        is MenuInteraction.Branches,
+        is MenuInteraction.ClickBranches -> MenuActionSafety.UNSPECIFIED
+        is MenuInteraction.Capability -> safety
+        is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
+    }
+
+    private fun MenuInteraction.safetyForSnapshot(click: ClickType): MenuActionSafety = when (this) {
+        MenuInteraction.DisplayOnly,
+        is MenuInteraction.Unavailable -> MenuActionSafety.UNSPECIFIED
+        is MenuInteraction.Action -> safetyFor(click)
+        is MenuInteraction.Branches,
+        is MenuInteraction.ClickBranches -> MenuActionSafety.UNSPECIFIED
+        is MenuInteraction.Capability -> safetyFor(click)
+        is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
     }
 
     private fun MenuActionResult.traceResultKind(): MenuRuntimeActionResultKind = when (this) {
@@ -1526,6 +1722,24 @@ internal class MenuRuntimeServiceImpl(
         val playerId: UUID,
         val route: MenuRoute,
     )
+}
+
+/** 非同期finishが完了した後も、呼出し元が詳細診断を取得できるよう保持します。 */
+internal class MenuRuntimeExternalFinishResultStore {
+    private val results = ConcurrentHashMap<UUID, MenuRuntimeOperationResult>()
+
+    fun record(playerId: UUID, result: MenuRuntimeOperationResult) {
+        require(result.operation == MenuRuntimeOperation.FINISH_EXTERNAL) {
+            "external finish store accepts FINISH_EXTERNAL results only"
+        }
+        results[playerId] = result
+    }
+
+    fun latest(playerId: UUID): MenuRuntimeOperationResult? = results[playerId]
+
+    fun clear(playerId: UUID) {
+        results.remove(playerId)
+    }
 }
 
 internal class MenuCloseReasonTracker<T : Any> {

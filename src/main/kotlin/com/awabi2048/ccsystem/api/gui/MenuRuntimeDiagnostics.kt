@@ -21,6 +21,7 @@ enum class MenuRuntimeInteractionKind {
     DISPLAY_ONLY,
     ACTION,
     BRANCHES,
+    CLICK_BRANCHES,
     CAPABILITY,
     UNAVAILABLE,
     BACK,
