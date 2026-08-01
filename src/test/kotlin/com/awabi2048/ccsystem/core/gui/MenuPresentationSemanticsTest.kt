@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gui.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -196,5 +197,29 @@ class MenuPresentationSemanticsTest {
             MenuRuntimeInspectionInteractionSnapshot(MenuRuntimeInteractionKind.DISPLAY_ONLY),
         ).also { it.presentationSemantics = semantics }
         assertEquals(semantics, slot.copyWithPresentationSemantics().presentationSemantics)
+    }
+
+    @Test
+    fun `menu element copy path retains presentation semantics while changing canonical fields`() {
+        val semantics = factory.create(
+            GuiNameSpec.Empty,
+            GuiLoreSpec.None,
+            MenuPresentationProfile.DISPLAY_ONLY,
+        )
+        val unsafeField = sun.misc.Unsafe::class.java.getDeclaredField("theUnsafe").also { it.isAccessible = true }
+        val unsafe = unsafeField.get(null) as sun.misc.Unsafe
+        val item = unsafe.allocateInstance(ItemStack::class.java) as ItemStack
+        val element = MenuElement(
+            slot = 0,
+            item = item,
+            role = GuiElementRole.BACKGROUND,
+            interaction = MenuInteraction.DisplayOnly,
+        ).also { it.presentationSemantics = semantics }
+
+        val copied = element.copyWithPresentationSemantics(slot = 8)
+
+        assertEquals(8, copied.slot)
+        assertEquals(GuiElementRole.BACKGROUND, copied.role)
+        assertEquals(semantics, copied.presentationSemantics)
     }
 }

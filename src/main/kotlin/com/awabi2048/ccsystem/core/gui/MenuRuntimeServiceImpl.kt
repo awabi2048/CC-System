@@ -729,9 +729,10 @@ internal class MenuRuntimeServiceImpl(
             inventory.clear()
             applyView(inventory, view)
             inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
+            val runtimeElements = canonicalElements(view)
             sessions[player.uniqueId] = Session(
                 session.route,
-                view.elements.associateBy { it.slot },
+                runtimeElements.associateBy { it.slot },
                 session.preserveHistory,
                 view.standardFrame,
                 policy.inputSlots,
@@ -1326,7 +1327,7 @@ internal class MenuRuntimeServiceImpl(
                 closeReasons.clear(previousInventory)
             }
         }
-        val runtimeElements = standardBackgroundElements(view) + view.elements
+        val runtimeElements = canonicalElements(view)
         sessions[player.uniqueId] = Session(
             route,
             runtimeElements.associateBy { it.slot },
@@ -1376,6 +1377,9 @@ internal class MenuRuntimeServiceImpl(
                 }}",
         )
     }
+
+    private fun canonicalElements(view: InventoryMenuView): List<MenuElement> =
+        standardBackgroundElements(view) + view.elements
 
     private fun standardBackgroundElements(view: InventoryMenuView): List<MenuElement> {
         if (!view.standardFrame) return emptyList()
@@ -1660,7 +1664,7 @@ internal class MenuRuntimeServiceImpl(
         title = view.title,
         size = view.size,
         revision = presentations.current(player)?.revision ?: 0L,
-        slots = (standardBackgroundElements(view) + view.elements).associateBy { it.slot }.values.sortedBy { it.slot }.map { element ->
+        slots = canonicalElements(view).associateBy { it.slot }.values.sortedBy { it.slot }.map { element ->
             val item = element.item
             val meta = item.itemMeta
             MenuRuntimeInspectionSlotSnapshot(

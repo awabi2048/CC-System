@@ -73,6 +73,30 @@ class GuiCommonPresentationSemanticsFixtureTest {
     }
 
     @Test
+    fun `open refresh and inspection share one canonical standard background path`() {
+        val source = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt"),
+        )
+
+        assertEquals(3, Regex("canonicalElements\\(view\\)").findAll(source).count())
+        assertTrue(source.contains("val runtimeElements = canonicalElements(view)"))
+        assertTrue(source.contains("slots = canonicalElements(view)"))
+        assertTrue(!source.contains("view.elements.associateBy { it.slot }"))
+        assertTrue(source.contains("semanticElements.backgroundEntry(slot, material)"))
+    }
+
+    @Test
+    fun `raw item snapshots do not infer background role`() {
+        val source = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt"),
+        )
+
+        assertTrue(source.contains("element?.role ?: GuiItemMarker.role(item)"))
+        assertTrue(!source.contains("item.type == Material.BLACK_STAINED_GLASS_PANE"))
+        assertTrue(!source.contains("item.type == Material.GRAY_STAINED_GLASS_PANE"))
+    }
+
+    @Test
     fun `navigation fixture retains fixed label and typed action without duplicate union`() {
         val action = GuiLoreLine.Interaction(null, setOf(ClickType.LEFT, ClickType.RIGHT), "移動")
         val lore = GuiLoreComposer.compose(GuiLoreSpec.None, listOf(action))
