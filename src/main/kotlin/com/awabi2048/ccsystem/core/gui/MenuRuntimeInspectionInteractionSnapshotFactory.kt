@@ -95,10 +95,23 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
             safetyByClick = interaction.safetyByClick.toSortedMap(compareBy(ClickType::name)),
             reversibleContractsByClick = interaction.reversibleContractsByClick(),
         )
-        is MenuInteraction.Unavailable -> MenuRuntimeInspectionInteractionSnapshot(
-            MenuRuntimeInteractionKind.UNAVAILABLE,
-            acceptedClicks = interaction.acceptedClicks.toSet(),
-        )
+        is MenuInteraction.Unavailable -> interaction.sourceCapability.let { source ->
+            MenuRuntimeInspectionInteractionSnapshot(
+                MenuRuntimeInteractionKind.UNAVAILABLE,
+                capabilityId = source?.capabilityId,
+                arguments = source?.arguments.orEmpty(),
+                attributes = source?.attributes?.let { attributes ->
+                    MenuImmutableCollections.orderedMap(
+                        attributes.mapValues { (_, value) ->
+                            MenuSnapshotCodec.snapshotOrNull(value)?.value
+                                ?: MenuRuntimeOpaqueAttributeSnapshot(value.javaClass.name)
+                        },
+                        compareBy<String> { it },
+                    )
+                }.orEmpty(),
+                acceptedClicks = interaction.acceptedClicks.toSet(),
+            ).also { it.sourcePlacement = source?.placement }
+        }
         is MenuInteraction.Back -> MenuRuntimeInspectionInteractionSnapshot(
             MenuRuntimeInteractionKind.BACK,
             acceptedClicks = interaction.acceptedClicks.toSet(),

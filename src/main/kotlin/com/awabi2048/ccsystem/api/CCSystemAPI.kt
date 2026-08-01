@@ -39,7 +39,7 @@ interface CCSystemAPI {
 
     companion object {
         /** immutable reversible state ABI を表す契約版です。 */
-        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 3
+        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 4
     }
     /**
      * プレイヤーの言語設定を取得します

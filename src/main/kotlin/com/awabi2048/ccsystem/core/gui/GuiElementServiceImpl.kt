@@ -295,7 +295,14 @@ class GuiElementServiceImpl(
                 interaction = MenuInteraction.Unavailable(
                     MenuAcceptedClicks.STANDARD,
                     capability.unavailableReason!!,
-                ),
+                ).also { unavailable ->
+                    unavailable.sourceCapability = com.awabi2048.ccsystem.api.gui.MenuCapabilitySource(
+                        capability.capabilityId,
+                        capability.placement,
+                        spec.arguments,
+                        spec.attributes,
+                    )
+                },
             )
         } else {
             MenuElement(

@@ -24,7 +24,9 @@ class MenuCapabilityAvailabilityReasonTest {
         val resolved = requireNotNull(service.resolve("test:reasoned", player()))
         assertEquals(1, evaluations.get())
         assertEquals(reason, resolved.unavailableReason)
+        assertEquals("test", resolved.placement)
         assertFalse(resolved.actionable)
+        assertEquals("test", resolved.placement)
         assertTrue(resolved.actions.isEmpty())
     }
 

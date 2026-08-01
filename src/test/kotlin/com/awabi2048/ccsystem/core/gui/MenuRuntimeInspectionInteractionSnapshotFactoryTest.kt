@@ -2,6 +2,9 @@ package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
+import com.awabi2048.ccsystem.api.gui.MenuCapabilitySource
+import com.awabi2048.ccsystem.api.gui.copyWithSourceCapability
+import com.awabi2048.ccsystem.api.gui.copyWithSourcePlacement
 import com.awabi2048.ccsystem.api.gui.MenuInteractionBranch
 import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
@@ -16,6 +19,51 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
+    @Test
+    fun `reasoned unavailable retains immutable capability source in inspection`() {
+        val arguments = linkedMapOf("world_uuid" to "world-1")
+        val attributes = linkedMapOf<String, Any>("source" to "chanpon")
+        val interaction = MenuInteraction.Unavailable(message = Component.text("利用できません")).also {
+            it.sourceCapability = MenuCapabilitySource(
+                "test:world-settings",
+                "world-settings.environment",
+                arguments,
+                attributes,
+            )
+        }
+        arguments["world_uuid"] = "mutated"
+        attributes["source"] = "mutated"
+
+        val snapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(interaction)
+
+        assertEquals(MenuRuntimeInteractionKind.UNAVAILABLE, snapshot.kind)
+        assertEquals("test:world-settings", snapshot.capabilityId)
+        assertEquals("world-settings.environment", snapshot.sourcePlacement)
+        assertEquals(mapOf("world_uuid" to "world-1"), snapshot.arguments)
+        assertEquals(mapOf("source" to "chanpon"), snapshot.attributes)
+        assertEquals(MenuActionSafety.UNSPECIFIED, snapshot.safety)
+        assertEquals(emptyMap<ClickType, MenuActionSafety>(), snapshot.safetyByClick)
+        assertEquals(emptyMap<ClickType, Any>(), snapshot.reversibleContractsByClick)
+    }
+
+    @Test
+    fun `generic unavailable has no capability source and dedicated copies retain it`() {
+        val generic = MenuRuntimeInspectionInteractionSnapshotFactory.create(MenuInteraction.Unavailable())
+        assertEquals(null, generic.capabilityId)
+        assertEquals(null, generic.sourcePlacement)
+        assertEquals(emptyMap<String, String>(), generic.arguments)
+        assertEquals(emptyMap<String, Any?>(), generic.attributes)
+
+        val original = MenuInteraction.Unavailable(message = Component.text("disabled")).also {
+            it.sourceCapability = MenuCapabilitySource("test:feature", "settings.feature", emptyMap(), emptyMap())
+        }
+        val copied = original.copyWithSourceCapability()
+        val copiedSnapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(copied)
+            .copyWithSourcePlacement()
+        assertEquals(original.sourceCapability, copied.sourceCapability)
+        assertEquals("settings.feature", copiedSnapshot.sourcePlacement)
+    }
+
     @Test
     fun `capability inspection redacts opaque attributes and keeps per click safety`() {
         val marker = Any()

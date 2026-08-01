@@ -154,6 +154,10 @@ data class ResolvedMenuCapability(
     val presentation: MenuCapabilityPresentation,
     val actions: List<ResolvedMenuCapabilityAction>,
 ) {
+    /** 定義で宣言された配置先です。既存の主コンストラクタABIを維持するため本文で保持します。 */
+    var placement: String = ""
+        internal set
+
     val actionable: Boolean
         get() = actions.isNotEmpty()
 
@@ -189,6 +193,34 @@ data class ResolvedMenuCapability(
                 }
             }
         }
+}
+
+/**
+ * 利用不能表示へ変換された機能の出所です。
+ * 呼び出し元の可変Mapから切り離したスナップショットとして保持します。
+ */
+class MenuCapabilitySource(
+    val capabilityId: String,
+    val placement: String,
+    arguments: Map<String, String>,
+    attributes: Map<String, Any>,
+) {
+    val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
+    val attributes: Map<String, Any> = MenuImmutableCollections.orderedMap(attributes)
+
+    init {
+        require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
+        require(placement.isNotBlank()) { "placement must not be blank" }
+    }
+
+    override fun equals(other: Any?): Boolean = other is MenuCapabilitySource &&
+        capabilityId == other.capabilityId && placement == other.placement &&
+        arguments == other.arguments && attributes == other.attributes
+
+    override fun hashCode(): Int = arrayOf(capabilityId, placement, arguments, attributes).contentHashCode()
+
+    override fun toString(): String =
+        "MenuCapabilitySource(capabilityId=$capabilityId, placement=$placement, arguments=$arguments, attributes=$attributes)"
 }
 
 /** registry定義から読取専用で取得できる静的なclick・安全契約です。 */

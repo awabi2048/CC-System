@@ -56,7 +56,15 @@ data class MenuRuntimeInspectionInteractionSnapshot(
     val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
     val branches: List<MenuRuntimeInspectionInteractionBranchSnapshot> = emptyList(),
     val reversibleContractsByClick: Map<ClickType, MenuRuntimeReversibleContractSnapshot> = emptyMap(),
-)
+) {
+    /** capability由来の場合の定義上の配置先です。 */
+    var sourcePlacement: String? = null
+        internal set
+}
+
+/** 主コンストラクタ外の配置情報を保持してinspection snapshotを複製します。 */
+fun MenuRuntimeInspectionInteractionSnapshot.copyWithSourcePlacement(): MenuRuntimeInspectionInteractionSnapshot =
+    copy().also { it.sourcePlacement = sourcePlacement }
 
 /** 任意objectの参照を監査snapshotへ保持せず、型だけを示す非公開値markerです。 */
 data class MenuRuntimeOpaqueAttributeSnapshot(

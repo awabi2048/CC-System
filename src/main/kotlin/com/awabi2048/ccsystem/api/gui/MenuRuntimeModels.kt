@@ -216,6 +216,9 @@ sealed interface MenuInteraction {
         val message: Component? = null,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
+        var sourceCapability: MenuCapabilitySource? = null
+            internal set
+
         init {
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
         }
@@ -260,6 +263,15 @@ class MenuActionBranch(
     override fun equals(other: Any?): Boolean = other is MenuActionBranch && actionId == other.actionId && acceptedClicks == other.acceptedClicks && payload == other.payload && safety == other.safety && reversibleContract == other.reversibleContract
     override fun hashCode(): Int = arrayOf(actionId, acceptedClicks, payload, safety, reversibleContract).dataClassHashCode()
     override fun toString(): String = "MenuActionBranch(actionId=$actionId, acceptedClicks=$acceptedClicks, payload=$payload, safety=$safety, reversibleContract=$reversibleContract)"
+}
+
+/** 主コンストラクタ外の機能出所を保持して利用不能interactionを複製します。 */
+fun MenuInteraction.Unavailable.copyWithSourceCapability(
+    acceptedClicks: Set<ClickType> = this.acceptedClicks,
+    message: Component? = this.message,
+    sounds: MenuActionSoundPolicy? = this.sounds,
+): MenuInteraction.Unavailable = copy(acceptedClicks, message, sounds).also {
+    it.sourceCapability = sourceCapability
 }
 
 internal fun requireReversibleContractSafety(

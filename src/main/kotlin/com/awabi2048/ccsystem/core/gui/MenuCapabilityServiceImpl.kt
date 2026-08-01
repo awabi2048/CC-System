@@ -71,6 +71,7 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
             presentation = definition.presentationProvider.resolve(context),
             actions = resolvedActions,
         ).also {
+            it.placement = definition.placement
             it.availabilityResult = when {
                 definitionAvailability !is MenuAvailabilityResult.Available -> definitionAvailability
                 resolvedActions.isEmpty() && definition.actions.isNotEmpty() && actionUnavailableReason != null ->
