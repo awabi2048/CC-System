@@ -1,6 +1,5 @@
 package com.awabi2048.ccsystem.api.gui
 
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 
 /** Runtime handlerが表示側へ提供する宣言的な契約。 */
@@ -29,7 +28,6 @@ data class MenuActionObservation(
 
 /** RuntimeがCapability registryと照合して画面契約を検証するための文脈です。 */
 data class MenuContractValidationContext(
-    val player: Player,
     val capabilities: MenuCapabilityService,
 )
 
@@ -196,45 +194,49 @@ object MenuContractValidator {
             return
         }
         context ?: return
-        val resolved = runCatching {
-            context.capabilities.resolve(
-                interaction.capabilityId,
-                context.player,
-                interaction.arguments,
-                interaction.attributes,
-            )
-        }.getOrElse { failure ->
+        val capability = try {
+            context.capabilities.definition(interaction.capabilityId)
+        } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             violations += MenuContractViolation(
                 definition.routeId,
                 slot,
                 null,
-                "capability resolution failed: ${failure.javaClass.name}",
+                "capability definition lookup failed: ${failure.javaClass.name}",
             )
             return
         }
-        if (resolved == null) {
-            val message = if (context.capabilities.definition(interaction.capabilityId) == null) {
-                "capability is not registered: ${interaction.capabilityId}"
-            } else {
-                "capability does not resolve in this validation context: ${interaction.capabilityId}"
-            }
-            violations += MenuContractViolation(definition.routeId, slot, null, message)
+        if (capability == null) {
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability is not registered: ${interaction.capabilityId}",
+            )
             return
         }
-        if (resolved.acceptedClicks != interaction.acceptedClicks) {
+        val staticContract = capability.staticContract()
+        val unsupported = interaction.acceptedClicks - staticContract.acceptedClicks
+        if (unsupported.isNotEmpty()) {
             violations += MenuContractViolation(
                 definition.routeId,
                 slot,
                 null,
-                "capability accepted clicks differ: resolved=${resolved.acceptedClicks} rendered=${interaction.acceptedClicks}",
+                "capability accepted clicks are not declared by registry: $unsupported",
             )
         }
-        if (resolved.safety != interaction.safety || resolved.safetyByClick != interaction.safetyByClick) {
+        val expectedSafetyByClick = interaction.acceptedClicks.associateWith { staticContract.safetyByClick[it] }
+        val safetyMismatch = expectedSafetyByClick.any { (click, safety) ->
+            safety == null || interaction.safetyFor(click) != safety
+        }
+        val expectedSafety = expectedSafetyByClick.values.filterNotNull().distinct().singleOrNull()
+            ?: MenuActionSafety.UNSPECIFIED
+        if (safetyMismatch || interaction.safety != expectedSafety) {
             violations += MenuContractViolation(
                 definition.routeId,
                 slot,
                 null,
-                "capability safety contract differs: resolved=${resolved.safety}/${resolved.safetyByClick} rendered=${interaction.safety}/${interaction.safetyByClick}",
+                "capability safety contract differs from registry static contract",
             )
         }
     }

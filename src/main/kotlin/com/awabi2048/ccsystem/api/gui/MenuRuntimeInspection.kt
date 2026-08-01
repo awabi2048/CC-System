@@ -4,6 +4,15 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 
+/** inspectが再現する遷移文脈です。現在の履歴を暗黙には利用しません。 */
+enum class MenuRuntimeInspectionMode {
+    ROOT,
+    CURRENT,
+    REPLACE,
+    NAVIGATE,
+    EPHEMERAL,
+}
+
 /** 副作用なしのRuntime inspectで返す、完成viewの論理snapshotです。 */
 data class MenuRuntimeInspectionSnapshot(
     val route: MenuRuntimeRouteSnapshot,

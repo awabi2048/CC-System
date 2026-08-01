@@ -2,6 +2,8 @@ package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeClickTrace
 import java.util.ArrayDeque
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletableFuture
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -14,9 +16,11 @@ internal class MenuRuntimeClickTraceStore(
     }
 
     private val runs = ConcurrentHashMap<UUID, Run>()
+    private val terminalWaiters = ConcurrentHashMap<TraceKey, CompletableFuture<MenuRuntimeClickTrace>>()
 
     fun start(playerId: UUID, requestedRunId: String? = null): String {
         val runId = requestedRunId?.trim()?.takeIf(String::isNotEmpty) ?: UUID.randomUUID().toString()
+        cancelWaiters(playerId, "click trace run was replaced")
         runs[playerId] = Run(runId)
         return runId
     }
@@ -35,6 +39,48 @@ internal class MenuRuntimeClickTraceStore(
             if (run.runId != trace.runId) return
             run.traces.addLast(trace)
             while (run.traces.size > capacityPerPlayer) run.traces.removeFirst()
+            completeWaiterIfTerminal(playerId, trace)
+        }
+    }
+
+    fun terminal(playerId: UUID, runId: String, sequence: Long): MenuRuntimeClickTrace? {
+        val run = runs[playerId] ?: return null
+        synchronized(run) {
+            return run.traces.firstOrNull { it.runId == runId && it.sequence == sequence }
+                ?.takeIf { it.application.terminal }
+        }
+    }
+
+    fun awaitTerminal(playerId: UUID, runId: String, sequence: Long): CompletableFuture<MenuRuntimeClickTrace> {
+        terminal(playerId, runId, sequence)?.let { return CompletableFuture.completedFuture(it) }
+        return terminalWaiters.computeIfAbsent(TraceKey(playerId, runId, sequence)) {
+            CompletableFuture<MenuRuntimeClickTrace>()
+        }.also { future ->
+            terminal(playerId, runId, sequence)?.let { completed ->
+                future.complete(completed)
+                terminalWaiters.remove(TraceKey(playerId, runId, sequence), future)
+            }
+        }
+    }
+
+    fun update(
+        playerId: UUID,
+        identity: Identity,
+        transform: (MenuRuntimeClickTrace) -> MenuRuntimeClickTrace,
+    ): MenuRuntimeClickTrace? {
+        val run = runs[playerId] ?: return null
+        synchronized(run) {
+            if (run.runId != identity.runId) return null
+            val traces = run.traces.toList()
+            val index = traces.indexOfFirst { it.sequence == identity.sequence }
+            if (index < 0) return null
+            val updated = transform(traces[index])
+            run.traces.clear()
+            traces.forEachIndexed { currentIndex, trace ->
+                run.traces.addLast(if (currentIndex == index) updated else trace)
+            }
+            completeWaiterIfTerminal(playerId, updated)
+            return updated
         }
     }
 
@@ -54,19 +100,50 @@ internal class MenuRuntimeClickTraceStore(
 
     fun clear(playerId: UUID) {
         runs.remove(playerId)
+        cancelWaiters(playerId, "click traces were cleared")
     }
 
     fun clearOwner(owner: String) {
-        runs.values.forEach { run ->
+        val removed = mutableListOf<TraceKey>()
+        runs.forEach { (playerId, run) ->
             synchronized(run) {
                 run.traces.removeIf { trace ->
-                    trace.beforeRoute?.owner == owner || trace.afterRoute?.owner == owner
+                    val matches = trace.beforeRoute?.owner == owner || trace.afterRoute?.owner == owner
+                    if (matches) {
+                        removed += TraceKey(playerId, trace.runId, trace.sequence)
+                    }
+                    matches
                 }
             }
+        }
+        removed.forEach { key ->
+            terminalWaiters.remove(key)?.completeExceptionally(
+                CancellationException("click trace owner was cleared: $owner"),
+            )
         }
     }
 
     internal data class Identity(
+        val runId: String,
+        val sequence: Long,
+    )
+
+    private fun completeWaiterIfTerminal(playerId: UUID, trace: MenuRuntimeClickTrace) {
+        if (!trace.application.terminal) return
+        val key = TraceKey(playerId, trace.runId, trace.sequence)
+        terminalWaiters.remove(key)?.complete(trace)
+    }
+
+    private fun cancelWaiters(playerId: UUID, message: String) {
+        terminalWaiters.entries.removeIf { (key, future) ->
+            if (key.playerId != playerId) return@removeIf false
+            future.completeExceptionally(CancellationException(message))
+            true
+        }
+    }
+
+    private data class TraceKey(
+        val playerId: UUID,
         val runId: String,
         val sequence: Long,
     )

@@ -145,6 +145,27 @@ class MenuRuntimeUpdateApplicationTest {
         assertEquals(4, application.operationResult?.failure?.contractViolations?.single()?.slot)
     }
 
+    @Test
+    fun `pending resume is not reported as applied before its terminal result`() {
+        val pending = MenuRuntimeUpdateApplication.pending(
+            kind = MenuRuntimeUpdateKind.RESUME,
+            expectedRoute = route("source"),
+            beforeRevision = 5,
+            operationResult = MenuRuntimeOperationResult.pending(
+                MenuRuntimeOperation.FINISH_EXTERNAL,
+                MenuRoute("test", "source"),
+            ),
+        )
+
+        assertTrue(pending.attempted)
+        assertFalse(pending.applied)
+        assertFalse(pending.terminal)
+        assertEquals(MenuRuntimeUpdateApplicationState.PENDING, pending.state)
+        assertEquals(MenuRuntimeUpdateFailureReason.PENDING, pending.failureReason)
+        assertFalse(pending.operationResult!!.terminal)
+        assertFalse(pending.operationResult.successful)
+    }
+
     private fun application(
         kind: MenuRuntimeUpdateKind,
         expectedRoute: MenuRuntimeRouteSnapshot?,

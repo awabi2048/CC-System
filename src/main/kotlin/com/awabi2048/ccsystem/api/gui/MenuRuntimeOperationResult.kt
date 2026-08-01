@@ -26,6 +26,13 @@ enum class MenuRuntimeOperationFailureReason {
     NO_ACTIVE_SESSION,
     ROUTE_MISMATCH,
     NO_HISTORY,
+    INVALID_INSPECTION_CONTEXT,
+}
+
+/** 操作要求が受理済みでも、実処理がnext tick待ちかを区別します。 */
+enum class MenuRuntimeOperationCompletionState {
+    PENDING,
+    TERMINAL,
 }
 
 /** 例外本体を公開せず、診断に必要な構造化情報だけを保持します。 */
@@ -41,10 +48,16 @@ data class MenuRuntimeOperationResult(
     val route: MenuRoute?,
     val successful: Boolean,
     val failure: MenuRuntimeOperationFailure? = null,
+    val completionState: MenuRuntimeOperationCompletionState = MenuRuntimeOperationCompletionState.TERMINAL,
 ) {
     init {
-        require(successful == (failure == null)) {
-            "successful result must not have a failure and failed result must have one"
+        require(
+            when (completionState) {
+                MenuRuntimeOperationCompletionState.PENDING -> !successful && failure == null
+                MenuRuntimeOperationCompletionState.TERMINAL -> successful == (failure == null)
+            },
+        ) {
+            "pending results must be unsuccessful without a failure; terminal results must match their failure"
         }
     }
 
@@ -70,7 +83,21 @@ data class MenuRuntimeOperationResult(
             successful = false,
             failure = MenuRuntimeOperationFailure(reason, contractViolations, exceptionType),
         )
+
+        /** 要求は受理済みですが、実処理の成否はまだ確定していません。 */
+        fun pending(
+            operation: MenuRuntimeOperation,
+            route: MenuRoute?,
+        ): MenuRuntimeOperationResult = MenuRuntimeOperationResult(
+            operation = operation,
+            route = route,
+            successful = false,
+            completionState = MenuRuntimeOperationCompletionState.PENDING,
+        )
     }
+
+    val terminal: Boolean
+        get() = completionState == MenuRuntimeOperationCompletionState.TERMINAL
 
     fun forOperation(operation: MenuRuntimeOperation): MenuRuntimeOperationResult =
         if (this.operation == operation) this else copy(operation = operation)

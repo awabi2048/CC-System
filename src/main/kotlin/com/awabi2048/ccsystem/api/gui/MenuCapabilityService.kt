@@ -10,6 +10,7 @@ data class MenuCapabilityContext(
     val attributes: Map<String, Any> = emptyMap(),
 )
 
+/** 表示・inspectから呼ばれる読取専用の可用性判定です。 */
 fun interface MenuCapabilityAvailability {
     fun isAvailable(context: MenuCapabilityContext): Boolean
 }
@@ -21,6 +22,7 @@ data class MenuCapabilityPresentation(
     val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
 )
 
+/** 表示・inspectから呼ばれる読取専用のpresentation生成です。 */
 fun interface MenuCapabilityPresentationProvider {
     fun resolve(context: MenuCapabilityContext): MenuCapabilityPresentation
 }
@@ -36,6 +38,7 @@ fun interface MenuCapabilityActionHandler {
     fun handle(context: MenuCapabilityActionContext): MenuActionResult
 }
 
+/** 表示・inspectから呼ばれる読取専用の操作文言生成です。 */
 fun interface MenuCapabilityActionTextProvider {
     fun resolve(context: MenuCapabilityContext): String
 }
@@ -130,6 +133,25 @@ data class ResolvedMenuCapability(
         }
 }
 
+/** registry定義から読取専用で取得できる静的なclick・安全契約です。 */
+data class MenuCapabilityStaticContract(
+    val acceptedClicks: Set<ClickType>,
+    val safetyByClick: Map<ClickType, MenuActionSafety>,
+) {
+    val safety: MenuActionSafety
+        get() = safetyByClick.values.distinct().singleOrNull() ?: MenuActionSafety.UNSPECIFIED
+}
+
+fun MenuCapabilityDefinition.staticContract(): MenuCapabilityStaticContract =
+    MenuCapabilityStaticContract(
+        acceptedClicks = actions.flatMapTo(linkedSetOf()) { it.trigger.clicks },
+        safetyByClick = buildMap {
+            actions.forEach { action ->
+                action.trigger.clicks.forEach { click -> put(click, action.safety) }
+            }
+        },
+    )
+
 interface MenuCapabilityService {
     fun register(definition: MenuCapabilityDefinition)
 
@@ -141,6 +163,11 @@ interface MenuCapabilityService {
 
     fun definitions(placement: String): List<MenuCapabilityDefinition>
 
+    /**
+     * 表示生成用の動的解決です。availability、文言、presentation providerを実行します。
+     * inspectや契約検証からは呼ばれません。実装側はrendererから呼ばれることを前提に、
+     * 読取専用で実装してください。
+     */
     fun resolve(
         capabilityId: String,
         player: Player,

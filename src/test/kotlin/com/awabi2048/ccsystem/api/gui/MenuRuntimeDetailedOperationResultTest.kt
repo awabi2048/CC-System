@@ -37,4 +37,16 @@ class MenuRuntimeDetailedOperationResultTest {
         assertFalse(failed.operationResult.successful)
         assertTrue(failed.snapshot == null)
     }
+
+    @Test
+    fun `pending operation is neither a success nor a failure`() {
+        val pending = MenuRuntimeOperationResult.pending(
+            MenuRuntimeOperation.FINISH_EXTERNAL,
+            MenuRoute("test", "menu"),
+        )
+
+        assertFalse(pending.terminal)
+        assertFalse(pending.successful)
+        assertTrue(pending.failure == null)
+    }
 }

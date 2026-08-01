@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api.gui
 
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 interface MenuRuntimeService {
     fun register(definition: InventoryMenuDefinition)
@@ -30,7 +31,25 @@ interface MenuRuntimeService {
     /** GUI状態を変えず、playerの診断traceだけを削除します。 */
     fun clearClickTraces(player: Player)
 
-    fun inspect(player: Player, route: MenuRoute): MenuRuntimeInspectionResult
+    /** 指定した仮想遷移文脈で、状態を変更せず完成viewを検査します。 */
+    fun inspect(
+        player: Player,
+        route: MenuRoute,
+        mode: MenuRuntimeInspectionMode,
+    ): MenuRuntimeInspectionResult
+
+    /** PENDINGでないterminal click traceだけを返します。 */
+    fun terminalClickTrace(player: Player, runId: String, sequence: Long): MenuRuntimeClickTrace?
+
+    /**
+     * 指定traceがterminalになるまで完了しないFutureを返します。
+     * BukkitメインスレッドでFutureをブロックしてはいけません。
+     */
+    fun awaitTerminalClickTrace(
+        player: Player,
+        runId: String,
+        sequence: Long,
+    ): CompletableFuture<MenuRuntimeClickTrace>
 
     fun open(player: Player, route: MenuRoute): Boolean
 
@@ -80,9 +99,17 @@ interface MenuRuntimeService {
      *
      * 対応する [suspendForExternal] が成立している場合だけ一度受理し、
      * 同じ外部入力に対する重複完了では再表示しません。
+     *
+     * 終端成功した場合だけtrueを返します。次tickで完了する場合はfalseとなるため、
+     * 非同期の完了状態が必要な呼び出し側は[finishExternalResult]を使用してください。
      */
     fun finishExternal(player: Player): Boolean
 
+    /**
+     * 次tickで完了する再表示は[MenuRuntimeOperationCompletionState.PENDING]を返します。
+     * 終端結果は[latestExternalFinishResult]、クリック起点の場合は
+     * [awaitTerminalClickTrace]で確認してください。
+     */
     fun finishExternalResult(player: Player): MenuRuntimeOperationResult
 
     fun latestExternalFinishResult(player: Player): MenuRuntimeOperationResult?

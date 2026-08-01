@@ -3,11 +3,21 @@ package com.awabi2048.ccsystem.core.gui
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeClickDisposition
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeClickTrace
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeRouteSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplication
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplicationState
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateFailureReason
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateKind
 import java.util.UUID
+import java.util.concurrent.CancellationException
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class MenuRuntimeClickTraceStoreTest {
@@ -41,6 +51,101 @@ class MenuRuntimeClickTraceStoreTest {
         assertEquals(listOf("owner-b"), store.all(playerId).mapNotNull { it.beforeRoute?.owner })
     }
 
+    @Test
+    fun `owner cleanup cancels a waiter for a removed pending trace`() {
+        val store = MenuRuntimeClickTraceStore()
+        val playerId = UUID.randomUUID()
+        val identity = store.next(playerId)
+        val pending = MenuRuntimeUpdateApplication.pending(
+            MenuRuntimeUpdateKind.RESUME,
+            route("route"),
+            1L,
+            MenuRuntimeOperationResult.pending(MenuRuntimeOperation.FINISH_EXTERNAL, null),
+        )
+        store.append(
+            playerId,
+            trace(identity.runId, identity.sequence, playerId, 0, "owner-a").copy(application = pending),
+        )
+        val waiter = store.awaitTerminal(playerId, identity.runId, identity.sequence)
+
+        store.clearOwner("owner-a")
+
+        assertTrue(waiter.isCompletedExceptionally)
+        assertThrows(CancellationException::class.java) { waiter.get() }
+    }
+
+    @Test
+    fun `pending trace is replaced by a terminal result and completes its waiter`() {
+        val store = MenuRuntimeClickTraceStore()
+        val playerId = UUID.randomUUID()
+        val identity = store.next(playerId)
+        val route = MenuRuntimeRouteSnapshot("owner", "route", emptyMap())
+        val pending = MenuRuntimeUpdateApplication.pending(
+            MenuRuntimeUpdateKind.RESUME,
+            route,
+            1L,
+            MenuRuntimeOperationResult.pending(MenuRuntimeOperation.FINISH_EXTERNAL, null),
+        )
+        store.append(playerId, trace(identity.runId, identity.sequence, playerId, 0).copy(application = pending))
+
+        val waiter = store.awaitTerminal(playerId, identity.runId, identity.sequence)
+        assertFalse(waiter.isDone)
+
+        store.update(playerId, identity) { trace ->
+            trace.copy(
+                application = trace.application.copy(
+                    applied = true,
+                    failureReason = MenuRuntimeUpdateFailureReason.NONE,
+                    state = MenuRuntimeUpdateApplicationState.TERMINAL,
+                    operationResult = MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.FINISH_EXTERNAL, null),
+                ),
+            )
+        }
+
+        val terminal = waiter.get()
+        assertTrue(terminal.application.terminal)
+        assertTrue(terminal.application.applied)
+        assertEquals(MenuRuntimeUpdateApplicationState.TERMINAL, terminal.application.state)
+        assertEquals(terminal, store.terminal(playerId, identity.runId, identity.sequence))
+    }
+
+    @Test
+    fun `pending trace retains the terminal failure that completes it`() {
+        val store = MenuRuntimeClickTraceStore()
+        val playerId = UUID.randomUUID()
+        val identity = store.next(playerId)
+        val pending = MenuRuntimeUpdateApplication.pending(
+            MenuRuntimeUpdateKind.RESUME,
+            route("source"),
+            1L,
+            MenuRuntimeOperationResult.pending(MenuRuntimeOperation.FINISH_EXTERNAL, null),
+        )
+        store.append(playerId, trace(identity.runId, identity.sequence, playerId, 0).copy(application = pending))
+        val waiter = store.awaitTerminal(playerId, identity.runId, identity.sequence)
+        val failure = MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.FINISH_EXTERNAL,
+            null,
+            com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+        )
+
+        store.update(playerId, identity) { trace ->
+            trace.copy(
+                application = trace.application.copy(
+                    applied = false,
+                    failureReason = MenuRuntimeUpdateFailureReason.INVENTORY_OPEN_FAILED,
+                    operationResult = failure,
+                    state = MenuRuntimeUpdateApplicationState.TERMINAL,
+                ),
+            )
+        }
+
+        val terminal = waiter.get()
+        assertTrue(terminal.application.terminal)
+        assertFalse(terminal.application.applied)
+        assertEquals(MenuRuntimeUpdateFailureReason.INVENTORY_OPEN_FAILED, terminal.application.failureReason)
+        assertEquals(failure, terminal.application.operationResult)
+    }
+
     private fun trace(runId: String, sequence: Long, playerId: UUID, slot: Int, owner: String = "owner"): MenuRuntimeClickTrace =
         MenuRuntimeClickTrace(
             runId,
@@ -64,4 +169,6 @@ class MenuRuntimeClickTraceStoreTest {
             1,
             MenuRuntimeRouteSnapshot(owner, "route", emptyMap()),
         )
+
+    private fun route(id: String) = MenuRuntimeRouteSnapshot("owner", id, emptyMap())
 }

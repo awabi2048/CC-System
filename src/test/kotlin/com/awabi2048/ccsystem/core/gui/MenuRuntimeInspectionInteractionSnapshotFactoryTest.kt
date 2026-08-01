@@ -4,6 +4,11 @@ import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuInteractionBranch
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
+import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -65,5 +70,56 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
         assertEquals("toggle", snapshot.branches[1].interaction.actionId)
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safetyByClick[ClickType.LEFT])
         assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])
+    }
+
+    @Test
+    fun `normal runtime slot and inspection use the same complete interaction snapshot`() {
+        val interaction = MenuInteraction.ClickBranches(
+            listOf(
+                MenuInteractionBranch(
+                    setOf(ClickType.LEFT),
+                    MenuInteraction.Capability(
+                        capabilityId = "test:open",
+                        arguments = mapOf("world" to "one"),
+                        attributes = mapOf("source" to "runtime"),
+                        acceptedClicks = setOf(ClickType.LEFT),
+                        safety = MenuActionSafety.NAVIGATION_ONLY,
+                    ),
+                ),
+                MenuInteractionBranch(
+                    setOf(ClickType.RIGHT),
+                    MenuInteraction.Back(setOf(ClickType.RIGHT)),
+                ),
+            ),
+        )
+        val complete = MenuRuntimeInspectionInteractionSnapshotFactory.create(interaction)
+        val runtimeSlot = MenuRuntimeSlotSnapshot(
+            slot = 4,
+            kind = MenuRuntimeSlotKind.ACTION,
+            material = Material.STONE,
+            amount = 1,
+            name = Component.text("Test"),
+            lore = emptyList(),
+            glint = false,
+            role = GuiElementRole.ACTION,
+            interactionKind = MenuRuntimeInteractionKind.CLICK_BRANCHES,
+            actionId = null,
+            capabilityId = null,
+            acceptedClicks = setOf(ClickType.LEFT, ClickType.RIGHT),
+            payload = emptyMap(),
+            enabled = true,
+            safety = MenuActionSafety.UNSPECIFIED,
+            safetyByClick = emptyMap(),
+            branches = emptyList(),
+            interaction = complete,
+        )
+
+        assertEquals(complete, runtimeSlot.interaction)
+        val retained = requireNotNull(runtimeSlot.interaction)
+        assertEquals(MenuRuntimeInteractionKind.CAPABILITY, retained.branches[0].interaction.kind)
+        assertEquals("test:open", retained.branches[0].interaction.capabilityId)
+        assertEquals(mapOf("world" to "one"), retained.branches[0].interaction.arguments)
+        assertEquals("runtime", retained.branches[0].interaction.attributes["source"])
+        assertEquals(MenuRuntimeInteractionKind.BACK, retained.branches[1].interaction.kind)
     }
 }

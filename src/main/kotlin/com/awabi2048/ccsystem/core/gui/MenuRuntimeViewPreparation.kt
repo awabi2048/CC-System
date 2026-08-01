@@ -13,6 +13,7 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
+import com.awabi2048.ccsystem.api.gui.rethrowIfUnrecoverableMenuRuntimeFailure
 
 /**
  * Runtimeがinventoryを作成する前に必ず行う、描画と契約検証の共通処理です。
@@ -27,12 +28,13 @@ internal object MenuRuntimeViewPreparation {
         val view = try {
             definition.renderer.render(context)
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             return MenuRuntimePreparedViewResult.RenderFailed(failure.javaClass.name)
         }
         return contractInvalid(
             definition,
             view.elements.map { element -> MenuActionObservation(element.slot, element.resolvedInteraction()) },
-            capabilities?.let { MenuContractValidationContext(context.player, it) },
+            capabilities?.let(::MenuContractValidationContext),
         ) ?: MenuRuntimePreparedViewResult.Ready(view)
     }
 

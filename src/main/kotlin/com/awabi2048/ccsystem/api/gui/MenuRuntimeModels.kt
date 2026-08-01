@@ -351,6 +351,12 @@ data class MenuRenderContext(
     val canGoBack: Boolean = false,
 )
 
+/**
+ * 完成viewを生成する読取専用rendererです。
+ *
+ * Runtimeはopen/refreshだけでなくinspectでもこの関数を呼びます。ワールド、プレイヤー、
+ * 設定、Capability registry、外部サービスを変更せず、同じcontextから同じ論理viewを返してください。
+ */
 fun interface InventoryMenuRenderer {
     fun render(context: MenuRenderContext): InventoryMenuView
 }

@@ -39,6 +39,7 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionResult
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSlotSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionMode
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuSurface
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
@@ -47,7 +48,10 @@ import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplicationState
+import com.awabi2048.ccsystem.api.gui.rethrowIfUnrecoverableMenuRuntimeFailure
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import net.kyori.adventure.text.Component
@@ -141,15 +145,43 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(player.uniqueId)
     }
 
-    override fun inspect(player: Player, route: MenuRoute): MenuRuntimeInspectionResult {
+    override fun inspect(
+        player: Player,
+        route: MenuRoute,
+        mode: MenuRuntimeInspectionMode,
+    ): MenuRuntimeInspectionResult {
         val definition = definition(route.owner, route.id)
             ?: return inspectionFailure(route, MenuRuntimeOperationFailureReason.MISSING_DEFINITION)
+        val inspectionNavigation = MenuRuntimeInspectionNavigationContextResolver.resolve(
+            mode,
+            navigation.currentRoute(player),
+            navigation.breadcrumbs(player),
+            route,
+        )
+            ?: return inspectionFailure(route, MenuRuntimeOperationFailureReason.INVALID_INSPECTION_CONTEXT)
         return MenuRuntimeViewPreparation.inspect(
             definition,
-            MenuRenderContext(player, route, navigation.canGoBack(player)),
+            MenuRenderContext(player, route, inspectionNavigation.canGoBack),
             capabilities,
-        ) { view -> inspectionSnapshot(player, route, view.withHistoryNavigation(player)) }
+        ) { view ->
+            inspectionSnapshot(
+                player,
+                route,
+                inspectionNavigation,
+                view.withHistoryNavigation(inspectionNavigation.canGoBack),
+            )
+        }
     }
+
+    override fun terminalClickTrace(player: Player, runId: String, sequence: Long): MenuRuntimeClickTrace? =
+        clickTraces.terminal(player.uniqueId, runId, sequence)
+
+    override fun awaitTerminalClickTrace(
+        player: Player,
+        runId: String,
+        sequence: Long,
+    ): CompletableFuture<MenuRuntimeClickTrace> =
+        clickTraces.awaitTerminal(player.uniqueId, runId, sequence)
 
     override fun open(player: Player, route: MenuRoute): Boolean = openResult(player, route).successful
 
@@ -230,7 +262,13 @@ internal class MenuRuntimeServiceImpl(
 
     override fun finishExternal(player: Player): Boolean = finishExternalResult(player).successful
 
-    override fun finishExternalResult(player: Player): MenuRuntimeOperationResult {
+    override fun finishExternalResult(player: Player): MenuRuntimeOperationResult =
+        finishExternalResult(player, null)
+
+    private fun finishExternalResult(
+        player: Player,
+        terminalTrace: MenuRuntimeClickTraceStore.Identity?,
+    ): MenuRuntimeOperationResult {
         val route = externalSuspensions.remove(player.uniqueId) ?: return MenuRuntimeOperationResult.failed(
             MenuRuntimeOperation.FINISH_EXTERNAL,
             navigation.currentRoute(player),
@@ -257,6 +295,7 @@ internal class MenuRuntimeServiceImpl(
                         )
                     }
                 } catch (failure: Throwable) {
+                    failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
                         Level.SEVERE,
                         "外部画面終了後のメニュー再表示に失敗しました: route=${route.id} player=${player.uniqueId}",
@@ -270,9 +309,11 @@ internal class MenuRuntimeServiceImpl(
                     )
                 }
                 externalFinishResults.record(player.uniqueId, completion)
+                terminalTrace?.let { completePendingTrace(player, it, completion) }
             })
-            MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.FINISH_EXTERNAL, route)
+            MenuRuntimeOperationResult.pending(MenuRuntimeOperation.FINISH_EXTERNAL, route)
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             val result = MenuRuntimeOperationResult.failed(
                 MenuRuntimeOperation.FINISH_EXTERNAL,
                 route,
@@ -372,7 +413,7 @@ internal class MenuRuntimeServiceImpl(
                 capabilities,
             )
         ) {
-            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
+            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
                 plugin.logger.severe(
                     "メニュー再描画に失敗しました: route=${definition.routeId} " +
@@ -421,6 +462,7 @@ internal class MenuRuntimeServiceImpl(
             presentations.markRefreshed(player)
             MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.REFRESH, session.route)
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
                 Level.SEVERE,
                 "メニュー再描画の反映に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
@@ -564,6 +606,7 @@ internal class MenuRuntimeServiceImpl(
                     ),
                 )
             } catch (failure: Throwable) {
+                failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                 actionFailure = failure
                 plugin.logger.log(
                     Level.SEVERE,
@@ -583,6 +626,7 @@ internal class MenuRuntimeServiceImpl(
                 result,
                 originRevision,
                 trace.beforeRoute,
+                trace.identity,
             )
             recordClickTrace(
                 trace,
@@ -696,6 +740,7 @@ internal class MenuRuntimeServiceImpl(
                     result,
                     trace.beforeRevision,
                     trace.beforeRoute,
+                    trace.identity,
                     playSound = false,
                 )
                 recordClickTrace(
@@ -804,6 +849,7 @@ internal class MenuRuntimeServiceImpl(
                 is MenuInteraction.ClickBranches -> error("click branches must resolve before execution")
             }
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             actionFailure = failure
             plugin.logger.log(
                 Level.SEVERE,
@@ -829,6 +875,7 @@ internal class MenuRuntimeServiceImpl(
             result,
             originRevision,
             trace.beforeRoute,
+            trace.identity,
         )
         recordClickTrace(
             trace,
@@ -869,10 +916,10 @@ internal class MenuRuntimeServiceImpl(
         val player = event.player as? Player ?: return
         val closeReason = closeReasons.consume(event.inventory)
         definition(holder.route.owner, holder.route.id)?.onClose?.let { handler ->
-            runCatching {
+            try {
                 handler.handle(MenuCloseContext(player, holder.route, event.inventory, closeReason))
-            }
-                .onFailure { failure ->
+            } catch (failure: Throwable) {
+                failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
                         Level.SEVERE,
                         "メニューClose処理に失敗しました: route=${holder.route.key()} player=${player.uniqueId}",
@@ -930,7 +977,7 @@ internal class MenuRuntimeServiceImpl(
                 capabilities,
             )
         ) {
-            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
+            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
                 plugin.logger.severe(
                     "メニュー描画に失敗しました: route=${definition.routeId} exception=${prepared.exceptionType}",
@@ -960,6 +1007,7 @@ internal class MenuRuntimeServiceImpl(
                 applyView(created, view)
             }
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
                 Level.SEVERE,
                 "メニューInventoryの作成に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
@@ -981,6 +1029,7 @@ internal class MenuRuntimeServiceImpl(
         try {
             player.openInventory(inventory)
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
                 Level.SEVERE,
                 "メニューInventoryを開けませんでした: route=${definition.routeId} player=${player.uniqueId}",
@@ -1025,8 +1074,8 @@ internal class MenuRuntimeServiceImpl(
      * これにより、古い表示フラグやダイアログ復帰後の再描画が誤っていても、
      * 戻り先のないボタンや、戻り先があるのに消えるボタンをRuntime境界で防ぐ。
      */
-    private fun InventoryMenuView.withHistoryNavigation(player: Player): InventoryMenuView {
-        if (navigation.canGoBack(player)) return this
+    private fun InventoryMenuView.withHistoryNavigation(canGoBack: Boolean): InventoryMenuView {
+        if (canGoBack) return this
         val visibleElements = elements.filterNot { it.role == GuiElementRole.BACK }
         return if (visibleElements.size == elements.size) this else copy(elements = visibleElements)
     }
@@ -1048,7 +1097,14 @@ internal class MenuRuntimeServiceImpl(
     }
 
     private fun MenuRuntimeOperationResult.asUpdateOutcome(): MenuUpdateApplicationOutcome =
-        if (successful) {
+        if (!terminal) {
+            MenuUpdateApplicationOutcome(
+                false,
+                MenuRuntimeUpdateFailureReason.PENDING,
+                this,
+                MenuRuntimeUpdateApplicationState.PENDING,
+            )
+        } else if (successful) {
             MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE, this)
         } else {
             MenuUpdateApplicationOutcome(
@@ -1069,6 +1125,7 @@ internal class MenuRuntimeServiceImpl(
         MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION -> MenuRuntimeUpdateFailureReason.NO_ACTIVE_SESSION
         MenuRuntimeOperationFailureReason.ROUTE_MISMATCH -> MenuRuntimeUpdateFailureReason.ROUTE_MISMATCH
         MenuRuntimeOperationFailureReason.NO_HISTORY -> MenuRuntimeUpdateFailureReason.NO_HISTORY
+        MenuRuntimeOperationFailureReason.INVALID_INSPECTION_CONTEXT -> MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
     }
 
     private fun applyResult(
@@ -1080,6 +1137,7 @@ internal class MenuRuntimeServiceImpl(
         result: MenuActionResult,
         originRevision: Long?,
         beforeRoute: MenuRuntimeRouteSnapshot?,
+        traceIdentity: MenuRuntimeClickTraceStore.Identity? = null,
         playSound: Boolean = true,
     ): MenuRuntimeUpdateApplication {
         val declaredUpdate = MenuRuntimeUpdateSnapshot.from(result)
@@ -1141,18 +1199,15 @@ internal class MenuRuntimeServiceImpl(
                     )
                 }
 
-                val outcome = runCatching {
+                val outcome = try {
                     when (update) {
                         MenuUpdate.None -> MenuUpdateApplicationOutcome(
                             false,
                             MenuRuntimeUpdateFailureReason.NOT_APPLICABLE,
                         )
                         MenuUpdate.Refresh -> refreshResult(player).asUpdateOutcome()
-                        MenuUpdate.Resume -> if (finishExternal(player)) {
-                            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
-                        } else {
-                            MenuUpdateApplicationOutcome(false, MenuRuntimeUpdateFailureReason.NOT_APPLICABLE)
-                        }
+                        MenuUpdate.Resume ->
+                            finishExternalResult(player, traceIdentity).asUpdateOutcome()
                         MenuUpdate.Close -> {
                             close(player)
                             MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
@@ -1169,7 +1224,8 @@ internal class MenuRuntimeServiceImpl(
                         is MenuUpdate.Replace -> replaceResult(player, update.route).asUpdateOutcome()
                         is MenuUpdate.Navigate -> navigateFromResult(player, session.route, update.route).asUpdateOutcome()
                     }
-                }.getOrElse { failure ->
+                } catch (failure: Throwable) {
+                    failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
                         Level.SEVERE,
                         "メニュー更新の適用に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
@@ -1190,6 +1246,11 @@ internal class MenuRuntimeServiceImpl(
                     afterRevision = null,
                     failureReason = outcome.failureReason,
                     operationResult = outcome.operationResult,
+                    state = if (update == MenuUpdate.None) {
+                        MenuRuntimeUpdateApplicationState.NOT_ATTEMPTED
+                    } else {
+                        outcome.state
+                    },
                 )
             }
         }
@@ -1296,11 +1357,12 @@ internal class MenuRuntimeServiceImpl(
     private fun inspectionSnapshot(
         player: Player,
         route: MenuRoute,
+        inspectionNavigation: MenuRuntimeInspectionNavigationContext,
         view: InventoryMenuView,
     ): MenuRuntimeInspectionSnapshot = MenuRuntimeInspectionSnapshot(
         route = route.runtimeSnapshot(),
-        breadcrumbs = navigation.breadcrumbs(player).map { it.runtimeSnapshot() },
-        canGoBack = navigation.canGoBack(player),
+        breadcrumbs = inspectionNavigation.breadcrumbs.map { it.runtimeSnapshot() },
+        canGoBack = inspectionNavigation.canGoBack,
         title = view.title,
         size = view.size,
         revision = presentations.current(player)?.revision ?: 0L,
@@ -1323,6 +1385,34 @@ internal class MenuRuntimeServiceImpl(
 
     private fun MenuInteraction.inspectionSnapshot(): MenuRuntimeInspectionInteractionSnapshot =
         MenuRuntimeInspectionInteractionSnapshotFactory.create(this)
+
+    private fun completePendingTrace(
+        player: Player,
+        identity: MenuRuntimeClickTraceStore.Identity,
+        completion: MenuRuntimeOperationResult,
+    ) {
+        val after = snapshotCurrent(player)
+        clickTraces.update(player.uniqueId, identity) { trace ->
+            val application = trace.application
+            if (application.state != MenuRuntimeUpdateApplicationState.PENDING) return@update trace
+            trace.copy(
+                afterRevision = after?.revision,
+                afterRoute = after?.route,
+                application = application.copy(
+                    applied = completion.successful,
+                    observedRoute = after?.route,
+                    afterRevision = after?.revision,
+                    failureReason = if (completion.successful) {
+                        MenuRuntimeUpdateFailureReason.NONE
+                    } else {
+                        completion.failure!!.reason.toUpdateFailureReason()
+                    },
+                    operationResult = completion,
+                    state = MenuRuntimeUpdateApplicationState.TERMINAL,
+                ),
+            )
+        }
+    }
 
     private fun snapshotCurrent(player: Player): MenuRuntimeSnapshot? {
         val top = player.openInventory.topInventory
@@ -1475,6 +1565,7 @@ internal class MenuRuntimeServiceImpl(
             safety,
             safetyByClick,
             branches,
+            interaction?.inspectionSnapshot(),
         )
     }
 
@@ -1690,6 +1781,7 @@ internal class MenuRuntimeServiceImpl(
         val applied: Boolean,
         val failureReason: MenuRuntimeUpdateFailureReason,
         val operationResult: MenuRuntimeOperationResult? = null,
+        val state: MenuRuntimeUpdateApplicationState = MenuRuntimeUpdateApplicationState.TERMINAL,
     )
 
     private data class ClickTraceContext(
@@ -1722,6 +1814,7 @@ internal class MenuRuntimeServiceImpl(
         val playerId: UUID,
         val route: MenuRoute,
     )
+
 }
 
 /** 非同期finishが完了した後も、呼出し元が詳細診断を取得できるよう保持します。 */

@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.api.gui.MenuRouteResultOpener
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
+import com.awabi2048.ccsystem.api.gui.rethrowIfUnrecoverableMenuRuntimeFailure
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.UUID
@@ -79,7 +80,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         inventoryPolicies.entries.firstOrNull { (owner, _) -> matchesOwner(owner, inventory) }?.value?.let { return it }
         // matcherだけを登録した既存メニューも、GUIアイテムをプレイヤー側へ移さない既定動作にする。
         return menuMatchers.values.firstOrNull { matcher ->
-            runCatching { matcher.matches(inventory) }.getOrDefault(false)
+            matchesSafely { matcher.matches(inventory) }
         }?.let { GuiInventoryPolicy() }
     }
 
@@ -91,7 +92,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         val matcher = menuMatchers[owner]
         return closeMatchingMenus(players) { inventory ->
             inventoryInstances[inventory]?.owner == owner ||
-                matcher?.let { runCatching { it.matches(inventory) }.getOrDefault(false) } == true
+                matcher?.let { matchesSafely { it.matches(inventory) } } == true
         }
     }
 
@@ -130,6 +131,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         val result = try {
             opener.open(player, route).forOperation(MenuRuntimeOperation.OPEN).copy(route = route)
         } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             MenuRuntimeOperationResult.failed(
                 MenuRuntimeOperation.OPEN,
                 route,
@@ -192,7 +194,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
     ): Int {
         var closed = 0
         players.forEach { player ->
-            if (runCatching { matches(player.openInventory.topInventory) }.getOrDefault(false)) {
+            if (matchesSafely { matches(player.openInventory.topInventory) }) {
                 player.closeInventory()
                 clear(player)
                 closed++
@@ -203,7 +205,14 @@ class MenuNavigationServiceImpl : MenuNavigationService {
 
     private fun matchesOwner(owner: String, inventory: Inventory): Boolean {
         val matcher = menuMatchers[owner] ?: return false
-        return runCatching { matcher.matches(inventory) }.getOrDefault(false)
+        return matchesSafely { matcher.matches(inventory) }
+    }
+
+    private fun matchesSafely(block: () -> Boolean): Boolean = try {
+        block()
+    } catch (failure: Throwable) {
+        failure.rethrowIfUnrecoverableMenuRuntimeFailure()
+        false
     }
 
     private data class RouteKey(

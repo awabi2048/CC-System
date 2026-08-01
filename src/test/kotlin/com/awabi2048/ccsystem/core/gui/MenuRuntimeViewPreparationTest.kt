@@ -21,6 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class MenuRuntimeViewPreparationTest {
@@ -75,6 +76,23 @@ class MenuRuntimeViewPreparationTest {
 
         val failed = assertInstanceOf(MenuRuntimePreparedViewResult.RenderFailed::class.java, result)
         assertEquals(IllegalStateException::class.java.name, failed.exceptionType)
+    }
+
+    @Test
+    fun `renderer virtual machine error is not converted to a render diagnostic`() {
+        val definition = InventoryMenuDefinition(
+            owner = "test",
+            id = "render-vm-error",
+            renderer = InventoryMenuRenderer { throw OutOfMemoryError("test") },
+            actions = emptyMap(),
+        )
+
+        assertThrows(OutOfMemoryError::class.java) {
+            MenuRuntimeViewPreparation.renderValidated(
+                definition,
+                MenuRenderContext(player(), MenuRoute("test", "render-vm-error")),
+            )
+        }
     }
 
     @Test

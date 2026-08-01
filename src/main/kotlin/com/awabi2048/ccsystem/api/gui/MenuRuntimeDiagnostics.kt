@@ -78,6 +78,7 @@ enum class MenuRuntimeUpdateKind {
 /** 宣言済みの更新が実際に適用されなかった理由です。 */
 enum class MenuRuntimeUpdateFailureReason {
     NONE,
+    PENDING,
     OPEN_FAILED,
     UPDATE_FAILED,
     MISSING_OPENER,
@@ -93,6 +94,13 @@ enum class MenuRuntimeUpdateFailureReason {
     STALE_REVISION,
     NOT_APPLICABLE,
     EXCEPTION,
+}
+
+/** 宣言済みupdateの適用が未試行・予約中・完了済みのどれかを表します。 */
+enum class MenuRuntimeUpdateApplicationState {
+    NOT_ATTEMPTED,
+    PENDING,
+    TERMINAL,
 }
 
 /** payloadをキー順で複写したRouteの診断表現です。 */
@@ -128,6 +136,8 @@ data class MenuRuntimeSlotSnapshot(
     val safety: MenuActionSafety,
     val safetyByClick: Map<ClickType, MenuActionSafety>,
     val branches: List<MenuRuntimeBranchSnapshot>,
+    /** ClickBranchesを含む最終interactionまで保持する共通snapshotです。 */
+    val interaction: MenuRuntimeInspectionInteractionSnapshot? = null,
 )
 
 /** inventory surfaceでは全slotを、Dialog/Formでは空のslot一覧を返します。 */
@@ -190,7 +200,13 @@ data class MenuRuntimeUpdateApplication(
     val failureReason: MenuRuntimeUpdateFailureReason,
     /** Boolean更新APIでは失われる、open/refresh失敗の詳細です。 */
     val operationResult: MenuRuntimeOperationResult? = null,
+    /** PENDINGの間は[applied]を真とみなしてはいけません。 */
+    val state: MenuRuntimeUpdateApplicationState =
+        if (attempted) MenuRuntimeUpdateApplicationState.TERMINAL else MenuRuntimeUpdateApplicationState.NOT_ATTEMPTED,
 ) {
+    val terminal: Boolean
+        get() = state == MenuRuntimeUpdateApplicationState.TERMINAL
+
     /** 既存のJava/Kotlin呼出しバイナリを維持する8引数コンストラクタです。 */
     constructor(
         attempted: Boolean,
@@ -211,6 +227,7 @@ data class MenuRuntimeUpdateApplication(
         afterRevision,
         failureReason,
         null,
+        if (attempted) MenuRuntimeUpdateApplicationState.TERMINAL else MenuRuntimeUpdateApplicationState.NOT_ATTEMPTED,
     )
 
     companion object {
@@ -228,6 +245,24 @@ data class MenuRuntimeUpdateApplication(
             beforeRevision = beforeRevision,
             afterRevision = null,
             failureReason = failureReason,
+        )
+
+        fun pending(
+            kind: MenuRuntimeUpdateKind,
+            expectedRoute: MenuRuntimeRouteSnapshot?,
+            beforeRevision: Long?,
+            operationResult: MenuRuntimeOperationResult,
+        ): MenuRuntimeUpdateApplication = MenuRuntimeUpdateApplication(
+            attempted = true,
+            applied = false,
+            kind = kind,
+            expectedRoute = expectedRoute,
+            observedRoute = null,
+            beforeRevision = beforeRevision,
+            afterRevision = null,
+            failureReason = MenuRuntimeUpdateFailureReason.PENDING,
+            operationResult = operationResult,
+            state = MenuRuntimeUpdateApplicationState.PENDING,
         )
     }
 }
