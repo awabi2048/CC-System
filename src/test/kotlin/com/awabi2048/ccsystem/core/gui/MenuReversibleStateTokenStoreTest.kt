@@ -2,7 +2,8 @@ package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.MenuReversibleInteractionContext
-import com.awabi2048.ccsystem.api.gui.MenuReversibleProviderState
+import com.awabi2048.ccsystem.api.gui.MenuReversibleOpaqueState
+import com.awabi2048.ccsystem.api.gui.MenuReversibleStateSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProvider
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderDefinition
@@ -121,7 +122,7 @@ class MenuReversibleStateTokenStoreTest {
                     "audit-run",
                     MenuRoute("test", "route"),
                     interaction(),
-                    State,
+                    stateSnapshot(),
                     capturedRegistration.generation,
                     providerCurrent = {
                         registry.registration("provider:state")?.generation == capturedRegistration.generation
@@ -164,13 +165,54 @@ class MenuReversibleStateTokenStoreTest {
             "old-run",
             MenuRoute("test", "route"),
             interaction(),
-            State,
+            stateSnapshot(),
             UUID.randomUUID(),
             providerCurrent = { true },
             runCurrent = { false },
         )
         val invalidated = assertInstanceOf(MenuReversibleStateTokenStore.IssueResult.Invalidated::class.java, rejected)
         assertEquals(MenuReversibleStateFailureReason.RUN_MISMATCH, invalidated.reason)
+    }
+
+    @Test
+    fun `token drops live attributes and restore interaction is immutable`() {
+        val store = store()
+        val player = UUID.randomUUID()
+        val attributes = linkedMapOf<String, Any>("handle" to Any())
+        val arguments = linkedMapOf("world" to "before")
+        val interaction = MenuReversibleInteractionContext(
+            4,
+            ClickType.LEFT,
+            "toggle",
+            "test:capability",
+            MenuReversibleContract("test:state", mapOf("operation" to "toggle")),
+            3L,
+            arguments,
+            attributes,
+            mapOf("page" to "1"),
+        )
+        val issued = store.issue(
+            player,
+            "audit-run",
+            MenuRoute("test", "route"),
+            interaction,
+            stateSnapshot(),
+            UUID.randomUUID(),
+            providerCurrent = { true },
+            runCurrent = { true },
+        ) as MenuReversibleStateTokenStore.IssueResult.Issued
+
+        arguments["world"] = "after"
+        attributes["later"] = "not retained"
+        val entry = (store.peek(issued.token, player) as MenuReversibleStateTokenStore.PeekResult.Found).entry
+        val restore = entry.interaction.restoreContext()
+        assertEquals(mapOf("world" to "before"), restore.arguments)
+        assertEquals(mapOf("page" to "1"), restore.routePayload)
+        assertTrue(restore.javaClass.methods.none { it.name == "getAttributes" })
+        assertThrows(UnsupportedOperationException::class.java) {
+            @Suppress("UNCHECKED_CAST")
+            (restore.arguments as MutableMap<String, String>)["world"] = "forbidden"
+        }
     }
 
     private fun store(
@@ -191,7 +233,7 @@ class MenuReversibleStateTokenStoreTest {
             "audit-run",
             MenuRoute("test", "route"),
             interaction(),
-            State,
+            stateSnapshot(),
             generation,
             providerCurrent,
             runCurrent,
@@ -222,7 +264,11 @@ class MenuReversibleStateTokenStoreTest {
             com.awabi2048.ccsystem.api.gui.MenuReversibleProviderRestoreResult.Restored
     })
 
-    private data object State : MenuReversibleProviderState
+    private fun stateSnapshot() = MenuReversibleStateSnapshot.capture(State)
+
+    private data object State : MenuReversibleOpaqueState {
+        override fun snapshot(): Any = mapOf("state" to "captured")
+    }
 
     private class MutableClock(private var current: Instant) : Clock() {
         override fun getZone() = ZoneOffset.UTC

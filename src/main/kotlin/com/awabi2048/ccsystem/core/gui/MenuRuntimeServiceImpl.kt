@@ -43,6 +43,7 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionMode
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.MenuReversibleInteractionContext
+import com.awabi2048.ccsystem.api.gui.MenuReversibleOpaqueState
 import com.awabi2048.ccsystem.api.gui.MenuReversibleProviderCaptureResult
 import com.awabi2048.ccsystem.api.gui.MenuReversibleProviderRestoreResult
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateCaptureContext
@@ -52,8 +53,10 @@ import com.awabi2048.ccsystem.api.gui.MenuReversibleStateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderRegistry
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRestoreContext
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRestoreResult
+import com.awabi2048.ccsystem.api.gui.MenuReversibleStateSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateTraceBindingResult
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateToken
+import com.awabi2048.ccsystem.api.gui.MenuSnapshotValueException
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeReversibleContractSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuSurface
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
@@ -224,13 +227,34 @@ internal class MenuRuntimeServiceImpl(
                 exceptionType = failure.javaClass.name,
             )
         }
-        val state = when (capture) {
+        val opaqueState = when (capture) {
             is MenuReversibleProviderCaptureResult.Captured -> capture.state
             is MenuReversibleProviderCaptureResult.Rejected -> return reversibleCaptureFailure(
                 MenuReversibleStateFailureReason.CAPTURE_REJECTED,
                 capture.reason,
             )
         }
+        val state = (opaqueState as? MenuReversibleOpaqueState)?.let { opaque ->
+            try {
+                MenuReversibleStateSnapshot.capture(opaque)
+            } catch (failure: MenuSnapshotValueException) {
+                return reversibleCaptureFailure(
+                    MenuReversibleStateFailureReason.INVALID_STATE_TYPE,
+                    failure.message,
+                    failure.javaClass.name,
+                )
+            } catch (failure: Throwable) {
+                if (failure is Error) throw failure
+                return reversibleCaptureFailure(
+                    MenuReversibleStateFailureReason.CAPTURE_EXCEPTION,
+                    exceptionType = failure.javaClass.name,
+                )
+            }
+        } ?: return reversibleCaptureFailure(
+            MenuReversibleStateFailureReason.INVALID_STATE_TYPE,
+            "provider state must implement MenuReversibleOpaqueState",
+            opaqueState.javaClass.name,
+        )
         if (!matchesReversibleSession(player, before.route, before.revision)) {
             return reversibleCaptureFailure(MenuReversibleStateFailureReason.ROUTE_REVISION_MISMATCH)
         }
@@ -284,7 +308,7 @@ internal class MenuRuntimeServiceImpl(
                     player,
                     entry.route,
                     entry.runId,
-                    entry.interaction,
+                    entry.interaction.restoreContext(),
                     entry.state,
                 ),
             )

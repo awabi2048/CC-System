@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuInteractionBranch
 import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOpaqueAttributeSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test
 
 class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
     @Test
-    fun `capability inspection keeps opaque attributes and per click safety`() {
+    fun `capability inspection redacts opaque attributes and keeps per click safety`() {
         val marker = Any()
         val snapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(
             MenuInteraction.Capability(
@@ -35,7 +36,7 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
         assertEquals(MenuRuntimeInteractionKind.CAPABILITY, snapshot.kind)
         assertEquals("test:world-settings", snapshot.capabilityId)
         assertEquals(mapOf("world_uuid" to "world-1"), snapshot.arguments)
-        assertEquals(marker, snapshot.attributes["opaque"])
+        assertEquals(MenuRuntimeOpaqueAttributeSnapshot(Any::class.java.name), snapshot.attributes["opaque"])
         assertEquals(setOf(ClickType.LEFT, ClickType.RIGHT), snapshot.acceptedClicks)
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safety)
         assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])

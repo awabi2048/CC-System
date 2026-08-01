@@ -104,17 +104,46 @@ enum class MenuRuntimeUpdateApplicationState {
 }
 
 /** payloadをキー順で複写したRouteの診断表現です。 */
-data class MenuRuntimeRouteSnapshot(
+class MenuRuntimeRouteSnapshot(
     val owner: String,
     val id: String,
-    val payload: Map<String, String>,
-)
+    payload: Map<String, String>,
+) {
+    val payload: Map<String, String> = MenuImmutableCollections.strings(payload)
+
+    fun copy(
+        owner: String = this.owner,
+        id: String = this.id,
+        payload: Map<String, String> = this.payload,
+    ): MenuRuntimeRouteSnapshot = MenuRuntimeRouteSnapshot(owner, id, payload)
+
+    operator fun component1(): String = owner
+    operator fun component2(): String = id
+    operator fun component3(): Map<String, String> = payload
+    override fun equals(other: Any?): Boolean =
+        other is MenuRuntimeRouteSnapshot && owner == other.owner && id == other.id && payload == other.payload
+    override fun hashCode(): Int = 31 * (31 * owner.hashCode() + id.hashCode()) + payload.hashCode()
+    override fun toString(): String = "MenuRuntimeRouteSnapshot(owner=$owner, id=$id, payload=$payload)"
+}
 
 /** 復元 provider の診断情報です。provider が返した不透明状態や token 本体は含みません。 */
-data class MenuRuntimeReversibleContractSnapshot(
+class MenuRuntimeReversibleContractSnapshot(
     val providerId: String,
-    val arguments: Map<String, String>,
-)
+    arguments: Map<String, String>,
+) {
+    val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
+    fun copy(
+        providerId: String = this.providerId,
+        arguments: Map<String, String> = this.arguments,
+    ): MenuRuntimeReversibleContractSnapshot = MenuRuntimeReversibleContractSnapshot(providerId, arguments)
+    operator fun component1(): String = providerId
+    operator fun component2(): Map<String, String> = arguments
+    override fun equals(other: Any?): Boolean =
+        other is MenuRuntimeReversibleContractSnapshot && providerId == other.providerId && arguments == other.arguments
+    override fun hashCode(): Int = 31 * providerId.hashCode() + arguments.hashCode()
+    override fun toString(): String =
+        "MenuRuntimeReversibleContractSnapshot(providerId=$providerId, arguments=$arguments)"
+}
 
 data class MenuRuntimeBranchSnapshot(
     val actionId: String,

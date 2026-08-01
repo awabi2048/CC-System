@@ -3,10 +3,13 @@ package com.awabi2048.ccsystem.core.gui
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
+import com.awabi2048.ccsystem.api.gui.MenuImmutableCollections
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionBranchSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOpaqueAttributeSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeReversibleContractSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuSnapshotCodec
 import org.bukkit.event.inventory.ClickType
 
 /**
@@ -79,7 +82,14 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
             MenuRuntimeInteractionKind.CAPABILITY,
             capabilityId = interaction.capabilityId,
             arguments = interaction.arguments.toSortedMap(),
-            attributes = interaction.attributes.toMap(),
+            attributes = MenuImmutableCollections.orderedMap(
+                interaction.attributes.mapValues { (_, value) ->
+                    val snapshot = MenuSnapshotCodec.snapshotOrNull(value)
+                    if (snapshot != null) snapshot.value
+                    else MenuRuntimeOpaqueAttributeSnapshot(value.javaClass.name)
+                },
+                compareBy<String> { it },
+            ),
             acceptedClicks = interaction.acceptedClicks.toSet(),
             safety = interaction.safety,
             safetyByClick = interaction.safetyByClick.toSortedMap(compareBy(ClickType::name)),

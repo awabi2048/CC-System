@@ -1,7 +1,8 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.MenuReversibleInteractionContext
-import com.awabi2048.ccsystem.api.gui.MenuReversibleProviderState
+import com.awabi2048.ccsystem.api.gui.MenuReversibleRestoreInteractionContext
+import com.awabi2048.ccsystem.api.gui.MenuReversibleStateSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRetention
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateToken
@@ -31,7 +32,7 @@ internal class MenuReversibleStateTokenStore(
         runId: String,
         route: MenuRoute,
         interaction: MenuReversibleInteractionContext,
-        state: MenuReversibleProviderState,
+        state: MenuReversibleStateSnapshot,
         providerGeneration: UUID,
         providerCurrent: () -> Boolean,
         runCurrent: () -> Boolean,
@@ -53,7 +54,7 @@ internal class MenuReversibleStateTokenStore(
             playerId = playerId,
             runId = runId,
             route = route,
-            interaction = interaction,
+            interaction = TokenInteraction.capture(interaction),
             state = state,
             providerGeneration = providerGeneration,
             expiresAt = clock.instant().plus(retention.ttl),
@@ -222,10 +223,39 @@ internal class MenuReversibleStateTokenStore(
         val playerId: UUID,
         val runId: String,
         val route: MenuRoute,
-        val interaction: MenuReversibleInteractionContext,
-        val state: MenuReversibleProviderState,
+        val interaction: TokenInteraction,
+        val state: MenuReversibleStateSnapshot,
         val providerGeneration: UUID,
         val expiresAt: Instant,
         val binding: TraceBinding? = null,
     )
+
+    /** tokenにはcapture callback専用attributesを保持しない。 */
+    class TokenInteraction private constructor(
+        val slot: Int,
+        val click: org.bukkit.event.inventory.ClickType,
+        val actionId: String?,
+        val capabilityId: String?,
+        val contract: com.awabi2048.ccsystem.api.gui.MenuReversibleContract,
+        val revision: Long,
+        val arguments: Map<String, String>,
+        val routePayload: Map<String, String>,
+    ) {
+        fun restoreContext(): MenuReversibleRestoreInteractionContext = MenuReversibleRestoreInteractionContext(
+            slot, click, actionId, capabilityId, contract, revision, arguments, routePayload,
+        )
+
+        companion object {
+            fun capture(interaction: MenuReversibleInteractionContext): TokenInteraction = TokenInteraction(
+                interaction.slot,
+                interaction.click,
+                interaction.actionId,
+                interaction.capabilityId,
+                interaction.contract.copy(),
+                interaction.revision,
+                interaction.arguments,
+                interaction.routePayload,
+            )
+        }
+    }
 }

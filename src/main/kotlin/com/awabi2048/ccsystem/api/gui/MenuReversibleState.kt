@@ -9,20 +9,57 @@ import org.bukkit.event.inventory.ClickType
  * [MenuActionSafety.REVERSIBLE] の操作を監査で復元するための、表示・実行契約とは別の宣言です。
  * arguments は通常の action payload と混在させず、復元 provider だけが解釈します。
  */
-data class MenuReversibleContract(
+class MenuReversibleContract(
     val providerId: String,
-    val arguments: Map<String, String> = emptyMap(),
+    arguments: Map<String, String> = emptyMap(),
 ) {
+    val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
     init {
         require(providerId.isNotBlank()) { "reversible provider id must not be blank" }
         require(arguments.keys.none { it.isBlank() }) { "reversible argument keys must not be blank" }
     }
 
-    fun diagnosticArguments(): Map<String, String> = arguments.toSortedMap()
+    fun diagnosticArguments(): Map<String, String> = arguments
+
+    fun copy(
+        providerId: String = this.providerId,
+        arguments: Map<String, String> = this.arguments,
+    ): MenuReversibleContract = MenuReversibleContract(providerId, arguments)
+
+    operator fun component1(): String = providerId
+    operator fun component2(): Map<String, String> = arguments
+
+    override fun equals(other: Any?): Boolean =
+        other is MenuReversibleContract && providerId == other.providerId && arguments == other.arguments
+
+    override fun hashCode(): Int = 31 * providerId.hashCode() + arguments.hashCode()
+
+    override fun toString(): String = "MenuReversibleContract(providerId=$providerId, arguments=$arguments)"
 }
 
 /** Provider が保持する復元専用の不透明状態です。Runtime は内容を診断へ出力しません。 */
 interface MenuReversibleProviderState
+
+/** provider独自stateをtokenへ保存するため、allowlist値へ明示encodeする境界です。 */
+interface MenuReversibleOpaqueState : MenuReversibleProviderState {
+    fun snapshot(): Any?
+}
+
+/** restore callbackへ渡す、切り離し済み・JSON証跡化可能なprovider stateです。 */
+class MenuReversibleStateSnapshot internal constructor(
+    private val immutable: MenuImmutableSnapshot,
+) {
+    val value: Any? get() = immutable.value
+    fun jsonEvidence(): Any? = immutable.jsonEvidence()
+    override fun equals(other: Any?): Boolean = other is MenuReversibleStateSnapshot && immutable == other.immutable
+    override fun hashCode(): Int = immutable.hashCode()
+    override fun toString(): String = "MenuReversibleStateSnapshot($immutable)"
+
+    internal companion object {
+        fun capture(state: MenuReversibleOpaqueState): MenuReversibleStateSnapshot =
+            MenuReversibleStateSnapshot(MenuSnapshotCodec.snapshot(state.snapshot()))
+    }
+}
 
 /** Runtime が発行する一回限りの不透明トークンです。 */
 class MenuReversibleStateToken internal constructor(
@@ -36,20 +73,42 @@ class MenuReversibleStateToken internal constructor(
     override fun toString(): String = "MenuReversibleStateToken(redacted)"
 }
 
-data class MenuReversibleInteractionContext(
+class MenuReversibleInteractionContext(
     val slot: Int,
     val click: ClickType,
     val actionId: String?,
     val capabilityId: String?,
-    val contract: MenuReversibleContract,
+    contract: MenuReversibleContract,
     val revision: Long,
     /** 最終 Action の payload、または Capability invocation の arguments です。 */
-    val arguments: Map<String, String> = emptyMap(),
+    arguments: Map<String, String> = emptyMap(),
     /** Capability invocation が持つ型付き runtime attributes です。診断へは公開しません。 */
-    val attributes: Map<String, Any> = emptyMap(),
+    attributes: Map<String, Any> = emptyMap(),
     /** capture 時点の route payload です。 */
-    val routePayload: Map<String, String> = emptyMap(),
-)
+    routePayload: Map<String, String> = emptyMap(),
+) {
+    val contract: MenuReversibleContract = contract.copy()
+    val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
+    /** capture callbackにのみ渡すlive attributeです。token/restore contextへ保存しません。 */
+    val attributes: Map<String, Any> = MenuImmutableCollections.orderedMap(attributes, compareBy<String> { it })
+    val routePayload: Map<String, String> = MenuImmutableCollections.strings(routePayload)
+}
+
+/** restore callbackへ渡す、attributesを含まないimmutable interaction束縛です。 */
+class MenuReversibleRestoreInteractionContext internal constructor(
+    val slot: Int,
+    val click: ClickType,
+    val actionId: String?,
+    val capabilityId: String?,
+    contract: MenuReversibleContract,
+    val revision: Long,
+    arguments: Map<String, String>,
+    routePayload: Map<String, String>,
+) {
+    val contract: MenuReversibleContract = contract.copy()
+    val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
+    val routePayload: Map<String, String> = MenuImmutableCollections.strings(routePayload)
+}
 
 /** provider callback は Runtime の registry/token lock を保持しない状態で呼ばれます。 */
 data class MenuReversibleStateCaptureContext(
@@ -63,8 +122,8 @@ data class MenuReversibleStateRestoreContext(
     val player: Player,
     val route: MenuRoute,
     val runId: String,
-    val interaction: MenuReversibleInteractionContext,
-    val state: MenuReversibleProviderState,
+    val interaction: MenuReversibleRestoreInteractionContext,
+    val state: MenuReversibleStateSnapshot,
 )
 
 sealed interface MenuReversibleProviderCaptureResult {
@@ -152,6 +211,7 @@ enum class MenuReversibleStateFailureReason {
     ROUTE_REVISION_MISMATCH,
     CAPTURE_REJECTED,
     CAPTURE_EXCEPTION,
+    INVALID_STATE_TYPE,
     TOKEN_UNKNOWN,
     TOKEN_EXPIRED,
     TOKEN_ALREADY_USED,

@@ -45,17 +45,26 @@ enum class MenuActionSafety {
 sealed interface MenuInteraction {
     data object DisplayOnly : MenuInteraction
 
-    data class Action(
+    class Action(
         val actionId: String,
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
-        val payload: Map<String, String> = emptyMap(),
+        acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        payload: Map<String, String> = emptyMap(),
         val sounds: MenuActionSoundPolicy? = null,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
         val capabilityId: String? = null,
-        val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
-        val reversibleContract: MenuReversibleContract? = null,
-        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
+        safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
+        reversibleContract: MenuReversibleContract? = null,
+        reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
     ) : MenuInteraction {
+        val acceptedClicks: Set<ClickType> = MenuImmutableCollections.orderedSet(acceptedClicks, compareBy(ClickType::name))
+        val payload: Map<String, String> = MenuImmutableCollections.strings(payload)
+        val safetyByClick: Map<ClickType, MenuActionSafety> =
+            MenuImmutableCollections.orderedMap(safetyByClick, compareBy(ClickType::name))
+        val reversibleContract: MenuReversibleContract? = reversibleContract?.copy()
+        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = MenuImmutableCollections.orderedMap(
+            reversibleContractByClick.mapValues { (_, contract) -> contract.copy() },
+            compareBy(ClickType::name),
+        )
         init {
             require(actionId.isNotBlank()) { "actionId must not be blank" }
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
@@ -83,10 +92,11 @@ sealed interface MenuInteraction {
      * クリック種別ごとに異なるActionへ分岐する宣言。
      * 表示案内とクリック受付を同じBranch群から生成するために使用する。
      */
-    data class Branches(
-        val branches: List<MenuActionBranch>,
+    class Branches(
+        branches: List<MenuActionBranch>,
         val sounds: MenuActionSoundPolicy? = null,
     ) : MenuInteraction {
+        val branches: List<MenuActionBranch> = MenuImmutableCollections.list(branches)
         init {
             require(branches.isNotEmpty()) { "branches must not be empty" }
             val accepted = branches.flatMap(MenuActionBranch::acceptedClicks)
@@ -102,9 +112,10 @@ sealed interface MenuInteraction {
      * [Branches]は既存のAction handler分岐として維持します。Capabilityを含む異種の
      * interactionを同一slotへ置く場合だけ、この型を使用します。
      */
-    data class ClickBranches(
-        val branches: List<MenuInteractionBranch>,
+    class ClickBranches(
+        branches: List<MenuInteractionBranch>,
     ) : MenuInteraction {
+        val branches: List<MenuInteractionBranch> = MenuImmutableCollections.list(branches)
         init {
             require(branches.isNotEmpty()) { "branches must not be empty" }
             val accepted = branches.flatMap(MenuInteractionBranch::acceptedClicks)
@@ -117,17 +128,28 @@ sealed interface MenuInteraction {
             branches.singleOrNull { click in it.acceptedClicks }?.interaction
     }
 
-    data class Capability(
+    class Capability(
         val capabilityId: String,
-        val arguments: Map<String, String> = emptyMap(),
-        val attributes: Map<String, Any> = emptyMap(),
-        val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+        arguments: Map<String, String> = emptyMap(),
+        attributes: Map<String, Any> = emptyMap(),
+        acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val sounds: MenuActionSoundPolicy? = null,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
-        val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
-        val reversibleContract: MenuReversibleContract? = null,
-        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
+        safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
+        reversibleContract: MenuReversibleContract? = null,
+        reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
     ) : MenuInteraction {
+        val arguments: Map<String, String> = MenuImmutableCollections.strings(arguments)
+        /** 任意attribute値はcapture callback用live handleを許すため、containerだけを防御copyします。 */
+        val attributes: Map<String, Any> = MenuImmutableCollections.orderedMap(attributes, compareBy<String> { it })
+        val acceptedClicks: Set<ClickType> = MenuImmutableCollections.orderedSet(acceptedClicks, compareBy(ClickType::name))
+        val safetyByClick: Map<ClickType, MenuActionSafety> =
+            MenuImmutableCollections.orderedMap(safetyByClick, compareBy(ClickType::name))
+        val reversibleContract: MenuReversibleContract? = reversibleContract?.copy()
+        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = MenuImmutableCollections.orderedMap(
+            reversibleContractByClick.mapValues { (_, contract) -> contract.copy() },
+            compareBy(ClickType::name),
+        )
         init {
             require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
@@ -171,13 +193,16 @@ sealed interface MenuInteraction {
     }
 }
 
-data class MenuActionBranch(
+class MenuActionBranch(
     val actionId: String,
-    val acceptedClicks: Set<ClickType>,
-    val payload: Map<String, String> = emptyMap(),
+    acceptedClicks: Set<ClickType>,
+    payload: Map<String, String> = emptyMap(),
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
-    val reversibleContract: MenuReversibleContract? = null,
+    reversibleContract: MenuReversibleContract? = null,
 ) {
+    val acceptedClicks: Set<ClickType> = MenuImmutableCollections.orderedSet(acceptedClicks, compareBy(ClickType::name))
+    val payload: Map<String, String> = MenuImmutableCollections.strings(payload)
+    val reversibleContract: MenuReversibleContract? = reversibleContract?.copy()
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }
         require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }

@@ -43,12 +43,17 @@ data class MenuRuntimeInspectionInteractionSnapshot(
     val actionId: String? = null,
     val capabilityId: String? = null,
     val arguments: Map<String, String> = emptyMap(),
-    val attributes: Map<String, Any> = emptyMap(),
+    val attributes: Map<String, Any?> = emptyMap(),
     val acceptedClicks: Set<ClickType> = emptySet(),
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
     val branches: List<MenuRuntimeInspectionInteractionBranchSnapshot> = emptyList(),
     val reversibleContractsByClick: Map<ClickType, MenuRuntimeReversibleContractSnapshot> = emptyMap(),
+)
+
+/** 任意objectの参照を監査snapshotへ保持せず、型だけを示す非公開値markerです。 */
+data class MenuRuntimeOpaqueAttributeSnapshot(
+    val typeName: String,
 )
 
 data class MenuRuntimeInspectionInteractionBranchSnapshot(
