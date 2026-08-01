@@ -53,6 +53,8 @@ sealed interface MenuInteraction {
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
         val capabilityId: String? = null,
         val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
+        val reversibleContract: MenuReversibleContract? = null,
+        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
     ) : MenuInteraction {
         init {
             require(actionId.isNotBlank()) { "actionId must not be blank" }
@@ -60,9 +62,15 @@ sealed interface MenuInteraction {
             require(safetyByClick.keys.all { it in acceptedClicks }) {
                 "action safety may only be declared for accepted clicks"
             }
+            require(reversibleContractByClick.keys.all { it in acceptedClicks }) {
+                "action reversible contract may only be declared for accepted clicks"
+            }
         }
 
         fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
+
+        fun reversibleContractFor(click: ClickType): MenuReversibleContract? =
+            reversibleContractByClick[click] ?: reversibleContract
     }
 
     /**
@@ -111,6 +119,8 @@ sealed interface MenuInteraction {
         val sounds: MenuActionSoundPolicy? = null,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
         val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
+        val reversibleContract: MenuReversibleContract? = null,
+        val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
     ) : MenuInteraction {
         init {
             require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
@@ -118,9 +128,15 @@ sealed interface MenuInteraction {
             require(safetyByClick.keys.all { it in acceptedClicks }) {
                 "capability safety may only be declared for accepted clicks"
             }
+            require(reversibleContractByClick.keys.all { it in acceptedClicks }) {
+                "capability reversible contract may only be declared for accepted clicks"
+            }
         }
 
         fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
+
+        fun reversibleContractFor(click: ClickType): MenuReversibleContract? =
+            reversibleContractByClick[click] ?: reversibleContract
     }
 
     data class Unavailable(
@@ -148,6 +164,7 @@ data class MenuActionBranch(
     val acceptedClicks: Set<ClickType>,
     val payload: Map<String, String> = emptyMap(),
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    val reversibleContract: MenuReversibleContract? = null,
 ) {
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }

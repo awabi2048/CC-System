@@ -31,6 +31,28 @@ interface MenuRuntimeService {
     /** GUI状態を変えず、playerの診断traceだけを削除します。 */
     fun clearClickTraces(player: Player)
 
+    /**
+     * 監査専用です。現在表示中の slot/click が宣言する可逆操作の状態を取得します。
+     * 通常の render / inspect / click 実行では呼ばれません。
+     */
+    fun captureReversibleState(
+        player: Player,
+        slot: Int,
+        click: org.bukkit.event.inventory.ClickType,
+    ): MenuReversibleStateCaptureResult
+
+    /** 監査専用です。token を発行した同一 player だけが復元できます。 */
+    fun restoreReversibleState(
+        player: Player,
+        token: MenuReversibleStateToken,
+    ): MenuReversibleStateRestoreResult
+
+    /** 監査専用です。token が束縛された online player を使って復元します。 */
+    fun restoreReversibleState(token: MenuReversibleStateToken): MenuReversibleStateRestoreResult
+
+    /** player の未使用可逆 token をすべて無効化します。 */
+    fun clearReversibleStates(player: Player)
+
     /** 指定した仮想遷移文脈で、状態を変更せず完成viewを検査します。 */
     fun inspect(
         player: Player,

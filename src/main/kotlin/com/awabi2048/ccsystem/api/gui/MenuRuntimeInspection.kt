@@ -48,6 +48,7 @@ data class MenuRuntimeInspectionInteractionSnapshot(
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
     val branches: List<MenuRuntimeInspectionInteractionBranchSnapshot> = emptyList(),
+    val reversibleContractsByClick: Map<ClickType, MenuRuntimeReversibleContractSnapshot> = emptyMap(),
 )
 
 data class MenuRuntimeInspectionInteractionBranchSnapshot(

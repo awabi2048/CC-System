@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionBranchSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionInteractionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeReversibleContractSnapshot
 import org.bukkit.event.inventory.ClickType
 
 /**
@@ -26,6 +27,7 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
             acceptedClicks = interaction.acceptedClicks.toSet(),
             safety = interaction.safety,
             safetyByClick = interaction.safetyByClick.toSortedMap(compareBy(ClickType::name)),
+            reversibleContractsByClick = interaction.reversibleContractsByClick(),
         )
         is MenuInteraction.Branches -> MenuRuntimeInspectionInteractionSnapshot(
             MenuRuntimeInteractionKind.BRANCHES,
@@ -46,6 +48,7 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
                             branch.acceptedClicks,
                             branch.payload,
                             safety = branch.safety,
+                            reversibleContract = branch.reversibleContract,
                         ),
                     ),
                 )
@@ -78,6 +81,7 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
             acceptedClicks = interaction.acceptedClicks.toSet(),
             safety = interaction.safety,
             safetyByClick = interaction.safetyByClick.toSortedMap(compareBy(ClickType::name)),
+            reversibleContractsByClick = interaction.reversibleContractsByClick(),
         )
         is MenuInteraction.Unavailable -> MenuRuntimeInspectionInteractionSnapshot(
             MenuRuntimeInteractionKind.UNAVAILABLE,
@@ -109,4 +113,18 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
         is MenuInteraction.Capability -> safetyFor(click)
         is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
     }
+
+    private fun MenuInteraction.Action.reversibleContractsByClick(): Map<ClickType, MenuRuntimeReversibleContractSnapshot> =
+        acceptedClicks.mapNotNull { click ->
+            reversibleContractFor(click)?.let { contract ->
+                click to MenuRuntimeReversibleContractSnapshot(contract.providerId, contract.diagnosticArguments())
+            }
+        }.toMap().toSortedMap(compareBy(ClickType::name))
+
+    private fun MenuInteraction.Capability.reversibleContractsByClick(): Map<ClickType, MenuRuntimeReversibleContractSnapshot> =
+        acceptedClicks.mapNotNull { click ->
+            reversibleContractFor(click)?.let { contract ->
+                click to MenuRuntimeReversibleContractSnapshot(contract.providerId, contract.diagnosticArguments())
+            }
+        }.toMap().toSortedMap(compareBy(ClickType::name))
 }

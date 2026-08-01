@@ -110,11 +110,18 @@ data class MenuRuntimeRouteSnapshot(
     val payload: Map<String, String>,
 )
 
+/** 復元 provider の診断情報です。provider が返した不透明状態や token 本体は含みません。 */
+data class MenuRuntimeReversibleContractSnapshot(
+    val providerId: String,
+    val arguments: Map<String, String>,
+)
+
 data class MenuRuntimeBranchSnapshot(
     val actionId: String,
     val acceptedClicks: Set<ClickType>,
     val payload: Map<String, String>,
     val safety: MenuActionSafety,
+    val reversibleContract: MenuRuntimeReversibleContractSnapshot? = null,
 )
 
 /** ItemStackを保持せず、表示上必要な値だけを複写したslotの診断情報です。 */
@@ -138,6 +145,7 @@ data class MenuRuntimeSlotSnapshot(
     val branches: List<MenuRuntimeBranchSnapshot>,
     /** ClickBranchesを含む最終interactionまで保持する共通snapshotです。 */
     val interaction: MenuRuntimeInspectionInteractionSnapshot? = null,
+    val reversibleContractsByClick: Map<ClickType, MenuRuntimeReversibleContractSnapshot> = emptyMap(),
 )
 
 /** inventory surfaceでは全slotを、Dialog/Formでは空のslot一覧を返します。 */
@@ -312,6 +320,7 @@ data class MenuRuntimeClickTrace(
     val afterRevision: Long?,
     val afterRoute: MenuRuntimeRouteSnapshot?,
     val application: MenuRuntimeUpdateApplication = MenuRuntimeUpdateApplication.notAttempted(),
+    val reversibleContract: MenuRuntimeReversibleContractSnapshot? = null,
 ) {
     /** [update]を明示した名称です。 */
     val declaredUpdate: MenuRuntimeUpdateSnapshot?

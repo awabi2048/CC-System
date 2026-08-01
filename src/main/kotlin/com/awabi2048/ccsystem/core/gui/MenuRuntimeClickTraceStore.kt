@@ -135,6 +135,10 @@ internal class MenuRuntimeClickTraceStore(
         runs[playerId]?.traces?.lastOrNull()
     }
 
+    fun currentRunId(playerId: UUID): String? = synchronized(lock) {
+        runs[playerId]?.runId
+    }
+
     fun clear(playerId: UUID) {
         val cancellations = synchronized(lock) {
             runs.remove(playerId)

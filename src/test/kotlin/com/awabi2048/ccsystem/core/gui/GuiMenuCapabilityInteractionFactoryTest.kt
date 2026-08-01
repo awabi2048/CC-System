@@ -9,6 +9,7 @@ import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation
 import com.awabi2048.ccsystem.api.gui.MenuCapabilityTrigger
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
+import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapabilityAction
 import org.bukkit.Material
@@ -38,6 +39,10 @@ class GuiMenuCapabilityInteractionFactoryTest {
         assertEquals(MenuActionSafety.UNSPECIFIED, interaction.safety)
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, interaction.safetyByClick[ClickType.LEFT])
         assertEquals(MenuActionSafety.REVERSIBLE, interaction.safetyByClick[ClickType.RIGHT])
+        assertEquals(
+            MenuReversibleContract("audit:world", mapOf("operation" to "toggle")),
+            interaction.reversibleContractFor(ClickType.RIGHT),
+        )
     }
 
     private fun capability() = ResolvedMenuCapability(
@@ -57,6 +62,7 @@ class GuiMenuCapabilityInteractionFactoryTest {
                 MenuCapabilityTrigger.RIGHT,
                 "Toggle",
                 MenuActionSafety.REVERSIBLE,
+                MenuReversibleContract("audit:world", mapOf("operation" to "toggle")),
             ),
         ),
     )

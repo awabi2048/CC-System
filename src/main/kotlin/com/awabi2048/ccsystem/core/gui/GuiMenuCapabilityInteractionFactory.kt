@@ -13,5 +13,6 @@ internal object GuiMenuCapabilityInteractionFactory {
             acceptedClicks = spec.acceptedClicks,
             safety = spec.safety,
             safetyByClick = spec.safetyByClick,
+            reversibleContractByClick = spec.reversibleContractByClick,
         )
 }

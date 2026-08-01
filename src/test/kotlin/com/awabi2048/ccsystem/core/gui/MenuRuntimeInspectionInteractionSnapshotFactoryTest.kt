@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.core.gui
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuInteractionBranch
+import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
@@ -25,6 +26,9 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
                 acceptedClicks = setOf(ClickType.LEFT, ClickType.RIGHT),
                 safety = MenuActionSafety.NAVIGATION_ONLY,
                 safetyByClick = mapOf(ClickType.RIGHT to MenuActionSafety.REVERSIBLE),
+                reversibleContractByClick = mapOf(
+                    ClickType.RIGHT to MenuReversibleContract("audit:world", mapOf("world" to "world-1")),
+                ),
             ),
         )
 
@@ -35,6 +39,8 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
         assertEquals(setOf(ClickType.LEFT, ClickType.RIGHT), snapshot.acceptedClicks)
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safety)
         assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])
+        assertEquals("audit:world", snapshot.reversibleContractsByClick[ClickType.RIGHT]?.providerId)
+        assertEquals(mapOf("world" to "world-1"), snapshot.reversibleContractsByClick[ClickType.RIGHT]?.arguments)
     }
 
     @Test

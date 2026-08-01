@@ -63,6 +63,7 @@ data class MenuCapabilityAction(
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val handler: MenuCapabilityActionHandler,
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    val reversibleContract: MenuReversibleContract? = null,
 ) {
     init {
         require(id.isNotBlank()) { "action id must not be blank" }
@@ -104,6 +105,7 @@ data class ResolvedMenuCapabilityAction(
     val trigger: MenuCapabilityTrigger,
     val text: String,
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    val reversibleContract: MenuReversibleContract? = null,
 )
 
 data class ResolvedMenuCapability(
@@ -131,12 +133,22 @@ data class ResolvedMenuCapability(
                 action.trigger.clicks.forEach { click -> put(click, action.safety) }
             }
         }
+
+    val reversibleContractByClick: Map<ClickType, MenuReversibleContract>
+        get() = buildMap {
+            actions.forEach { action ->
+                action.reversibleContract?.let { contract ->
+                    action.trigger.clicks.forEach { click -> put(click, contract) }
+                }
+            }
+        }
 }
 
 /** registry定義から読取専用で取得できる静的なclick・安全契約です。 */
 data class MenuCapabilityStaticContract(
     val acceptedClicks: Set<ClickType>,
     val safetyByClick: Map<ClickType, MenuActionSafety>,
+    val reversibleContractByClick: Map<ClickType, MenuReversibleContract> = emptyMap(),
 ) {
     val safety: MenuActionSafety
         get() = safetyByClick.values.distinct().singleOrNull() ?: MenuActionSafety.UNSPECIFIED
@@ -148,6 +160,13 @@ fun MenuCapabilityDefinition.staticContract(): MenuCapabilityStaticContract =
         safetyByClick = buildMap {
             actions.forEach { action ->
                 action.trigger.clicks.forEach { click -> put(click, action.safety) }
+            }
+        },
+        reversibleContractByClick = buildMap {
+            actions.forEach { action ->
+                action.reversibleContract?.let { contract ->
+                    action.trigger.clicks.forEach { click -> put(click, contract) }
+                }
             }
         },
     )

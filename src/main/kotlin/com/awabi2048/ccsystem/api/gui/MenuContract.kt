@@ -239,5 +239,16 @@ object MenuContractValidator {
                 "capability safety contract differs from registry static contract",
             )
         }
+        val reversibleMismatch = interaction.acceptedClicks.any { click ->
+            interaction.reversibleContractFor(click) != staticContract.reversibleContractByClick[click]
+        }
+        if (reversibleMismatch) {
+            violations += MenuContractViolation(
+                definition.routeId,
+                slot,
+                null,
+                "capability reversible contract differs from registry static contract",
+            )
+        }
     }
 }

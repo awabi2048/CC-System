@@ -102,6 +102,8 @@ interface CCSystemAPI {
 
     fun getMenuCapabilityService(): MenuCapabilityService
 
+    fun getMenuReversibleStateProviderRegistry(): com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderRegistry
+
     fun getMenuSoundService(): MenuSoundService
 
     fun getMenuRuntimeService(): MenuRuntimeService

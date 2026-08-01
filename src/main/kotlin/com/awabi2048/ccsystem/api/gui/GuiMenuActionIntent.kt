@@ -16,6 +16,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent
 
     data class AnyClick(
@@ -24,6 +25,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent {
     }
 
@@ -43,6 +45,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent
 
     /** Same action for plain left/right clicks only. */
@@ -52,6 +55,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent
 
     /** Same action for both Shift-click directions. */
@@ -61,6 +65,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent
 
     data class MiddleClick(
@@ -69,6 +74,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent
 
     data object Back : GuiMenuActionIntent {
@@ -81,6 +87,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent {
     }
 
@@ -90,6 +97,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent {
     }
 
@@ -100,6 +108,7 @@ sealed interface GuiMenuActionIntent {
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
         val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val reversibleContract: MenuReversibleContract? = null,
     ) : GuiMenuActionIntent {
     }
 
@@ -119,6 +128,7 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
             payload = payload,
             enabled = enabled,
             safety = safety,
+            reversibleContract = reversibleContract,
         )
     )
     is GuiMenuActionIntent.LeftRight -> buildList {
@@ -136,6 +146,7 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
         payload,
         enabled,
         safety,
+        reversibleContract,
     ).expand()
     is GuiMenuActionIntent.Cancel -> GuiMenuActionIntent.AnyClick(
         actionId,
@@ -143,6 +154,7 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
         payload,
         enabled,
         safety,
+        reversibleContract,
     ).expand()
     is GuiMenuActionIntent.Page -> GuiMenuActionIntent.AnyClick(
         actionId,
@@ -150,6 +162,7 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
         payload,
         enabled,
         safety,
+        reversibleContract,
     ).expand()
 }
 
@@ -162,27 +175,28 @@ private fun GuiMenuActionIntent.AnyClick.toEntry(
     payload = payload,
     enabled = enabled,
     safety = safety,
+    reversibleContract = reversibleContract,
 )
 
 private fun GuiMenuActionIntent.GestureAction.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety, reversibleContract)
 
 private fun GuiMenuActionIntent.LeftRightSame.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety, reversibleContract)
 
 private fun GuiMenuActionIntent.PlainLeftRight.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety, reversibleContract)
 
 private fun GuiMenuActionIntent.ShiftAny.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety, reversibleContract)
 
 private fun GuiMenuActionIntent.MiddleClick.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety, reversibleContract)
 
 enum class MenuGesture {
     ANY,

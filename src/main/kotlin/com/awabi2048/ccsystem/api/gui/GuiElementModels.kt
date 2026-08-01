@@ -222,6 +222,7 @@ internal data class GuiMenuEntryAction(
     val payload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    val reversibleContract: MenuReversibleContract? = null,
 ) {
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }
@@ -359,6 +360,9 @@ data class GuiMenuCapabilityInvocationSpec(
 
     val safetyByClick: Map<ClickType, MenuActionSafety>
         get() = capability.safetyByClick
+
+    val reversibleContractByClick: Map<ClickType, MenuReversibleContract>
+        get() = capability.reversibleContractByClick
 }
 
 /**

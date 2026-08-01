@@ -120,11 +120,18 @@ class GuiElementServiceImpl(
                     payload = action.payload,
                     sounds = spec.sounds,
                     safety = action.safety,
+                    reversibleContract = action.reversibleContract,
                 )
             }
             else -> MenuInteraction.Branches(
                 branches = enabledActions.map { action ->
-                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload, action.safety)
+                    MenuActionBranch(
+                        action.actionId,
+                        action.acceptedClicks,
+                        action.payload,
+                        action.safety,
+                        action.reversibleContract,
+                    )
                 },
                 sounds = spec.sounds,
             )
@@ -185,11 +192,18 @@ class GuiElementServiceImpl(
                     action.payload,
                     spec.sounds,
                     action.safety,
+                    reversibleContract = action.reversibleContract,
                 )
             }
             else -> MenuInteraction.Branches(
                 enabledActions.map { action ->
-                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload, action.safety)
+                    MenuActionBranch(
+                        action.actionId,
+                        action.acceptedClicks,
+                        action.payload,
+                        action.safety,
+                        action.reversibleContract,
+                    )
                 },
                 spec.sounds,
             )
