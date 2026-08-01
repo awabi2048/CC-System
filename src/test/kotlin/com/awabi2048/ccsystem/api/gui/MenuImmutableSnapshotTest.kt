@@ -5,6 +5,7 @@ import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotSame
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class MenuImmutableSnapshotTest {
@@ -108,6 +109,38 @@ class MenuImmutableSnapshotTest {
             })
         }
     }
+
+    @Test
+    fun `codec enforces depth node collection string and total encoded limits`() {
+        var deep: Any? = "leaf"
+        repeat(MenuSnapshotCodec.MAX_DEPTH + 1) { deep = listOf(deep) }
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_DEPTH, failureOf { MenuSnapshotCodec.snapshot(deep) }.reason)
+
+        val oversizedCollection = List(MenuSnapshotCodec.MAX_COLLECTION_SIZE + 1) { it }
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf { MenuSnapshotCodec.snapshot(oversizedCollection) }.reason)
+
+        val unicode = "界".repeat(MenuSnapshotCodec.MAX_STRING_UTF8_BYTES / 3 + 1)
+        assertTrue(unicode.length < MenuSnapshotCodec.MAX_STRING_UTF8_BYTES)
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf { MenuSnapshotCodec.snapshot(unicode) }.reason)
+
+        val individuallyValid = "a".repeat(MenuSnapshotCodec.MAX_STRING_UTF8_BYTES)
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf {
+            MenuSnapshotCodec.snapshot(List(5) { individuallyValid })
+        }.reason)
+
+        val manyNodes = List(MenuSnapshotCodec.MAX_COLLECTION_SIZE) {
+            List(4) { listOf(it) }
+        }
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf { MenuSnapshotCodec.snapshot(manyNodes) }.reason)
+
+        val oversizedKey = "鍵".repeat(MenuSnapshotCodec.MAX_STRING_UTF8_BYTES / 3 + 1)
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf {
+            MenuSnapshotCodec.snapshot(mapOf(oversizedKey to "value"))
+        }.reason)
+    }
+
+    private fun failureOf(block: () -> Unit): MenuSnapshotValueException =
+        assertThrows(MenuSnapshotValueException::class.java, block)
 
     private fun sourceForSameEvidence(): Map<String, Any?> = linkedMapOf(
         "nested" to listOf("before", mapOf("count" to 1)),

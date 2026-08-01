@@ -33,6 +33,14 @@ import org.bukkit.plugin.java.JavaPlugin
  * 他のプラグインがこのインターフェースを経由してCC-Systemの機能を利用します
  */
 interface CCSystemAPI {
+    /** GUI runtime の公開契約版です。consumer は provider 登録前に要求版との完全一致を確認してください。 */
+    val guiRuntimeContractVersion: Int
+        get() = GUI_RUNTIME_CONTRACT_VERSION
+
+    companion object {
+        /** immutable reversible state ABI を表す契約版です。 */
+        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 2
+    }
     /**
      * プレイヤーの言語設定を取得します
      *

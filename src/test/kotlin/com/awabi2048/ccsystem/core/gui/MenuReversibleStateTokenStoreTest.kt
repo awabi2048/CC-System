@@ -68,6 +68,17 @@ class MenuReversibleStateTokenStoreTest {
     }
 
     @Test
+    fun `default maximum of 256 tokens remains bounded`() {
+        val bounded = store(capacity = 256)
+        val player = UUID.randomUUID()
+        val oldest = issue(bounded, player)
+        repeat(255) { issue(bounded, player) }
+        assertInstanceOf(MenuReversibleStateTokenStore.PeekResult.Found::class.java, bounded.peek(oldest, player))
+        issue(bounded, player)
+        assertTakeFailure(bounded.take(oldest, player), MenuReversibleStateFailureReason.TOKEN_EXPIRED)
+    }
+
+    @Test
     fun `concurrent restore acquisition has exactly one winner`() {
         val store = store()
         val player = UUID.randomUUID()

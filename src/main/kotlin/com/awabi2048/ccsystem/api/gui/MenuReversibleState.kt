@@ -48,7 +48,7 @@ interface MenuReversibleOpaqueState : MenuReversibleProviderState {
 /** restore callbackへ渡す、切り離し済み・JSON証跡化可能なprovider stateです。 */
 class MenuReversibleStateSnapshot internal constructor(
     private val immutable: MenuImmutableSnapshot,
-) {
+) : MenuReversibleProviderState {
     val value: Any? get() = immutable.value
     fun jsonEvidence(): Any? = immutable.jsonEvidence()
     override fun equals(other: Any?): Boolean = other is MenuReversibleStateSnapshot && immutable == other.immutable
@@ -118,13 +118,31 @@ data class MenuReversibleStateCaptureContext(
     val interaction: MenuReversibleInteractionContext,
 )
 
-data class MenuReversibleStateRestoreContext(
+class MenuReversibleStateRestoreContext(
     val player: Player,
     val route: MenuRoute,
     val runId: String,
-    val interaction: MenuReversibleRestoreInteractionContext,
-    val state: MenuReversibleStateSnapshot,
-)
+    val restoreInteraction: MenuReversibleRestoreInteractionContext,
+    val stateSnapshot: MenuReversibleStateSnapshot,
+) {
+    /** ABI v1 descriptor bridgeです。新規consumerは [restoreInteraction] を使用してください。 */
+    @Deprecated("GUI runtime contract v2ではrestoreInteractionを使用してください")
+    fun getInteraction(): MenuReversibleInteractionContext = MenuReversibleInteractionContext(
+        restoreInteraction.slot,
+        restoreInteraction.click,
+        restoreInteraction.actionId,
+        restoreInteraction.capabilityId,
+        restoreInteraction.contract,
+        restoreInteraction.revision,
+        restoreInteraction.arguments,
+        emptyMap(),
+        restoreInteraction.routePayload,
+    )
+
+    /** ABI v1 descriptor bridgeです。新規consumerは [stateSnapshot] を使用してください。 */
+    @Deprecated("GUI runtime contract v2ではstateSnapshotを使用してください")
+    fun getState(): MenuReversibleProviderState = stateSnapshot
+}
 
 sealed interface MenuReversibleProviderCaptureResult {
     data class Captured(val state: MenuReversibleProviderState) : MenuReversibleProviderCaptureResult
@@ -212,6 +230,8 @@ enum class MenuReversibleStateFailureReason {
     CAPTURE_REJECTED,
     CAPTURE_EXCEPTION,
     INVALID_STATE_TYPE,
+    INVALID_STATE_SIZE,
+    INVALID_STATE_DEPTH,
     TOKEN_UNKNOWN,
     TOKEN_EXPIRED,
     TOKEN_ALREADY_USED,

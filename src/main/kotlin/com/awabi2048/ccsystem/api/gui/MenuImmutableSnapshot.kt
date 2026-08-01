@@ -34,7 +34,10 @@ class MenuImmutableSnapshot private constructor(
 }
 
 /** [MenuSnapshotCodec] が受理できない値です。可逆状態はこの値を token に保存できません。 */
+enum class MenuSnapshotFailureReason { INVALID_VALUE_TYPE, INVALID_STATE_DEPTH, INVALID_STATE_SIZE }
+
 class MenuSnapshotValueException internal constructor(
+    val reason: MenuSnapshotFailureReason,
     message: String,
 ) : IllegalArgumentException(message)
 
@@ -43,9 +46,18 @@ class MenuSnapshotValueException internal constructor(
  * Bukkit handle、Player、World、mutable collection、独自classはIDまたはallowlist値へ明示変換してください。
  */
 object MenuSnapshotCodec {
+    const val MAX_DEPTH = 32
+    const val MAX_NODES = 4096
+    const val MAX_STRING_UTF8_BYTES = 65_536
+    const val MAX_TOTAL_ENCODED_BYTES = 262_144
+    const val MAX_COLLECTION_SIZE = 1024
+
     /** 許可値を再帰的に切り離します。未知型は [MenuSnapshotValueException] で拒否します。 */
     fun snapshot(value: Any?): MenuImmutableSnapshot =
-        MenuImmutableSnapshot.detached(copy(value, "$", IdentityHashMap()))
+        MenuImmutableSnapshot.detached(copy(value, "$", IdentityHashMap(), Budget(), 0)).also { snapshot ->
+            val bytes = snapshot.jsonEvidenceText().toByteArray(Charsets.UTF_8).size
+            if (bytes > MAX_TOTAL_ENCODED_BYTES) sizeFailure("encoded snapshot is $bytes bytes; maximum is $MAX_TOTAL_ENCODED_BYTES")
+        }
 
     /** 許可値なら切り離したsnapshot、未知型ならnullです。診断用attributesで利用します。 */
     fun snapshotOrNull(value: Any?): MenuImmutableSnapshot? = try {
@@ -54,9 +66,13 @@ object MenuSnapshotCodec {
         null
     }
 
-    private fun copy(value: Any?, path: String, ancestors: IdentityHashMap<Any, Unit>): Any? = when (value) {
+    private class Budget(var nodes: Int = 0)
+
+    private fun copy(value: Any?, path: String, ancestors: IdentityHashMap<Any, Unit>, budget: Budget, depth: Int): Any? {
+        if (depth > MAX_DEPTH) throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_STATE_DEPTH, "$path exceeds maximum depth $MAX_DEPTH")
+        if (++budget.nodes > MAX_NODES) sizeFailure("snapshot exceeds maximum node count $MAX_NODES")
+        return when (value) {
         null,
-        is String,
         is Boolean,
         is Byte,
         is Short,
@@ -64,24 +80,28 @@ object MenuSnapshotCodec {
         is Long,
         is BigInteger,
         is BigDecimal -> value
-        is Float -> if (value.isFinite()) value else throw MenuSnapshotValueException("$path contains a non-finite Float")
-        is Double -> if (value.isFinite()) value else throw MenuSnapshotValueException("$path contains a non-finite Double")
+        is String -> value.also { checkString(it, path) }
+        is Float -> if (value.isFinite()) value else throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_VALUE_TYPE, "$path contains a non-finite Float")
+        is Double -> if (value.isFinite()) value else throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_VALUE_TYPE, "$path contains a non-finite Double")
         is UUID -> value
         is Enum<*> -> value
-        is MenuRoute -> MenuRoute(value.owner, value.id, value.payload)
-        is MenuRuntimeRouteSnapshot -> MenuRuntimeRouteSnapshot(value.owner, value.id, value.payload)
-        is Map<*, *> -> withAncestor(value, path, ancestors) { copyMap(value, path, ancestors) }
+        is MenuRoute -> MenuRoute(value.owner.also { checkString(it, "$path.owner") }, value.id.also { checkString(it, "$path.id") }, copyMap(value.payload, "$path.payload", ancestors, budget, depth + 1).mapValues { it.value as String })
+        is MenuRuntimeRouteSnapshot -> MenuRuntimeRouteSnapshot(value.owner.also { checkString(it, "$path.owner") }, value.id.also { checkString(it, "$path.id") }, copyMap(value.payload, "$path.payload", ancestors, budget, depth + 1).mapValues { it.value as String })
+        is Map<*, *> -> withAncestor(value, path, ancestors) { copyMap(value, path, ancestors, budget, depth) }
         is List<*> -> withAncestor(value, path, ancestors) {
-            Collections.unmodifiableList(value.mapIndexed { index, nested -> copy(nested, "$path[$index]", ancestors) })
+            checkCollection(value.size, path)
+            Collections.unmodifiableList(value.mapIndexed { index, nested -> copy(nested, "$path[$index]", ancestors, budget, depth + 1) })
         }
         is Set<*> -> withAncestor(value, path, ancestors) {
-            val copied = value.mapIndexed { index, nested -> copy(nested, "$path[$index]", ancestors) }
+            checkCollection(value.size, path)
+            val copied = value.mapIndexed { index, nested -> copy(nested, "$path[$index]", ancestors, budget, depth + 1) }
                 .sortedBy { canonicalJson(jsonEvidence(it)) }
             Collections.unmodifiableSet(LinkedHashSet(copied))
         }
-        else -> throw MenuSnapshotValueException(
+        else -> throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_VALUE_TYPE,
             "$path has unsupported snapshot value type: ${value.javaClass.name}",
         )
+        }
     }
 
     private inline fun <T> withAncestor(
@@ -91,7 +111,7 @@ object MenuSnapshotCodec {
         block: () -> T,
     ): T {
         if (ancestors.put(value, Unit) != null) {
-            throw MenuSnapshotValueException("$path contains a cyclic collection reference")
+            throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_VALUE_TYPE, "$path contains a cyclic collection reference")
         }
         return try {
             block()
@@ -100,16 +120,30 @@ object MenuSnapshotCodec {
         }
     }
 
-    private fun copyMap(value: Map<*, *>, path: String, ancestors: IdentityHashMap<Any, Unit>): Map<String, Any?> {
+    private fun copyMap(value: Map<*, *>, path: String, ancestors: IdentityHashMap<Any, Unit>, budget: Budget, depth: Int): Map<String, Any?> {
+        checkCollection(value.size, path)
         val entries = value.entries.map { entry ->
             val key = entry.key as? String
-                ?: throw MenuSnapshotValueException("$path has a non-String map key: ${entry.key?.javaClass?.name ?: "null"}")
-            key to copy(entry.value, "$path.$key", ancestors)
+                ?: throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_VALUE_TYPE, "$path has a non-String map key: ${entry.key?.javaClass?.name ?: "null"}")
+            checkString(key, "$path key")
+            key to copy(entry.value, "$path.$key", ancestors, budget, depth + 1)
         }.sortedBy { it.first }
         return Collections.unmodifiableMap(LinkedHashMap<String, Any?>(entries.size).also { target ->
             entries.forEach { (key, nested) -> target[key] = nested }
         })
     }
+
+    private fun checkCollection(size: Int, path: String) {
+        if (size > MAX_COLLECTION_SIZE) sizeFailure("$path has $size entries; maximum is $MAX_COLLECTION_SIZE")
+    }
+
+    private fun checkString(value: String, path: String) {
+        val bytes = value.toByteArray(Charsets.UTF_8).size
+        if (bytes > MAX_STRING_UTF8_BYTES) sizeFailure("$path is $bytes UTF-8 bytes; maximum is $MAX_STRING_UTF8_BYTES")
+    }
+
+    private fun sizeFailure(message: String): Nothing =
+        throw MenuSnapshotValueException(MenuSnapshotFailureReason.INVALID_STATE_SIZE, message)
 
     internal fun jsonEvidence(value: Any?): Any? = when (value) {
         null,

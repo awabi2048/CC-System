@@ -239,7 +239,11 @@ internal class MenuRuntimeServiceImpl(
                 MenuReversibleStateSnapshot.capture(opaque)
             } catch (failure: MenuSnapshotValueException) {
                 return reversibleCaptureFailure(
-                    MenuReversibleStateFailureReason.INVALID_STATE_TYPE,
+                    when (failure.reason) {
+                        com.awabi2048.ccsystem.api.gui.MenuSnapshotFailureReason.INVALID_VALUE_TYPE -> MenuReversibleStateFailureReason.INVALID_STATE_TYPE
+                        com.awabi2048.ccsystem.api.gui.MenuSnapshotFailureReason.INVALID_STATE_SIZE -> MenuReversibleStateFailureReason.INVALID_STATE_SIZE
+                        com.awabi2048.ccsystem.api.gui.MenuSnapshotFailureReason.INVALID_STATE_DEPTH -> MenuReversibleStateFailureReason.INVALID_STATE_DEPTH
+                    },
                     failure.message,
                     failure.javaClass.name,
                 )
