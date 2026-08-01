@@ -86,6 +86,20 @@ sealed interface MenuInteraction {
 
         fun reversibleContractFor(click: ClickType): MenuReversibleContract? =
             reversibleContractByClick[click] ?: reversibleContract
+
+        fun copy(actionId: String = this.actionId, acceptedClicks: Set<ClickType> = this.acceptedClicks, payload: Map<String, String> = this.payload, sounds: MenuActionSoundPolicy? = this.sounds, safety: MenuActionSafety = this.safety, capabilityId: String? = this.capabilityId, safetyByClick: Map<ClickType, MenuActionSafety> = this.safetyByClick, reversibleContract: MenuReversibleContract? = this.reversibleContract, reversibleContractByClick: Map<ClickType, MenuReversibleContract> = this.reversibleContractByClick): Action = Action(actionId, acceptedClicks, payload, sounds, safety, capabilityId, safetyByClick, reversibleContract, reversibleContractByClick)
+        operator fun component1(): String = actionId
+        operator fun component2(): Set<ClickType> = acceptedClicks
+        operator fun component3(): Map<String, String> = payload
+        operator fun component4(): MenuActionSoundPolicy? = sounds
+        operator fun component5(): MenuActionSafety = safety
+        operator fun component6(): String? = capabilityId
+        operator fun component7(): Map<ClickType, MenuActionSafety> = safetyByClick
+        operator fun component8(): MenuReversibleContract? = reversibleContract
+        operator fun component9(): Map<ClickType, MenuReversibleContract> = reversibleContractByClick
+        override fun equals(other: Any?): Boolean = other is Action && actionId == other.actionId && acceptedClicks == other.acceptedClicks && payload == other.payload && sounds == other.sounds && safety == other.safety && capabilityId == other.capabilityId && safetyByClick == other.safetyByClick && reversibleContract == other.reversibleContract && reversibleContractByClick == other.reversibleContractByClick
+        override fun hashCode(): Int = arrayOf(actionId, acceptedClicks, payload, sounds, safety, capabilityId, safetyByClick, reversibleContract, reversibleContractByClick).dataClassHashCode()
+        override fun toString(): String = "Action(actionId=$actionId, acceptedClicks=$acceptedClicks, payload=$payload, sounds=$sounds, safety=$safety, capabilityId=$capabilityId, safetyByClick=$safetyByClick, reversibleContract=$reversibleContract, reversibleContractByClick=$reversibleContractByClick)"
     }
 
     /**
@@ -104,6 +118,12 @@ sealed interface MenuInteraction {
                 "a click type cannot be assigned to multiple action branches"
             }
         }
+        fun copy(branches: List<MenuActionBranch> = this.branches, sounds: MenuActionSoundPolicy? = this.sounds): Branches = Branches(branches, sounds)
+        operator fun component1(): List<MenuActionBranch> = branches
+        operator fun component2(): MenuActionSoundPolicy? = sounds
+        override fun equals(other: Any?): Boolean = other is Branches && branches == other.branches && sounds == other.sounds
+        override fun hashCode(): Int = arrayOf(branches, sounds).dataClassHashCode()
+        override fun toString(): String = "Branches(branches=$branches, sounds=$sounds)"
     }
 
     /**
@@ -123,9 +143,13 @@ sealed interface MenuInteraction {
                 "a click type cannot be assigned to multiple interaction branches"
             }
         }
-
         fun resolve(click: ClickType): MenuInteraction? =
             branches.singleOrNull { click in it.acceptedClicks }?.interaction
+        fun copy(branches: List<MenuInteractionBranch> = this.branches): ClickBranches = ClickBranches(branches)
+        operator fun component1(): List<MenuInteractionBranch> = branches
+        override fun equals(other: Any?): Boolean = other is ClickBranches && branches == other.branches
+        override fun hashCode(): Int = branches.hashCode()
+        override fun toString(): String = "ClickBranches(branches=$branches)"
     }
 
     class Capability(
@@ -171,6 +195,20 @@ sealed interface MenuInteraction {
 
         fun reversibleContractFor(click: ClickType): MenuReversibleContract? =
             reversibleContractByClick[click] ?: reversibleContract
+
+        fun copy(capabilityId: String = this.capabilityId, arguments: Map<String, String> = this.arguments, attributes: Map<String, Any> = this.attributes, acceptedClicks: Set<ClickType> = this.acceptedClicks, sounds: MenuActionSoundPolicy? = this.sounds, safety: MenuActionSafety = this.safety, safetyByClick: Map<ClickType, MenuActionSafety> = this.safetyByClick, reversibleContract: MenuReversibleContract? = this.reversibleContract, reversibleContractByClick: Map<ClickType, MenuReversibleContract> = this.reversibleContractByClick): Capability = Capability(capabilityId, arguments, attributes, acceptedClicks, sounds, safety, safetyByClick, reversibleContract, reversibleContractByClick)
+        operator fun component1(): String = capabilityId
+        operator fun component2(): Map<String, String> = arguments
+        operator fun component3(): Map<String, Any> = attributes
+        operator fun component4(): Set<ClickType> = acceptedClicks
+        operator fun component5(): MenuActionSoundPolicy? = sounds
+        operator fun component6(): MenuActionSafety = safety
+        operator fun component7(): Map<ClickType, MenuActionSafety> = safetyByClick
+        operator fun component8(): MenuReversibleContract? = reversibleContract
+        operator fun component9(): Map<ClickType, MenuReversibleContract> = reversibleContractByClick
+        override fun equals(other: Any?): Boolean = other is Capability && capabilityId == other.capabilityId && arguments == other.arguments && attributes == other.attributes && acceptedClicks == other.acceptedClicks && sounds == other.sounds && safety == other.safety && safetyByClick == other.safetyByClick && reversibleContract == other.reversibleContract && reversibleContractByClick == other.reversibleContractByClick
+        override fun hashCode(): Int = arrayOf(capabilityId, arguments, attributes, acceptedClicks, sounds, safety, safetyByClick, reversibleContract, reversibleContractByClick).dataClassHashCode()
+        override fun toString(): String = "Capability(capabilityId=$capabilityId, arguments=$arguments, attributes=$attributes, acceptedClicks=$acceptedClicks, sounds=$sounds, safety=$safety, safetyByClick=$safetyByClick, reversibleContract=$reversibleContract, reversibleContractByClick=$reversibleContractByClick)"
     }
 
     data class Unavailable(
@@ -213,6 +251,15 @@ class MenuActionBranch(
             "action branch",
         )
     }
+    fun copy(actionId: String = this.actionId, acceptedClicks: Set<ClickType> = this.acceptedClicks, payload: Map<String, String> = this.payload, safety: MenuActionSafety = this.safety, reversibleContract: MenuReversibleContract? = this.reversibleContract): MenuActionBranch = MenuActionBranch(actionId, acceptedClicks, payload, safety, reversibleContract)
+    operator fun component1(): String = actionId
+    operator fun component2(): Set<ClickType> = acceptedClicks
+    operator fun component3(): Map<String, String> = payload
+    operator fun component4(): MenuActionSafety = safety
+    operator fun component5(): MenuReversibleContract? = reversibleContract
+    override fun equals(other: Any?): Boolean = other is MenuActionBranch && actionId == other.actionId && acceptedClicks == other.acceptedClicks && payload == other.payload && safety == other.safety && reversibleContract == other.reversibleContract
+    override fun hashCode(): Int = arrayOf(actionId, acceptedClicks, payload, safety, reversibleContract).dataClassHashCode()
+    override fun toString(): String = "MenuActionBranch(actionId=$actionId, acceptedClicks=$acceptedClicks, payload=$payload, safety=$safety, reversibleContract=$reversibleContract)"
 }
 
 internal fun requireReversibleContractSafety(
@@ -274,6 +321,13 @@ private fun MenuInteraction.acceptedClicksForBranch(): Set<ClickType> = when (th
     is MenuInteraction.Capability -> acceptedClicks
     is MenuInteraction.Unavailable -> acceptedClicks
     is MenuInteraction.Back -> acceptedClicks
+}
+
+private fun Array<out Any?>.dataClassHashCode(): Int {
+    if (isEmpty()) return 0
+    var result = this[0]?.hashCode() ?: 0
+    for (index in 1 until size) result = 31 * result + (this[index]?.hashCode() ?: 0)
+    return result
 }
 
 data class MenuElement(

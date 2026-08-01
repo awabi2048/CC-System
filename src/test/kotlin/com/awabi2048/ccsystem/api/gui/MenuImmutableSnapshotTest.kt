@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem.api.gui
 
 import java.util.UUID
+import java.util.AbstractList
+import java.util.concurrent.atomic.AtomicInteger
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotSame
@@ -137,6 +139,22 @@ class MenuImmutableSnapshotTest {
         assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failureOf {
             MenuSnapshotCodec.snapshot(mapOf(oversizedKey to "value"))
         }.reason)
+    }
+
+    @Test
+    fun `total budget rejects while reading only the bounded prefix`() {
+        val reads = AtomicInteger()
+        val chunk = "\\\"\n界".repeat(12_000)
+        val lazyLarge = object : AbstractList<String>() {
+            override val size: Int = 1_000
+            override fun get(index: Int): String {
+                reads.incrementAndGet()
+                return chunk
+            }
+        }
+        val failure = failureOf { MenuSnapshotCodec.snapshot(lazyLarge) }
+        assertEquals(MenuSnapshotFailureReason.INVALID_STATE_SIZE, failure.reason)
+        assertTrue(reads.get() < 10, "総量超過後もcollectionを走査しています: ${reads.get()}")
     }
 
     private fun failureOf(block: () -> Unit): MenuSnapshotValueException =
