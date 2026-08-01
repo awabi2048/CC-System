@@ -38,10 +38,23 @@ interface GuiElementService {
 
     fun decoration(material: Material): ItemStack
 
+    /** 標準フレームが所有する背景要素です。任意のraw ItemStackにはこの意味を推論しません。 */
+    fun backgroundEntry(slot: Int, material: Material): MenuElement
+
     fun backItem(name: String, material: Material = Material.REDSTONE): ItemStack
 
     /** 共通の戻る項目。表示、STANDARD受付、BACK role、履歴戻りを一体で生成する。 */
     fun backEntry(player: Player?, slot: Int, material: Material = Material.REDSTONE): MenuElement
+
+    fun pageNavigationEntry(
+        player: Player?,
+        slot: Int,
+        direction: GuiMenuActionIntent.Direction,
+        actionId: String,
+        label: String,
+        payload: Map<String, String> = emptyMap(),
+        material: Material,
+    ): MenuElement
 
     fun confirmItem(name: String, confirm: Boolean): ItemStack
 }

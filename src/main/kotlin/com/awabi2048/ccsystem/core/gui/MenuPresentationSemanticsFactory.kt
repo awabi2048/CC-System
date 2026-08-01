@@ -55,7 +55,8 @@ internal class MenuPresentationSemanticsFactory(
     private fun lineSemantics(line: GuiLoreLine): MenuLoreLineSemantics = when (line) {
         GuiLoreLine.Spacer -> MenuLoreLineSemantics(MenuLoreLineKind.SPACER)
         GuiLoreLine.Separator -> MenuLoreLineSemantics(MenuLoreLineKind.SEPARATOR)
-        is GuiLoreLine.Text, is GuiLoreLine.StyledText, is GuiLoreLine.UserText -> MenuLoreLineSemantics(MenuLoreLineKind.DESCRIPTION)
+        is GuiLoreLine.Text, is GuiLoreLine.StyledText, is GuiLoreLine.UserText, is GuiLoreLine.Component ->
+            MenuLoreLineSemantics(MenuLoreLineKind.DESCRIPTION)
         is GuiLoreLine.Data, is GuiLoreLine.ComponentData, is GuiLoreLine.SubData, is GuiLoreLine.Metadata,
         is GuiLoreLine.StatusData, is GuiLoreLine.StatusComponentData, is GuiLoreLine.ProgressPath ->
             MenuLoreLineSemantics(MenuLoreLineKind.DATA)
@@ -71,7 +72,7 @@ internal class MenuPresentationSemanticsFactory(
                 line.label,
             ),
         )
-        is GuiLoreLine.Component, is GuiLoreLine.Opaque -> MenuLoreLineSemantics(MenuLoreLineKind.UNKNOWN)
+        is GuiLoreLine.Opaque -> MenuLoreLineSemantics(MenuLoreLineKind.UNKNOWN)
     }
 
     private fun operationLabel(line: GuiLoreLine.Interaction): String = when (val gesture = line.gesture) {

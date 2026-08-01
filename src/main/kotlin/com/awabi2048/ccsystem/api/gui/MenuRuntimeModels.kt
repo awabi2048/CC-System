@@ -360,16 +360,16 @@ data class MenuElement(
         require(slot >= 0) { "slot must not be negative" }
         require(actionId?.isNotBlank() != false) { "actionId must not be blank" }
         require(actionId != null || actionPayload.isEmpty()) { "display-only elements cannot have action payload" }
-        require(role != GuiElementRole.DECORATION || actionId == null) {
-            "decoration elements cannot have an action"
+        require(role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND) || actionId == null) {
+            "background and decoration elements cannot have an action"
         }
         require(
             interaction !is MenuInteraction.Action &&
                 interaction !is MenuInteraction.Capability &&
                 interaction !is MenuInteraction.ClickBranches ||
-                role != GuiElementRole.DECORATION
+                role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND)
         ) {
-            "decoration elements cannot have an interaction action"
+            "background and decoration elements cannot have an interaction action"
         }
         require(interaction !is MenuInteraction.Back || role == GuiElementRole.BACK) {
             "back interaction requires BACK role"

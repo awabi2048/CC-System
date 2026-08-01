@@ -9,6 +9,7 @@ import com.awabi2048.ccsystem.api.gui.GuiFrameSpec
 import com.awabi2048.ccsystem.api.gui.GuiItemSpec
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
+import com.awabi2048.ccsystem.api.gui.GuiMenuActionIntent
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuCapabilityInvocationSpec
@@ -148,6 +149,7 @@ class GuiElementServiceImpl(
                 spec.role == GuiElementRole.NAVIGATION -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.PAGE_NAVIGATION
                 enabledActions.singleOrNull()?.acceptedClicks == MenuAcceptedClicks.STANDARD ->
                     com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+                enabledActions.size == 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_CUSTOM_ACTION
                 enabledActions.isEmpty() -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
                 else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
             },
@@ -239,6 +241,7 @@ class GuiElementServiceImpl(
                 baseItem.role == GuiElementRole.NAVIGATION -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.PAGE_NAVIGATION
                 enabledActions.singleOrNull()?.acceptedClicks == MenuAcceptedClicks.STANDARD ->
                     com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+                enabledActions.size == 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_CUSTOM_ACTION
                 enabledActions.isEmpty() -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
                 else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
             },
@@ -319,6 +322,8 @@ class GuiElementServiceImpl(
             capability.actions.size > 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.MULTI_ACTION
             acceptedClicks == MenuAcceptedClicks.STANDARD ->
                 com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+            capability.actionable && capability.actions.size == 1 ->
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_CUSTOM_ACTION
             !capability.actionable -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
             else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
         }
@@ -383,19 +388,60 @@ class GuiElementServiceImpl(
         )
     }
 
+    override fun backgroundEntry(slot: Int, material: Material): MenuElement {
+        val spec = GuiItemSpec(
+            material = material,
+            name = GuiNameSpec.Empty,
+            lore = GuiLoreSpec.None,
+            role = GuiElementRole.BACKGROUND,
+            amount = 1,
+        )
+        return MenuElement(slot, item(spec), GuiElementRole.BACKGROUND, interaction = MenuInteraction.DisplayOnly)
+            .withPresentationSemantics(semanticsFactory.create(
+                spec.name,
+                spec.lore,
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY,
+            ))
+    }
+
     override fun backEntry(player: Player?, slot: Int, material: Material): MenuElement {
         val label = requireI18n(player, "gui.common.return", emptyMap())
+        val spec = GuiItemSpec(
+            material = material,
+            name = GuiNameSpec.FixedLabel(name(label, GuiNameStyle.MUTED)),
+            lore = GuiLoreSpec.NameOnly,
+            role = GuiElementRole.BACK,
+            amount = 1,
+        )
         val item = item(
-            GuiItemSpec(
-                material = material,
-                name = GuiNameSpec.Text(label, GuiNameStyle.MUTED),
-                lore = GuiLoreSpec.NameOnly,
-                role = GuiElementRole.BACK,
-                amount = 1,
-            )
+            spec
         )
         return MenuElement(slot = slot, item = item, role = GuiElementRole.BACK)
+            .withPresentationSemantics(semanticsFactory.create(
+                spec.name,
+                spec.lore,
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.PAGE_NAVIGATION,
+            ))
     }
+
+    override fun pageNavigationEntry(
+        player: Player?,
+        slot: Int,
+        direction: GuiMenuActionIntent.Direction,
+        actionId: String,
+        label: String,
+        payload: Map<String, String>,
+        material: Material,
+    ): MenuElement = menuEntry(
+        player,
+        GuiMenuEntrySpec(
+            slot = slot,
+            material = material,
+            name = GuiNameSpec.FixedLabel(Component.text(label)),
+            role = GuiElementRole.NAVIGATION,
+            actions = listOf(GuiMenuActionIntent.Page(direction, actionId, label, payload)),
+        ),
+    )
 
     override fun confirmItem(name: String, confirm: Boolean): ItemStack {
         return item(

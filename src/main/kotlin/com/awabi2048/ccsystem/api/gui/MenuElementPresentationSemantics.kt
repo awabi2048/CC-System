@@ -30,6 +30,7 @@ enum class MenuLoreLineKind {
 
 enum class MenuPresentationProfile {
     SINGLE_STANDARD_ACTION,
+    SINGLE_CUSTOM_ACTION,
     MULTI_ACTION,
     LIST_TARGET,
     PAGE_NAVIGATION,
@@ -119,10 +120,14 @@ object MenuPresentationSemanticsValidator {
             MenuPresentationProfile.SINGLE_STANDARD_ACTION -> if (
                 interaction !is MenuInteraction.Action || interaction.acceptedClicks != MenuAcceptedClicks.STANDARD
             ) add("PROFILE_INTERACTION_MISMATCH")
+            MenuPresentationProfile.SINGLE_CUSTOM_ACTION -> if (
+                interaction !is MenuInteraction.Action || interaction.acceptedClicks.isEmpty() ||
+                interaction.acceptedClicks == MenuAcceptedClicks.STANDARD
+            ) add("PROFILE_INTERACTION_MISMATCH")
             MenuPresentationProfile.MULTI_ACTION -> if (
                 interaction !is MenuInteraction.Branches && interaction !is MenuInteraction.ClickBranches
             ) add("PROFILE_INTERACTION_MISMATCH")
-            MenuPresentationProfile.PAGE_NAVIGATION -> if (element.role != GuiElementRole.NAVIGATION) {
+            MenuPresentationProfile.PAGE_NAVIGATION -> if (element.role !in setOf(GuiElementRole.NAVIGATION, GuiElementRole.BACK)) {
                 add("PROFILE_ROLE_MISMATCH")
             }
             MenuPresentationProfile.DISABLED -> if (interaction !is MenuInteraction.Unavailable) {

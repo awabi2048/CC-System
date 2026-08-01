@@ -54,6 +54,39 @@ class MenuPresentationSemanticsTest {
     }
 
     @Test
+    fun `every structured lore line subtype maps exhaustively to a semantic kind`() {
+        val lines = listOf(
+            GuiLoreLine.Spacer to MenuLoreLineKind.SPACER,
+            GuiLoreLine.Separator to MenuLoreLineKind.SEPARATOR,
+            GuiLoreLine.Data("d", "v", "§f") to MenuLoreLineKind.DATA,
+            GuiLoreLine.ComponentData("d", Component.text("v"), "§f") to MenuLoreLineKind.DATA,
+            GuiLoreLine.SubData("d", "v") to MenuLoreLineKind.DATA,
+            GuiLoreLine.Metadata("d", "v") to MenuLoreLineKind.DATA,
+            GuiLoreLine.Interaction(null, MenuGesture.ANY, "run") to MenuLoreLineKind.ACTION,
+            GuiLoreLine.Option("choice", true, "§a", "§7") to MenuLoreLineKind.CHOICE,
+            GuiLoreLine.Warning("warning") to MenuLoreLineKind.WARNING,
+            GuiLoreLine.Danger("danger") to MenuLoreLineKind.DANGER,
+            GuiLoreLine.Text("text") to MenuLoreLineKind.DESCRIPTION,
+            GuiLoreLine.StyledText("text", "§f", false) to MenuLoreLineKind.DESCRIPTION,
+            GuiLoreLine.StatusData("s", "v", "§f", GuiStatusTone.COMPLETE) to MenuLoreLineKind.DATA,
+            GuiLoreLine.StatusComponentData(Component.text("s"), Component.text("v"), GuiStatusTone.COMPLETE) to MenuLoreLineKind.DATA,
+            GuiLoreLine.ProgressPath(listOf("a"), 0) to MenuLoreLineKind.DATA,
+            GuiLoreLine.UserText("user") to MenuLoreLineKind.DESCRIPTION,
+            GuiLoreLine.Component(Component.text("component")) to MenuLoreLineKind.DESCRIPTION,
+            GuiLoreLine.Opaque(Component.text("opaque")) to MenuLoreLineKind.UNKNOWN,
+        )
+
+        val mapper = MenuPresentationSemanticsFactory::class.java.getDeclaredMethod(
+            "lineSemantics",
+            GuiLoreLine::class.java,
+        ).also { it.isAccessible = true }
+        lines.forEach { (line, expected) ->
+            val actual = (mapper.invoke(factory, line) as MenuLoreLineSemantics).kind
+            assertEquals(expected, actual, line::class.simpleName)
+        }
+    }
+
+    @Test
     fun `validator rejects wrong order and disabled action`() {
         val badLore = MenuLoreSemantics(MenuLoreSemanticSource.STRUCTURED, GuiLoreFrame.BOTH, listOf(
             MenuLoreBlockSemantics(listOf(

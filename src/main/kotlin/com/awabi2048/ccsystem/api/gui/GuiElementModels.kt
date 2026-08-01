@@ -30,6 +30,7 @@ enum class GuiElementRole {
     CONFIRM,
     CANCEL,
     NAVIGATION,
+    BACKGROUND,
     DECORATION
 }
 
@@ -279,8 +280,8 @@ data class GuiMenuEntrySpec(
         require(accepted.size == accepted.distinct().size) {
             "a click type cannot be assigned to multiple menu actions"
         }
-        require(role != GuiElementRole.DECORATION || expandedActions().isEmpty()) {
-            "decoration entries cannot have actions"
+        require(role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND) || expandedActions().isEmpty()) {
+            "background and decoration entries cannot have actions"
         }
         require(actions.none { it is GuiMenuActionIntent.Back } || role == GuiElementRole.BACK) {
             "back action intent requires BACK role"
@@ -331,8 +332,8 @@ data class GuiStructuredMenuEntrySpec(
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        require(item.role != GuiElementRole.DECORATION || expandedActions().isEmpty()) {
-            "decoration entries cannot have actions"
+        require(item.role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND) || expandedActions().isEmpty()) {
+            "background and decoration entries cannot have actions"
         }
         val accepted = expandedActions().filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
         require(accepted.size == accepted.distinct().size) {

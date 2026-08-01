@@ -8,6 +8,9 @@ import com.awabi2048.ccsystem.api.gui.MenuActionContext
 import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
+import com.awabi2048.ccsystem.api.gui.MenuElement
+import com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics
+import com.awabi2048.ccsystem.api.gui.MenuPresentationProfile
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseReason
 import com.awabi2048.ccsystem.api.gui.MenuContractViolation
@@ -96,6 +99,7 @@ internal class MenuRuntimeServiceImpl(
     private val capabilities: com.awabi2048.ccsystem.api.gui.MenuCapabilityService,
     private val reversibleProviders: MenuReversibleStateProviderRegistry = MenuReversibleStateProviderRegistryImpl(),
 ) : MenuRuntimeService, Listener {
+    private val semanticElements = GuiElementServiceImpl()
     private val closeReasons = MenuCloseReasonTracker<Inventory>()
     private val definitions = ConcurrentHashMap<RouteKey, InventoryMenuDefinition>()
     private val sessions = ConcurrentHashMap<UUID, Session>()
@@ -1322,9 +1326,10 @@ internal class MenuRuntimeServiceImpl(
                 closeReasons.clear(previousInventory)
             }
         }
+        val runtimeElements = standardBackgroundElements(view) + view.elements
         sessions[player.uniqueId] = Session(
             route,
-            view.elements.associateBy { it.slot },
+            runtimeElements.associateBy { it.slot },
             preserveHistory,
             view.standardFrame,
             policy.inputSlots,
@@ -1370,6 +1375,19 @@ internal class MenuRuntimeServiceImpl(
                     "slot=${violation.slot} action=${violation.actionId} ${violation.message}"
                 }}",
         )
+    }
+
+    private fun standardBackgroundElements(view: InventoryMenuView): List<MenuElement> {
+        if (!view.standardFrame) return emptyList()
+        val occupied = view.elements.mapTo(mutableSetOf()) { it.slot } + view.inputSlots
+        return (0 until view.size).filterNot(occupied::contains).map { slot ->
+            val material = if (slot < 9 || slot >= view.size - 9) {
+                Material.BLACK_STAINED_GLASS_PANE
+            } else {
+                Material.GRAY_STAINED_GLASS_PANE
+            }
+            semanticElements.backgroundEntry(slot, material)
+        }
     }
 
     private fun MenuRuntimeOperationResult.asUpdateOutcome(): MenuUpdateApplicationOutcome =
@@ -1642,7 +1660,7 @@ internal class MenuRuntimeServiceImpl(
         title = view.title,
         size = view.size,
         revision = presentations.current(player)?.revision ?: 0L,
-        slots = view.elements.sortedBy { it.slot }.map { element ->
+        slots = (standardBackgroundElements(view) + view.elements).associateBy { it.slot }.values.sortedBy { it.slot }.map { element ->
             val item = element.item
             val meta = item.itemMeta
             MenuRuntimeInspectionSlotSnapshot(
@@ -1655,7 +1673,7 @@ internal class MenuRuntimeServiceImpl(
                 role = element.role,
                 enabled = element.enabled,
                 interaction = element.resolvedInteraction().inspectionSnapshot(),
-            ).also { it.presentationSemantics = element.presentationSemantics }
+            ).also { it.presentationSemantics = element.effectivePresentationSemantics() }
         },
     )
 
@@ -1845,8 +1863,27 @@ internal class MenuRuntimeServiceImpl(
             interaction?.inspectionSnapshot(),
             interaction?.reversibleContractsByClick().orEmpty(),
         ).also { snapshot ->
-            snapshot.presentationSemantics = element?.presentationSemantics
+            snapshot.presentationSemantics = element?.effectivePresentationSemantics()
                 ?: com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics.opaque()
+        }
+    }
+
+    private fun MenuElement.effectivePresentationSemantics(): MenuElementPresentationSemantics {
+        val resolved = resolvedInteraction()
+        return when {
+            resolved is MenuInteraction.Unavailable && resolved.message != null &&
+                presentationSemantics.profile != MenuPresentationProfile.DISABLED ->
+                presentationSemantics.copy(
+                    profile = MenuPresentationProfile.DISABLED,
+                    disabledReason = resolved.message,
+                )
+            resolved == MenuInteraction.DisplayOnly && presentationSemantics.profile in setOf(
+                MenuPresentationProfile.SINGLE_STANDARD_ACTION,
+                MenuPresentationProfile.SINGLE_CUSTOM_ACTION,
+                MenuPresentationProfile.MULTI_ACTION,
+                MenuPresentationProfile.PAGE_NAVIGATION,
+            ) -> presentationSemantics.copy(profile = MenuPresentationProfile.DISPLAY_ONLY)
+            else -> presentationSemantics
         }
     }
 
