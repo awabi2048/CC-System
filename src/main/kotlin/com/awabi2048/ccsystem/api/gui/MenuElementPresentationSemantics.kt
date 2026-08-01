@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api.gui
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.event.inventory.ClickType
 
 enum class MenuNameSemantic {
@@ -155,7 +156,9 @@ object MenuPresentationSemanticsValidator {
             val action = actions.singleOrNull()?.value?.action
             if (action == null || action.acceptedClicks != MenuAcceptedClicks.STANDARD) add("STANDARD_ACTION_CLICKS")
         }
-        if (semantics.profile == MenuPresentationProfile.DISABLED && semantics.disabledReason == null) {
+        if (semantics.profile == MenuPresentationProfile.DISABLED &&
+            semantics.disabledReason?.let(DISABLED_REASON_PLAIN_TEXT::serialize)?.isNotBlank() != true
+        ) {
             add("DISABLED_REASON_MISSING")
         }
         if (semantics.profile == MenuPresentationProfile.DISABLED && actions.isNotEmpty()) add("DISABLED_HAS_ACTION")
@@ -163,4 +166,6 @@ object MenuPresentationSemanticsValidator {
             add("ACTION_ONLY_LEADING_SPACER")
         }
     }
+
+    private val DISABLED_REASON_PLAIN_TEXT = PlainTextComponentSerializer.plainText()
 }

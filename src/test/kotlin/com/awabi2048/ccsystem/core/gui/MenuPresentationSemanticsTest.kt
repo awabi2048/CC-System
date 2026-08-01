@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.*
@@ -107,6 +108,47 @@ class MenuPresentationSemanticsTest {
         )
         assertEquals(reason, semantics.disabledReason)
         assertTrue(MenuPresentationSemanticsValidator.violations(semantics).isEmpty())
+    }
+
+    @Test
+    fun `disabled semantics reject reasons without visible plain text`() {
+        val invalidReasons = listOf<Component?>(
+            null,
+            Component.empty(),
+            Component.empty().color(NamedTextColor.RED),
+            Component.text(" \n\t "),
+        )
+        invalidReasons.forEach { reason ->
+            val semantics = factory.create(
+                GuiNameSpec.FixedLabel(Component.text("設定")),
+                GuiLoreSpec.None,
+                MenuPresentationProfile.DISABLED,
+                reason,
+            )
+            assertTrue(
+                MenuPresentationSemanticsValidator.violations(semantics)
+                    .contains("DISABLED_REASON_MISSING"),
+            )
+        }
+    }
+
+    @Test
+    fun `disabled semantics accept visible and translatable reasons`() {
+        listOf(
+            Component.text("利用できません"),
+            Component.translatable("gui.disabled.reason"),
+        ).forEach { reason ->
+            val semantics = factory.create(
+                GuiNameSpec.FixedLabel(Component.text("設定")),
+                GuiLoreSpec.None,
+                MenuPresentationProfile.DISABLED,
+                reason,
+            )
+            assertFalse(
+                MenuPresentationSemanticsValidator.violations(semantics)
+                    .contains("DISABLED_REASON_MISSING"),
+            )
+        }
     }
 
     @Test
