@@ -74,6 +74,17 @@ enum class MenuRuntimeUpdateKind {
     NAVIGATE,
 }
 
+/** 宣言済みの更新が実際に適用されなかった理由です。 */
+enum class MenuRuntimeUpdateFailureReason {
+    NONE,
+    OPEN_FAILED,
+    UPDATE_FAILED,
+    NO_HISTORY,
+    STALE_REVISION,
+    NOT_APPLICABLE,
+    EXCEPTION,
+}
+
 /** payloadをキー順で複写したRouteの診断表現です。 */
 data class MenuRuntimeRouteSnapshot(
     val owner: String,
@@ -153,6 +164,41 @@ data class MenuRuntimeUpdateSnapshot(
 }
 
 /**
+ * MenuUpdateの宣言と、Runtimeが実際に適用できた結果を分けて記録します。
+ *
+ * [kind] と [expectedRoute] は宣言された更新、[observedRoute] と [afterRevision] は
+ * traceを記録した時点のRuntime観測値です。更新のないclickは[attempted]がfalseです。
+ */
+data class MenuRuntimeUpdateApplication(
+    val attempted: Boolean,
+    val applied: Boolean,
+    val kind: MenuRuntimeUpdateKind?,
+    val expectedRoute: MenuRuntimeRouteSnapshot?,
+    val observedRoute: MenuRuntimeRouteSnapshot?,
+    val beforeRevision: Long?,
+    val afterRevision: Long?,
+    val failureReason: MenuRuntimeUpdateFailureReason,
+) {
+    companion object {
+        fun notAttempted(
+            kind: MenuRuntimeUpdateKind? = null,
+            expectedRoute: MenuRuntimeRouteSnapshot? = null,
+            beforeRevision: Long? = null,
+            failureReason: MenuRuntimeUpdateFailureReason = MenuRuntimeUpdateFailureReason.NOT_APPLICABLE,
+        ): MenuRuntimeUpdateApplication = MenuRuntimeUpdateApplication(
+            attempted = false,
+            applied = false,
+            kind = kind,
+            expectedRoute = expectedRoute,
+            observedRoute = null,
+            beforeRevision = beforeRevision,
+            afterRevision = null,
+            failureReason = failureReason,
+        )
+    }
+}
+
+/**
  * Runtime listenerが実際に受け取ったinventory clickの処理記録です。
  *
  * traceの保管はplayerごとに有界で、GUIの状態やactionの実行可否を変更しません。
@@ -174,8 +220,14 @@ data class MenuRuntimeClickTrace(
     val payload: Map<String, String>,
     val safety: MenuActionSafety,
     val result: MenuRuntimeActionResultKind?,
+    /** Handlerが返した宣言値です。既存のupdate APIとの互換性を維持します。 */
     val update: MenuRuntimeUpdateSnapshot?,
     val exceptionType: String?,
     val afterRevision: Long?,
     val afterRoute: MenuRuntimeRouteSnapshot?,
-)
+    val application: MenuRuntimeUpdateApplication = MenuRuntimeUpdateApplication.notAttempted(),
+) {
+    /** [update]を明示した名称です。 */
+    val declaredUpdate: MenuRuntimeUpdateSnapshot?
+        get() = update
+}

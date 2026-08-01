@@ -29,6 +29,8 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplication
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuSurface
@@ -411,7 +413,16 @@ internal class MenuRuntimeServiceImpl(
             } finally {
                 executing.remove(player.uniqueId)
             }
-            applyResult(player, session, null, definition, MenuClickType.DEFAULT, result, originRevision)
+            val application = applyResult(
+                player,
+                session,
+                null,
+                definition,
+                MenuClickType.DEFAULT,
+                result,
+                originRevision,
+                trace.beforeRoute,
+            )
             recordClickTrace(
                 trace,
                 player,
@@ -419,6 +430,7 @@ internal class MenuRuntimeServiceImpl(
                 if (actionFailure == null) MenuRuntimeClickDisposition.HANDLED else MenuRuntimeClickDisposition.EXCEPTION,
                 accepted = true,
                 result = result,
+                application = application,
                 exception = actionFailure,
                 interactionKind = MenuRuntimeInteractionKind.PLAYER_INVENTORY,
                 actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
@@ -499,12 +511,18 @@ internal class MenuRuntimeServiceImpl(
                     MenuSoundPolicyResolver.successPolicy(interaction.sounds, definition.sounds),
                     clickType,
                 )
-                val update = if (back(player)) {
-                    MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.BACK)
-                } else {
-                    close(player)
-                    MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CLOSE)
-                }
+                val result = MenuActionResult.Success(MenuUpdate.Back)
+                val application = applyResult(
+                    player,
+                    session,
+                    interaction.sounds,
+                    definition,
+                    clickType,
+                    result,
+                    trace.beforeRevision,
+                    trace.beforeRoute,
+                    playSound = false,
+                )
                 recordClickTrace(
                     trace,
                     player,
@@ -512,8 +530,8 @@ internal class MenuRuntimeServiceImpl(
                     MenuRuntimeClickDisposition.BACK,
                     accepted = true,
                     interaction = interaction,
-                    result = MenuActionResult.Success(MenuUpdate.None),
-                    update = update,
+                    result = result,
+                    application = application,
                 )
                 return
             }
@@ -624,7 +642,7 @@ internal class MenuRuntimeServiceImpl(
             is MenuInteraction.Branches -> interaction.sounds
             is MenuInteraction.Capability -> interaction.sounds
         }
-        applyResult(
+        val application = applyResult(
             player,
             session,
             interactionSounds,
@@ -632,6 +650,7 @@ internal class MenuRuntimeServiceImpl(
             clickType,
             result,
             originRevision,
+            trace.beforeRoute,
         )
         recordClickTrace(
             trace,
@@ -641,6 +660,7 @@ internal class MenuRuntimeServiceImpl(
             accepted = true,
             interaction = interaction,
             result = result,
+            application = application,
             exception = actionFailure,
         )
     }
@@ -792,43 +812,127 @@ internal class MenuRuntimeServiceImpl(
         clickType: MenuClickType,
         result: MenuActionResult,
         originRevision: Long?,
-    ) {
+        beforeRoute: MenuRuntimeRouteSnapshot?,
+        playSound: Boolean = true,
+    ): MenuRuntimeUpdateApplication {
+        val declaredUpdate = MenuRuntimeUpdateSnapshot.from(result)
+        fun notAttempted(
+            reason: MenuRuntimeUpdateFailureReason = MenuRuntimeUpdateFailureReason.NOT_APPLICABLE,
+        ) = MenuRuntimeUpdateApplication.notAttempted(
+            kind = declaredUpdate?.kind,
+            expectedRoute = declaredUpdate?.route,
+            beforeRevision = originRevision,
+            failureReason = reason,
+        )
+
         when (result) {
-            MenuActionResult.Ignored -> return
+            MenuActionResult.Ignored -> return notAttempted()
             is MenuActionResult.Rejected -> {
-                playResolved(
-                    player,
-                    result.sound,
-                    MenuSoundPolicyResolver.rejectedPolicy(elementSounds, definition.sounds),
-                    clickType,
-                )
+                if (playSound) {
+                    playResolved(
+                        player,
+                        result.sound,
+                        MenuSoundPolicyResolver.rejectedPolicy(elementSounds, definition.sounds),
+                        clickType,
+                    )
+                }
                 result.message?.let(player::sendMessage)
+                return notAttempted()
             }
             is MenuActionResult.Success -> {
-                playResolved(
-                    player,
-                    result.sound,
-                    MenuSoundPolicyResolver.successPolicy(elementSounds, definition.sounds),
-                    clickType,
-                )
+                if (playSound) {
+                    playResolved(
+                        player,
+                        result.sound,
+                        MenuSoundPolicyResolver.successPolicy(elementSounds, definition.sounds),
+                        clickType,
+                    )
+                }
                 val update = result.update
+                val expectedRoute = when (update) {
+                    is MenuUpdate.Navigate -> update.route.runtimeSnapshot()
+                    is MenuUpdate.Replace -> update.route.runtimeSnapshot()
+                    MenuUpdate.Refresh, MenuUpdate.Resume -> beforeRoute
+                    MenuUpdate.Back -> navigation.breadcrumbs(player).lastOrNull()?.runtimeSnapshot()
+                    MenuUpdate.Close, MenuUpdate.None -> null
+                }
                 if (!MenuStaleUpdatePolicy.shouldApply(
                         update,
                         originRevision,
                         presentations.current(player)?.revision,
                     )
                 ) {
-                    return
+                    return MenuRuntimeUpdateApplication(
+                        attempted = true,
+                        applied = false,
+                        kind = declaredUpdate?.kind,
+                        expectedRoute = expectedRoute,
+                        observedRoute = null,
+                        beforeRevision = originRevision,
+                        afterRevision = null,
+                        failureReason = MenuRuntimeUpdateFailureReason.STALE_REVISION,
+                    )
                 }
-                when (update) {
-                    MenuUpdate.None -> Unit
-                    MenuUpdate.Refresh -> refresh(player)
-                    MenuUpdate.Resume -> finishExternal(player)
-                    MenuUpdate.Close -> close(player)
-                    MenuUpdate.Back -> if (!back(player)) close(player)
-                    is MenuUpdate.Replace -> replace(player, update.route)
-                    is MenuUpdate.Navigate -> navigateFrom(player, session.route, update.route)
+
+                val outcome = runCatching {
+                    when (update) {
+                        MenuUpdate.None -> false to MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
+                        MenuUpdate.Refresh -> if (refresh(player)) {
+                            true to MenuRuntimeUpdateFailureReason.NONE
+                        } else {
+                            false to MenuRuntimeUpdateFailureReason.UPDATE_FAILED
+                        }
+                        MenuUpdate.Resume -> if (finishExternal(player)) {
+                            true to MenuRuntimeUpdateFailureReason.NONE
+                        } else {
+                            false to MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
+                        }
+                        MenuUpdate.Close -> {
+                            close(player)
+                            true to MenuRuntimeUpdateFailureReason.NONE
+                        }
+                        MenuUpdate.Back -> {
+                            val hadHistory = navigation.canGoBack(player)
+                            if (back(player)) {
+                                true to MenuRuntimeUpdateFailureReason.NONE
+                            } else {
+                                close(player)
+                                false to if (hadHistory) {
+                                    MenuRuntimeUpdateFailureReason.OPEN_FAILED
+                                } else {
+                                    MenuRuntimeUpdateFailureReason.NO_HISTORY
+                                }
+                            }
+                        }
+                        is MenuUpdate.Replace -> if (replace(player, update.route)) {
+                            true to MenuRuntimeUpdateFailureReason.NONE
+                        } else {
+                            false to MenuRuntimeUpdateFailureReason.OPEN_FAILED
+                        }
+                        is MenuUpdate.Navigate -> if (navigateFrom(player, session.route, update.route)) {
+                            true to MenuRuntimeUpdateFailureReason.NONE
+                        } else {
+                            false to MenuRuntimeUpdateFailureReason.OPEN_FAILED
+                        }
+                    }
+                }.getOrElse { failure ->
+                    plugin.logger.log(
+                        Level.SEVERE,
+                        "メニュー更新の適用に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                        failure,
+                    )
+                    false to MenuRuntimeUpdateFailureReason.EXCEPTION
                 }
+                return MenuRuntimeUpdateApplication(
+                    attempted = update != MenuUpdate.None,
+                    applied = outcome.first,
+                    kind = declaredUpdate?.kind,
+                    expectedRoute = expectedRoute,
+                    observedRoute = null,
+                    beforeRevision = originRevision,
+                    afterRevision = null,
+                    failureReason = outcome.second,
+                )
             }
         }
     }
@@ -1081,6 +1185,7 @@ internal class MenuRuntimeServiceImpl(
         interaction: MenuInteraction? = null,
         result: MenuActionResult? = null,
         update: MenuRuntimeUpdateSnapshot? = result?.traceUpdate(),
+        application: MenuRuntimeUpdateApplication? = null,
         exception: Throwable? = null,
         interactionKind: MenuRuntimeInteractionKind? = null,
         actionId: String? = null,
@@ -1096,6 +1201,25 @@ internal class MenuRuntimeServiceImpl(
             safety,
         )
         val after = snapshotCurrent(player)
+        val resolvedApplication = (application ?: MenuRuntimeUpdateApplication.notAttempted(
+            kind = update?.kind,
+            expectedRoute = update?.route,
+            beforeRevision = context.beforeRevision,
+            failureReason = if (exception == null) {
+                MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
+            } else {
+                MenuRuntimeUpdateFailureReason.EXCEPTION
+            },
+        )).let { candidate ->
+            if (exception != null && !candidate.attempted) {
+                candidate.copy(failureReason = MenuRuntimeUpdateFailureReason.EXCEPTION)
+            } else {
+                candidate
+            }
+        }.copy(
+            observedRoute = after?.route,
+            afterRevision = after?.revision,
+        )
         clickTraces.append(
             player.uniqueId,
             MenuRuntimeClickTrace(
@@ -1119,6 +1243,7 @@ internal class MenuRuntimeServiceImpl(
                 exception?.javaClass?.name,
                 after?.revision,
                 after?.route,
+                resolvedApplication,
             ),
         )
     }

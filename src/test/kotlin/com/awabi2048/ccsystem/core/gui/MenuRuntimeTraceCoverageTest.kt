@@ -24,4 +24,28 @@ class MenuRuntimeTraceCoverageTest {
             "recordClickTrace(",
         ).forEach { expected -> assertTrue(expected in source, "missing trace coverage: $expected") }
     }
+
+    @Test
+    fun `runtime listener applies every update variant and retains its application result`() {
+        val source = Path.of(
+            "src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt",
+        ).readText()
+        listOf(
+            "): MenuRuntimeUpdateApplication {",
+            "MenuUpdate.None",
+            "MenuUpdate.Refresh",
+            "MenuUpdate.Resume",
+            "MenuUpdate.Close",
+            "MenuUpdate.Back",
+            "is MenuUpdate.Replace",
+            "is MenuUpdate.Navigate",
+            "MenuRuntimeUpdateFailureReason.OPEN_FAILED",
+            "MenuRuntimeUpdateFailureReason.NO_HISTORY",
+            "MenuRuntimeUpdateFailureReason.STALE_REVISION",
+            "MenuRuntimeUpdateFailureReason.EXCEPTION",
+            "application = application",
+            "observedRoute = after?.route",
+            "afterRevision = after?.revision",
+        ).forEach { expected -> assertTrue(expected in source, "missing update application coverage: $expected") }
+    }
 }
