@@ -402,6 +402,7 @@ class GuiElementServiceImpl(
         GuiNameSpec.Empty -> Component.empty()
         is GuiNameSpec.FixedLabel -> normalizeComponent(name.value)
         is GuiNameSpec.TargetIdentity -> normalizeComponent(name.value)
+        is GuiNameSpec.Opaque -> name.value
         is GuiNameSpec.Text -> this.name(name.text, name.style)
         is GuiNameSpec.Component -> normalizeComponent(name.value)
     }

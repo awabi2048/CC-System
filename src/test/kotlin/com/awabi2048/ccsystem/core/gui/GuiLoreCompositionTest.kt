@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
+import com.awabi2048.ccsystem.api.gui.GuiLoreFrame
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -38,6 +39,21 @@ class GuiLoreCompositionTest {
         assertEquals("説明", (blocks.blocks.first().lines.single() as GuiLoreLine.Text).text)
         assertEquals("開く", composed.actions.single().label)
         assertTrue(plain(service.render(spec)).any { it.contains("開く") })
+    }
+
+    @Test
+    fun `framed blocks preserve every requested frame and none adds no separator`() {
+        val block = GuiLoreBlock(listOf(GuiLoreLine.Text("body")))
+        val rendered = GuiLoreFrame.entries.associateWith { frame ->
+            plain(service.render(GuiLoreSpec.FramedBlocks(listOf(block), frame)))
+        }
+
+        assertEquals(listOf("body"), rendered.getValue(GuiLoreFrame.NONE))
+        assertEquals(2, rendered.getValue(GuiLoreFrame.TOP).size)
+        assertEquals("body", rendered.getValue(GuiLoreFrame.TOP).last())
+        assertEquals("body", rendered.getValue(GuiLoreFrame.BOTTOM).first())
+        assertEquals(2, rendered.getValue(GuiLoreFrame.BOTTOM).size)
+        assertEquals(3, rendered.getValue(GuiLoreFrame.BOTH).size)
     }
 
     private fun plain(lines: List<net.kyori.adventure.text.Component>): List<String> =

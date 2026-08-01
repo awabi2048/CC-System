@@ -28,6 +28,7 @@ class LoreServiceImpl(
             GuiLoreSpec.None -> emptyList()
             GuiLoreSpec.NameOnly -> emptyList()
             is GuiLoreSpec.Blocks -> renderBlocks(spec.blocks)
+            is GuiLoreSpec.FramedBlocks -> renderBlocks(spec.blocks, spec.frame)
             is GuiLoreSpec.Rich -> renderRich(spec.lines, spec.frame)
             is GuiLoreSpec.Opaque -> renderRich(spec.lines.map(GuiLoreLine::Opaque), spec.frame)
             is GuiLoreSpec.WithActions -> renderWithActions(spec)
@@ -43,6 +44,7 @@ class LoreServiceImpl(
             GuiLoreSpec.None -> renderBlocks(listOf(actionBlock))
             GuiLoreSpec.NameOnly -> emptyList()
             is GuiLoreSpec.Blocks -> renderBlocks(base.blocks + actionBlock)
+            is GuiLoreSpec.FramedBlocks -> renderBlocks(base.blocks + actionBlock, base.frame)
             is GuiLoreSpec.Rich -> renderRich(base.lines + GuiLoreLine.Spacer + actionBlock.lines, base.frame)
             is GuiLoreSpec.Opaque -> renderRich(
                 base.lines.map(GuiLoreLine::Opaque) + GuiLoreLine.Spacer + actionBlock.lines,
@@ -52,7 +54,10 @@ class LoreServiceImpl(
         }
     }
 
-    private fun renderBlocks(blocks: List<GuiLoreBlock>): List<Component> {
+    private fun renderBlocks(
+        blocks: List<GuiLoreBlock>,
+        frame: GuiLoreFrame = GuiLoreFrame.BOTH,
+    ): List<Component> {
         val lines = buildList {
             blocks.forEachIndexed { index, block ->
                 // Blocks の境界は情報のまとまりを保つ空行とし、中間の区切り線は明示指定だけに任せる。
@@ -60,7 +65,7 @@ class LoreServiceImpl(
                 addAll(block.lines)
             }
         }
-        return renderRich(lines, GuiLoreFrame.BOTH)
+        return renderRich(lines, frame)
     }
 
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {

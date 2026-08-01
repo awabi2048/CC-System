@@ -73,6 +73,18 @@ class MenuPresentationSemanticsTest {
         assertEquals(MenuNameSemantic.OPAQUE, factory.create(
             GuiNameSpec.Text("legacy", GuiNameStyle.DEFAULT), GuiLoreSpec.None, MenuPresentationProfile.UNKNOWN,
         ).name)
+        assertEquals(MenuNameSemantic.OPAQUE, factory.create(
+            GuiNameSpec.Opaque(Component.text("styled")), GuiLoreSpec.None, MenuPresentationProfile.UNKNOWN,
+        ).name)
+        GuiLoreFrame.entries.forEach { frame ->
+            val lore = GuiLoreSpec.FramedBlocks(
+                listOf(GuiLoreBlock(listOf(GuiLoreLine.Text("body")))),
+                frame,
+            )
+            assertEquals(frame, factory.create(
+                GuiNameSpec.FixedLabel(Component.text("label")), lore, MenuPresentationProfile.DISPLAY_ONLY,
+            ).lore.frame)
+        }
         val clicks = linkedSetOf(ClickType.LEFT)
         val action = MenuLoreActionSemantics(
             GuiInputGesture.MenuClicks(clicks), clicks, "左クリック", "実行",

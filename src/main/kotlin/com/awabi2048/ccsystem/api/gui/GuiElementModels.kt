@@ -18,6 +18,7 @@ sealed interface GuiNameSpec {
     data object Empty : GuiNameSpec
     data class FixedLabel(val value: net.kyori.adventure.text.Component) : GuiNameSpec
     data class TargetIdentity(val value: net.kyori.adventure.text.Component) : GuiNameSpec
+    data class Opaque(val value: net.kyori.adventure.text.Component) : GuiNameSpec
     data class Text(val text: String, val style: GuiNameStyle) : GuiNameSpec
     data class Component(val value: net.kyori.adventure.text.Component) : GuiNameSpec
 }
@@ -144,6 +145,14 @@ sealed interface GuiLoreSpec {
     ) : GuiLoreSpec {
         init {
             require(lines.isNotEmpty()) { "Opaque lore must not be empty" }
+        }
+    }
+    data class FramedBlocks(
+        val blocks: List<GuiLoreBlock>,
+        val frame: GuiLoreFrame,
+    ) : GuiLoreSpec {
+        init {
+            require(blocks.isNotEmpty()) { "Lore blocks must not be empty" }
         }
     }
     /** 意味内容と操作群を分離した合成仕様。 */

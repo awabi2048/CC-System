@@ -18,13 +18,14 @@ internal class MenuPresentationSemanticsFactory(
         GuiNameSpec.Empty -> MenuNameSemantic.EMPTY
         is GuiNameSpec.FixedLabel -> MenuNameSemantic.FIXED_LABEL
         is GuiNameSpec.TargetIdentity -> MenuNameSemantic.TARGET_IDENTITY
-        is GuiNameSpec.Text, is GuiNameSpec.Component -> MenuNameSemantic.OPAQUE
+        is GuiNameSpec.Opaque, is GuiNameSpec.Text, is GuiNameSpec.Component -> MenuNameSemantic.OPAQUE
     }
 
     private fun loreSemantics(spec: GuiLoreSpec): MenuLoreSemantics {
         val (frame, blocks) = when (spec) {
             GuiLoreSpec.None, GuiLoreSpec.NameOnly -> GuiLoreFrame.NONE to emptyList()
             is GuiLoreSpec.Blocks -> GuiLoreFrame.BOTH to spec.blocks
+            is GuiLoreSpec.FramedBlocks -> spec.frame to spec.blocks
             is GuiLoreSpec.Rich -> spec.frame to spec.lines.takeIf { it.isNotEmpty() }
                 ?.let { listOf(GuiLoreBlock(it)) }.orEmpty()
             is GuiLoreSpec.Opaque -> spec.frame to listOf(GuiLoreBlock(spec.lines.map(GuiLoreLine::Opaque)))
@@ -42,6 +43,7 @@ internal class MenuPresentationSemanticsFactory(
             GuiLoreSpec.None -> GuiLoreFrame.BOTH to listOf(actions)
             GuiLoreSpec.NameOnly -> GuiLoreFrame.NONE to emptyList()
             is GuiLoreSpec.Blocks -> GuiLoreFrame.BOTH to (base.blocks + actions)
+            is GuiLoreSpec.FramedBlocks -> base.frame to (base.blocks + actions)
             is GuiLoreSpec.Rich -> base.frame to listOf(GuiLoreBlock(base.lines + GuiLoreLine.Spacer + actions.lines))
             is GuiLoreSpec.Opaque -> base.frame to listOf(
                 GuiLoreBlock(base.lines.map(GuiLoreLine::Opaque) + GuiLoreLine.Spacer + actions.lines),
@@ -88,6 +90,7 @@ internal class MenuPresentationSemanticsFactory(
         is GuiLoreSpec.Opaque -> true
         is GuiLoreSpec.WithActions -> base.containsOpaque()
         is GuiLoreSpec.Blocks -> blocks.any { it.lines.any { line -> line is GuiLoreLine.Opaque } }
+        is GuiLoreSpec.FramedBlocks -> blocks.any { it.lines.any { line -> line is GuiLoreLine.Opaque } }
         is GuiLoreSpec.Rich -> lines.any { it is GuiLoreLine.Opaque }
         GuiLoreSpec.None, GuiLoreSpec.NameOnly -> false
     }
