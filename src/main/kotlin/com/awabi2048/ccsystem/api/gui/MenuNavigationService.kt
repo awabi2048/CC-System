@@ -10,6 +10,8 @@ fun interface GuiMenuMatcher {
 interface MenuNavigationService {
     fun registerOpener(owner: String, id: String, opener: MenuRouteOpener)
 
+    fun registerResultOpener(owner: String, id: String, opener: MenuRouteResultOpener)
+
     fun unregisterOwner(owner: String)
 
     fun registerMenuMatcher(owner: String, matcher: GuiMenuMatcher)
@@ -40,11 +42,23 @@ interface MenuNavigationService {
 
     fun open(player: Player, route: MenuRoute): Boolean
 
+    fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
+
     fun pushAndOpen(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean
+
+    fun pushAndOpenResult(
+        player: Player,
+        currentRoute: MenuRoute,
+        targetRoute: MenuRoute,
+    ): MenuRuntimeOperationResult
 
     fun openRoot(player: Player, route: MenuRoute): Boolean
 
+    fun openRootResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
+
     fun openPrevious(player: Player): Boolean
+
+    fun openPreviousResult(player: Player): MenuRuntimeOperationResult?
 
     /** 現在の画面から戻れる再生成可能なRouteが存在するかを返す。 */
     fun canGoBack(player: Player): Boolean

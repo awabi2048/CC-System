@@ -10,7 +10,7 @@ import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseReason
-import com.awabi2048.ccsystem.api.gui.MenuContractValidator
+import com.awabi2048.ccsystem.api.gui.MenuContractViolation
 import com.awabi2048.ccsystem.api.gui.ManagedInventoryMenuRequest
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteraction
 import com.awabi2048.ccsystem.api.gui.ManagedMenuInteractionOutcome
@@ -32,6 +32,9 @@ import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateKind
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplication
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
 import com.awabi2048.ccsystem.api.gui.MenuActionSafety
 import com.awabi2048.ccsystem.api.gui.MenuSurface
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
@@ -84,9 +87,15 @@ internal class MenuRuntimeServiceImpl(
         check(definitions.putIfAbsent(key, definition) == null) {
             "Menu definition is already registered: ${definition.routeId}"
         }
-        navigation.registerOpener(definition.owner, definition.id) { player, route ->
-            if (definitions[key] == null) return@registerOpener false
-            openDirect(player, route, playOpenSound = player.uniqueId !in suppressOpenSound)
+        navigation.registerResultOpener(definition.owner, definition.id) { player, route ->
+            if (definitions[key] == null) {
+                return@registerResultOpener MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.OPEN,
+                    route,
+                    MenuRuntimeOperationFailureReason.MISSING_DEFINITION,
+                )
+            }
+            openDirectResult(player, route, playOpenSound = player.uniqueId !in suppressOpenSound)
         }
     }
 
@@ -127,14 +136,20 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(player.uniqueId)
     }
 
-    override fun open(player: Player, route: MenuRoute): Boolean {
+    override fun open(player: Player, route: MenuRoute): Boolean = openResult(player, route).successful
+
+    override fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
         completeExternal(player)
-        return navigation.openRoot(player, route)
+        return navigation.openRootResult(player, route).forOperation(MenuRuntimeOperation.OPEN)
     }
 
-    override fun replace(player: Player, route: MenuRoute): Boolean {
+    override fun replace(player: Player, route: MenuRoute): Boolean = replaceResult(player, route).successful
+
+    override fun replaceResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
         completeExternal(player)
-        return withoutOpenSound(player) { navigation.open(player, route) }
+        return withoutOpenSound(player) {
+            navigation.openResult(player, route).forOperation(MenuRuntimeOperation.REPLACE)
+        }
     }
 
     override fun reopenCurrent(player: Player): Boolean {
@@ -142,14 +157,17 @@ internal class MenuRuntimeServiceImpl(
         return replace(player, route)
     }
 
-    override fun navigate(player: Player, route: MenuRoute): Boolean {
+    override fun navigate(player: Player, route: MenuRoute): Boolean = navigateResult(player, route).successful
+
+    override fun navigateResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
         completeExternal(player)
-        val currentRoute = navigation.currentRoute(player) ?: return open(player, route)
-        return navigateFrom(player, currentRoute, route)
+        val currentRoute = navigation.currentRoute(player) ?: return openResult(player, route)
+            .forOperation(MenuRuntimeOperation.NAVIGATE)
+        return navigateFromResult(player, currentRoute, route)
     }
 
     override fun openEphemeral(player: Player, route: MenuRoute): Boolean =
-        openDirect(player, route, playOpenSound = true, preserveHistory = true)
+        openDirectResult(player, route, playOpenSound = true, preserveHistory = true).successful
 
     override fun preserveHistoryOnClose(player: Player) {
         val inventory = player.openInventory.topInventory
@@ -240,48 +258,95 @@ internal class MenuRuntimeServiceImpl(
         }
     }
 
-    override fun refresh(player: Player): Boolean {
-        val session = sessions[player.uniqueId] ?: return false
+    override fun refresh(player: Player): Boolean = refreshResult(player).successful
+
+    override fun refreshResult(player: Player): MenuRuntimeOperationResult {
+        val session = sessions[player.uniqueId] ?: return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.REFRESH,
+            navigation.currentRoute(player),
+            MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION,
+        )
         val holder = player.openInventory.topInventory.holder as? MenuRuntimeHolder
-            ?: return openDirect(player, session.route, playOpenSound = false)
-        if (holder.route != session.route) return false
-        val definition = definition(session.route.owner, session.route.id) ?: return false
-        val view = runCatching {
-            definition.renderer.render(
-                MenuRenderContext(player, session.route, navigation.canGoBack(player))
+            ?: return openDirectResult(player, session.route, playOpenSound = false)
+                .forOperation(MenuRuntimeOperation.REFRESH)
+        if (holder.route != session.route) return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.REFRESH,
+            session.route,
+            MenuRuntimeOperationFailureReason.ROUTE_MISMATCH,
+        )
+        val definition = definition(session.route.owner, session.route.id)
+            ?: return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.REFRESH,
+                session.route,
+                MenuRuntimeOperationFailureReason.MISSING_DEFINITION,
             )
-        }.onFailure { failure ->
-            plugin.logger.log(
-                Level.SEVERE,
-                "メニュー再描画に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
-                failure
+        val view = when (
+            val prepared = MenuRuntimeViewPreparation.renderValidated(
+                definition,
+                MenuRenderContext(player, session.route, navigation.canGoBack(player)),
             )
-        }.getOrNull()
-            ?.withHistoryNavigation(player)
-            ?: return false
+        ) {
+            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
+            is MenuRuntimePreparedViewResult.RenderFailed -> {
+                plugin.logger.severe(
+                    "メニュー再描画に失敗しました: route=${definition.routeId} " +
+                        "player=${player.uniqueId} exception=${prepared.exceptionType}",
+                )
+                return MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.REFRESH,
+                    session.route,
+                    MenuRuntimeOperationFailureReason.RENDER_FAILED,
+                    exceptionType = prepared.exceptionType,
+                )
+            }
+            is MenuRuntimePreparedViewResult.ContractInvalid -> {
+                logContractInvalid(definition, player, prepared.violations)
+                return MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.REFRESH,
+                    session.route,
+                    MenuRuntimeOperationFailureReason.CONTRACT_INVALID,
+                    contractViolations = prepared.violations,
+                )
+            }
+        }
         val policy = inventoryPolicy(view)
         if (
             player.openInventory.topInventory.size != view.size ||
             player.openInventory.title() != view.title ||
             holder.guiInventoryPolicy() != policy
         ) {
-            return openDirect(player, session.route, playOpenSound = false)
+            return openDirectResult(player, session.route, playOpenSound = false)
+                .forOperation(MenuRuntimeOperation.REFRESH)
         }
 
-        val inventory = player.openInventory.topInventory
-        val inputItems = policy.inputSlots.associateWith { inventory.getItem(it)?.clone() }
-        inventory.clear()
-        applyView(inventory, view)
-        inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
-        sessions[player.uniqueId] = Session(
-            session.route,
-            view.elements.associateBy { it.slot },
-            session.preserveHistory,
-            view.standardFrame,
-            policy.inputSlots,
-        )
-        presentations.markRefreshed(player)
-        return true
+        return try {
+            val inventory = player.openInventory.topInventory
+            val inputItems = policy.inputSlots.associateWith { inventory.getItem(it)?.clone() }
+            inventory.clear()
+            applyView(inventory, view)
+            inputItems.forEach { (slot, item) -> inventory.setItem(slot, item) }
+            sessions[player.uniqueId] = Session(
+                session.route,
+                view.elements.associateBy { it.slot },
+                session.preserveHistory,
+                view.standardFrame,
+                policy.inputSlots,
+            )
+            presentations.markRefreshed(player)
+            MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.REFRESH, session.route)
+        } catch (failure: Throwable) {
+            plugin.logger.log(
+                Level.SEVERE,
+                "メニュー再描画の反映に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                failure,
+            )
+            MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.REFRESH,
+                session.route,
+                MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+                exceptionType = failure.javaClass.name,
+            )
+        }
     }
 
     override fun close(player: Player) {
@@ -297,9 +362,18 @@ internal class MenuRuntimeServiceImpl(
         presentations.markClosed(player)
     }
 
-    override fun back(player: Player): Boolean {
+    override fun back(player: Player): Boolean = backResult(player).successful
+
+    private fun backResult(player: Player): MenuRuntimeOperationResult {
         completeExternal(player)
-        return withoutOpenSound(player) { navigation.openPrevious(player) }
+        return withoutOpenSound(player) {
+            navigation.openPreviousResult(player)
+                ?: MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.NAVIGATE,
+                    navigation.breadcrumbs(player).lastOrNull(),
+                    MenuRuntimeOperationFailureReason.NO_HISTORY,
+                )
+        }
     }
 
     override fun closeOwnedMenus(owner: String): Int = closeMatching(owner, null)
@@ -732,36 +806,66 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(event.player.uniqueId)
     }
 
-    private fun openDirect(
+    private fun openDirectResult(
         player: Player,
         route: MenuRoute,
         playOpenSound: Boolean,
         preserveHistory: Boolean = false,
-    ): Boolean {
-        val definition = definition(route.owner, route.id) ?: return false
-        val view = runCatching {
-            definition.renderer.render(MenuRenderContext(player, route, navigation.canGoBack(player)))
-        }
-            .onFailure { failure ->
-                plugin.logger.log(Level.SEVERE, "メニュー描画に失敗しました: route=${definition.routeId}", failure)
+    ): MenuRuntimeOperationResult {
+        val definition = definition(route.owner, route.id)
+            ?: return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.OPEN,
+                route,
+                MenuRuntimeOperationFailureReason.MISSING_DEFINITION,
+            )
+        val view = when (
+            val prepared = MenuRuntimeViewPreparation.renderValidated(
+                definition,
+                MenuRenderContext(player, route, navigation.canGoBack(player)),
+            )
+        ) {
+            is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(player)
+            is MenuRuntimePreparedViewResult.RenderFailed -> {
+                plugin.logger.severe(
+                    "メニュー描画に失敗しました: route=${definition.routeId} exception=${prepared.exceptionType}",
+                )
+                return MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.OPEN,
+                    route,
+                    MenuRuntimeOperationFailureReason.RENDER_FAILED,
+                    exceptionType = prepared.exceptionType,
+                )
             }
-            .getOrNull()
-            ?.also { rendered -> MenuContractValidator.requireValid(definition, rendered) }
-            ?.withHistoryNavigation(player)
-            ?: return false
+            is MenuRuntimePreparedViewResult.ContractInvalid -> {
+                logContractInvalid(definition, player, prepared.violations)
+                return MenuRuntimeOperationResult.failed(
+                    MenuRuntimeOperation.OPEN,
+                    route,
+                    MenuRuntimeOperationFailureReason.CONTRACT_INVALID,
+                    contractViolations = prepared.violations,
+                )
+            }
+        }
         val policy = inventoryPolicy(view)
         val holder = MenuRuntimeHolder(player.uniqueId, route, policy, preserveHistory)
-        val inventory = Bukkit.createInventory(holder, view.size, view.title)
-        holder.backingInventory = inventory
-        applyView(inventory, view)
-        sessions[player.uniqueId] = Session(
-            route,
-            view.elements.associateBy { it.slot },
-            preserveHistory,
-            view.standardFrame,
-            policy.inputSlots,
-        )
-        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
+        val inventory = try {
+            Bukkit.createInventory(holder, view.size, view.title).also { created ->
+                holder.backingInventory = created
+                applyView(created, view)
+            }
+        } catch (failure: Throwable) {
+            plugin.logger.log(
+                Level.SEVERE,
+                "メニューInventoryの作成に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                failure,
+            )
+            return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.OPEN,
+                route,
+                MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+                exceptionType = failure.javaClass.name,
+            )
+        }
         val previousInventory = player.openInventory.topInventory
         val previousIsManaged = previousInventory.holder is MenuRuntimeHolder
         if (previousIsManaged) {
@@ -770,18 +874,38 @@ internal class MenuRuntimeServiceImpl(
         }
         try {
             player.openInventory(inventory)
+        } catch (failure: Throwable) {
+            plugin.logger.log(
+                Level.SEVERE,
+                "メニューInventoryを開けませんでした: route=${definition.routeId} player=${player.uniqueId}",
+                failure,
+            )
+            return MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.OPEN,
+                route,
+                MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED,
+                exceptionType = failure.javaClass.name,
+            )
         } finally {
             if (previousIsManaged) {
                 closeReasons.clear(previousInventory)
             }
         }
+        sessions[player.uniqueId] = Session(
+            route,
+            view.elements.associateBy { it.slot },
+            preserveHistory,
+            view.standardFrame,
+            policy.inputSlots,
+        )
+        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
         presentations.markOpened(
             player,
             com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY,
             route.owner,
             route.id,
         )
-        return true
+        return MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.OPEN, route)
     }
 
     private fun applyView(inventory: org.bukkit.inventory.Inventory, view: InventoryMenuView) {
@@ -803,6 +927,43 @@ internal class MenuRuntimeServiceImpl(
 
     private fun inventoryPolicy(view: InventoryMenuView): GuiInventoryPolicy =
         GuiInventoryPolicy(view.inputSlots, view.playerInventoryInteraction)
+
+    private fun logContractInvalid(
+        definition: InventoryMenuDefinition,
+        player: Player,
+        violations: List<MenuContractViolation>,
+    ) {
+        plugin.logger.warning(
+            "メニュー契約が不正です: route=${definition.routeId} player=${player.uniqueId} " +
+                "violations=${violations.joinToString { violation ->
+                    "slot=${violation.slot} action=${violation.actionId} ${violation.message}"
+                }}",
+        )
+    }
+
+    private fun MenuRuntimeOperationResult.asUpdateOutcome(): MenuUpdateApplicationOutcome =
+        if (successful) {
+            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE, this)
+        } else {
+            MenuUpdateApplicationOutcome(
+                false,
+                failure!!.reason.toUpdateFailureReason(),
+                this,
+            )
+        }
+
+    private fun MenuRuntimeOperationFailureReason.toUpdateFailureReason(): MenuRuntimeUpdateFailureReason = when (this) {
+        MenuRuntimeOperationFailureReason.MISSING_OPENER -> MenuRuntimeUpdateFailureReason.MISSING_OPENER
+        MenuRuntimeOperationFailureReason.MISSING_DEFINITION -> MenuRuntimeUpdateFailureReason.MISSING_DEFINITION
+        MenuRuntimeOperationFailureReason.RENDER_FAILED -> MenuRuntimeUpdateFailureReason.RENDER_FAILED
+        MenuRuntimeOperationFailureReason.CONTRACT_INVALID -> MenuRuntimeUpdateFailureReason.CONTRACT_INVALID
+        MenuRuntimeOperationFailureReason.INVENTORY_OPEN_FAILED -> MenuRuntimeUpdateFailureReason.INVENTORY_OPEN_FAILED
+        MenuRuntimeOperationFailureReason.OPENER_RETURNED_FALSE -> MenuRuntimeUpdateFailureReason.OPENER_RETURNED_FALSE
+        MenuRuntimeOperationFailureReason.OPENER_EXCEPTION -> MenuRuntimeUpdateFailureReason.OPENER_EXCEPTION
+        MenuRuntimeOperationFailureReason.NO_ACTIVE_SESSION -> MenuRuntimeUpdateFailureReason.NO_ACTIVE_SESSION
+        MenuRuntimeOperationFailureReason.ROUTE_MISMATCH -> MenuRuntimeUpdateFailureReason.ROUTE_MISMATCH
+        MenuRuntimeOperationFailureReason.NO_HISTORY -> MenuRuntimeUpdateFailureReason.NO_HISTORY
+    }
 
     private fun applyResult(
         player: Player,
@@ -876,44 +1037,31 @@ internal class MenuRuntimeServiceImpl(
 
                 val outcome = runCatching {
                     when (update) {
-                        MenuUpdate.None -> false to MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
-                        MenuUpdate.Refresh -> if (refresh(player)) {
-                            true to MenuRuntimeUpdateFailureReason.NONE
-                        } else {
-                            false to MenuRuntimeUpdateFailureReason.UPDATE_FAILED
-                        }
+                        MenuUpdate.None -> MenuUpdateApplicationOutcome(
+                            false,
+                            MenuRuntimeUpdateFailureReason.NOT_APPLICABLE,
+                        )
+                        MenuUpdate.Refresh -> refreshResult(player).asUpdateOutcome()
                         MenuUpdate.Resume -> if (finishExternal(player)) {
-                            true to MenuRuntimeUpdateFailureReason.NONE
+                            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
                         } else {
-                            false to MenuRuntimeUpdateFailureReason.NOT_APPLICABLE
+                            MenuUpdateApplicationOutcome(false, MenuRuntimeUpdateFailureReason.NOT_APPLICABLE)
                         }
                         MenuUpdate.Close -> {
                             close(player)
-                            true to MenuRuntimeUpdateFailureReason.NONE
+                            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
                         }
                         MenuUpdate.Back -> {
-                            val hadHistory = navigation.canGoBack(player)
-                            if (back(player)) {
-                                true to MenuRuntimeUpdateFailureReason.NONE
+                            val backResult = backResult(player)
+                            if (backResult.successful) {
+                                backResult.asUpdateOutcome()
                             } else {
                                 close(player)
-                                false to if (hadHistory) {
-                                    MenuRuntimeUpdateFailureReason.OPEN_FAILED
-                                } else {
-                                    MenuRuntimeUpdateFailureReason.NO_HISTORY
-                                }
+                                backResult.asUpdateOutcome()
                             }
                         }
-                        is MenuUpdate.Replace -> if (replace(player, update.route)) {
-                            true to MenuRuntimeUpdateFailureReason.NONE
-                        } else {
-                            false to MenuRuntimeUpdateFailureReason.OPEN_FAILED
-                        }
-                        is MenuUpdate.Navigate -> if (navigateFrom(player, session.route, update.route)) {
-                            true to MenuRuntimeUpdateFailureReason.NONE
-                        } else {
-                            false to MenuRuntimeUpdateFailureReason.OPEN_FAILED
-                        }
+                        is MenuUpdate.Replace -> replaceResult(player, update.route).asUpdateOutcome()
+                        is MenuUpdate.Navigate -> navigateFromResult(player, session.route, update.route).asUpdateOutcome()
                     }
                 }.getOrElse { failure ->
                     plugin.logger.log(
@@ -921,24 +1069,37 @@ internal class MenuRuntimeServiceImpl(
                         "メニュー更新の適用に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                         failure,
                     )
-                    false to MenuRuntimeUpdateFailureReason.EXCEPTION
+                    MenuUpdateApplicationOutcome(
+                        false,
+                        MenuRuntimeUpdateFailureReason.EXCEPTION,
+                    )
                 }
                 return MenuRuntimeUpdateApplication(
                     attempted = update != MenuUpdate.None,
-                    applied = outcome.first,
+                    applied = outcome.applied,
                     kind = declaredUpdate?.kind,
                     expectedRoute = expectedRoute,
                     observedRoute = null,
                     beforeRevision = originRevision,
                     afterRevision = null,
-                    failureReason = outcome.second,
+                    failureReason = outcome.failureReason,
+                    operationResult = outcome.operationResult,
                 )
             }
         }
     }
 
     private fun navigateFrom(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean =
-        withoutOpenSound(player) { navigation.pushAndOpen(player, currentRoute, targetRoute) }
+        navigateFromResult(player, currentRoute, targetRoute).successful
+
+    private fun navigateFromResult(
+        player: Player,
+        currentRoute: MenuRoute,
+        targetRoute: MenuRoute,
+    ): MenuRuntimeOperationResult = withoutOpenSound(player) {
+        navigation.pushAndOpenResult(player, currentRoute, targetRoute)
+            .forOperation(MenuRuntimeOperation.NAVIGATE)
+    }
 
     private fun <T> withoutOpenSound(player: Player, action: () -> T): T {
         suppressOpenSound.add(player.uniqueId)
@@ -1328,6 +1489,12 @@ internal class MenuRuntimeServiceImpl(
         MenuRuntimeSlotKind.BACK,
         MenuRuntimeSlotKind.UNAVAILABLE -> MenuRuntimeClickDisposition.NO_SESSION
     }
+
+    private data class MenuUpdateApplicationOutcome(
+        val applied: Boolean,
+        val failureReason: MenuRuntimeUpdateFailureReason,
+        val operationResult: MenuRuntimeOperationResult? = null,
+    )
 
     private data class ClickTraceContext(
         val identity: MenuRuntimeClickTraceStore.Identity,

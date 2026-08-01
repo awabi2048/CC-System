@@ -118,6 +118,33 @@ class MenuRuntimeUpdateApplicationTest {
         assertEquals(MenuRuntimeUpdateFailureReason.EXCEPTION, exception.failureReason)
     }
 
+    @Test
+    fun `update application retains detailed contract failure`() {
+        val targetRoute = MenuRoute("test", "target")
+        val operationResult = MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.REPLACE,
+            targetRoute,
+            MenuRuntimeOperationFailureReason.CONTRACT_INVALID,
+            contractViolations = listOf(
+                MenuContractViolation("test:target", 4, "missing", "no handler is registered"),
+            ),
+        )
+        val application = MenuRuntimeUpdateApplication(
+            attempted = true,
+            applied = false,
+            kind = MenuRuntimeUpdateKind.REPLACE,
+            expectedRoute = route("target"),
+            observedRoute = route("source"),
+            beforeRevision = 3,
+            afterRevision = 3,
+            failureReason = MenuRuntimeUpdateFailureReason.CONTRACT_INVALID,
+            operationResult = operationResult,
+        )
+
+        assertEquals(MenuRuntimeOperationFailureReason.CONTRACT_INVALID, application.operationResult?.failure?.reason)
+        assertEquals(4, application.operationResult?.failure?.contractViolations?.single()?.slot)
+    }
+
     private fun application(
         kind: MenuRuntimeUpdateKind,
         expectedRoute: MenuRuntimeRouteSnapshot?,

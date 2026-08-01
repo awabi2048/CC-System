@@ -70,4 +70,30 @@ class MenuContractTest {
         assertEquals(1, violations.size)
         assertTrue(violations.single().message.contains("accepted click contract"))
     }
+
+    @Test
+    fun `capability interaction does not require a host action handler`() {
+        val definition = InventoryMenuDefinition(
+            owner = "test",
+            id = "capability-contract",
+            renderer = InventoryMenuRenderer { error("not used") },
+            actions = emptyMap(),
+        )
+
+        val violations = MenuContractValidator.validate(
+            definition,
+            listOf(
+                MenuActionObservation(
+                    slot = 4,
+                    interaction = MenuInteraction.Capability(
+                        capabilityId = "external:open-world-settings",
+                        arguments = mapOf("world_uuid" to "world-1"),
+                        acceptedClicks = MenuAcceptedClicks.STANDARD,
+                    ),
+                ),
+            ),
+        )
+
+        assertTrue(violations.isEmpty())
+    }
 }

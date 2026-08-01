@@ -32,7 +32,13 @@ interface MenuRuntimeService {
 
     fun open(player: Player, route: MenuRoute): Boolean
 
+    /** [open]のBoolean互換APIでは失われる詳細な結果を返します。 */
+    fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
+
     fun replace(player: Player, route: MenuRoute): Boolean
+
+    /** [replace]のBoolean互換APIでは失われる詳細な結果を返します。 */
+    fun replaceResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
 
     /**
      * 現在のルートを履歴へ積み直さず、open音も再生せずに再表示する。
@@ -41,6 +47,9 @@ interface MenuRuntimeService {
     fun reopenCurrent(player: Player): Boolean
 
     fun navigate(player: Player, route: MenuRoute): Boolean
+
+    /** [navigate]のBoolean互換APIでは失われる詳細な結果を返します。 */
+    fun navigateResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult
 
     /**
      * 現在のRouteと履歴を変更せず、一時画面を開く。
@@ -73,6 +82,9 @@ interface MenuRuntimeService {
     fun feedback(player: Player, interaction: ManagedMenuInteraction)
 
     fun refresh(player: Player): Boolean
+
+    /** [refresh]のBoolean互換APIでは失われる詳細な結果を返します。 */
+    fun refreshResult(player: Player): MenuRuntimeOperationResult
 
     fun back(player: Player): Boolean
 

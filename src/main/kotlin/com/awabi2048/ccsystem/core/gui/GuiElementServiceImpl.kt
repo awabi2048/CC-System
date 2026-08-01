@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.GuiElementService
@@ -9,6 +11,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
+import com.awabi2048.ccsystem.api.gui.GuiMenuCapabilityInvocationSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuCapabilitySpec
 import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
 import com.awabi2048.ccsystem.api.gui.MenuActionBranch
@@ -231,6 +234,32 @@ class GuiElementServiceImpl(
         return item
     }
 
+    override fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilityInvocationSpec): MenuElement {
+        val capability = spec.capability
+        val item = capabilityItem(player, capability)
+        val acceptedClicks = spec.acceptedClicks
+        return if (capability.actionable && acceptedClicks.isNotEmpty()) {
+            MenuElement(
+                slot = spec.slot,
+                item = item,
+                role = GuiElementRole.ACTION,
+                interaction = GuiMenuCapabilityInteractionFactory.create(spec),
+            )
+        } else {
+            MenuElement(
+                slot = spec.slot,
+                item = item,
+                role = GuiElementRole.CONTENT,
+                interaction = MenuInteraction.DisplayOnly,
+            )
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated(
+        message = "CapabilityはGuiMenuCapabilityInvocationSpecで直接Runtimeへ渡してください",
+        replaceWith = ReplaceWith("menuCapabilityEntry(player, GuiMenuCapabilityInvocationSpec(spec.slot, spec.capability, arguments = spec.actionPayload))"),
+    )
     override fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement {
         val capability = spec.capability
         val item = capabilityItem(player, capability)

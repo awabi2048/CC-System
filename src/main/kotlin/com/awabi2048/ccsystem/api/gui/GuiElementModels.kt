@@ -335,6 +335,42 @@ data class GuiStructuredMenuEntrySpec(
  * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
  * 外部システムは描画後のItemStackへ操作情報を付け直さない。
  */
+/**
+ * 解決済みCapabilityをRuntimeの正規Interactionとして配置するための宣言です。
+ *
+ * capability ID・受理click・安全区分は[capability]の解決済み契約から取得します。
+ * 呼出し側は任意のaction payloadへcapability IDを書き戻す必要がありません。
+ */
+data class GuiMenuCapabilityInvocationSpec(
+    val slot: Int,
+    val capability: ResolvedMenuCapability,
+    val arguments: Map<String, String> = emptyMap(),
+    val attributes: Map<String, Any> = emptyMap(),
+) {
+    init {
+        require(slot >= 0) { "slot must not be negative" }
+    }
+
+    val acceptedClicks: Set<ClickType>
+        get() = capability.acceptedClicks
+
+    val safety: MenuActionSafety
+        get() = capability.safety
+
+    val safetyByClick: Map<ClickType, MenuActionSafety>
+        get() = capability.safetyByClick
+}
+
+/**
+ * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
+ *
+ * @deprecated Capabilityは[GuiMenuCapabilityInvocationSpec]で直接Runtimeへ渡してください。
+ * この型は既存画面の段階移行だけに残します。
+ */
+@Deprecated(
+    message = "CapabilityはGuiMenuCapabilityInvocationSpecで直接Runtimeへ渡してください",
+    replaceWith = ReplaceWith("GuiMenuCapabilityInvocationSpec(slot, capability, arguments = actionPayload)"),
+)
 data class GuiMenuCapabilitySpec(
     val slot: Int,
     val capability: ResolvedMenuCapability,

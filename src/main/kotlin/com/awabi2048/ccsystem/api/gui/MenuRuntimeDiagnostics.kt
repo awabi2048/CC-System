@@ -79,6 +79,15 @@ enum class MenuRuntimeUpdateFailureReason {
     NONE,
     OPEN_FAILED,
     UPDATE_FAILED,
+    MISSING_OPENER,
+    MISSING_DEFINITION,
+    RENDER_FAILED,
+    CONTRACT_INVALID,
+    INVENTORY_OPEN_FAILED,
+    OPENER_EXCEPTION,
+    OPENER_RETURNED_FALSE,
+    NO_ACTIVE_SESSION,
+    ROUTE_MISMATCH,
     NO_HISTORY,
     STALE_REVISION,
     NOT_APPLICABLE,
@@ -178,7 +187,31 @@ data class MenuRuntimeUpdateApplication(
     val beforeRevision: Long?,
     val afterRevision: Long?,
     val failureReason: MenuRuntimeUpdateFailureReason,
+    /** Boolean更新APIでは失われる、open/refresh失敗の詳細です。 */
+    val operationResult: MenuRuntimeOperationResult? = null,
 ) {
+    /** 既存のJava/Kotlin呼出しバイナリを維持する8引数コンストラクタです。 */
+    constructor(
+        attempted: Boolean,
+        applied: Boolean,
+        kind: MenuRuntimeUpdateKind?,
+        expectedRoute: MenuRuntimeRouteSnapshot?,
+        observedRoute: MenuRuntimeRouteSnapshot?,
+        beforeRevision: Long?,
+        afterRevision: Long?,
+        failureReason: MenuRuntimeUpdateFailureReason,
+    ) : this(
+        attempted,
+        applied,
+        kind,
+        expectedRoute,
+        observedRoute,
+        beforeRevision,
+        afterRevision,
+        failureReason,
+        null,
+    )
+
     companion object {
         fun notAttempted(
             kind: MenuRuntimeUpdateKind? = null,
