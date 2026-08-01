@@ -13,7 +13,25 @@ data class MenuCapabilityContext(
 /** 表示・inspectから呼ばれる読取専用の可用性判定です。 */
 fun interface MenuCapabilityAvailability {
     fun isAvailable(context: MenuCapabilityContext): Boolean
+
+    companion object {
+        @JvmStatic
+        fun reasoned(provider: MenuCapabilityAvailabilityProvider): MenuCapabilityAvailability = provider
+    }
 }
+
+/** 可否と利用不能理由を1回の評価で返すavailabilityです。 */
+fun interface MenuCapabilityAvailabilityProvider : MenuCapabilityAvailability {
+    fun resolve(context: MenuCapabilityContext): MenuAvailabilityResult
+
+    override fun isAvailable(context: MenuCapabilityContext): Boolean =
+        resolve(context) is MenuAvailabilityResult.Available
+}
+
+fun MenuCapabilityAvailability.resolveAvailability(context: MenuCapabilityContext): MenuAvailabilityResult =
+    if (this is MenuCapabilityAvailabilityProvider) resolve(context)
+    else if (isAvailable(context)) MenuAvailabilityResult.Available
+    else MenuAvailabilityResult.UnavailableUnknown
 
 data class MenuCapabilityPresentation(
     val item: GuiItemSpec,
@@ -138,6 +156,12 @@ data class ResolvedMenuCapability(
 ) {
     val actionable: Boolean
         get() = actions.isNotEmpty()
+
+    var availabilityResult: MenuAvailabilityResult = MenuAvailabilityResult.Available
+        internal set
+
+    val unavailableReason: net.kyori.adventure.text.Component?
+        get() = (availabilityResult as? MenuAvailabilityResult.Unavailable)?.reason
 
     val acceptedClicks: Set<ClickType>
         get() = actions.flatMapTo(linkedSetOf()) { it.trigger.clicks }

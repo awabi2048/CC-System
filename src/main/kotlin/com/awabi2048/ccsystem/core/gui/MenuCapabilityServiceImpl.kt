@@ -8,6 +8,8 @@ import com.awabi2048.ccsystem.api.gui.MenuActionResult
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapabilityAction
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
+import com.awabi2048.ccsystem.api.gui.MenuAvailabilityResult
+import com.awabi2048.ccsystem.api.gui.resolveAvailability
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -45,9 +47,18 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
     ): ResolvedMenuCapability? {
         val definition = definitions[capabilityId] ?: return null
         val context = MenuCapabilityContext(player, arguments, attributes)
-        if (!definition.availability.isAvailable(context)) return null
+        val definitionAvailability = definition.availability.resolveAvailability(context)
+        var actionUnavailableReason: net.kyori.adventure.text.Component? = null
         val resolvedActions = definition.actions.mapNotNull { action ->
-            if (!action.availability.isAvailable(context)) return@mapNotNull null
+            if (definitionAvailability !is MenuAvailabilityResult.Available) return@mapNotNull null
+            when (val availability = action.availability.resolveAvailability(context)) {
+                MenuAvailabilityResult.Available -> Unit
+                MenuAvailabilityResult.UnavailableUnknown -> return@mapNotNull null
+                is MenuAvailabilityResult.Unavailable -> {
+                    if (actionUnavailableReason == null) actionUnavailableReason = availability.reason
+                    return@mapNotNull null
+                }
+            }
             val text = action.textProvider.resolve(context)
                 .replace(LEGACY_FORMATTING, "")
             require(text.isNotBlank()) {
@@ -59,7 +70,14 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
             capabilityId = capabilityId,
             presentation = definition.presentationProvider.resolve(context),
             actions = resolvedActions,
-        )
+        ).also {
+            it.availabilityResult = when {
+                definitionAvailability !is MenuAvailabilityResult.Available -> definitionAvailability
+                resolvedActions.isEmpty() && definition.actions.isNotEmpty() && actionUnavailableReason != null ->
+                    MenuAvailabilityResult.Unavailable(actionUnavailableReason)
+                else -> MenuAvailabilityResult.Available
+            }
+        }
     }
 
     override fun execute(

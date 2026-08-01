@@ -101,6 +101,7 @@ data class MenuElementPresentationSemantics(
 
 sealed interface MenuAvailabilityResult {
     data object Available : MenuAvailabilityResult
+    data object UnavailableUnknown : MenuAvailabilityResult
     data class Unavailable(val reason: Component) : MenuAvailabilityResult
 }
 

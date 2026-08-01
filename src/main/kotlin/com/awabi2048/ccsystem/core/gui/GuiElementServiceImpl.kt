@@ -287,6 +287,16 @@ class GuiElementServiceImpl(
                 role = GuiElementRole.ACTION,
                 interaction = GuiMenuCapabilityInteractionFactory.create(spec),
             )
+        } else if (capability.unavailableReason != null) {
+            MenuElement(
+                slot = spec.slot,
+                item = item,
+                role = GuiElementRole.CONTENT,
+                interaction = MenuInteraction.Unavailable(
+                    MenuAcceptedClicks.STANDARD,
+                    capability.unavailableReason!!,
+                ),
+            )
         } else {
             MenuElement(
                 slot = spec.slot,
@@ -296,6 +306,7 @@ class GuiElementServiceImpl(
             )
         }
         val profile = when {
+            capability.unavailableReason != null -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISABLED
             capability.presentation.item.name is GuiNameSpec.TargetIdentity ->
                 com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.LIST_TARGET
             capability.actions.size > 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.MULTI_ACTION
@@ -305,7 +316,12 @@ class GuiElementServiceImpl(
             else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
         }
         return element.withPresentationSemantics(
-            semanticsFactory.create(capability.presentation.item.name, loreSpec, profile),
+            semanticsFactory.create(
+                capability.presentation.item.name,
+                loreSpec,
+                profile,
+                capability.unavailableReason,
+            ),
         )
     }
 
