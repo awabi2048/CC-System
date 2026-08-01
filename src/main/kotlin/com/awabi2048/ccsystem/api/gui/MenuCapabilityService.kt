@@ -59,6 +59,7 @@ data class MenuCapabilityAction(
         MenuCapabilityAvailability { true },
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val handler: MenuCapabilityActionHandler,
+    val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 ) {
     init {
         require(id.isNotBlank()) { "action id must not be blank" }
@@ -99,6 +100,7 @@ data class ResolvedMenuCapabilityAction(
     val id: String,
     val trigger: MenuCapabilityTrigger,
     val text: String,
+    val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 )
 
 data class ResolvedMenuCapability(
@@ -111,6 +113,21 @@ data class ResolvedMenuCapability(
 
     val acceptedClicks: Set<ClickType>
         get() = actions.flatMapTo(linkedSetOf()) { it.trigger.clicks }
+
+    /** 全clickで同一の安全区分だけを単値として返します。混在時は推測しません。 */
+    val safety: MenuActionSafety
+        get() = actions.map(ResolvedMenuCapabilityAction::safety)
+            .distinct()
+            .singleOrNull()
+            ?: MenuActionSafety.UNSPECIFIED
+
+    /** clickごとの安全区分です。定義時にclickの重複は禁止されています。 */
+    val safetyByClick: Map<ClickType, MenuActionSafety>
+        get() = buildMap {
+            actions.forEach { action ->
+                action.trigger.clicks.forEach { click -> put(click, action.safety) }
+            }
+        }
 }
 
 interface MenuCapabilityService {

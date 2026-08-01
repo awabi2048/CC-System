@@ -53,7 +53,7 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
             require(text.isNotBlank()) {
                 "Capability action text must not be blank: $capabilityId:${action.id}"
             }
-            ResolvedMenuCapabilityAction(action.id, action.trigger, text)
+            ResolvedMenuCapabilityAction(action.id, action.trigger, text, action.safety)
         }
         return ResolvedMenuCapability(
             capabilityId = capabilityId,

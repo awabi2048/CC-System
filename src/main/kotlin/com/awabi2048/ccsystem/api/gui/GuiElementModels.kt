@@ -221,6 +221,7 @@ internal data class GuiMenuEntryAction(
     val label: String,
     val payload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
+    val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 ) {
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }

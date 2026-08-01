@@ -15,6 +15,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent
 
     data class AnyClick(
@@ -22,6 +23,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent {
     }
 
@@ -40,6 +42,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent
 
     /** Same action for plain left/right clicks only. */
@@ -48,6 +51,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent
 
     /** Same action for both Shift-click directions. */
@@ -56,6 +60,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent
 
     data class MiddleClick(
@@ -63,6 +68,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent
 
     data object Back : GuiMenuActionIntent {
@@ -74,6 +80,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent {
     }
 
@@ -82,6 +89,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent {
     }
 
@@ -91,6 +99,7 @@ sealed interface GuiMenuActionIntent {
         val label: String,
         val payload: Map<String, String> = emptyMap(),
         override val enabled: Boolean = true,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     ) : GuiMenuActionIntent {
     }
 
@@ -109,6 +118,7 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
             label = label,
             payload = payload,
             enabled = enabled,
+            safety = safety,
         )
     )
     is GuiMenuActionIntent.LeftRight -> buildList {
@@ -125,18 +135,21 @@ internal fun GuiMenuActionIntent.expand(): List<GuiMenuEntryAction> = when (this
         label,
         payload,
         enabled,
+        safety,
     ).expand()
     is GuiMenuActionIntent.Cancel -> GuiMenuActionIntent.AnyClick(
         actionId,
         label,
         payload,
         enabled,
+        safety,
     ).expand()
     is GuiMenuActionIntent.Page -> GuiMenuActionIntent.AnyClick(
         actionId,
         label,
         payload,
         enabled,
+        safety,
     ).expand()
 }
 
@@ -148,27 +161,28 @@ private fun GuiMenuActionIntent.AnyClick.toEntry(
     label = label,
     payload = payload,
     enabled = enabled,
+    safety = safety,
 )
 
 private fun GuiMenuActionIntent.GestureAction.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
 
 private fun GuiMenuActionIntent.LeftRightSame.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
 
 private fun GuiMenuActionIntent.PlainLeftRight.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
 
 private fun GuiMenuActionIntent.ShiftAny.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
 
 private fun GuiMenuActionIntent.MiddleClick.toEntry(
     clicks: Set<org.bukkit.event.inventory.ClickType>,
-) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled)
+) = GuiMenuEntryAction(actionId, clicks, label, payload, enabled, safety)
 
 enum class MenuGesture {
     ANY,

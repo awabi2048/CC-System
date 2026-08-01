@@ -25,6 +25,22 @@ data class MenuActionSoundPolicy(
     val rejected: MenuSoundPolicy = MenuSoundPolicy.Default,
 )
 
+/**
+ * 操作の副作用をドメイン側が明示するための区分です。
+ *
+ * Runtime はこの値から操作可否を推測しません。診断・監査の実行計画が、
+ * 表示文言や素材ではなく、画面定義が宣言した事実を利用するための情報です。
+ */
+enum class MenuActionSafety {
+    UNSPECIFIED,
+    NAVIGATION_ONLY,
+    REVERSIBLE,
+    CONFIRM_ENTRY,
+    IRREVERSIBLE,
+    EXTERNAL_SIDE_EFFECT,
+    INPUT_OR_EXTERNAL_SURFACE,
+}
+
 /** Inventory上の1要素。actionIdがない要素は表示専用として扱う。 */
 sealed interface MenuInteraction {
     data object DisplayOnly : MenuInteraction
@@ -34,11 +50,19 @@ sealed interface MenuInteraction {
         val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val payload: Map<String, String> = emptyMap(),
         val sounds: MenuActionSoundPolicy? = null,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val capabilityId: String? = null,
+        val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
     ) : MenuInteraction {
         init {
             require(actionId.isNotBlank()) { "actionId must not be blank" }
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+            require(safetyByClick.keys.all { it in acceptedClicks }) {
+                "action safety may only be declared for accepted clicks"
+            }
         }
+
+        fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
     }
 
     /**
@@ -64,11 +88,18 @@ sealed interface MenuInteraction {
         val attributes: Map<String, Any> = emptyMap(),
         val acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
         val sounds: MenuActionSoundPolicy? = null,
+        val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+        val safetyByClick: Map<ClickType, MenuActionSafety> = emptyMap(),
     ) : MenuInteraction {
         init {
             require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
             require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+            require(safetyByClick.keys.all { it in acceptedClicks }) {
+                "capability safety may only be declared for accepted clicks"
+            }
         }
+
+        fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
     }
 
     data class Unavailable(
@@ -95,6 +126,7 @@ data class MenuActionBranch(
     val actionId: String,
     val acceptedClicks: Set<ClickType>,
     val payload: Map<String, String> = emptyMap(),
+    val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 ) {
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }
@@ -132,6 +164,7 @@ data class MenuElement(
     val enabled: Boolean = true,
     val sounds: MenuActionSoundPolicy? = null,
     val interaction: MenuInteraction? = null,
+    val actionSafety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -155,7 +188,12 @@ data class MenuElement(
     fun resolvedInteraction(): MenuInteraction = interaction ?: when {
         role == GuiElementRole.BACK -> MenuInteraction.Back(sounds = sounds)
         !enabled -> MenuInteraction.Unavailable(sounds = sounds)
-        actionId != null -> MenuInteraction.Action(actionId, payload = actionPayload, sounds = sounds)
+        actionId != null -> MenuInteraction.Action(
+            actionId,
+            payload = actionPayload,
+            sounds = sounds,
+            safety = actionSafety,
+        )
         else -> MenuInteraction.DisplayOnly
     }
 }

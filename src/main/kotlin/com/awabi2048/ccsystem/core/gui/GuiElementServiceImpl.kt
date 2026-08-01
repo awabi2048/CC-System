@@ -117,11 +117,12 @@ class GuiElementServiceImpl(
                     acceptedClicks = action.acceptedClicks,
                     payload = action.payload,
                     sounds = spec.sounds,
+                    safety = action.safety,
                 )
             }
             else -> MenuInteraction.Branches(
                 branches = enabledActions.map { action ->
-                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload)
+                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload, action.safety)
                 },
                 sounds = spec.sounds,
             )
@@ -181,11 +182,12 @@ class GuiElementServiceImpl(
                     action.acceptedClicks,
                     action.payload,
                     spec.sounds,
+                    action.safety,
                 )
             }
             else -> MenuInteraction.Branches(
                 enabledActions.map { action ->
-                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload)
+                    MenuActionBranch(action.actionId, action.acceptedClicks, action.payload, action.safety)
                 },
                 spec.sounds,
             )
@@ -242,6 +244,9 @@ class GuiElementServiceImpl(
                     actionId = spec.actionId,
                     acceptedClicks = acceptedClicks,
                     payload = spec.actionPayload,
+                    safety = capability.safety,
+                    capabilityId = capability.capabilityId,
+                    safetyByClick = capability.safetyByClick,
                 ),
             )
         } else {

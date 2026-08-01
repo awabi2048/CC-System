@@ -13,6 +13,23 @@ interface MenuRuntimeService {
 
     fun definition(owner: String, id: String): InventoryMenuDefinition?
 
+    /** 現在Runtimeが表示している画面の事実を、状態を変更せずに複写します。 */
+    fun snapshot(player: Player): MenuRuntimeSnapshot?
+
+    /** click traceを新しい診断runへ切り替え、run IDを返します。 */
+    fun startClickTraceRun(player: Player): String
+
+    /** 呼出し側が識別子を指定してclick traceを新しい診断runへ切り替えます。 */
+    fun startClickTraceRun(player: Player, runId: String): String
+
+    /** playerに対して記録された有界click traceを古い順で返します。 */
+    fun clickTraces(player: Player): List<MenuRuntimeClickTrace>
+
+    fun latestClickTrace(player: Player): MenuRuntimeClickTrace?
+
+    /** GUI状態を変えず、playerの診断traceだけを削除します。 */
+    fun clearClickTraces(player: Player)
+
     fun open(player: Player, route: MenuRoute): Boolean
 
     fun replace(player: Player, route: MenuRoute): Boolean

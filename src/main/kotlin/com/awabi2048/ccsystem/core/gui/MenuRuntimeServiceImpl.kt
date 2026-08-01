@@ -19,6 +19,19 @@ import com.awabi2048.ccsystem.api.gui.MenuRenderContext
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeActions
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeActionResultKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeBranchSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeClickDisposition
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeClickTrace
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeRouteSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuActionSafety
+import com.awabi2048.ccsystem.api.gui.MenuSurface
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
@@ -28,6 +41,7 @@ import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -37,6 +51,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.java.JavaPlugin
@@ -56,6 +72,7 @@ internal class MenuRuntimeServiceImpl(
     private val externalSuspensions = ConcurrentHashMap<UUID, MenuRoute>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
+    private val clickTraces = MenuRuntimeClickTraceStore()
     private val presentedInventories = java.util.Collections.synchronizedMap(
         java.util.IdentityHashMap<org.bukkit.inventory.Inventory, ManagedPresentation>()
     )
@@ -74,12 +91,14 @@ internal class MenuRuntimeServiceImpl(
     override fun unregister(owner: String, id: String) {
         definitions.remove(RouteKey(owner, id))
         closeMatching(owner, id)
+        clickTraces.clearOwner(owner)
     }
 
     override fun unregisterOwner(owner: String) {
         definitions.keys.removeIf { it.owner == owner }
         closeMatching(owner, null)
         navigation.unregisterOwner(owner)
+        clickTraces.clearOwner(owner)
     }
 
     override fun definitions(): List<InventoryMenuDefinition> =
@@ -87,6 +106,24 @@ internal class MenuRuntimeServiceImpl(
 
     override fun definition(owner: String, id: String): InventoryMenuDefinition? =
         definitions[RouteKey(owner, id)]
+
+    override fun snapshot(player: Player): MenuRuntimeSnapshot? = snapshotCurrent(player)
+
+    override fun startClickTraceRun(player: Player): String =
+        clickTraces.start(player.uniqueId)
+
+    override fun startClickTraceRun(player: Player, runId: String): String =
+        clickTraces.start(player.uniqueId, runId)
+
+    override fun clickTraces(player: Player): List<MenuRuntimeClickTrace> =
+        clickTraces.all(player.uniqueId)
+
+    override fun latestClickTrace(player: Player): MenuRuntimeClickTrace? =
+        clickTraces.latest(player.uniqueId)
+
+    override fun clearClickTraces(player: Player) {
+        clickTraces.clear(player.uniqueId)
+    }
 
     override fun open(player: Player, route: MenuRoute): Boolean {
         completeExternal(player)
@@ -238,7 +275,10 @@ internal class MenuRuntimeServiceImpl(
             session.route,
             view.elements.associateBy { it.slot },
             session.preserveHistory,
+            view.standardFrame,
+            policy.inputSlots,
         )
+        presentations.markRefreshed(player)
         return true
     }
 
@@ -266,34 +306,85 @@ internal class MenuRuntimeServiceImpl(
     fun onInventoryClick(event: InventoryClickEvent) {
         val holder = event.view.topInventory.holder as? MenuRuntimeHolder ?: return
         val player = event.whoClicked as? Player ?: return
+        val trace = beginClickTrace(player, event.rawSlot, event.click, holder.route)
         val policy = holder.guiInventoryPolicy()
         if (holder.playerId != player.uniqueId) {
             event.isCancelled = true
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.OWNER_MISMATCH)
             return
         }
         if (event.clickedInventory != event.view.topInventory) {
             if (policy.playerInventoryInteraction == PlayerInventoryInteraction.BLOCKED) {
                 event.isCancelled = true
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.PLAYER_INVENTORY_BLOCKED)
                 return
             }
             if (policy.playerInventoryInteraction == PlayerInventoryInteraction.INTERACTIVE) {
                 if (PlayerInventoryTransferGuard.blocks(event.action)) event.isCancelled = true
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.PLAYER_INVENTORY_INTERACTIVE)
                 return
             }
-            val session = sessions[player.uniqueId] ?: return
-            if (session.route != holder.route) return
-            val definition = definition(holder.route.owner, holder.route.id) ?: return
-            val handler = definition.actions[MenuRuntimeActions.PLAYER_INVENTORY_CLICK] ?: return
+            val session = sessions[player.uniqueId] ?: run {
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.NO_SESSION)
+                return
+            }
+            if (session.route != holder.route) {
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.ROUTE_MISMATCH)
+                return
+            }
+            val definition = definition(holder.route.owner, holder.route.id) ?: run {
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.MISSING_HANDLER)
+                return
+            }
+            val handler = definition.actions[MenuRuntimeActions.PLAYER_INVENTORY_CLICK] ?: run {
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.PLAYER_INVENTORY_UNACCEPTED,
+                    interactionKind = MenuRuntimeInteractionKind.PLAYER_INVENTORY,
+                    actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                    payload = mapOf(MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString()),
+                    safety = MenuActionSafety.INPUT_OR_EXTERNAL_SURFACE,
+                )
+                return
+            }
             if (!PlayerInventoryActionAcceptance.accepts(
                     policy.capturesPlayerInventoryClick,
                     event.clickedInventory == player.inventory,
                     handlerPresent = true,
                     event.click,
                 )
-            ) return
+            ) {
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.PLAYER_INVENTORY_UNACCEPTED,
+                    interactionKind = MenuRuntimeInteractionKind.PLAYER_INVENTORY,
+                    actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                    payload = mapOf(MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString()),
+                    safety = MenuActionSafety.INPUT_OR_EXTERNAL_SURFACE,
+                )
+                return
+            }
             event.isCancelled = true
-            if (!executing.add(player.uniqueId)) return
+            if (!executing.add(player.uniqueId)) {
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.EXECUTING,
+                    accepted = true,
+                    interactionKind = MenuRuntimeInteractionKind.PLAYER_INVENTORY,
+                    actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                    payload = mapOf(MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString()),
+                    safety = MenuActionSafety.INPUT_OR_EXTERNAL_SURFACE,
+                )
+                return
+            }
             val originRevision = presentations.current(player)?.revision
+            var actionFailure: Throwable? = null
             val result = try {
                 handler.handle(
                     MenuActionContext(
@@ -310,6 +401,7 @@ internal class MenuRuntimeServiceImpl(
                     ),
                 )
             } catch (failure: Throwable) {
+                actionFailure = failure
                 plugin.logger.log(
                     Level.SEVERE,
                     "プレイヤーインベントリActionの実行に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
@@ -320,22 +412,64 @@ internal class MenuRuntimeServiceImpl(
                 executing.remove(player.uniqueId)
             }
             applyResult(player, session, null, definition, MenuClickType.DEFAULT, result, originRevision)
+            recordClickTrace(
+                trace,
+                player,
+                event.isCancelled,
+                if (actionFailure == null) MenuRuntimeClickDisposition.HANDLED else MenuRuntimeClickDisposition.EXCEPTION,
+                accepted = true,
+                result = result,
+                exception = actionFailure,
+                interactionKind = MenuRuntimeInteractionKind.PLAYER_INVENTORY,
+                actionId = MenuRuntimeActions.PLAYER_INVENTORY_CLICK,
+                payload = mapOf(MenuRuntimeActions.PLAYER_INVENTORY_SLOT_PAYLOAD to event.slot.toString()),
+                safety = MenuActionSafety.INPUT_OR_EXTERNAL_SURFACE,
+            )
             return
         }
-        if (policy.acceptsTopSlot(event.rawSlot)) return
+        if (policy.acceptsTopSlot(event.rawSlot)) {
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.INPUT)
+            return
+        }
         event.isCancelled = true
 
-        val session = sessions[player.uniqueId] ?: return
-        if (session.route != holder.route) return
-        val element = session.elements[event.rawSlot] ?: return
-        if (!MenuClickAcceptance.accepts(event.click)) return
-        val definition = definition(holder.route.owner, holder.route.id) ?: return
+        val session = sessions[player.uniqueId] ?: run {
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.NO_SESSION)
+            return
+        }
+        if (session.route != holder.route) {
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.ROUTE_MISMATCH)
+            return
+        }
+        val element = session.elements[event.rawSlot] ?: run {
+            recordClickTrace(
+                trace,
+                player,
+                event.isCancelled,
+                session.slotKind(event.view.topInventory, event.rawSlot).toClickDisposition(),
+            )
+            return
+        }
+        if (!MenuClickAcceptance.accepts(event.click)) {
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNSUPPORTED_CLICK)
+            return
+        }
+        val definition = definition(holder.route.owner, holder.route.id) ?: run {
+            recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.MISSING_HANDLER)
+            return
+        }
         val clickType = clickType(element.role)
         val interaction = element.resolvedInteraction()
         when (interaction) {
-            MenuInteraction.DisplayOnly -> return
+            MenuInteraction.DisplayOnly -> {
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.DISPLAY_ONLY, interaction = interaction)
+                return
+            }
             is MenuInteraction.Unavailable -> {
-                if (event.click !in interaction.acceptedClicks) return
+                if (event.click !in interaction.acceptedClicks) {
+                    recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
+                    return
+                }
                 playResolved(
                     player,
                     MenuSoundPolicy.Default,
@@ -343,32 +477,89 @@ internal class MenuRuntimeServiceImpl(
                     clickType,
                 )
                 interaction.message?.let(player::sendMessage)
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.UNAVAILABLE,
+                    accepted = true,
+                    interaction = interaction,
+                    result = MenuActionResult.Rejected(),
+                )
                 return
             }
             is MenuInteraction.Back -> {
-                if (event.click !in interaction.acceptedClicks) return
+                if (event.click !in interaction.acceptedClicks) {
+                    recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
+                    return
+                }
                 playResolved(
                     player,
                     MenuSoundPolicy.Default,
                     MenuSoundPolicyResolver.successPolicy(interaction.sounds, definition.sounds),
                     clickType,
                 )
-                if (!back(player)) close(player)
+                val update = if (back(player)) {
+                    MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.BACK)
+                } else {
+                    close(player)
+                    MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CLOSE)
+                }
+                recordClickTrace(
+                    trace,
+                    player,
+                    event.isCancelled,
+                    MenuRuntimeClickDisposition.BACK,
+                    accepted = true,
+                    interaction = interaction,
+                    result = MenuActionResult.Success(MenuUpdate.None),
+                    update = update,
+                )
                 return
             }
-            is MenuInteraction.Action -> if (event.click !in interaction.acceptedClicks) return
+            is MenuInteraction.Action -> if (event.click !in interaction.acceptedClicks) {
+                recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
+                return
+            }
             is MenuInteraction.Branches ->
-                if (interaction.branches.none { event.click in it.acceptedClicks }) return
+                if (interaction.branches.none { event.click in it.acceptedClicks }) {
+                    recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
+                    return
+                }
             is MenuInteraction.Capability ->
-                if (event.click !in interaction.acceptedClicks) return
+                if (event.click !in interaction.acceptedClicks) {
+                    recordClickTrace(trace, player, event.isCancelled, MenuRuntimeClickDisposition.UNACCEPTED, interaction = interaction)
+                    return
+                }
         }
-        if (!executing.add(player.uniqueId)) return
+        if (!executing.add(player.uniqueId)) {
+            recordClickTrace(
+                trace,
+                player,
+                event.isCancelled,
+                MenuRuntimeClickDisposition.EXECUTING,
+                accepted = true,
+                interaction = interaction,
+            )
+            return
+        }
         val originRevision = presentations.current(player)?.revision
+        var actionFailure: Throwable? = null
 
         val result = try {
             when (interaction) {
                 is MenuInteraction.Action -> {
-                    val handler = definition.actions[interaction.actionId] ?: return
+                    val handler = definition.actions[interaction.actionId] ?: run {
+                        recordClickTrace(
+                            trace,
+                            player,
+                            event.isCancelled,
+                            MenuRuntimeClickDisposition.MISSING_HANDLER,
+                            accepted = true,
+                            interaction = interaction,
+                        )
+                        return
+                    }
                     handler.handle(
                         MenuActionContext(
                             player,
@@ -384,7 +575,17 @@ internal class MenuRuntimeServiceImpl(
                 }
                 is MenuInteraction.Branches -> {
                     val branch = interaction.branches.single { event.click in it.acceptedClicks }
-                    val handler = definition.actions[branch.actionId] ?: return
+                    val handler = definition.actions[branch.actionId] ?: run {
+                        recordClickTrace(
+                            trace,
+                            player,
+                            event.isCancelled,
+                            MenuRuntimeClickDisposition.MISSING_HANDLER,
+                            accepted = true,
+                            interaction = interaction,
+                        )
+                        return
+                    }
                     handler.handle(
                         MenuActionContext(
                             player,
@@ -408,6 +609,7 @@ internal class MenuRuntimeServiceImpl(
                     )
             }
         } catch (failure: Throwable) {
+            actionFailure = failure
             plugin.logger.log(
                 Level.SEVERE,
                 "メニュー操作の実行に失敗しました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId}",
@@ -430,6 +632,16 @@ internal class MenuRuntimeServiceImpl(
             clickType,
             result,
             originRevision,
+        )
+        recordClickTrace(
+            trace,
+            player,
+            event.isCancelled,
+            if (actionFailure == null) MenuRuntimeClickDisposition.HANDLED else MenuRuntimeClickDisposition.EXCEPTION,
+            accepted = true,
+            interaction = interaction,
+            result = result,
+            exception = actionFailure,
         )
     }
 
@@ -495,6 +707,11 @@ internal class MenuRuntimeServiceImpl(
         })
     }
 
+    @EventHandler
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        clickTraces.clear(event.player.uniqueId)
+    }
+
     private fun openDirect(
         player: Player,
         route: MenuRoute,
@@ -517,7 +734,13 @@ internal class MenuRuntimeServiceImpl(
         val inventory = Bukkit.createInventory(holder, view.size, view.title)
         holder.backingInventory = inventory
         applyView(inventory, view)
-        sessions[player.uniqueId] = Session(route, view.elements.associateBy { it.slot }, preserveHistory)
+        sessions[player.uniqueId] = Session(
+            route,
+            view.elements.associateBy { it.slot },
+            preserveHistory,
+            view.standardFrame,
+            policy.inputSlots,
+        )
         if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
         val previousInventory = player.openInventory.topInventory
         val previousIsManaged = previousInventory.holder is MenuRuntimeHolder
@@ -684,12 +907,327 @@ internal class MenuRuntimeServiceImpl(
         }
     }
 
+    private fun snapshotCurrent(player: Player): MenuRuntimeSnapshot? {
+        val top = player.openInventory.topInventory
+        val holder = top.holder as? MenuRuntimeHolder
+        val session = sessions[player.uniqueId]
+            ?.takeIf { holder?.route == it.route && holder.playerId == player.uniqueId }
+        val presented = currentPresentedRoute(player)
+        val presentation = presentations.current(player)
+        val route = session?.route ?: presented ?: navigation.currentRoute(player) ?: presentation
+            ?.takeIf { it.owner != null && it.id != null }
+            ?.let { MenuRoute(requireNotNull(it.owner), requireNotNull(it.id)) }
+            ?: return null
+        val surface = presentation?.surface ?: MenuSurface.INVENTORY
+        val revision = presentation?.revision ?: 0L
+        if (surface != MenuSurface.INVENTORY) {
+            return MenuRuntimeSnapshot(
+                player.uniqueId,
+                route.runtimeSnapshot(),
+                navigation.breadcrumbs(player).map { breadcrumb -> breadcrumb.runtimeSnapshot() },
+                navigation.canGoBack(player),
+                surface,
+                Component.empty(),
+                0,
+                revision,
+                emptyList(),
+            )
+        }
+        val slots = (0 until top.size).map { slot ->
+            snapshotSlot(top, session, slot)
+        }
+        return MenuRuntimeSnapshot(
+            player.uniqueId,
+            route.runtimeSnapshot(),
+            navigation.breadcrumbs(player).map { breadcrumb -> breadcrumb.runtimeSnapshot() },
+            navigation.canGoBack(player),
+            MenuSurface.INVENTORY,
+            player.openInventory.title(),
+            top.size,
+            revision,
+            slots,
+        )
+    }
+
+    private fun snapshotSlot(
+        inventory: Inventory,
+        session: Session?,
+        slot: Int,
+    ): MenuRuntimeSlotSnapshot {
+        val element = session?.elements?.get(slot)
+        val item = inventory.getItem(slot)?.takeUnless { it.type.isAir }
+        val meta = item?.itemMeta
+        val interaction = element?.resolvedInteraction()
+        val (kind, interactionKind) = when (interaction) {
+            MenuInteraction.DisplayOnly -> MenuRuntimeSlotKind.DISPLAY_ONLY to MenuRuntimeInteractionKind.DISPLAY_ONLY
+            is MenuInteraction.Action -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.ACTION
+            is MenuInteraction.Branches -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.BRANCHES
+            is MenuInteraction.Capability -> MenuRuntimeSlotKind.ACTION to MenuRuntimeInteractionKind.CAPABILITY
+            is MenuInteraction.Unavailable -> MenuRuntimeSlotKind.UNAVAILABLE to MenuRuntimeInteractionKind.UNAVAILABLE
+            is MenuInteraction.Back -> MenuRuntimeSlotKind.BACK to MenuRuntimeInteractionKind.BACK
+            null -> when {
+                session != null && slot in session.inputSlots -> MenuRuntimeSlotKind.INPUT to null
+                item == null -> MenuRuntimeSlotKind.EMPTY to null
+                session?.standardFrame == true -> MenuRuntimeSlotKind.FRAME to null
+                else -> MenuRuntimeSlotKind.DISPLAY_ONLY to null
+            }
+        }
+        val branches = (interaction as? MenuInteraction.Branches)
+            ?.branches
+            ?.map { branch ->
+                MenuRuntimeBranchSnapshot(
+                    branch.actionId,
+                    branch.acceptedClicks.toSet(),
+                    branch.payload.toSortedMap(),
+                    branch.safety,
+                )
+            }
+            .orEmpty()
+        val acceptedClicks = when (interaction) {
+            is MenuInteraction.Action -> interaction.acceptedClicks
+            is MenuInteraction.Branches -> interaction.branches.flatMapTo(linkedSetOf()) { it.acceptedClicks }
+            is MenuInteraction.Capability -> interaction.acceptedClicks
+            is MenuInteraction.Unavailable -> interaction.acceptedClicks
+            is MenuInteraction.Back -> interaction.acceptedClicks
+            MenuInteraction.DisplayOnly,
+            null -> emptySet()
+        }
+        val payload = when (interaction) {
+            is MenuInteraction.Action -> interaction.payload.toSortedMap()
+            is MenuInteraction.Capability -> interaction.arguments.toSortedMap()
+            else -> emptyMap()
+        }
+        val safety = when (interaction) {
+            is MenuInteraction.Action -> interaction.safety
+            is MenuInteraction.Branches -> branches.map(MenuRuntimeBranchSnapshot::safety)
+                .distinct()
+                .singleOrNull()
+                ?: MenuActionSafety.UNSPECIFIED
+            is MenuInteraction.Capability -> interaction.safety
+            is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
+            is MenuInteraction.Unavailable,
+            MenuInteraction.DisplayOnly,
+            null -> MenuActionSafety.UNSPECIFIED
+        }
+        val safetyByClick = when (interaction) {
+            is MenuInteraction.Action -> interaction.safetyByClick.toSortedMap(compareBy(ClickType::name))
+            is MenuInteraction.Branches -> buildMap {
+                interaction.branches.forEach { branch ->
+                    branch.acceptedClicks.forEach { click -> put(click, branch.safety) }
+                }
+            }.toSortedMap(compareBy(ClickType::name))
+            is MenuInteraction.Capability -> interaction.safetyByClick.toSortedMap(compareBy(ClickType::name))
+            else -> emptyMap()
+        }
+        return MenuRuntimeSlotSnapshot(
+            slot,
+            kind,
+            item?.type,
+            item?.amount ?: 0,
+            meta?.displayName(),
+            meta?.lore().orEmpty(),
+            item?.let(::hasGlint) ?: false,
+            element?.role ?: GuiItemMarker.role(item),
+            interactionKind,
+            when (interaction) {
+                is MenuInteraction.Action -> interaction.actionId
+                else -> null
+            },
+            when (interaction) {
+                is MenuInteraction.Action -> interaction.capabilityId
+                is MenuInteraction.Capability -> interaction.capabilityId
+                else -> null
+            },
+            acceptedClicks.toSet(),
+            payload,
+            element?.enabled ?: false,
+            safety,
+            safetyByClick,
+            branches,
+        )
+    }
+
+    private fun hasGlint(item: ItemStack): Boolean {
+        val meta = item.itemMeta ?: return item.enchantments.isNotEmpty()
+        return item.enchantments.isNotEmpty() ||
+            (meta.hasEnchantmentGlintOverride() && meta.enchantmentGlintOverride)
+    }
+
+    private fun MenuRoute.runtimeSnapshot(): MenuRuntimeRouteSnapshot =
+        MenuRuntimeRouteSnapshot(owner, id, payload.toSortedMap())
+
+    private fun beginClickTrace(
+        player: Player,
+        slot: Int,
+        click: ClickType,
+        route: MenuRoute,
+    ): ClickTraceContext {
+        val before = snapshotCurrent(player)
+        return ClickTraceContext(
+            clickTraces.next(player.uniqueId),
+            before?.revision,
+            before?.route ?: route.runtimeSnapshot(),
+            slot,
+            click,
+        )
+    }
+
+    private fun recordClickTrace(
+        context: ClickTraceContext,
+        player: Player,
+        cancelled: Boolean,
+        disposition: MenuRuntimeClickDisposition,
+        accepted: Boolean = false,
+        interaction: MenuInteraction? = null,
+        result: MenuActionResult? = null,
+        update: MenuRuntimeUpdateSnapshot? = result?.traceUpdate(),
+        exception: Throwable? = null,
+        interactionKind: MenuRuntimeInteractionKind? = null,
+        actionId: String? = null,
+        capabilityId: String? = null,
+        payload: Map<String, String> = emptyMap(),
+        safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    ) {
+        val details = interaction?.traceDetails(context.click) ?: InteractionTraceDetails(
+            interactionKind,
+            actionId,
+            capabilityId,
+            payload.toSortedMap(),
+            safety,
+        )
+        val after = snapshotCurrent(player)
+        clickTraces.append(
+            player.uniqueId,
+            MenuRuntimeClickTrace(
+                context.identity.runId,
+                context.identity.sequence,
+                player.uniqueId,
+                context.beforeRevision,
+                context.beforeRoute,
+                context.slot,
+                context.click,
+                cancelled,
+                accepted,
+                disposition,
+                details.kind,
+                details.actionId,
+                details.capabilityId,
+                details.payload,
+                details.safety,
+                result?.traceResultKind(),
+                update,
+                exception?.javaClass?.name,
+                after?.revision,
+                after?.route,
+            ),
+        )
+    }
+
+    private fun MenuInteraction.traceDetails(click: ClickType): InteractionTraceDetails = when (this) {
+        MenuInteraction.DisplayOnly -> InteractionTraceDetails(
+            MenuRuntimeInteractionKind.DISPLAY_ONLY,
+            null,
+            null,
+            emptyMap(),
+            MenuActionSafety.UNSPECIFIED,
+        )
+        is MenuInteraction.Action -> InteractionTraceDetails(
+            MenuRuntimeInteractionKind.ACTION,
+            actionId,
+            capabilityId,
+            payload.toSortedMap(),
+            safetyFor(click),
+        )
+        is MenuInteraction.Branches -> {
+            val branch = branches.singleOrNull { click in it.acceptedClicks }
+            InteractionTraceDetails(
+                MenuRuntimeInteractionKind.BRANCHES,
+                branch?.actionId,
+                null,
+                branch?.payload?.toSortedMap().orEmpty(),
+                branch?.safety ?: MenuActionSafety.UNSPECIFIED,
+            )
+        }
+        is MenuInteraction.Capability -> InteractionTraceDetails(
+            MenuRuntimeInteractionKind.CAPABILITY,
+            null,
+            capabilityId,
+            arguments.toSortedMap(),
+            safetyFor(click),
+        )
+        is MenuInteraction.Unavailable -> InteractionTraceDetails(
+            MenuRuntimeInteractionKind.UNAVAILABLE,
+            null,
+            null,
+            emptyMap(),
+            MenuActionSafety.UNSPECIFIED,
+        )
+        is MenuInteraction.Back -> InteractionTraceDetails(
+            MenuRuntimeInteractionKind.BACK,
+            null,
+            null,
+            emptyMap(),
+            MenuActionSafety.NAVIGATION_ONLY,
+        )
+    }
+
+    private fun MenuActionResult.traceResultKind(): MenuRuntimeActionResultKind = when (this) {
+        MenuActionResult.Ignored -> MenuRuntimeActionResultKind.IGNORED
+        is MenuActionResult.Rejected -> MenuRuntimeActionResultKind.REJECTED
+        is MenuActionResult.Success -> MenuRuntimeActionResultKind.SUCCESS
+    }
+
+    private fun MenuActionResult.traceUpdate(): MenuRuntimeUpdateSnapshot? = when (this) {
+        MenuActionResult.Ignored,
+        is MenuActionResult.Rejected -> null
+        is MenuActionResult.Success -> when (val update = update) {
+            MenuUpdate.None -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.NONE)
+            MenuUpdate.Refresh -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.REFRESH)
+            MenuUpdate.Resume -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.RESUME)
+            MenuUpdate.Close -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CLOSE)
+            MenuUpdate.Back -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.BACK)
+            is MenuUpdate.Replace -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.REPLACE, update.route.runtimeSnapshot())
+            is MenuUpdate.Navigate -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.NAVIGATE, update.route.runtimeSnapshot())
+        }
+    }
+
+    private fun Session.slotKind(inventory: Inventory, slot: Int): MenuRuntimeSlotKind =
+        snapshotSlot(inventory, this, slot).kind
+
+    private fun MenuRuntimeSlotKind.toClickDisposition(): MenuRuntimeClickDisposition = when (this) {
+        MenuRuntimeSlotKind.EMPTY -> MenuRuntimeClickDisposition.EMPTY
+        MenuRuntimeSlotKind.FRAME -> MenuRuntimeClickDisposition.FRAME
+        MenuRuntimeSlotKind.INPUT -> MenuRuntimeClickDisposition.INPUT
+        MenuRuntimeSlotKind.DISPLAY_ONLY -> MenuRuntimeClickDisposition.DISPLAY_ONLY
+        MenuRuntimeSlotKind.ACTION,
+        MenuRuntimeSlotKind.BACK,
+        MenuRuntimeSlotKind.UNAVAILABLE -> MenuRuntimeClickDisposition.NO_SESSION
+    }
+
+    private data class ClickTraceContext(
+        val identity: MenuRuntimeClickTraceStore.Identity,
+        val beforeRevision: Long?,
+        val beforeRoute: MenuRuntimeRouteSnapshot?,
+        val slot: Int,
+        val click: ClickType,
+    )
+
+    private data class InteractionTraceDetails(
+        val kind: MenuRuntimeInteractionKind?,
+        val actionId: String?,
+        val capabilityId: String?,
+        val payload: Map<String, String>,
+        val safety: MenuActionSafety,
+    )
+
     private data class RouteKey(val owner: String, val id: String)
 
     private data class Session(
         val route: MenuRoute,
         val elements: Map<Int, com.awabi2048.ccsystem.api.gui.MenuElement>,
         val preserveHistory: Boolean,
+        val standardFrame: Boolean,
+        val inputSlots: Set<Int>,
     )
 
     private data class ManagedPresentation(
