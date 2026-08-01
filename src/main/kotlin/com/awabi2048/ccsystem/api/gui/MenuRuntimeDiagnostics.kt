@@ -204,8 +204,9 @@ data class MenuRuntimeUpdateApplication(
     val state: MenuRuntimeUpdateApplicationState =
         if (attempted) MenuRuntimeUpdateApplicationState.TERMINAL else MenuRuntimeUpdateApplicationState.NOT_ATTEMPTED,
 ) {
+    /** PENDING以外のtraceは、更新の有無を問わず終端状態です。 */
     val terminal: Boolean
-        get() = state == MenuRuntimeUpdateApplicationState.TERMINAL
+        get() = state != MenuRuntimeUpdateApplicationState.PENDING
 
     /** 既存のJava/Kotlin呼出しバイナリを維持する8引数コンストラクタです。 */
     constructor(
@@ -266,6 +267,22 @@ data class MenuRuntimeUpdateApplication(
         )
     }
 }
+
+/** click trace待機要求が、現在保持されていない識別子を参照した理由です。 */
+enum class MenuRuntimeClickTraceAwaitFailureReason {
+    UNKNOWN_RUN,
+    UNKNOWN_SEQUENCE,
+}
+
+/** [MenuRuntimeService.awaitTerminalClickTrace] の即時失敗を識別する例外です。 */
+class MenuRuntimeClickTraceAwaitException(
+    val reason: MenuRuntimeClickTraceAwaitFailureReason,
+) : IllegalStateException(
+    when (reason) {
+        MenuRuntimeClickTraceAwaitFailureReason.UNKNOWN_RUN -> "click trace run is not active"
+        MenuRuntimeClickTraceAwaitFailureReason.UNKNOWN_SEQUENCE -> "click trace sequence is not retained"
+    },
+)
 
 /**
  * Runtime listenerが実際に受け取ったinventory clickの処理記録です。

@@ -1640,6 +1640,7 @@ internal class MenuRuntimeServiceImpl(
         )
         clickTraces.append(
             player.uniqueId,
+            context.identity,
             MenuRuntimeClickTrace(
                 context.identity.runId,
                 context.identity.sequence,

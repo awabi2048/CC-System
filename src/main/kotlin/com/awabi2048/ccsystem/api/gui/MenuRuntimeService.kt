@@ -38,11 +38,12 @@ interface MenuRuntimeService {
         mode: MenuRuntimeInspectionMode,
     ): MenuRuntimeInspectionResult
 
-    /** PENDINGでないterminal click traceだけを返します。 */
+    /** PENDINGでない既存click traceだけを返します。 */
     fun terminalClickTrace(player: Player, runId: String, sequence: Long): MenuRuntimeClickTrace?
 
     /**
-     * 指定traceがterminalになるまで完了しないFutureを返します。
+     * 既存のPENDING traceだけを待機登録します。NOT_ATTEMPTEDとTERMINALのtraceは即時完了し、
+     * 現在のrunに存在しない識別子は[MenuRuntimeClickTraceAwaitException]で即時失敗します。
      * BukkitメインスレッドでFutureをブロックしてはいけません。
      */
     fun awaitTerminalClickTrace(
