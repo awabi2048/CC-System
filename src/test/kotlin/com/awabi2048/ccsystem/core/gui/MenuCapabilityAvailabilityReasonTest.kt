@@ -26,7 +26,6 @@ class MenuCapabilityAvailabilityReasonTest {
         assertEquals(reason, resolved.unavailableReason)
         assertEquals("test", resolved.placement)
         assertFalse(resolved.actionable)
-        assertEquals("test", resolved.placement)
         assertTrue(resolved.actions.isEmpty())
     }
 
@@ -39,6 +38,36 @@ class MenuCapabilityAvailabilityReasonTest {
         assertEquals(MenuAvailabilityResult.UnavailableUnknown, resolved.availabilityResult)
         assertNull(resolved.unavailableReason)
         assertFalse(resolved.actionable)
+        assertEquals("test", resolved.placement)
+    }
+
+    @Test
+    fun `resolution metadata copy retains reasoned unknown and available states while changing presentation`() {
+        val reason = Component.text("disabled")
+        val availabilities = listOf(
+            MenuCapabilityAvailability.reasoned { MenuAvailabilityResult.Unavailable(reason) },
+            MenuCapabilityAvailability { false },
+            MenuCapabilityAvailability { true },
+        )
+        val expected = listOf(
+            MenuAvailabilityResult.Unavailable(reason),
+            MenuAvailabilityResult.UnavailableUnknown,
+            MenuAvailabilityResult.Available,
+        )
+
+        availabilities.zip(expected).forEach { (availability, expectedAvailability) ->
+            val service = MenuCapabilityServiceImpl()
+            service.register(definition(availability))
+            val resolved = requireNotNull(service.resolve("test:reasoned", player()))
+            val changedPresentation = resolved.presentation.copy(glint = true)
+
+            val copied = resolved.copyPreservingResolutionMetadata(presentation = changedPresentation)
+
+            assertEquals("test", copied.placement)
+            assertEquals(expectedAvailability, copied.availabilityResult)
+            assertEquals(changedPresentation, copied.presentation)
+            assertNotSame(resolved, copied)
+        }
     }
 
     private fun definition(availability: MenuCapabilityAvailability) = MenuCapabilityDefinition(

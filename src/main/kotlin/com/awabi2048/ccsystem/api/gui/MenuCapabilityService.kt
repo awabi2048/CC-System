@@ -196,6 +196,20 @@ data class ResolvedMenuCapability(
 }
 
 /**
+ * 解決後に得た配置・availabilityを保持したまま、表示などの主コンストラクタ値を変更します。
+ * data classのgenerated copyは主コンストラクタ外の解決メタデータを複製しないため、
+ * 解決済みインスタンスを加工するconsumerはこちらを使用します。
+ */
+fun ResolvedMenuCapability.copyPreservingResolutionMetadata(
+    capabilityId: String = this.capabilityId,
+    presentation: MenuCapabilityPresentation = this.presentation,
+    actions: List<ResolvedMenuCapabilityAction> = this.actions,
+): ResolvedMenuCapability = copy(capabilityId, presentation, actions).also {
+    it.placement = placement
+    it.availabilityResult = availabilityResult
+}
+
+/**
  * 利用不能表示へ変換された機能の出所です。
  * 呼び出し元の可変Mapから切り離したスナップショットとして保持します。
  */
