@@ -53,6 +53,7 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
                     ),
                 )
             },
+            reversibleContractsByClick = interaction.reversibleContractsByClick(),
         )
         is MenuInteraction.ClickBranches -> MenuRuntimeInspectionInteractionSnapshot(
             MenuRuntimeInteractionKind.CLICK_BRANCHES,
@@ -72,6 +73,7 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
                     create(branch.interaction),
                 )
             },
+            reversibleContractsByClick = interaction.reversibleContractsByClick(),
         )
         is MenuInteraction.Capability -> MenuRuntimeInspectionInteractionSnapshot(
             MenuRuntimeInteractionKind.CAPABILITY,
@@ -114,17 +116,32 @@ internal object MenuRuntimeInspectionInteractionSnapshotFactory {
         is MenuInteraction.Back -> MenuActionSafety.NAVIGATION_ONLY
     }
 
-    private fun MenuInteraction.Action.reversibleContractsByClick(): Map<ClickType, MenuRuntimeReversibleContractSnapshot> =
-        acceptedClicks.mapNotNull { click ->
+    private fun MenuInteraction.reversibleContractsByClick(): Map<ClickType, MenuRuntimeReversibleContractSnapshot> = when (this) {
+        MenuInteraction.DisplayOnly,
+        is MenuInteraction.Unavailable,
+        is MenuInteraction.Back -> emptyMap()
+        is MenuInteraction.Action -> acceptedClicks.mapNotNull { click ->
             reversibleContractFor(click)?.let { contract ->
                 click to MenuRuntimeReversibleContractSnapshot(contract.providerId, contract.diagnosticArguments())
             }
-        }.toMap().toSortedMap(compareBy(ClickType::name))
-
-    private fun MenuInteraction.Capability.reversibleContractsByClick(): Map<ClickType, MenuRuntimeReversibleContractSnapshot> =
-        acceptedClicks.mapNotNull { click ->
+        }.toMap()
+        is MenuInteraction.Branches -> branches.flatMap { branch ->
+            branch.reversibleContract?.let { contract ->
+                branch.acceptedClicks.map { click ->
+                    click to MenuRuntimeReversibleContractSnapshot(contract.providerId, contract.diagnosticArguments())
+                }
+            }.orEmpty()
+        }.toMap()
+        is MenuInteraction.ClickBranches -> branches.flatMap { branch ->
+            branch.interaction.reversibleContractsByClick()
+                .filterKeys { it in branch.acceptedClicks }
+                .entries
+                .map { it.key to it.value }
+        }.toMap()
+        is MenuInteraction.Capability -> acceptedClicks.mapNotNull { click ->
             reversibleContractFor(click)?.let { contract ->
                 click to MenuRuntimeReversibleContractSnapshot(contract.providerId, contract.diagnosticArguments())
             }
-        }.toMap().toSortedMap(compareBy(ClickType::name))
+        }.toMap()
+    }.toSortedMap(compareBy(ClickType::name))
 }

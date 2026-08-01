@@ -67,6 +67,12 @@ data class MenuCapabilityAction(
 ) {
     init {
         require(id.isNotBlank()) { "action id must not be blank" }
+        requireReversibleContractSafety(
+            trigger.clicks,
+            { safety },
+            { reversibleContract },
+            "capability action",
+        )
     }
 }
 
@@ -97,6 +103,14 @@ data class MenuCapabilityDefinition(
         require(duplicateClicks.isEmpty()) {
             "capability actions must not accept the same click: $duplicateClicks"
         }
+        actions.forEach { action ->
+            requireReversibleContractSafety(
+                action.trigger.clicks,
+                { action.safety },
+                { action.reversibleContract },
+                "capability definition action ${action.id}",
+            )
+        }
     }
 }
 
@@ -106,7 +120,16 @@ data class ResolvedMenuCapabilityAction(
     val text: String,
     val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
     val reversibleContract: MenuReversibleContract? = null,
-)
+) {
+    init {
+        requireReversibleContractSafety(
+            trigger.clicks,
+            { safety },
+            { reversibleContract },
+            "resolved capability action",
+        )
+    }
+}
 
 data class ResolvedMenuCapability(
     val capabilityId: String,

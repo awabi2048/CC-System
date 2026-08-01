@@ -32,6 +32,7 @@ class MenuCapabilityContractValidationTest {
                         capabilityId = "test:capability",
                         acceptedClicks = setOf(ClickType.RIGHT),
                         safety = MenuActionSafety.REVERSIBLE,
+                        reversibleContract = MenuReversibleContract("audit:test"),
                     ),
                 ),
             ),

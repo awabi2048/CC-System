@@ -28,7 +28,12 @@ class MenuRuntimeDiagnosticsTest {
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, gesture.safety)
 
         val branches = GuiMenuActionIntent.LeftRight(
-            GuiMenuActionIntent.AnyClick("left", "Left", safety = MenuActionSafety.REVERSIBLE),
+            GuiMenuActionIntent.AnyClick(
+                "left",
+                "Left",
+                safety = MenuActionSafety.REVERSIBLE,
+                reversibleContract = MenuReversibleContract("audit:left"),
+            ),
             GuiMenuActionIntent.AnyClick("right", "Right", safety = MenuActionSafety.IRREVERSIBLE),
         ).expand()
         assertEquals(MenuActionSafety.REVERSIBLE, branches.single { it.actionId == "left" }.safety)
@@ -45,6 +50,7 @@ class MenuRuntimeDiagnosticsTest {
                 ClickType.LEFT to MenuActionSafety.NAVIGATION_ONLY,
                 ClickType.RIGHT to MenuActionSafety.REVERSIBLE,
             ),
+            reversibleContractByClick = mapOf(ClickType.RIGHT to MenuReversibleContract("audit:capability")),
         )
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, action.safetyFor(ClickType.LEFT))
         assertEquals(MenuActionSafety.REVERSIBLE, action.safetyFor(ClickType.RIGHT))
@@ -72,6 +78,7 @@ class MenuRuntimeDiagnosticsTest {
                     MenuCapabilityTrigger.RIGHT,
                     "Toggle",
                     MenuActionSafety.REVERSIBLE,
+                    MenuReversibleContract("audit:toggle"),
                 ),
             ),
         )

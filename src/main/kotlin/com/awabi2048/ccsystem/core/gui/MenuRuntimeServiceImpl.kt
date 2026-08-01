@@ -52,6 +52,7 @@ import com.awabi2048.ccsystem.api.gui.MenuReversibleStateFailureReason
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderRegistry
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRestoreContext
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRestoreResult
+import com.awabi2048.ccsystem.api.gui.MenuReversibleStateTraceBindingResult
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateToken
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeReversibleContractSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuSurface
@@ -102,6 +103,9 @@ internal class MenuRuntimeServiceImpl(
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val clickTraces = MenuRuntimeClickTraceStore()
     private val reversibleTokens = MenuReversibleStateTokenStore()
+    private val reversibleProviderInvalidation = reversibleProviders.addInvalidationListener { registration ->
+        reversibleTokens.clearProviderGeneration(registration.generation)
+    }
     private val presentedInventories = java.util.Collections.synchronizedMap(
         java.util.IdentityHashMap<org.bukkit.inventory.Inventory, ManagedPresentation>()
     )
@@ -146,11 +150,17 @@ internal class MenuRuntimeServiceImpl(
 
     override fun snapshot(player: Player): MenuRuntimeSnapshot? = snapshotCurrent(player)
 
-    override fun startClickTraceRun(player: Player): String =
-        clickTraces.start(player.uniqueId)
+    override fun startClickTraceRun(player: Player): String {
+        val runId = clickTraces.start(player.uniqueId)
+        reversibleTokens.clear(player.uniqueId)
+        return runId
+    }
 
-    override fun startClickTraceRun(player: Player, runId: String): String =
-        clickTraces.start(player.uniqueId, runId)
+    override fun startClickTraceRun(player: Player, runId: String): String {
+        val startedRunId = clickTraces.start(player.uniqueId, runId)
+        reversibleTokens.clear(player.uniqueId)
+        return startedRunId
+    }
 
     override fun clickTraces(player: Player): List<MenuRuntimeClickTrace> =
         clickTraces.all(player.uniqueId)
@@ -160,6 +170,7 @@ internal class MenuRuntimeServiceImpl(
 
     override fun clearClickTraces(player: Player) {
         clickTraces.clear(player.uniqueId)
+        reversibleTokens.clear(player.uniqueId)
     }
 
     override fun captureReversibleState(
@@ -184,7 +195,7 @@ internal class MenuRuntimeServiceImpl(
         }
         val contract = resolved.contract
             ?: return reversibleCaptureFailure(MenuReversibleStateFailureReason.MISSING_CONTRACT)
-        val provider = reversibleProviders.definition(contract.providerId)
+        val provider = reversibleProviders.registration(contract.providerId)
             ?: return reversibleCaptureFailure(
                 MenuReversibleStateFailureReason.UNKNOWN_PROVIDER,
                 "provider is not registered: ${contract.providerId}",
@@ -198,9 +209,12 @@ internal class MenuRuntimeServiceImpl(
             capabilityId = resolved.capabilityId,
             contract = contract,
             revision = before.revision,
+            arguments = resolved.arguments.toSortedMap(),
+            attributes = resolved.attributes.toMap(),
+            routePayload = holder.route.payload.toSortedMap(),
         )
         val capture = try {
-            provider.provider.capture(
+            provider.definition.provider.capture(
                 MenuReversibleStateCaptureContext(player, holder.route, runId, interaction),
             )
         } catch (failure: Throwable) {
@@ -217,11 +231,25 @@ internal class MenuRuntimeServiceImpl(
                 capture.reason,
             )
         }
-        val after = snapshotCurrent(player)
-        if (after == null || after.route != before.route || after.revision != before.revision) {
+        if (!matchesReversibleSession(player, before.route, before.revision)) {
             return reversibleCaptureFailure(MenuReversibleStateFailureReason.ROUTE_REVISION_MISMATCH)
         }
-        val token = reversibleTokens.issue(player.uniqueId, runId, holder.route, interaction, state)
+        val token = when (val issued = reversibleTokens.issue(
+            player.uniqueId,
+            runId,
+            holder.route,
+            interaction,
+            state,
+            provider.generation,
+            providerCurrent = {
+                reversibleProviders.registration(contract.providerId)?.generation == provider.generation
+            },
+            runCurrent = { clickTraces.currentRunId(player.uniqueId) == runId },
+        )) {
+            is MenuReversibleStateTokenStore.IssueResult.Issued -> issued.token
+            is MenuReversibleStateTokenStore.IssueResult.Invalidated ->
+                return reversibleCaptureFailure(issued.reason)
+        }
         return MenuReversibleStateCaptureResult.Captured(
             token,
             contract.providerId,
@@ -234,17 +262,24 @@ internal class MenuRuntimeServiceImpl(
         player: Player,
         token: MenuReversibleStateToken,
     ): MenuReversibleStateRestoreResult {
+        if (!player.isOnline) return reversibleRestoreFailure(MenuReversibleStateFailureReason.PLAYER_OFFLINE)
+        val preview = when (val found = reversibleTokens.peek(token, player.uniqueId)) {
+            is MenuReversibleStateTokenStore.PeekResult.Found -> found.entry
+            is MenuReversibleStateTokenStore.PeekResult.Failed -> return reversibleRestoreFailure(found.reason)
+        }
+        validateReversibleRestore(player, preview)?.let { reason -> return reversibleRestoreFailure(reason) }
         val entry = when (val taken = reversibleTokens.take(token, player.uniqueId)) {
             is MenuReversibleStateTokenStore.TakeResult.Taken -> taken.entry
             is MenuReversibleStateTokenStore.TakeResult.Failed -> return reversibleRestoreFailure(taken.reason)
         }
-        val provider = reversibleProviders.definition(entry.interaction.contract.providerId)
-            ?: return reversibleRestoreFailure(
-                MenuReversibleStateFailureReason.PROVIDER_UNREGISTERED,
-                "provider is not registered: ${entry.interaction.contract.providerId}",
-            )
+        validateReversibleRestore(player, entry)?.let { reason -> return reversibleRestoreFailure(reason) }
+        val provider = reversibleProviders.registration(entry.interaction.contract.providerId)
+            ?: return reversibleRestoreFailure(MenuReversibleStateFailureReason.PROVIDER_UNREGISTERED)
+        if (provider.generation != entry.providerGeneration) {
+            return reversibleRestoreFailure(MenuReversibleStateFailureReason.PROVIDER_GENERATION_MISMATCH)
+        }
         val restored = try {
-            provider.provider.restore(
+            provider.definition.provider.restore(
                 MenuReversibleStateRestoreContext(
                     player,
                     entry.route,
@@ -286,6 +321,69 @@ internal class MenuRuntimeServiceImpl(
         return restoreReversibleState(player, token)
     }
 
+    override fun bindReversibleStateToTrace(
+        player: Player,
+        token: MenuReversibleStateToken,
+        runId: String,
+        sequence: Long,
+    ): MenuReversibleStateTraceBindingResult {
+        if (!player.isOnline) return reversibleBindingFailure(MenuReversibleStateFailureReason.PLAYER_OFFLINE)
+        val entry = when (val found = reversibleTokens.peek(token, player.uniqueId)) {
+            is MenuReversibleStateTokenStore.PeekResult.Found -> found.entry
+            is MenuReversibleStateTokenStore.PeekResult.Failed -> return reversibleBindingFailure(found.reason)
+        }
+        if (entry.runId != runId || clickTraces.currentRunId(player.uniqueId) != runId) {
+            return reversibleBindingFailure(MenuReversibleStateFailureReason.RUN_MISMATCH)
+        }
+        val provider = reversibleProviders.registration(entry.interaction.contract.providerId)
+            ?: return reversibleBindingFailure(MenuReversibleStateFailureReason.PROVIDER_UNREGISTERED)
+        if (provider.generation != entry.providerGeneration) {
+            return reversibleBindingFailure(MenuReversibleStateFailureReason.PROVIDER_GENERATION_MISMATCH)
+        }
+        val trace = clickTraces.terminal(player.uniqueId, runId, sequence)
+            ?: return reversibleBindingFailure(MenuReversibleStateFailureReason.TRACE_NOT_TERMINAL)
+        if (!trace.matchesReversibleCapture(entry)) {
+            return reversibleBindingFailure(MenuReversibleStateFailureReason.TRACE_MISMATCH)
+        }
+        val afterRoute = trace.afterRoute
+            ?: return reversibleBindingFailure(MenuReversibleStateFailureReason.TRACE_MISMATCH)
+        val afterRevision = trace.afterRevision
+            ?: return reversibleBindingFailure(MenuReversibleStateFailureReason.TRACE_MISMATCH)
+        if (!matchesReversibleSession(player, afterRoute, afterRevision)) {
+            return reversibleBindingFailure(MenuReversibleStateFailureReason.ROUTE_REVISION_MISMATCH)
+        }
+        when (val binding = reversibleTokens.bind(
+            token,
+            player.uniqueId,
+            MenuReversibleStateTokenStore.TraceBinding(runId, sequence, afterRoute, afterRevision),
+        )) {
+            MenuReversibleStateTokenStore.BindResult.Bound -> Unit
+            is MenuReversibleStateTokenStore.BindResult.Failed -> return reversibleBindingFailure(binding.reason)
+        }
+        return MenuReversibleStateTraceBindingResult.Bound(
+            entry.interaction.contract.providerId,
+            afterRoute,
+            afterRevision,
+            runId,
+            sequence,
+        )
+    }
+
+    override fun bindReversibleStateToTrace(
+        token: MenuReversibleStateToken,
+        runId: String,
+        sequence: Long,
+    ): MenuReversibleStateTraceBindingResult {
+        reversibleTokens.missingReason(token)?.let { reason -> return reversibleBindingFailure(reason) }
+        val playerId = reversibleTokens.boundPlayerId(token)
+            ?: return reversibleBindingFailure(
+                reversibleTokens.missingReason(token) ?: MenuReversibleStateFailureReason.TOKEN_UNKNOWN,
+            )
+        val player = Bukkit.getPlayer(playerId)
+            ?: return reversibleBindingFailure(MenuReversibleStateFailureReason.PLAYER_OFFLINE)
+        return bindReversibleStateToTrace(player, token, runId, sequence)
+    }
+
     override fun clearReversibleStates(player: Player) {
         reversibleTokens.clear(player.uniqueId)
     }
@@ -308,6 +406,7 @@ internal class MenuRuntimeServiceImpl(
             definition,
             MenuRenderContext(player, route, inspectionNavigation.canGoBack),
             capabilities,
+            reversibleProviders,
         ) { view ->
             inspectionSnapshot(
                 player,
@@ -556,6 +655,7 @@ internal class MenuRuntimeServiceImpl(
                 definition,
                 MenuRenderContext(player, session.route, navigation.canGoBack(player)),
                 capabilities,
+                reversibleProviders,
             )
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
@@ -1122,6 +1222,7 @@ internal class MenuRuntimeServiceImpl(
                 definition,
                 MenuRenderContext(player, route, navigation.canGoBack(player)),
                 capabilities,
+                reversibleProviders,
             )
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
@@ -1741,21 +1842,110 @@ internal class MenuRuntimeServiceImpl(
     ): MenuReversibleStateRestoreResult =
         MenuReversibleStateRestoreResult.Failed(MenuReversibleStateFailure(reason, message, exceptionType))
 
+    private fun reversibleBindingFailure(
+        reason: MenuReversibleStateFailureReason,
+        message: String? = null,
+        exceptionType: String? = null,
+    ): MenuReversibleStateTraceBindingResult =
+        MenuReversibleStateTraceBindingResult.Failed(MenuReversibleStateFailure(reason, message, exceptionType))
+
+    private fun matchesReversibleSession(
+        player: Player,
+        expectedRoute: MenuRuntimeRouteSnapshot,
+        expectedRevision: Long,
+    ): Boolean {
+        val holder = player.openInventory.topInventory.holder as? MenuRuntimeHolder ?: return false
+        val session = sessions[player.uniqueId]
+            ?.takeIf { it.route == holder.route && holder.playerId == player.uniqueId }
+            ?: return false
+        val current = snapshotCurrent(player) ?: return false
+        return current.surface == MenuSurface.INVENTORY &&
+            session.route.runtimeSnapshot() == expectedRoute &&
+            current.route == expectedRoute &&
+            current.revision == expectedRevision
+    }
+
+    private fun validateReversibleRestore(
+        player: Player,
+        entry: MenuReversibleStateTokenStore.Entry,
+    ): MenuReversibleStateFailureReason? {
+        val binding = entry.binding ?: return MenuReversibleStateFailureReason.TOKEN_UNBOUND
+        if (binding.runId != entry.runId || clickTraces.currentRunId(player.uniqueId) != entry.runId) {
+            return MenuReversibleStateFailureReason.RUN_MISMATCH
+        }
+        val provider = reversibleProviders.registration(entry.interaction.contract.providerId)
+            ?: return MenuReversibleStateFailureReason.PROVIDER_UNREGISTERED
+        if (provider.generation != entry.providerGeneration) {
+            return MenuReversibleStateFailureReason.PROVIDER_GENERATION_MISMATCH
+        }
+        val trace = clickTraces.terminal(player.uniqueId, binding.runId, binding.sequence)
+            ?: return MenuReversibleStateFailureReason.TRACE_NOT_TERMINAL
+        if (!trace.matchesReversibleCapture(entry) ||
+            trace.afterRoute != binding.route ||
+            trace.afterRevision != binding.revision
+        ) {
+            return MenuReversibleStateFailureReason.TRACE_MISMATCH
+        }
+        val latest = clickTraces.latest(player.uniqueId)
+        if (latest?.runId != binding.runId || latest.sequence != binding.sequence || !latest.application.terminal) {
+            return MenuReversibleStateFailureReason.TRACE_MISMATCH
+        }
+        if (!matchesReversibleSession(player, binding.route, binding.revision)) {
+            return MenuReversibleStateFailureReason.ROUTE_REVISION_MISMATCH
+        }
+        return null
+    }
+
+    private fun MenuRuntimeClickTrace.matchesReversibleCapture(
+        entry: MenuReversibleStateTokenStore.Entry,
+    ): Boolean =
+        accepted &&
+            result == MenuRuntimeActionResultKind.SUCCESS &&
+            beforeRoute == entry.route.runtimeSnapshot() &&
+            beforeRevision == entry.interaction.revision &&
+            slot == entry.interaction.slot &&
+            click == entry.interaction.click &&
+            actionId == entry.interaction.actionId &&
+            capabilityId == entry.interaction.capabilityId &&
+            safety == MenuActionSafety.REVERSIBLE &&
+            reversibleContract == entry.interaction.contract.diagnosticSnapshot()
+
     private fun MenuInteraction.resolveReversibleInteraction(click: ClickType): ReversibleInteraction? = when (this) {
         MenuInteraction.DisplayOnly,
         is MenuInteraction.Unavailable,
         is MenuInteraction.Back -> null
         is MenuInteraction.Action ->
             takeIf { click in acceptedClicks }?.let {
-                ReversibleInteraction(actionId, capabilityId, safetyFor(click), reversibleContractFor(click))
+                ReversibleInteraction(
+                    actionId,
+                    capabilityId,
+                    safetyFor(click),
+                    reversibleContractFor(click),
+                    payload,
+                    emptyMap(),
+                )
             }
         is MenuInteraction.Branches -> branches.singleOrNull { click in it.acceptedClicks }?.let { branch ->
-            ReversibleInteraction(branch.actionId, null, branch.safety, branch.reversibleContract)
+            ReversibleInteraction(
+                branch.actionId,
+                null,
+                branch.safety,
+                branch.reversibleContract,
+                branch.payload,
+                emptyMap(),
+            )
         }
         is MenuInteraction.ClickBranches -> resolve(click)?.resolveReversibleInteraction(click)
         is MenuInteraction.Capability ->
             takeIf { click in acceptedClicks }?.let {
-                ReversibleInteraction(null, capabilityId, safetyFor(click), reversibleContractFor(click))
+                ReversibleInteraction(
+                    null,
+                    capabilityId,
+                    safetyFor(click),
+                    reversibleContractFor(click),
+                    arguments,
+                    attributes,
+                )
             }
     }
 
@@ -2018,6 +2208,8 @@ internal class MenuRuntimeServiceImpl(
         val capabilityId: String?,
         val safety: MenuActionSafety,
         val contract: MenuReversibleContract?,
+        val arguments: Map<String, String>,
+        val attributes: Map<String, Any>,
     )
 
     private data class RouteKey(val owner: String, val id: String)

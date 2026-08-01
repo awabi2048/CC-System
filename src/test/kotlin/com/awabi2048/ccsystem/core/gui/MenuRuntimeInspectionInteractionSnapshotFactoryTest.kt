@@ -62,6 +62,7 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
                             actionId = "toggle",
                             acceptedClicks = setOf(ClickType.RIGHT),
                             safety = MenuActionSafety.REVERSIBLE,
+                            reversibleContract = MenuReversibleContract("audit:toggle"),
                         ),
                     ),
                 ),
@@ -76,6 +77,7 @@ class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
         assertEquals("toggle", snapshot.branches[1].interaction.actionId)
         assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safetyByClick[ClickType.LEFT])
         assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])
+        assertEquals("audit:toggle", snapshot.reversibleContractsByClick[ClickType.RIGHT]?.providerId)
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProvider
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderDefinition
 import com.awabi2048.ccsystem.api.gui.MenuReversibleStateRetention
 import com.awabi2048.ccsystem.api.gui.MenuRoute
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeRouteSnapshot
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -88,25 +89,121 @@ class MenuReversibleStateTokenStoreTest {
         }
     }
 
+    @Test
+    fun `provider generation unregister invalidates tokens and prevents capture completion from issuing stale state`() {
+        val registry = MenuReversibleStateProviderRegistryImpl()
+        val store = store()
+        registry.addInvalidationListener { registration -> store.clearProviderGeneration(registration.generation) }
+        registry.register(definition("provider", "state"))
+        val registration = requireNotNull(registry.registration("provider:state"))
+        val player = UUID.randomUUID()
+        val token = issue(
+            store,
+            player,
+            registration.generation,
+            providerCurrent = { registry.registration("provider:state")?.generation == registration.generation },
+        )
+
+        registry.unregister("provider", "state")
+        assertTakeFailure(store.take(token, player), MenuReversibleStateFailureReason.TOKEN_EXPIRED)
+
+        val captureStarted = CountDownLatch(1)
+        val finishCapture = CountDownLatch(1)
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            registry.register(definition("provider", "state"))
+            val capturedRegistration = requireNotNull(registry.registration("provider:state"))
+            val result = executor.submit<MenuReversibleStateTokenStore.IssueResult> {
+                captureStarted.countDown()
+                finishCapture.await(5, TimeUnit.SECONDS)
+                store.issue(
+                    player,
+                    "audit-run",
+                    MenuRoute("test", "route"),
+                    interaction(),
+                    State,
+                    capturedRegistration.generation,
+                    providerCurrent = {
+                        registry.registration("provider:state")?.generation == capturedRegistration.generation
+                    },
+                    runCurrent = { true },
+                )
+            }
+            assertTrue(captureStarted.await(5, TimeUnit.SECONDS))
+            registry.unregister("provider", "state")
+            finishCapture.countDown()
+
+            val invalidated = assertInstanceOf(MenuReversibleStateTokenStore.IssueResult.Invalidated::class.java, result.get(5, TimeUnit.SECONDS))
+            assertEquals(MenuReversibleStateFailureReason.PROVIDER_GENERATION_MISMATCH, invalidated.reason)
+        } finally {
+            executor.shutdownNow()
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS))
+        }
+    }
+
+    @Test
+    fun `trace binding is retained once and issuance requires the captured run to remain current`() {
+        val store = store()
+        val player = UUID.randomUUID()
+        val token = issue(store, player)
+
+        val binding = MenuReversibleStateTokenStore.TraceBinding(
+            "audit-run",
+            8L,
+            MenuRuntimeRouteSnapshot("test", "route", emptyMap()),
+            4L,
+        )
+        assertEquals(MenuReversibleStateTokenStore.BindResult.Bound, store.bind(token, player, binding))
+        val entry = assertInstanceOf(MenuReversibleStateTokenStore.PeekResult.Found::class.java, store.peek(token, player)).entry
+        assertEquals(binding, entry.binding)
+        val duplicate = assertInstanceOf(MenuReversibleStateTokenStore.BindResult.Failed::class.java, store.bind(token, player, binding))
+        assertEquals(MenuReversibleStateFailureReason.TOKEN_ALREADY_BOUND, duplicate.reason)
+
+        val rejected = store.issue(
+            player,
+            "old-run",
+            MenuRoute("test", "route"),
+            interaction(),
+            State,
+            UUID.randomUUID(),
+            providerCurrent = { true },
+            runCurrent = { false },
+        )
+        val invalidated = assertInstanceOf(MenuReversibleStateTokenStore.IssueResult.Invalidated::class.java, rejected)
+        assertEquals(MenuReversibleStateFailureReason.RUN_MISMATCH, invalidated.reason)
+    }
+
     private fun store(
         ttl: Duration = Duration.ofMinutes(1),
         capacity: Int = 8,
         clock: Clock = Clock.systemUTC(),
     ) = MenuReversibleStateTokenStore(MenuReversibleStateRetention(ttl, capacity), clock)
 
-    private fun issue(store: MenuReversibleStateTokenStore, player: UUID) = store.issue(
-        player,
-        "audit-run",
-        MenuRoute("test", "route"),
-        MenuReversibleInteractionContext(
-            4,
-            ClickType.LEFT,
-            "toggle",
-            null,
-            MenuReversibleContract("test:state", mapOf("key" to "value")),
-            3L,
-        ),
-        State,
+    private fun issue(
+        store: MenuReversibleStateTokenStore,
+        player: UUID,
+        generation: UUID = UUID.randomUUID(),
+        providerCurrent: () -> Boolean = { true },
+        runCurrent: () -> Boolean = { true },
+    ): com.awabi2048.ccsystem.api.gui.MenuReversibleStateToken =
+        (store.issue(
+            player,
+            "audit-run",
+            MenuRoute("test", "route"),
+            interaction(),
+            State,
+            generation,
+            providerCurrent,
+            runCurrent,
+        ) as MenuReversibleStateTokenStore.IssueResult.Issued).token
+
+    private fun interaction() = MenuReversibleInteractionContext(
+        4,
+        ClickType.LEFT,
+        "toggle",
+        null,
+        MenuReversibleContract("test:state", mapOf("key" to "value")),
+        3L,
     )
 
     private fun assertTakeFailure(

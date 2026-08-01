@@ -43,6 +43,12 @@ data class MenuReversibleInteractionContext(
     val capabilityId: String?,
     val contract: MenuReversibleContract,
     val revision: Long,
+    /** 最終 Action の payload、または Capability invocation の arguments です。 */
+    val arguments: Map<String, String> = emptyMap(),
+    /** Capability invocation が持つ型付き runtime attributes です。診断へは公開しません。 */
+    val attributes: Map<String, Any> = emptyMap(),
+    /** capture 時点の route payload です。 */
+    val routePayload: Map<String, String> = emptyMap(),
 )
 
 /** provider callback は Runtime の registry/token lock を保持しない状態で呼ばれます。 */
@@ -104,6 +110,12 @@ data class MenuReversibleStateProviderDefinition(
     }
 }
 
+/** registry が一度の register ごとに発行する provider 世代です。 */
+data class MenuReversibleStateProviderRegistration(
+    val definition: MenuReversibleStateProviderDefinition,
+    val generation: UUID,
+)
+
 /** owner 付き provider registry。重複 ID は常に失敗し、既存登録を置換しません。 */
 interface MenuReversibleStateProviderRegistry {
     fun register(definition: MenuReversibleStateProviderDefinition)
@@ -113,6 +125,15 @@ interface MenuReversibleStateProviderRegistry {
     fun unregisterOwner(owner: String)
 
     fun definition(providerId: String): MenuReversibleStateProviderDefinition?
+
+    /** provider と、その登録インスタンスを識別する世代を返します。 */
+    fun registration(providerId: String): MenuReversibleStateProviderRegistration?
+
+    /**
+     * provider 世代の解除を購読します。listener は registry の内部ロック外で同期的に呼ばれます。
+     * Runtime は発行済み token を直ちに無効化するために使用します。
+     */
+    fun addInvalidationListener(listener: (MenuReversibleStateProviderRegistration) -> Unit): AutoCloseable
 
     fun definitions(): List<MenuReversibleStateProviderDefinition>
 }
@@ -125,13 +146,19 @@ enum class MenuReversibleStateFailureReason {
     NOT_REVERSIBLE,
     MISSING_CONTRACT,
     UNKNOWN_PROVIDER,
+    PROVIDER_GENERATION_MISMATCH,
     NO_ACTIVE_RUN,
+    RUN_MISMATCH,
     ROUTE_REVISION_MISMATCH,
     CAPTURE_REJECTED,
     CAPTURE_EXCEPTION,
     TOKEN_UNKNOWN,
     TOKEN_EXPIRED,
     TOKEN_ALREADY_USED,
+    TOKEN_UNBOUND,
+    TOKEN_ALREADY_BOUND,
+    TRACE_NOT_TERMINAL,
+    TRACE_MISMATCH,
     TOKEN_WRONG_PLAYER,
     PLAYER_OFFLINE,
     PROVIDER_UNREGISTERED,
@@ -164,6 +191,18 @@ sealed interface MenuReversibleStateRestoreResult {
     ) : MenuReversibleStateRestoreResult
 
     data class Failed(val failure: MenuReversibleStateFailure) : MenuReversibleStateRestoreResult
+}
+
+sealed interface MenuReversibleStateTraceBindingResult {
+    data class Bound(
+        val providerId: String,
+        val route: MenuRuntimeRouteSnapshot,
+        val revision: Long,
+        val runId: String,
+        val sequence: Long,
+    ) : MenuReversibleStateTraceBindingResult
+
+    data class Failed(val failure: MenuReversibleStateFailure) : MenuReversibleStateTraceBindingResult
 }
 
 /** Runtime の token 保持期間です。実装は容量超過時にも最古 token を破棄します。 */

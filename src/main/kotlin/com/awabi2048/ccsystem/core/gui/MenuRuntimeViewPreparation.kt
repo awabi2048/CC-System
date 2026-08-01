@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gui.MenuContractValidationContext
 import com.awabi2048.ccsystem.api.gui.MenuContractValidator
 import com.awabi2048.ccsystem.api.gui.MenuContractViolation
 import com.awabi2048.ccsystem.api.gui.MenuRenderContext
+import com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderRegistry
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionResult
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeInspectionSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
@@ -24,6 +25,7 @@ internal object MenuRuntimeViewPreparation {
         definition: InventoryMenuDefinition,
         context: MenuRenderContext,
         capabilities: MenuCapabilityService? = null,
+        reversibleProviders: MenuReversibleStateProviderRegistry? = null,
     ): MenuRuntimePreparedViewResult {
         val view = try {
             definition.renderer.render(context)
@@ -34,7 +36,7 @@ internal object MenuRuntimeViewPreparation {
         return contractInvalid(
             definition,
             view.elements.map { element -> MenuActionObservation(element.slot, element.resolvedInteraction()) },
-            capabilities?.let(::MenuContractValidationContext),
+            capabilities?.let { MenuContractValidationContext(it, reversibleProviders) },
         ) ?: MenuRuntimePreparedViewResult.Ready(view)
     }
 
@@ -51,9 +53,10 @@ internal object MenuRuntimeViewPreparation {
         definition: InventoryMenuDefinition,
         context: MenuRenderContext,
         capabilities: MenuCapabilityService,
+        reversibleProviders: MenuReversibleStateProviderRegistry? = null,
         snapshot: (InventoryMenuView) -> MenuRuntimeInspectionSnapshot,
     ): MenuRuntimeInspectionResult = when (
-        val prepared = renderValidated(definition, context, capabilities)
+        val prepared = renderValidated(definition, context, capabilities, reversibleProviders)
     ) {
         is MenuRuntimePreparedViewResult.Ready -> MenuRuntimeInspectionResult(
             MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.INSPECT, context.route),

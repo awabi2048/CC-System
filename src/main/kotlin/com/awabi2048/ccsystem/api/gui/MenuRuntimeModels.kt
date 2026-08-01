@@ -65,6 +65,12 @@ sealed interface MenuInteraction {
             require(reversibleContractByClick.keys.all { it in acceptedClicks }) {
                 "action reversible contract may only be declared for accepted clicks"
             }
+            requireReversibleContractSafety(
+                acceptedClicks,
+                { click -> safetyByClick[click] ?: safety },
+                { click -> reversibleContractByClick[click] ?: reversibleContract },
+                "action",
+            )
         }
 
         fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
@@ -131,6 +137,12 @@ sealed interface MenuInteraction {
             require(reversibleContractByClick.keys.all { it in acceptedClicks }) {
                 "capability reversible contract may only be declared for accepted clicks"
             }
+            requireReversibleContractSafety(
+                acceptedClicks,
+                { click -> safetyByClick[click] ?: safety },
+                { click -> reversibleContractByClick[click] ?: reversibleContract },
+                "capability",
+            )
         }
 
         fun safetyFor(click: ClickType): MenuActionSafety = safetyByClick[click] ?: safety
@@ -169,6 +181,27 @@ data class MenuActionBranch(
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }
         require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
+        requireReversibleContractSafety(
+            acceptedClicks,
+            { safety },
+            { reversibleContract },
+            "action branch",
+        )
+    }
+}
+
+internal fun requireReversibleContractSafety(
+    acceptedClicks: Set<ClickType>,
+    safetyFor: (ClickType) -> MenuActionSafety,
+    contractFor: (ClickType) -> MenuReversibleContract?,
+    subject: String,
+) {
+    acceptedClicks.forEach { click ->
+        val reversible = safetyFor(click) == MenuActionSafety.REVERSIBLE
+        val hasContract = contractFor(click) != null
+        require(reversible == hasContract) {
+            "$subject reversible contract must be declared exactly for REVERSIBLE clicks: $click"
+        }
     }
 }
 

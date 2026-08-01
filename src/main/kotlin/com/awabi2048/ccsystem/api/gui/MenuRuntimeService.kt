@@ -28,7 +28,7 @@ interface MenuRuntimeService {
 
     fun latestClickTrace(player: Player): MenuRuntimeClickTrace?
 
-    /** GUI状態を変えず、playerの診断traceだけを削除します。 */
+    /** GUI状態を変えず、playerの診断traceと未使用可逆 token を削除します。 */
     fun clearClickTraces(player: Player)
 
     /**
@@ -49,6 +49,24 @@ interface MenuRuntimeService {
 
     /** 監査専用です。token が束縛された online player を使って復元します。 */
     fun restoreReversibleState(token: MenuReversibleStateToken): MenuReversibleStateRestoreResult
+
+    /**
+     * capture token を、その直後に成立した終端 click trace へ束縛します。
+     * 同一player・同一runで、capture時のslot/click/route/revision/契約に一致するtraceだけを受理します。
+     */
+    fun bindReversibleStateToTrace(
+        player: Player,
+        token: MenuReversibleStateToken,
+        runId: String,
+        sequence: Long,
+    ): MenuReversibleStateTraceBindingResult
+
+    /** token が束縛された online player を使って終端 trace へ束縛します。 */
+    fun bindReversibleStateToTrace(
+        token: MenuReversibleStateToken,
+        runId: String,
+        sequence: Long,
+    ): MenuReversibleStateTraceBindingResult
 
     /** player の未使用可逆 token をすべて無効化します。 */
     fun clearReversibleStates(player: Player)

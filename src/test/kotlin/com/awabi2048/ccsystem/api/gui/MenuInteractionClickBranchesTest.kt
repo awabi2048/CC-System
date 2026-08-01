@@ -20,6 +20,7 @@ class MenuInteractionClickBranchesTest {
             actionId = "toggle",
             acceptedClicks = setOf(ClickType.RIGHT),
             safety = MenuActionSafety.REVERSIBLE,
+            reversibleContract = MenuReversibleContract("audit:toggle"),
         )
         val interaction = MenuInteraction.ClickBranches(
             listOf(

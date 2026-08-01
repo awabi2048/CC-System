@@ -1,10 +1,13 @@
 package com.awabi2048.ccsystem.api.gui
 
 import com.awabi2048.ccsystem.core.gui.GuiMenuCapabilityInteractionFactory
+import com.awabi2048.ccsystem.core.gui.MenuCapabilityServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuReversibleStateProviderRegistryImpl
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class MenuReversibleContractTest {
@@ -65,5 +68,64 @@ class MenuReversibleContractTest {
 
         assertNull(interaction.reversibleContractFor(ClickType.LEFT))
         assertEquals(contract, interaction.reversibleContractFor(ClickType.RIGHT))
+    }
+
+    @Test
+    fun `reversible contracts and safety must be declared together for every click`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            MenuInteraction.Action(
+                actionId = "toggle",
+                acceptedClicks = setOf(ClickType.LEFT),
+                safety = MenuActionSafety.REVERSIBLE,
+            )
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            MenuActionBranch(
+                actionId = "toggle",
+                acceptedClicks = setOf(ClickType.LEFT),
+                safety = MenuActionSafety.NAVIGATION_ONLY,
+                reversibleContract = MenuReversibleContract("audit:toggle"),
+            )
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            MenuCapabilityAction(
+                id = "toggle",
+                trigger = MenuCapabilityTrigger.RIGHT,
+                textProvider = MenuCapabilityActionTextProvider { "Toggle" },
+                handler = MenuCapabilityActionHandler { MenuActionResult.Ignored },
+                safety = MenuActionSafety.REVERSIBLE,
+            )
+        }
+    }
+
+    @Test
+    fun `validator rejects a reversible contract whose provider is absent`() {
+        val definition = InventoryMenuDefinition(
+            owner = "test",
+            id = "contract",
+            renderer = InventoryMenuRenderer { error("not used") },
+            actions = mapOf("toggle" to MenuActionHandler { MenuActionResult.Success() }),
+        )
+        val violations = MenuContractValidator.validate(
+            definition,
+            listOf(
+                MenuActionObservation(
+                    4,
+                    MenuInteraction.Action(
+                        actionId = "toggle",
+                        acceptedClicks = setOf(ClickType.LEFT),
+                        safety = MenuActionSafety.REVERSIBLE,
+                        reversibleContract = MenuReversibleContract("missing:provider"),
+                    ),
+                ),
+            ),
+            MenuContractValidationContext(
+                MenuCapabilityServiceImpl(),
+                MenuReversibleStateProviderRegistryImpl(),
+            ),
+        )
+
+        assertEquals(1, violations.size)
+        assertEquals("reversible provider is not registered: missing:provider", violations.single().message)
     }
 }

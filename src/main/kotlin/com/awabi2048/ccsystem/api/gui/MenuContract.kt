@@ -29,6 +29,7 @@ data class MenuActionObservation(
 /** RuntimeがCapability registryと照合して画面契約を検証するための文脈です。 */
 data class MenuContractValidationContext(
     val capabilities: MenuCapabilityService,
+    val reversibleProviders: MenuReversibleStateProviderRegistry? = null,
 )
 
 /**
@@ -56,23 +57,45 @@ object MenuContractValidator {
 
         observations.forEach { observation ->
             when (val interaction = observation.interaction) {
-                is MenuInteraction.Action -> validateAction(
-                    definition,
-                    observation.slot,
-                    interaction.actionId,
-                    interaction.payload,
-                    interaction.acceptedClicks,
-                    acceptedByAction,
-                    violations,
-                )
+                is MenuInteraction.Action -> {
+                    validateAction(
+                        definition,
+                        observation.slot,
+                        interaction.actionId,
+                        interaction.payload,
+                        interaction.acceptedClicks,
+                        acceptedByAction,
+                        violations,
+                    )
+                    validateReversibleContract(
+                        definition,
+                        observation.slot,
+                        interaction.actionId,
+                        interaction.acceptedClicks,
+                        interaction::safetyFor,
+                        interaction::reversibleContractFor,
+                        context,
+                        violations,
+                    )
+                }
                 is MenuInteraction.Branches -> interaction.branches.forEach { branch ->
                     validateAction(
                     definition,
-                        observation.slot,
-                        branch.actionId,
+                    observation.slot,
+                    branch.actionId,
                         branch.payload,
                         branch.acceptedClicks,
-                        acceptedByAction,
+                    acceptedByAction,
+                    violations,
+                    )
+                    validateReversibleContract(
+                        definition,
+                        observation.slot,
+                        branch.actionId,
+                        branch.acceptedClicks,
+                        { branch.safety },
+                        { branch.reversibleContract },
+                        context,
                         violations,
                     )
                 }
@@ -158,15 +181,27 @@ object MenuContractValidator {
         violations: MutableList<MenuContractViolation>,
     ) {
         when (interaction) {
-            is MenuInteraction.Action -> validateAction(
-                definition,
-                slot,
-                interaction.actionId,
-                interaction.payload,
-                interaction.acceptedClicks,
-                acceptedByAction,
-                violations,
-            )
+            is MenuInteraction.Action -> {
+                validateAction(
+                    definition,
+                    slot,
+                    interaction.actionId,
+                    interaction.payload,
+                    interaction.acceptedClicks,
+                    acceptedByAction,
+                    violations,
+                )
+                validateReversibleContract(
+                    definition,
+                    slot,
+                    interaction.actionId,
+                    interaction.acceptedClicks,
+                    interaction::safetyFor,
+                    interaction::reversibleContractFor,
+                    context,
+                    violations,
+                )
+            }
             is MenuInteraction.Capability ->
                 validateCapability(definition, slot, interaction, context, violations)
             is MenuInteraction.Unavailable,
@@ -193,6 +228,16 @@ object MenuContractValidator {
             )
             return
         }
+        validateReversibleContract(
+            definition,
+            slot,
+            null,
+            interaction.acceptedClicks,
+            interaction::safetyFor,
+            interaction::reversibleContractFor,
+            context,
+            violations,
+        )
         context ?: return
         val capability = try {
             context.capabilities.definition(interaction.capabilityId)
@@ -249,6 +294,39 @@ object MenuContractValidator {
                 null,
                 "capability reversible contract differs from registry static contract",
             )
+        }
+    }
+
+    private fun validateReversibleContract(
+        definition: InventoryMenuDefinition,
+        slot: Int,
+        actionId: String?,
+        acceptedClicks: Set<ClickType>,
+        safetyFor: (ClickType) -> MenuActionSafety,
+        contractFor: (ClickType) -> MenuReversibleContract?,
+        context: MenuContractValidationContext?,
+        violations: MutableList<MenuContractViolation>,
+    ) {
+        acceptedClicks.forEach { click ->
+            val contract = contractFor(click)
+            val reversible = safetyFor(click) == MenuActionSafety.REVERSIBLE
+            if (reversible != (contract != null)) {
+                violations += MenuContractViolation(
+                    definition.routeId,
+                    slot,
+                    actionId,
+                    "reversible contract must be declared exactly for REVERSIBLE clicks: $click",
+                )
+                return@forEach
+            }
+            if (contract != null && context?.reversibleProviders?.registration(contract.providerId) == null) {
+                violations += MenuContractViolation(
+                    definition.routeId,
+                    slot,
+                    actionId,
+                    "reversible provider is not registered: ${contract.providerId}",
+                )
+            }
         }
     }
 }

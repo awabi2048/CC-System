@@ -228,6 +228,12 @@ internal data class GuiMenuEntryAction(
         require(actionId.isNotBlank()) { "actionId must not be blank" }
         require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
         require(label.isNotBlank()) { "action label must not be blank" }
+        requireReversibleContractSafety(
+            acceptedClicks,
+            { safety },
+            { reversibleContract },
+            "menu entry action",
+        )
     }
 }
 
