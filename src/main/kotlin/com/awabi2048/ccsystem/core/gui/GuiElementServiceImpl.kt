@@ -38,6 +38,7 @@ class GuiElementServiceImpl(
     private val i18n: ((Player?, String, Map<String, Any>) -> String)? = null,
 ) : GuiElementService {
     private val loreService = LoreServiceImpl(i18n)
+    private val semanticsFactory = MenuPresentationSemanticsFactory(i18n)
     private val legacy = LegacyComponentSerializer.legacySection()
     private val colorCodePattern = Regex("(?i)[\u00A7&][0-9A-FK-ORX]")
 
@@ -88,15 +89,12 @@ class GuiElementServiceImpl(
 
     override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
         val enabledActions = spec.expandedActions().filter { it.enabled }
+        val loreSpec = GuiMenuEntryLoreFactory.build(spec, enabledActions, player)
         val icon = item(
             GuiItemSpec(
                 material = spec.material,
                 name = spec.name,
-                lore = GuiMenuEntryLoreFactory.build(
-                    spec,
-                    enabledActions,
-                    player,
-                ),
+                lore = loreSpec,
                 role = spec.role,
                 amount = spec.amount,
             ),
@@ -141,7 +139,19 @@ class GuiElementServiceImpl(
             icon,
             spec.role,
             interaction = if (enabledActions.isEmpty() && spec.role == GuiElementRole.BACK) null else interaction,
-        )
+        ).withPresentationSemantics(semanticsFactory.create(
+            spec.name,
+            loreSpec,
+            when {
+                spec.name is GuiNameSpec.TargetIdentity -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.LIST_TARGET
+                enabledActions.size > 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.MULTI_ACTION
+                spec.role == GuiElementRole.NAVIGATION -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.PAGE_NAVIGATION
+                enabledActions.singleOrNull()?.acceptedClicks == MenuAcceptedClicks.STANDARD ->
+                    com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+                enabledActions.isEmpty() -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
+                else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
+            },
+        ))
     }
 
     override fun menuDisplay(spec: GuiMenuDisplaySpec): MenuElement {
@@ -161,7 +171,15 @@ class GuiElementServiceImpl(
             item = icon,
             role = spec.item.role,
             interaction = MenuInteraction.DisplayOnly,
-        )
+        ).withPresentationSemantics(semanticsFactory.create(
+            spec.item.name,
+            spec.item.lore,
+            if (spec.item.name is GuiNameSpec.TargetIdentity) {
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.LIST_TARGET
+            } else {
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
+            },
+        ))
     }
 
     override fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement {
@@ -172,9 +190,8 @@ class GuiElementServiceImpl(
         } else {
             spec.item
         }
-        val icon = item(
-            baseItem.copy(lore = GuiLoreComposer.compose(baseItem.lore, actionLines)),
-        ).also { item ->
+        val loreSpec = GuiLoreComposer.compose(baseItem.lore, actionLines)
+        val icon = item(baseItem.copy(lore = loreSpec)).also { item ->
             spec.glint?.let { enabled -> item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) } }
             spec.playerHeadOwner?.let { owner ->
                 val meta = item.itemMeta as? SkullMeta
@@ -213,10 +230,22 @@ class GuiElementServiceImpl(
             icon,
             spec.item.role,
             interaction = if (enabledActions.isEmpty() && spec.item.role == GuiElementRole.BACK) null else interaction,
-        )
+        ).withPresentationSemantics(semanticsFactory.create(
+            baseItem.name,
+            loreSpec,
+            when {
+                baseItem.name is GuiNameSpec.TargetIdentity -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.LIST_TARGET
+                enabledActions.size > 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.MULTI_ACTION
+                baseItem.role == GuiElementRole.NAVIGATION -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.PAGE_NAVIGATION
+                enabledActions.singleOrNull()?.acceptedClicks == MenuAcceptedClicks.STANDARD ->
+                    com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+                enabledActions.isEmpty() -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
+                else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
+            },
+        ))
     }
 
-    private fun capabilityItem(player: Player?, capability: ResolvedMenuCapability): ItemStack {
+    private fun capabilityItem(player: Player?, capability: ResolvedMenuCapability): Pair<ItemStack, GuiLoreSpec> {
         val presentation = capability.presentation
         val actions = capability.actions.map { action ->
             GuiMenuEntryAction(
@@ -244,14 +273,14 @@ class GuiElementServiceImpl(
             meta.owningPlayer = Bukkit.getOfflinePlayer(owner)
             item.itemMeta = meta
         }
-        return item
+        return item to itemSpec.lore
     }
 
     override fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilityInvocationSpec): MenuElement {
         val capability = spec.capability
-        val item = capabilityItem(player, capability)
+        val (item, loreSpec) = capabilityItem(player, capability)
         val acceptedClicks = spec.acceptedClicks
-        return if (capability.actionable && acceptedClicks.isNotEmpty()) {
+        val element = if (capability.actionable && acceptedClicks.isNotEmpty()) {
             MenuElement(
                 slot = spec.slot,
                 item = item,
@@ -266,6 +295,18 @@ class GuiElementServiceImpl(
                 interaction = MenuInteraction.DisplayOnly,
             )
         }
+        val profile = when {
+            capability.presentation.item.name is GuiNameSpec.TargetIdentity ->
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.LIST_TARGET
+            capability.actions.size > 1 -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.MULTI_ACTION
+            acceptedClicks == MenuAcceptedClicks.STANDARD ->
+                com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.SINGLE_STANDARD_ACTION
+            !capability.actionable -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.DISPLAY_ONLY
+            else -> com.awabi2048.ccsystem.api.gui.MenuPresentationProfile.UNKNOWN
+        }
+        return element.withPresentationSemantics(
+            semanticsFactory.create(capability.presentation.item.name, loreSpec, profile),
+        )
     }
 
     override fun applyFrame(inventory: Inventory, spec: GuiFrameSpec) {
@@ -359,9 +400,15 @@ class GuiElementServiceImpl(
 
     private fun renderName(name: GuiNameSpec): Component = when (name) {
         GuiNameSpec.Empty -> Component.empty()
+        is GuiNameSpec.FixedLabel -> normalizeComponent(name.value)
+        is GuiNameSpec.TargetIdentity -> normalizeComponent(name.value)
         is GuiNameSpec.Text -> this.name(name.text, name.style)
         is GuiNameSpec.Component -> normalizeComponent(name.value)
     }
+
+    private fun MenuElement.withPresentationSemantics(
+        semantics: com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics,
+    ): MenuElement = apply { presentationSemantics = semantics }
 
     private fun clickLabel(player: Player?, clicks: Set<ClickType>): String {
         val key = GuiInteractionLabelResolver.languageKey(clicks)

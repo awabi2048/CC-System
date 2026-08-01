@@ -1655,7 +1655,7 @@ internal class MenuRuntimeServiceImpl(
                 role = element.role,
                 enabled = element.enabled,
                 interaction = element.resolvedInteraction().inspectionSnapshot(),
-            )
+            ).also { it.presentationSemantics = element.presentationSemantics }
         },
     )
 
@@ -1844,7 +1844,10 @@ internal class MenuRuntimeServiceImpl(
             branches,
             interaction?.inspectionSnapshot(),
             interaction?.reversibleContractsByClick().orEmpty(),
-        )
+        ).also { snapshot ->
+            snapshot.presentationSemantics = element?.presentationSemantics
+                ?: com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics.opaque()
+        }
     }
 
     private fun hasGlint(item: ItemStack): Boolean {

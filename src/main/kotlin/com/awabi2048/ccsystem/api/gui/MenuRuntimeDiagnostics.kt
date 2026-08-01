@@ -176,6 +176,13 @@ data class MenuRuntimeSlotSnapshot(
     val interaction: MenuRuntimeInspectionInteractionSnapshot? = null,
     val reversibleContractsByClick: Map<ClickType, MenuRuntimeReversibleContractSnapshot> = emptyMap(),
 )
+{
+    var presentationSemantics: MenuElementPresentationSemantics = MenuElementPresentationSemantics.opaque()
+        internal set
+}
+
+fun MenuRuntimeSlotSnapshot.copyWithPresentationSemantics(): MenuRuntimeSlotSnapshot =
+    copy().also { it.presentationSemantics = presentationSemantics }
 
 /** inventory surfaceでは全slotを、Dialog/Formでは空のslot一覧を返します。 */
 data class MenuRuntimeSnapshot(

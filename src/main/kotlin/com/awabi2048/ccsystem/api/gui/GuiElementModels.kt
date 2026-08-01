@@ -16,6 +16,8 @@ enum class GuiNameStyle(val colorCode: String) {
 
 sealed interface GuiNameSpec {
     data object Empty : GuiNameSpec
+    data class FixedLabel(val value: net.kyori.adventure.text.Component) : GuiNameSpec
+    data class TargetIdentity(val value: net.kyori.adventure.text.Component) : GuiNameSpec
     data class Text(val text: String, val style: GuiNameStyle) : GuiNameSpec
     data class Component(val value: net.kyori.adventure.text.Component) : GuiNameSpec
 }

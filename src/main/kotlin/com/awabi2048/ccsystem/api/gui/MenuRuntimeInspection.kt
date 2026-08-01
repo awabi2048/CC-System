@@ -36,6 +36,13 @@ data class MenuRuntimeInspectionSlotSnapshot(
     val enabled: Boolean,
     val interaction: MenuRuntimeInspectionInteractionSnapshot,
 )
+{
+    var presentationSemantics: MenuElementPresentationSemantics = MenuElementPresentationSemantics.opaque()
+        internal set
+}
+
+fun MenuRuntimeInspectionSlotSnapshot.copyWithPresentationSemantics(): MenuRuntimeInspectionSlotSnapshot =
+    copy().also { it.presentationSemantics = presentationSemantics }
 
 /** 実行時に解決されるinteraction契約を、attributesを含めて保持する診断型です。 */
 data class MenuRuntimeInspectionInteractionSnapshot(

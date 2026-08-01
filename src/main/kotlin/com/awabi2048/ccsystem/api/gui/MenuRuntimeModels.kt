@@ -341,6 +341,9 @@ data class MenuElement(
     val interaction: MenuInteraction? = null,
     val actionSafety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
 ) {
+    var presentationSemantics: MenuElementPresentationSemantics = MenuElementPresentationSemantics.opaque()
+        internal set
+
     init {
         require(slot >= 0) { "slot must not be negative" }
         require(actionId?.isNotBlank() != false) { "actionId must not be blank" }
@@ -373,6 +376,21 @@ data class MenuElement(
         else -> MenuInteraction.DisplayOnly
     }
 }
+
+/** data class互換copyで、constructor外の表示意味情報も明示的に保持します。 */
+fun MenuElement.copyWithPresentationSemantics(
+    slot: Int = this.slot,
+    item: ItemStack = this.item,
+    role: GuiElementRole = this.role,
+    actionId: String? = this.actionId,
+    actionPayload: Map<String, String> = this.actionPayload,
+    enabled: Boolean = this.enabled,
+    sounds: MenuActionSoundPolicy? = this.sounds,
+    interaction: MenuInteraction? = this.interaction,
+    actionSafety: MenuActionSafety = this.actionSafety,
+): MenuElement = copy(
+    slot, item, role, actionId, actionPayload, enabled, sounds, interaction, actionSafety,
+).also { it.presentationSemantics = presentationSemantics }
 
 data class InventoryMenuView(
     val size: Int,

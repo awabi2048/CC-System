@@ -5,6 +5,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 
 interface GuiElementService {
     fun title(name: GuiNameSpec): Component
@@ -43,4 +44,29 @@ interface GuiElementService {
     fun backEntry(player: Player?, slot: Int, material: Material = Material.REDSTONE): MenuElement
 
     fun confirmItem(name: String, confirm: Boolean): ItemStack
+}
+
+/** 明示的に無効な要素を、表示専用要素と区別して生成します。 */
+fun GuiElementService.menuUnavailable(
+    player: Player?,
+    spec: GuiMenuEntrySpec,
+    reason: Component,
+    acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+): MenuElement {
+    require(spec.expandedActions().none(GuiMenuEntryAction::enabled)) {
+        "unavailable menu entries cannot contain enabled actions"
+    }
+    val base = menuEntry(player, spec)
+    return MenuElement(
+        slot = base.slot,
+        item = base.item,
+        role = base.role,
+        sounds = base.sounds,
+        interaction = MenuInteraction.Unavailable(acceptedClicks.toSet(), reason, base.sounds),
+    ).also { element ->
+        element.presentationSemantics = base.presentationSemantics.copy(
+            profile = MenuPresentationProfile.DISABLED,
+            disabledReason = reason,
+        )
+    }
 }
