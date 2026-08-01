@@ -113,6 +113,62 @@ class GuiCommonPresentationSemanticsFixtureTest {
     }
 
     @Test
+    fun `back semantic union matches runtime standard clicks and renders one action line`() {
+        val action = GuiLoreLine.Interaction(null, MenuAcceptedClicks.STANDARD, "戻る")
+        val lore = GuiLoreComposer.compose(GuiLoreSpec.None, listOf(action))
+        val semantics = factory.create(
+            GuiNameSpec.FixedLabel(Component.text("戻る")),
+            lore,
+            MenuPresentationProfile.PAGE_NAVIGATION,
+        )
+        val runtime = MenuInteraction.Back()
+        val rendered = LoreServiceImpl { _, _, _ -> "クリック" }.render(lore)
+            .map(PlainTextComponentSerializer.plainText()::serialize)
+
+        assertEquals(MenuAcceptedClicks.STANDARD, runtime.acceptedClicks)
+        assertEquals(MenuAcceptedClicks.STANDARD, semantics.lore.blocks.single().lines.single().action?.acceptedClicks)
+        assertEquals("クリック", semantics.lore.blocks.single().lines.single().action?.operationLabel)
+        assertEquals("戻る", semantics.lore.blocks.single().lines.single().action?.actionLabel)
+        assertTrue(rendered.first().isNotBlank())
+        assertEquals(1, rendered.count { it.contains("戻る") })
+        assertEquals(MenuPresentationProfile.PAGE_NAVIGATION, semantics.profile)
+        assertTrue(MenuPresentationSemanticsValidator.violations(semantics).isEmpty())
+
+        val source = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/core/gui/GuiElementServiceImpl.kt"),
+        )
+        val backBuilder = source.substringAfter("override fun backEntry")
+            .substringBefore("override fun pageNavigationEntry")
+        assertTrue(backBuilder.contains("actions = listOf(GuiMenuActionIntent.Back)"))
+        assertTrue(!backBuilder.contains("GuiLoreSpec.NameOnly"))
+        val menuEntryBuilder = source.substringAfter("override fun menuEntry")
+            .substringBefore("override fun menuDisplay")
+        assertTrue(menuEntryBuilder.contains("listOf(navigationAction(requireI18n"))
+        assertTrue(menuEntryBuilder.contains("GuiElementRole.NAVIGATION, GuiElementRole.BACK"))
+    }
+
+    @Test
+    fun `page navigation common builder has the same canonical standard union`() {
+        listOf(GuiMenuActionIntent.Direction.PREVIOUS, GuiMenuActionIntent.Direction.NEXT).forEach { direction ->
+            val spec = GuiMenuEntrySpec(
+                0,
+                Material.ARROW,
+                GuiNameSpec.FixedLabel(Component.text(direction.name)),
+                GuiElementRole.NAVIGATION,
+                actions = listOf(GuiMenuActionIntent.Page(direction, "page", "移動")),
+            )
+            val action = spec.expandedActions().single()
+            val lore = GuiMenuEntryLoreFactory.build(spec, listOf(action), null)
+            val semantics = factory.create(spec.name, lore, MenuPresentationProfile.PAGE_NAVIGATION)
+
+            assertEquals(MenuAcceptedClicks.STANDARD, action.acceptedClicks)
+            assertEquals(MenuAcceptedClicks.STANDARD, semantics.lore.blocks.single().lines.single().action?.acceptedClicks)
+            assertEquals(MenuPresentationProfile.PAGE_NAVIGATION, semantics.profile)
+            assertTrue(MenuPresentationSemanticsValidator.violations(semantics).isEmpty())
+        }
+    }
+
+    @Test
     fun `structured entry path renders action components when base lore is none`() {
         val spec = GuiStructuredMenuEntrySpec(
             slot = 0,
