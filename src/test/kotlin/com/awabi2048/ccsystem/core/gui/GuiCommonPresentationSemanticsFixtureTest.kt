@@ -8,9 +8,54 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
+import java.nio.file.Files
+import java.nio.file.Path
 
 class GuiCommonPresentationSemanticsFixtureTest {
     private val factory = MenuPresentationSemanticsFactory { _, _, _ -> "クリック" }
+
+    @Test
+    fun `item materialization never strips composed lore according to semantic role`() {
+        val source = Files.readString(
+            Path.of("src/main/kotlin/com/awabi2048/ccsystem/core/gui/GuiElementServiceImpl.kt"),
+        )
+        val itemBody = source.substringAfter("override fun item(spec: GuiItemSpec)")
+            .substringBefore("override fun menuEntry")
+
+        assertTrue(itemBody.contains("val lore = lore(spec.lore)"))
+        assertTrue(!itemBody.contains("nameOnlyRole"))
+        assertTrue(!itemBody.contains("emptyList() else lore"))
+    }
+
+    @Test
+    fun `action lore stays canonical immediately before item meta for semantic action roles`() {
+        val renderer = LoreServiceImpl { _, _, _ -> "クリック" }
+        val action = GuiLoreLine.Interaction(null, setOf(ClickType.LEFT, ClickType.RIGHT), "実行する")
+
+        listOf(
+            GuiElementRole.CONFIRM to MenuPresentationProfile.SINGLE_CUSTOM_ACTION,
+            GuiElementRole.CANCEL to MenuPresentationProfile.SINGLE_CUSTOM_ACTION,
+            GuiElementRole.NAVIGATION to MenuPresentationProfile.PAGE_NAVIGATION,
+            GuiElementRole.ACTION to MenuPresentationProfile.SINGLE_CUSTOM_ACTION,
+        ).forEach { (role, profile) ->
+            val lore = GuiLoreComposer.compose(GuiLoreSpec.None, listOf(action))
+            val rendered = renderer.render(lore)
+            val semantics = factory.create(
+                GuiNameSpec.FixedLabel(Component.text("操作")),
+                lore,
+                profile,
+            )
+
+            val renderedText = rendered.map(PlainTextComponentSerializer.plainText()::serialize)
+            assertTrue(renderedText.first().isNotBlank())
+            assertEquals(1, renderedText.count { it.contains("実行する") })
+            assertEquals(listOf(MenuLoreLineKind.ACTION), semantics.lore.blocks.flatMap { it.lines }.map { it.kind })
+            assertEquals(setOf(ClickType.LEFT, ClickType.RIGHT), semantics.lore.blocks.single().lines.single().action?.acceptedClicks)
+            assertEquals(action.label, semantics.lore.blocks.single().lines.single().action?.actionLabel)
+            assertTrue(MenuPresentationSemanticsValidator.violations(semantics).isEmpty())
+            assertTrue(role in setOf(GuiElementRole.CONFIRM, GuiElementRole.CANCEL, GuiElementRole.NAVIGATION, GuiElementRole.ACTION))
+        }
+    }
 
     @Test
     fun `background fixture is empty structured display only`() {

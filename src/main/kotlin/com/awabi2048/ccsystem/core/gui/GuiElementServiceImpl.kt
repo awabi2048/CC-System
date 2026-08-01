@@ -61,13 +61,7 @@ class GuiElementServiceImpl(
         val item = ItemStack(spec.material, spec.amount.coerceIn(1, spec.material.maxStackSize.coerceAtLeast(1)))
         val meta = item.itemMeta ?: return item
         meta.displayName(renderName(spec.name))
-        val nameOnlyRole = spec.role in setOf(
-            GuiElementRole.BACK,
-            GuiElementRole.CONFIRM,
-            GuiElementRole.CANCEL,
-            GuiElementRole.NAVIGATION,
-        )
-        val lore = if (nameOnlyRole) emptyList() else lore(spec.lore)
+        val lore = lore(spec.lore)
         if (lore.isNotEmpty()) {
             meta.lore(lore)
         }
