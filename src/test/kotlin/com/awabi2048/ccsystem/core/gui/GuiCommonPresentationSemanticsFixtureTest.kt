@@ -143,7 +143,8 @@ class GuiCommonPresentationSemanticsFixtureTest {
         assertTrue(!backBuilder.contains("GuiLoreSpec.NameOnly"))
         val menuEntryBuilder = source.substringAfter("override fun menuEntry")
             .substringBefore("override fun menuDisplay")
-        assertTrue(menuEntryBuilder.contains("listOf(navigationAction(requireI18n"))
+        assertTrue(menuEntryBuilder.contains("if (implicitBack)"))
+        assertTrue(menuEntryBuilder.contains("emptyList()"))
         assertTrue(menuEntryBuilder.contains("GuiElementRole.NAVIGATION, GuiElementRole.BACK"))
     }
 
