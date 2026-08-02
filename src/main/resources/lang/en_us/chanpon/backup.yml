@@ -225,6 +225,12 @@ chanpon:
         lore:
           - "§7Save all production worlds as a restore point."
     owner_backup:
+      unavailable:
+        display: "§cWorld backups unavailable"
+        not_production: "This world is not a production world."
+        protected: "Submitted or protected worlds cannot use this operation."
+        owner_only: "Only the world owner can use this operation."
+        world_missing: "The target world could not be found."
       title: "§0World Backup Management"
       display: "§aWorld Backups"
       description: "Manage backups and rollbacks for this production world."
