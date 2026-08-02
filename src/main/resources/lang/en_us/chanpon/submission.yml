@@ -2,6 +2,7 @@ chanpon:
   submission:
     common:
       action_next: "Toggle"
+      action_previous: "Select previous option"
       "on": On
       "off": Off
     creation:
