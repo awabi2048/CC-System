@@ -296,7 +296,10 @@ class GuiElementServiceImpl(
                 role = GuiElementRole.ACTION,
                 interaction = GuiMenuCapabilityInteractionFactory.create(spec),
             )
-        } else if (capability.unavailableReason != null) {
+        } else if (
+            capability.unavailableReason != null &&
+            spec.unavailableInteraction == com.awabi2048.ccsystem.api.gui.GuiUnavailableInteraction.REJECT_WITH_REASON
+        ) {
             MenuElement(
                 slot = spec.slot,
                 item = item,
