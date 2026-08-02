@@ -5,6 +5,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Inventory
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 
 interface GuiElementService {
     fun title(name: GuiNameSpec): Component
@@ -28,7 +29,8 @@ interface GuiElementService {
 
     fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement
 
-    fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilitySpec): MenuElement
+    /** 解決済みCapabilityを文字列Actionへ変換せず、Runtimeの共通Capability経路へ配置します。 */
+    fun menuCapabilityEntry(player: Player?, spec: GuiMenuCapabilityInvocationSpec): MenuElement
 
     fun applyFrame(inventory: Inventory, spec: GuiFrameSpec)
 
@@ -36,7 +38,48 @@ interface GuiElementService {
 
     fun decoration(material: Material): ItemStack
 
+    /** 標準フレームが所有する背景要素です。任意のraw ItemStackにはこの意味を推論しません。 */
+    fun backgroundEntry(slot: Int, material: Material): MenuElement
+
     fun backItem(name: String, material: Material = Material.REDSTONE): ItemStack
 
+    /** 共通の戻る項目。表示、STANDARD受付、BACK role、履歴戻りを一体で生成する。 */
+    fun backEntry(player: Player?, slot: Int, material: Material = Material.REDSTONE): MenuElement
+
+    fun pageNavigationEntry(
+        player: Player?,
+        slot: Int,
+        direction: GuiMenuActionIntent.Direction,
+        actionId: String,
+        label: String,
+        payload: Map<String, String> = emptyMap(),
+        material: Material,
+    ): MenuElement
+
     fun confirmItem(name: String, confirm: Boolean): ItemStack
+}
+
+/** 明示的に無効な要素を、表示専用要素と区別して生成します。 */
+fun GuiElementService.menuUnavailable(
+    player: Player?,
+    spec: GuiMenuEntrySpec,
+    reason: Component,
+    acceptedClicks: Set<ClickType> = MenuAcceptedClicks.STANDARD,
+): MenuElement {
+    require(spec.expandedActions().none(GuiMenuEntryAction::enabled)) {
+        "unavailable menu entries cannot contain enabled actions"
+    }
+    val base = menuEntry(player, spec)
+    return MenuElement(
+        slot = base.slot,
+        item = base.item,
+        role = base.role,
+        sounds = base.sounds,
+        interaction = MenuInteraction.Unavailable(acceptedClicks.toSet(), reason, base.sounds),
+    ).also { element ->
+        element.presentationSemantics = base.presentationSemantics.copy(
+            profile = MenuPresentationProfile.DISABLED,
+            disabledReason = reason,
+        )
+    }
 }

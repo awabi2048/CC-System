@@ -70,7 +70,7 @@ gui:
         border_center: 現在のボーダー中心
         border_size: 現在のボーダーサイズ
       action:
-        open_menu: ボーダー拡張メニューを開く
+        open_menu: メニューを開く
         teleport_center: ボーダー中心の地表へテレポート
     environment:
       display: §aワールド環境の設定
@@ -129,7 +129,7 @@ gui:
       'on': オン
       'off': オフ
       blocks:
-        current_label: 現在の設定
+        current_label: 通知の設定
         description:
         - オンの場合、メンバー以外の訪問者が
         - 来た際にメンバー全員に通知します

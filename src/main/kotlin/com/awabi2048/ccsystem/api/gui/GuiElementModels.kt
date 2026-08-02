@@ -16,6 +16,9 @@ enum class GuiNameStyle(val colorCode: String) {
 
 sealed interface GuiNameSpec {
     data object Empty : GuiNameSpec
+    data class FixedLabel(val value: net.kyori.adventure.text.Component) : GuiNameSpec
+    data class TargetIdentity(val value: net.kyori.adventure.text.Component) : GuiNameSpec
+    data class Opaque(val value: net.kyori.adventure.text.Component) : GuiNameSpec
     data class Text(val text: String, val style: GuiNameStyle) : GuiNameSpec
     data class Component(val value: net.kyori.adventure.text.Component) : GuiNameSpec
 }
@@ -27,6 +30,7 @@ enum class GuiElementRole {
     CONFIRM,
     CANCEL,
     NAVIGATION,
+    BACKGROUND,
     DECORATION
 }
 
@@ -66,6 +70,12 @@ sealed interface GuiLoreLine {
             acceptedClicks: Set<ClickType>,
             label: String,
         ) : this(viewer, GuiInputGesture.MenuClicks(acceptedClicks), label)
+
+        constructor(
+            viewer: org.bukkit.entity.Player?,
+            gesture: MenuGesture,
+            label: String,
+        ) : this(viewer, GuiInputGesture.MenuClicks(gesture.clicks), label)
 
         init {
             require(label.isNotBlank()) { "interaction label must not be blank" }
@@ -109,6 +119,8 @@ sealed interface GuiLoreLine {
     /** プレイヤーが入力した装飾可能な本文。固定UI文言には使用しない。 */
     data class UserText(val text: String) : GuiLoreLine
     data class Component(val value: net.kyori.adventure.text.Component) : GuiLoreLine
+    /** 既存ItemMeta Loreを意味解析せず、そのまま保持する行。 */
+    data class Opaque(val value: net.kyori.adventure.text.Component) : GuiLoreLine
 }
 
 sealed interface GuiLoreSpec {
@@ -127,6 +139,32 @@ sealed interface GuiLoreSpec {
         val lines: List<GuiLoreLine>,
         val frame: GuiLoreFrame
     ) : GuiLoreSpec
+    /** 既存Loreを意味解析せず保持する仕様。 */
+    data class Opaque(
+        val lines: List<net.kyori.adventure.text.Component>,
+        val frame: GuiLoreFrame = GuiLoreFrame.NONE,
+    ) : GuiLoreSpec {
+        init {
+            require(lines.isNotEmpty()) { "Opaque lore must not be empty" }
+        }
+    }
+    data class FramedBlocks(
+        val blocks: List<GuiLoreBlock>,
+        val frame: GuiLoreFrame,
+    ) : GuiLoreSpec {
+        init {
+            require(blocks.isNotEmpty()) { "Lore blocks must not be empty" }
+        }
+    }
+    /** 意味内容と操作群を分離した合成仕様。 */
+    data class WithActions(
+        val base: GuiLoreSpec,
+        val actions: List<GuiLoreLine.Interaction>,
+    ) : GuiLoreSpec {
+        init {
+            require(actions.isNotEmpty()) { "Lore actions must not be empty" }
+        }
+    }
 }
 
 data class GuiLoreBlock(val lines: List<GuiLoreLine>) {
@@ -189,17 +227,25 @@ data class GuiMenuEntryOption(
  * 外部システムが宣言できる操作の意味情報。
  * 操作案内、クリック受付、Runtime分岐はCC-Systemがこの宣言から同時生成する。
  */
-data class GuiMenuEntryAction(
+internal data class GuiMenuEntryAction(
     val actionId: String,
     val acceptedClicks: Set<ClickType>,
     val label: String,
     val payload: Map<String, String> = emptyMap(),
     val enabled: Boolean = true,
+    val safety: MenuActionSafety = MenuActionSafety.UNSPECIFIED,
+    val reversibleContract: MenuReversibleContract? = null,
 ) {
     init {
         require(actionId.isNotBlank()) { "actionId must not be blank" }
         require(acceptedClicks.isNotEmpty()) { "acceptedClicks must not be empty" }
         require(label.isNotBlank()) { "action label must not be blank" }
+        requireReversibleContractSafety(
+            acceptedClicks,
+            { safety },
+            { reversibleContract },
+            "menu entry action",
+        )
     }
 }
 
@@ -218,21 +264,38 @@ data class GuiMenuEntrySpec(
     val options: List<GuiMenuEntryOption> = emptyList(),
     val warnings: List<String> = emptyList(),
     val dangers: List<String> = emptyList(),
-    val actions: List<GuiMenuEntryAction> = emptyList(),
+    val actions: List<GuiMenuActionIntent> = emptyList(),
+    /**
+     * 既に意味単位へ分割済みのLoreブロック。Capability等の提供元が完成順序を
+     * 宣言する場合に使用し、呼び出し側で行種別へ再分類しない。
+     */
+    val semanticLoreBlocks: List<GuiLoreBlock> = emptyList(),
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        val accepted = expandedActions().filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
         require(accepted.size == accepted.distinct().size) {
             "a click type cannot be assigned to multiple menu actions"
         }
-        require(role != GuiElementRole.DECORATION || actions.isEmpty()) {
-            "decoration entries cannot have actions"
+        require(role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND) || expandedActions().isEmpty()) {
+            "background and decoration entries cannot have actions"
+        }
+        require(actions.none { it is GuiMenuActionIntent.Back } || role == GuiElementRole.BACK) {
+            "back action intent requires BACK role"
+        }
+        require(
+            semanticLoreBlocks.isEmpty() ||
+                (description.isEmpty() && data.isEmpty() && options.isEmpty() &&
+                    warnings.isEmpty() && dangers.isEmpty())
+        ) {
+            "semanticLoreBlocks cannot be combined with categorized lore fields"
         }
     }
+
+    internal fun expandedActions(): List<GuiMenuEntryAction> = actions.flatMap(GuiMenuActionIntent::expand)
 }
 
 /**
@@ -260,39 +323,72 @@ data class GuiMenuDisplaySpec(
 data class GuiStructuredMenuEntrySpec(
     val slot: Int,
     val item: GuiItemSpec,
-    val actions: List<GuiMenuEntryAction>,
+    val actions: List<GuiMenuActionIntent>,
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
+    /** Capability提供元が確定した意味ブロック。item.loreとは併用しない。 */
+    val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        require(item.role != GuiElementRole.DECORATION || actions.isEmpty()) {
-            "decoration entries cannot have actions"
+        require(item.role !in setOf(GuiElementRole.DECORATION, GuiElementRole.BACKGROUND) || expandedActions().isEmpty()) {
+            "background and decoration entries cannot have actions"
         }
-        val accepted = actions.filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
+        val accepted = expandedActions().filter(GuiMenuEntryAction::enabled).flatMap(GuiMenuEntryAction::acceptedClicks)
         require(accepted.size == accepted.distinct().size) {
             "a click type cannot be assigned to multiple menu actions"
         }
+        require(actions.none { it is GuiMenuActionIntent.Back } || item.role == GuiElementRole.BACK) {
+            "back action intent requires BACK role"
+        }
+        require(embeddedLoreBlocks.isEmpty() || item.lore == GuiLoreSpec.None || item.lore == GuiLoreSpec.NameOnly) {
+            "embeddedLoreBlocks cannot be combined with item lore"
+        }
     }
+
+    internal fun expandedActions(): List<GuiMenuEntryAction> = actions.flatMap(GuiMenuActionIntent::expand)
 }
 
 /**
  * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
  * 外部システムは描画後のItemStackへ操作情報を付け直さない。
  */
-data class GuiMenuCapabilitySpec(
+/**
+ * 解決済みCapabilityをRuntimeの正規Interactionとして配置するための宣言です。
+ *
+ * capability ID・受理click・安全区分は[capability]の解決済み契約から取得します。
+ * 呼出し側は任意のaction payloadへcapability IDを書き戻す必要がありません。
+ */
+data class GuiMenuCapabilityInvocationSpec(
     val slot: Int,
     val capability: ResolvedMenuCapability,
-    val actionId: String,
-    val actionPayload: Map<String, String> = emptyMap(),
+    val arguments: Map<String, String> = emptyMap(),
+    val attributes: Map<String, Any> = emptyMap(),
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
-        require(actionId.isNotBlank()) { "actionId must not be blank" }
     }
+
+    val acceptedClicks: Set<ClickType>
+        get() = capability.acceptedClicks
+
+    val safety: MenuActionSafety
+        get() = capability.safety
+
+    val safetyByClick: Map<ClickType, MenuActionSafety>
+        get() = capability.safetyByClick
+
+    val reversibleContractByClick: Map<ClickType, MenuReversibleContract>
+        get() = capability.reversibleContractByClick
 }
 
+/**
+ * Capabilityの表示と、ホスト画面が所有するRuntime Actionへの接続を同時に宣言する。
+ *
+ * @deprecated Capabilityは[GuiMenuCapabilityInvocationSpec]で直接Runtimeへ渡してください。
+ * この型は既存画面の段階移行だけに残します。
+ */
 sealed interface GuiFrameSection {
     data object None : GuiFrameSection
     data class Row(val element: GuiItemSpec) : GuiFrameSection

@@ -71,7 +71,7 @@ gui:
         border_center: Current Border Center
         border_size: Current Border Size
       action:
-        open_menu: Open border expansion menu
+        open_menu: Open menu
         teleport_center: Teleport to border center surface
     environment:
       display: §a World environment settings
@@ -130,7 +130,7 @@ gui:
       'on': 'ON'
       'off': 'OFF'
       blocks:
-        current_label: Current
+        current_label: Notification setting
         description:
         - When ON, members will be notified
         - when a guest visits the world.

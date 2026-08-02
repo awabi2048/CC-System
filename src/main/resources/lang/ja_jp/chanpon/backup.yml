@@ -6,6 +6,9 @@ chanpon:
       prev: "§e前のページ"
       next: "§e次のページ"
       back: "§7戻る"
+      prev_action: "前のページへ移動"
+      next_action: "次のページへ移動"
+      back_action: "戻る"
     kind:
       user_manual: "§aユーザー手動"
       admin_manual: "§e管理者手動"
@@ -17,18 +20,22 @@ chanpon:
       provider_display: "§bMWM-Chanpon"
       no_permission: "§cこのメニューを操作する権限がありません。"
       submission:
+        action: "開く"
         display: "§a提出状況の管理"
         lore:
           - "§7本番用ワールドの提出状況と完成マークを管理します。"
       world_data:
+        action: "開く"
         display: "§eワールドデータの管理"
         lore:
           - "§7本番用ワールドのバックアップとロールバックを管理します。"
       automation:
+        action: "開く"
         display: "§b自動処理の設定"
         lore:
           - "§7自動バックアップと自動ロールバックを設定します。"
       export:
+        action: "開く"
         display: "§7ワールドデータのエクスポート"
         lore:
           - "§7本番用ワールドのデータをZIPとして出力します。"
@@ -97,11 +104,13 @@ chanpon:
         - "§8━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     spawn_world:
       set:
+        action: "設定する"
         display: "§aこのワールドをスポーンワールドに設定する"
         lore:
           - "§7現在いるマイワールドを退避先スポーンワールドに設定します。"
           - "§7バックアップや復元時の退避先として使用されます。"
       change:
+        action: "変更する"
         display: "§eスポーンワールドをこのワールドに変更する"
         lore:
           - "§7退避先スポーンワールドを現在いるマイワールドへ変更します。"
@@ -301,7 +310,9 @@ chanpon:
           - "§c削除後はこのバックアップから復元できません。"
       button:
         confirm: "§a実行"
+        confirm_action: "実行"
         cancel: "§cキャンセル"
+        cancel_action: "キャンセル"
     message:
       backup_success: "§aバックアップを作成しました。"
       backup_failed: "§cバックアップに失敗しました。"

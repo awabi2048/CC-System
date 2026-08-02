@@ -1,6 +1,7 @@
 chanpon:
   submission:
     common:
+      action_next: "切り替え"
       "on": オン
       "off": オフ
     creation:
@@ -75,9 +76,12 @@ chanpon:
           - "§7本番用ワールドの提出状況と完成マークを管理します。"
       prev: "§e前のページ"
       next: "§e次のページ"
+      prev_action: "前のページへ移動"
+      next_action: "次のページへ移動"
       unknown: "不明"
       back:
         display: "§7戻る"
+        action: "戻る"
         lore:
           - "§7管理者メニューへ戻ります。"
       progress_filter:
@@ -142,8 +146,11 @@ chanpon:
       unknown: "不明"
       prev: "§e前のページ"
       next: "§e次のページ"
+      prev_action: "前のページへ移動"
+      next_action: "次のページへ移動"
       back:
         display: "§7戻る"
+        action: "戻る"
         lore:
           - "§7管理メニューへ戻ります。"
       visibility:
@@ -219,10 +226,12 @@ chanpon:
           - "§7締切後も、この管理メニューから締切を解除できます。"
       button:
         confirm:
+          action: "実行"
           display: "§a決定"
           lore:
             - "§7操作を実行します。"
         cancel:
+          action: "キャンセル"
           display: "§cキャンセル"
           lore:
             - "§7操作を中止します。"

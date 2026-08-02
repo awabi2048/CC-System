@@ -1,0 +1,189 @@
+package com.awabi2048.ccsystem.api.gui
+
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+
+class MenuRuntimeUpdateApplicationTest {
+    @Test
+    fun `navigate result distinguishes a successful open from an open failure`() {
+        val target = route("target")
+        val succeeded = application(
+            kind = MenuRuntimeUpdateKind.NAVIGATE,
+            expectedRoute = target,
+            observedRoute = target,
+            beforeRevision = 10,
+            afterRevision = 11,
+            applied = true,
+        )
+        val failed = application(
+            kind = MenuRuntimeUpdateKind.NAVIGATE,
+            expectedRoute = target,
+            observedRoute = route("source"),
+            beforeRevision = 10,
+            afterRevision = 10,
+            applied = false,
+            failureReason = MenuRuntimeUpdateFailureReason.OPEN_FAILED,
+        )
+
+        assertTrue(succeeded.attempted)
+        assertTrue(succeeded.applied)
+        assertEquals(target, succeeded.observedRoute)
+        assertEquals(11, succeeded.afterRevision)
+        assertEquals(MenuRuntimeUpdateFailureReason.NONE, succeeded.failureReason)
+        assertTrue(failed.attempted)
+        assertFalse(failed.applied)
+        assertEquals(MenuRuntimeUpdateFailureReason.OPEN_FAILED, failed.failureReason)
+    }
+
+    @Test
+    fun `replace and refresh retain their observed route and revision`() {
+        val target = route("target")
+        val replaced = application(
+            kind = MenuRuntimeUpdateKind.REPLACE,
+            expectedRoute = target,
+            observedRoute = target,
+            beforeRevision = 20,
+            afterRevision = 21,
+            applied = true,
+        )
+        val refreshed = application(
+            kind = MenuRuntimeUpdateKind.REFRESH,
+            expectedRoute = target,
+            observedRoute = target,
+            beforeRevision = 21,
+            afterRevision = 22,
+            applied = true,
+        )
+
+        assertEquals(MenuRuntimeUpdateKind.REPLACE, replaced.kind)
+        assertEquals(target, replaced.expectedRoute)
+        assertEquals(21, replaced.afterRevision)
+        assertEquals(MenuRuntimeUpdateKind.REFRESH, refreshed.kind)
+        assertEquals(target, refreshed.observedRoute)
+        assertEquals(22, refreshed.afterRevision)
+    }
+
+    @Test
+    fun `back without history records the fallback as a failed declared update`() {
+        val application = application(
+            kind = MenuRuntimeUpdateKind.BACK,
+            expectedRoute = null,
+            observedRoute = null,
+            beforeRevision = 30,
+            afterRevision = null,
+            applied = false,
+            failureReason = MenuRuntimeUpdateFailureReason.NO_HISTORY,
+        )
+
+        assertTrue(application.attempted)
+        assertFalse(application.applied)
+        assertEquals(MenuRuntimeUpdateFailureReason.NO_HISTORY, application.failureReason)
+        assertNull(application.observedRoute)
+    }
+
+    @Test
+    fun `close none and exceptions remain distinguishable`() {
+        val closed = application(
+            kind = MenuRuntimeUpdateKind.CLOSE,
+            expectedRoute = null,
+            observedRoute = null,
+            beforeRevision = 40,
+            afterRevision = null,
+            applied = true,
+        )
+        val none = MenuRuntimeUpdateApplication.notAttempted(
+            kind = MenuRuntimeUpdateKind.NONE,
+            beforeRevision = 41,
+        )
+        val exception = application(
+            kind = MenuRuntimeUpdateKind.REFRESH,
+            expectedRoute = route("source"),
+            observedRoute = route("source"),
+            beforeRevision = 42,
+            afterRevision = 42,
+            applied = false,
+            failureReason = MenuRuntimeUpdateFailureReason.EXCEPTION,
+        )
+
+        assertTrue(closed.attempted)
+        assertTrue(closed.applied)
+        assertFalse(none.attempted)
+        assertFalse(none.applied)
+        assertEquals(MenuRuntimeUpdateFailureReason.NOT_APPLICABLE, none.failureReason)
+        assertTrue(exception.attempted)
+        assertFalse(exception.applied)
+        assertEquals(MenuRuntimeUpdateFailureReason.EXCEPTION, exception.failureReason)
+    }
+
+    @Test
+    fun `update application retains detailed contract failure`() {
+        val targetRoute = MenuRoute("test", "target")
+        val operationResult = MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.REPLACE,
+            targetRoute,
+            MenuRuntimeOperationFailureReason.CONTRACT_INVALID,
+            contractViolations = listOf(
+                MenuContractViolation("test:target", 4, "missing", "no handler is registered"),
+            ),
+        )
+        val application = MenuRuntimeUpdateApplication(
+            attempted = true,
+            applied = false,
+            kind = MenuRuntimeUpdateKind.REPLACE,
+            expectedRoute = route("target"),
+            observedRoute = route("source"),
+            beforeRevision = 3,
+            afterRevision = 3,
+            failureReason = MenuRuntimeUpdateFailureReason.CONTRACT_INVALID,
+            operationResult = operationResult,
+        )
+
+        assertEquals(MenuRuntimeOperationFailureReason.CONTRACT_INVALID, application.operationResult?.failure?.reason)
+        assertEquals(4, application.operationResult?.failure?.contractViolations?.single()?.slot)
+    }
+
+    @Test
+    fun `pending resume is not reported as applied before its terminal result`() {
+        val pending = MenuRuntimeUpdateApplication.pending(
+            kind = MenuRuntimeUpdateKind.RESUME,
+            expectedRoute = route("source"),
+            beforeRevision = 5,
+            operationResult = MenuRuntimeOperationResult.pending(
+                MenuRuntimeOperation.FINISH_EXTERNAL,
+                MenuRoute("test", "source"),
+            ),
+        )
+
+        assertTrue(pending.attempted)
+        assertFalse(pending.applied)
+        assertFalse(pending.terminal)
+        assertEquals(MenuRuntimeUpdateApplicationState.PENDING, pending.state)
+        assertEquals(MenuRuntimeUpdateFailureReason.PENDING, pending.failureReason)
+        assertFalse(pending.operationResult!!.terminal)
+        assertFalse(pending.operationResult.successful)
+    }
+
+    private fun application(
+        kind: MenuRuntimeUpdateKind,
+        expectedRoute: MenuRuntimeRouteSnapshot?,
+        observedRoute: MenuRuntimeRouteSnapshot?,
+        beforeRevision: Long?,
+        afterRevision: Long?,
+        applied: Boolean,
+        failureReason: MenuRuntimeUpdateFailureReason = MenuRuntimeUpdateFailureReason.NONE,
+    ) = MenuRuntimeUpdateApplication(
+        attempted = true,
+        applied = applied,
+        kind = kind,
+        expectedRoute = expectedRoute,
+        observedRoute = observedRoute,
+        beforeRevision = beforeRevision,
+        afterRevision = afterRevision,
+        failureReason = failureReason,
+    )
+
+    private fun route(id: String) = MenuRuntimeRouteSnapshot("test", id, emptyMap())
+}

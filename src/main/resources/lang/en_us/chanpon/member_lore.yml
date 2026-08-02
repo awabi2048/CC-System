@@ -11,10 +11,12 @@ chanpon:
       enabled: On
       disabled: Off
       toggle_action: Toggle
+      back: "Back"
       role:
         display: "Member / Moderator"
         state_label: "Current role"
         member: "Member"
         moderator: "Moderator"
         action: "Change role"
-    click_edit_action: "Edit this member's permissions"
+    click_edit_action: "Open menu"
+    tool_permission_operation: "Change tool permissions"

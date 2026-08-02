@@ -33,6 +33,7 @@ import com.awabi2048.ccsystem.core.gui.MenuCommandServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuCapabilityServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuSoundServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl
+import com.awabi2048.ccsystem.core.gui.MenuReversibleStateProviderRegistryImpl
 import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuConfirmationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuFormServiceImpl
@@ -73,6 +74,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     private val menuCommandService = MenuCommandServiceImpl()
     private val guiElementService = GuiElementServiceImpl(::getI18nString)
     private val menuCapabilityService = MenuCapabilityServiceImpl()
+    private val menuReversibleStateProviderRegistry = MenuReversibleStateProviderRegistryImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
     private val loreService = LoreServiceImpl(::getI18nString)
     private val menuSoundService = MenuSoundServiceImpl()
@@ -84,6 +86,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         guiLayoutService,
         menuPresentationTracker,
         menuCapabilityService,
+        menuReversibleStateProviderRegistry,
     ).also {
         plugin.server.pluginManager.registerEvents(it, plugin)
     }
@@ -263,6 +266,9 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     override fun getMenuCommandService(): com.awabi2048.ccsystem.api.gui.MenuCommandService = menuCommandService
 
     override fun getMenuCapabilityService(): MenuCapabilityService = menuCapabilityService
+
+    override fun getMenuReversibleStateProviderRegistry(): com.awabi2048.ccsystem.api.gui.MenuReversibleStateProviderRegistry =
+        menuReversibleStateProviderRegistry
 
     override fun getMenuSoundService(): MenuSoundService {
         return menuSoundService

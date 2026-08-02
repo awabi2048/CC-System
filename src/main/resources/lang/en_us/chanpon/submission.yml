@@ -1,6 +1,7 @@
 chanpon:
   submission:
     common:
+      action_next: "Toggle"
       "on": On
       "off": Off
     creation:
@@ -75,9 +76,12 @@ chanpon:
           - "§7Manage production world submissions and completion marks."
       prev: "§ePrevious page"
       next: "§eNext page"
+      prev_action: "Go to previous page"
+      next_action: "Go to next page"
       unknown: "Unknown"
       back:
         display: "§7Back"
+        action: "Go back"
         lore:
           - "§7Return to the admin menu."
       progress_filter:
@@ -142,8 +146,11 @@ chanpon:
       unknown: "Unknown"
       prev: "§ePrevious page"
       next: "§eNext page"
+      prev_action: "Go to previous page"
+      next_action: "Go to next page"
       back:
         display: "§7Back"
+        action: "Go back"
         lore:
           - "§7Return to the admin menu."
       visibility:
@@ -219,10 +226,12 @@ chanpon:
           - "§7You can reopen submissions from the management menu afterward."
       button:
         confirm:
+          action: "Execute"
           display: "§aConfirm"
           lore:
             - "§7Run this operation."
         cancel:
+          action: "Cancel"
           display: "§cCancel"
           lore:
             - "§7Stop this operation."

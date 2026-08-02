@@ -12,22 +12,26 @@ internal object GuiMenuEntryLoreFactory {
         enabledActions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
     ): GuiLoreSpec {
-        val blocks = buildList {
-            block(spec.description.map(GuiLoreLine::Text))
-            block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
-            block(spec.options.map {
-                GuiLoreLine.Option(
-                    it.label,
-                    it.selected,
-                    com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
-                    com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
-                )
-            })
-            block(spec.warnings.map(GuiLoreLine::Warning))
-            block(spec.dangers.map(GuiLoreLine::Danger))
-            block(actionLines(enabledActions, viewer))
+        val base = if (spec.semanticLoreBlocks.isNotEmpty()) {
+            GuiLoreSpec.Blocks(spec.semanticLoreBlocks)
+        } else {
+            val blocks = buildList {
+                block(spec.description.map(GuiLoreLine::Text))
+                block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
+                block(spec.options.map {
+                    GuiLoreLine.Option(
+                        it.label,
+                        it.selected,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.PRIMARY.colorCode,
+                        com.awabi2048.ccsystem.api.gui.GuiValueTone.MUTED.colorCode,
+                    )
+                })
+                block(spec.warnings.map(GuiLoreLine::Warning))
+                block(spec.dangers.map(GuiLoreLine::Danger))
+            }
+            if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
         }
-        return if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
+        return GuiLoreComposer.compose(base, actionLines(enabledActions, viewer))
     }
 
     private fun MutableList<GuiLoreBlock>.block(lines: List<GuiLoreLine>) {
@@ -37,7 +41,7 @@ internal object GuiMenuEntryLoreFactory {
     fun actionLines(
         actions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
-    ): List<GuiLoreLine> {
+    ): List<GuiLoreLine.Interaction> {
         return actions.map { action ->
             GuiLoreLine.Interaction(viewer, action.acceptedClicks, action.label)
         }

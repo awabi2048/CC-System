@@ -23,8 +23,10 @@ gui:
     - §7This action cannot be undone.
     confirm: §cArchive
     confirm_desc: §7Archive this world
+    confirm_action: Archive
     cancel: §aCancel
     cancel_desc: §7Return to previous screen
+    cancel_action: Cancel
   confirm:
     reset_expansion:
       title: Confirm Reset

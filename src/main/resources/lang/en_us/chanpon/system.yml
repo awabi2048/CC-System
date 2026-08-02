@@ -98,7 +98,7 @@ chanpon:
         description: "Undo the latest expansion."
         modified_warning: "The expanded area has changes."
     notification:
-      current_label: "Current"
+      current_label: "Notification setting"
       action: "Toggle"
     critical:
       display: "§cCritical settings"

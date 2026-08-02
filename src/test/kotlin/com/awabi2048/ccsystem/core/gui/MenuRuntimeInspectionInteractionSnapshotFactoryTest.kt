@@ -1,0 +1,182 @@
+package com.awabi2048.ccsystem.core.gui
+
+import com.awabi2048.ccsystem.api.gui.MenuActionSafety
+import com.awabi2048.ccsystem.api.gui.MenuInteraction
+import com.awabi2048.ccsystem.api.gui.MenuCapabilitySource
+import com.awabi2048.ccsystem.api.gui.copyWithSourceCapability
+import com.awabi2048.ccsystem.api.gui.copyWithSourcePlacement
+import com.awabi2048.ccsystem.api.gui.MenuInteractionBranch
+import com.awabi2048.ccsystem.api.gui.MenuReversibleContract
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeInteractionKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOpaqueAttributeSnapshot
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotKind
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeSlotSnapshot
+import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.event.inventory.ClickType
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class MenuRuntimeInspectionInteractionSnapshotFactoryTest {
+    @Test
+    fun `reasoned unavailable retains immutable capability source in inspection`() {
+        val arguments = linkedMapOf("world_uuid" to "world-1")
+        val attributes = linkedMapOf<String, Any>("source" to "chanpon")
+        val interaction = MenuInteraction.Unavailable(message = Component.text("利用できません")).also {
+            it.sourceCapability = MenuCapabilitySource(
+                "test:world-settings",
+                "world-settings.environment",
+                arguments,
+                attributes,
+            )
+        }
+        arguments["world_uuid"] = "mutated"
+        attributes["source"] = "mutated"
+
+        val snapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(interaction)
+
+        assertEquals(MenuRuntimeInteractionKind.UNAVAILABLE, snapshot.kind)
+        assertEquals("test:world-settings", snapshot.capabilityId)
+        assertEquals("world-settings.environment", snapshot.sourcePlacement)
+        assertEquals(mapOf("world_uuid" to "world-1"), snapshot.arguments)
+        assertEquals(mapOf("source" to "chanpon"), snapshot.attributes)
+        assertEquals(MenuActionSafety.UNSPECIFIED, snapshot.safety)
+        assertEquals(emptyMap<ClickType, MenuActionSafety>(), snapshot.safetyByClick)
+        assertEquals(emptyMap<ClickType, Any>(), snapshot.reversibleContractsByClick)
+    }
+
+    @Test
+    fun `generic unavailable has no capability source and dedicated copies retain it`() {
+        val generic = MenuRuntimeInspectionInteractionSnapshotFactory.create(MenuInteraction.Unavailable())
+        assertEquals(null, generic.capabilityId)
+        assertEquals(null, generic.sourcePlacement)
+        assertEquals(emptyMap<String, String>(), generic.arguments)
+        assertEquals(emptyMap<String, Any?>(), generic.attributes)
+
+        val original = MenuInteraction.Unavailable(message = Component.text("disabled")).also {
+            it.sourceCapability = MenuCapabilitySource("test:feature", "settings.feature", emptyMap(), emptyMap())
+        }
+        val copied = original.copyWithSourceCapability()
+        val copiedSnapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(copied)
+            .copyWithSourcePlacement()
+        assertEquals(original.sourceCapability, copied.sourceCapability)
+        assertEquals("settings.feature", copiedSnapshot.sourcePlacement)
+    }
+
+    @Test
+    fun `capability inspection redacts opaque attributes and keeps per click safety`() {
+        val marker = Any()
+        val snapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(
+            MenuInteraction.Capability(
+                capabilityId = "test:world-settings",
+                arguments = mapOf("world_uuid" to "world-1"),
+                attributes = mapOf("opaque" to marker),
+                acceptedClicks = setOf(ClickType.LEFT, ClickType.RIGHT),
+                safety = MenuActionSafety.NAVIGATION_ONLY,
+                safetyByClick = mapOf(ClickType.RIGHT to MenuActionSafety.REVERSIBLE),
+                reversibleContractByClick = mapOf(
+                    ClickType.RIGHT to MenuReversibleContract("audit:world", mapOf("world" to "world-1")),
+                ),
+            ),
+        )
+
+        assertEquals(MenuRuntimeInteractionKind.CAPABILITY, snapshot.kind)
+        assertEquals("test:world-settings", snapshot.capabilityId)
+        assertEquals(mapOf("world_uuid" to "world-1"), snapshot.arguments)
+        assertEquals(MenuRuntimeOpaqueAttributeSnapshot(Any::class.java.name), snapshot.attributes["opaque"])
+        assertEquals(setOf(ClickType.LEFT, ClickType.RIGHT), snapshot.acceptedClicks)
+        assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safety)
+        assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])
+        assertEquals("audit:world", snapshot.reversibleContractsByClick[ClickType.RIGHT]?.providerId)
+        assertEquals(mapOf("world" to "world-1"), snapshot.reversibleContractsByClick[ClickType.RIGHT]?.arguments)
+    }
+
+    @Test
+    fun `mixed branches retain final interaction diagnostics`() {
+        val snapshot = MenuRuntimeInspectionInteractionSnapshotFactory.create(
+            MenuInteraction.ClickBranches(
+                listOf(
+                    MenuInteractionBranch(
+                        setOf(ClickType.LEFT),
+                        MenuInteraction.Capability(
+                            capabilityId = "test:open",
+                            acceptedClicks = setOf(ClickType.LEFT),
+                            safety = MenuActionSafety.NAVIGATION_ONLY,
+                        ),
+                    ),
+                    MenuInteractionBranch(
+                        setOf(ClickType.RIGHT),
+                        MenuInteraction.Action(
+                            actionId = "toggle",
+                            acceptedClicks = setOf(ClickType.RIGHT),
+                            safety = MenuActionSafety.REVERSIBLE,
+                            reversibleContract = MenuReversibleContract("audit:toggle"),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        assertEquals(MenuRuntimeInteractionKind.CLICK_BRANCHES, snapshot.kind)
+        assertEquals(setOf(ClickType.LEFT, ClickType.RIGHT), snapshot.acceptedClicks)
+        assertEquals(MenuRuntimeInteractionKind.CAPABILITY, snapshot.branches[0].interaction.kind)
+        assertEquals("test:open", snapshot.branches[0].interaction.capabilityId)
+        assertEquals(MenuRuntimeInteractionKind.ACTION, snapshot.branches[1].interaction.kind)
+        assertEquals("toggle", snapshot.branches[1].interaction.actionId)
+        assertEquals(MenuActionSafety.NAVIGATION_ONLY, snapshot.safetyByClick[ClickType.LEFT])
+        assertEquals(MenuActionSafety.REVERSIBLE, snapshot.safetyByClick[ClickType.RIGHT])
+        assertEquals("audit:toggle", snapshot.reversibleContractsByClick[ClickType.RIGHT]?.providerId)
+    }
+
+    @Test
+    fun `normal runtime slot and inspection use the same complete interaction snapshot`() {
+        val interaction = MenuInteraction.ClickBranches(
+            listOf(
+                MenuInteractionBranch(
+                    setOf(ClickType.LEFT),
+                    MenuInteraction.Capability(
+                        capabilityId = "test:open",
+                        arguments = mapOf("world" to "one"),
+                        attributes = mapOf("source" to "runtime"),
+                        acceptedClicks = setOf(ClickType.LEFT),
+                        safety = MenuActionSafety.NAVIGATION_ONLY,
+                    ),
+                ),
+                MenuInteractionBranch(
+                    setOf(ClickType.RIGHT),
+                    MenuInteraction.Back(setOf(ClickType.RIGHT)),
+                ),
+            ),
+        )
+        val complete = MenuRuntimeInspectionInteractionSnapshotFactory.create(interaction)
+        val runtimeSlot = MenuRuntimeSlotSnapshot(
+            slot = 4,
+            kind = MenuRuntimeSlotKind.ACTION,
+            material = Material.STONE,
+            amount = 1,
+            name = Component.text("Test"),
+            lore = emptyList(),
+            glint = false,
+            role = GuiElementRole.ACTION,
+            interactionKind = MenuRuntimeInteractionKind.CLICK_BRANCHES,
+            actionId = null,
+            capabilityId = null,
+            acceptedClicks = setOf(ClickType.LEFT, ClickType.RIGHT),
+            payload = emptyMap(),
+            enabled = true,
+            safety = MenuActionSafety.UNSPECIFIED,
+            safetyByClick = emptyMap(),
+            branches = emptyList(),
+            interaction = complete,
+        )
+
+        assertEquals(complete, runtimeSlot.interaction)
+        val retained = requireNotNull(runtimeSlot.interaction)
+        assertEquals(MenuRuntimeInteractionKind.CAPABILITY, retained.branches[0].interaction.kind)
+        assertEquals("test:open", retained.branches[0].interaction.capabilityId)
+        assertEquals(mapOf("world" to "one"), retained.branches[0].interaction.arguments)
+        assertEquals("runtime", retained.branches[0].interaction.attributes["source"])
+        assertEquals(MenuRuntimeInteractionKind.BACK, retained.branches[1].interaction.kind)
+    }
+}

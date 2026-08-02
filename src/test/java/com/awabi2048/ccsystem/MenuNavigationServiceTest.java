@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem;
 
 import com.awabi2048.ccsystem.api.gui.MenuRoute;
 import com.awabi2048.ccsystem.api.gui.GuiInventoryPolicy;
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason;
 import com.awabi2048.ccsystem.core.gui.MenuNavigationServiceImpl;
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -47,6 +48,22 @@ class MenuNavigationServiceTest {
 
         service.unregisterInventory(inventory);
         assertNull(service.inventoryPolicy(inventory));
+    }
+
+    @Test
+    void resultOpenerPreservesThrownExceptionWithoutChangingLegacyBooleanSam() {
+        var service = new MenuNavigationServiceImpl();
+        var player = player(UUID.randomUUID());
+        var route = route("throws");
+        service.registerResultOpener(route.getOwner(), route.getId(), (target, openedRoute) -> {
+            throw new IllegalStateException("intentional test failure");
+        });
+
+        var result = service.openResult(player, route);
+
+        assertTrue(!result.getSuccessful());
+        assertEquals(MenuRuntimeOperationFailureReason.OPENER_EXCEPTION, result.getFailure().getReason());
+        assertEquals(IllegalStateException.class.getName(), result.getFailure().getExceptionType());
     }
 
     private static Player player(UUID playerId) {

@@ -6,6 +6,11 @@ import com.awabi2048.ccsystem.api.gui.GuiMenuMatcher
 import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRouteOpener
+import com.awabi2048.ccsystem.api.gui.MenuRouteResultOpener
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperation
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationFailureReason
+import com.awabi2048.ccsystem.api.gui.MenuRuntimeOperationResult
+import com.awabi2048.ccsystem.api.gui.rethrowIfUnrecoverableMenuRuntimeFailure
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.UUID
@@ -15,7 +20,7 @@ import org.bukkit.inventory.Inventory
 
 class MenuNavigationServiceImpl : MenuNavigationService {
     private val history = MenuNavigationHistory()
-    private val openers = ConcurrentHashMap<RouteKey, MenuRouteOpener>()
+    private val openers = ConcurrentHashMap<RouteKey, RegisteredOpener>()
     private val menuMatchers = ConcurrentHashMap<String, GuiMenuMatcher>()
     private val inventoryPolicies = ConcurrentHashMap<String, GuiInventoryPolicy>()
     private val inventoryInstances = Collections.synchronizedMap(
@@ -23,6 +28,14 @@ class MenuNavigationServiceImpl : MenuNavigationService {
     )
     private val currentRoutes = ConcurrentHashMap<UUID, MenuRoute>()
     override fun registerOpener(owner: String, id: String, opener: MenuRouteOpener) {
+        register(owner, id, RegisteredOpener.Legacy(opener))
+    }
+
+    override fun registerResultOpener(owner: String, id: String, opener: MenuRouteResultOpener) {
+        register(owner, id, RegisteredOpener.Detailed(opener))
+    }
+
+    private fun register(owner: String, id: String, opener: RegisteredOpener) {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
         openers[RouteKey(owner, id)] = opener
@@ -67,7 +80,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         inventoryPolicies.entries.firstOrNull { (owner, _) -> matchesOwner(owner, inventory) }?.value?.let { return it }
         // matcherだけを登録した既存メニューも、GUIアイテムをプレイヤー側へ移さない既定動作にする。
         return menuMatchers.values.firstOrNull { matcher ->
-            runCatching { matcher.matches(inventory) }.getOrDefault(false)
+            matchesSafely { matcher.matches(inventory) }
         }?.let { GuiInventoryPolicy() }
     }
 
@@ -79,7 +92,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         val matcher = menuMatchers[owner]
         return closeMatchingMenus(players) { inventory ->
             inventoryInstances[inventory]?.owner == owner ||
-                matcher?.let { runCatching { it.matches(inventory) }.getOrDefault(false) } == true
+                matcher?.let { matchesSafely { it.matches(inventory) } } == true
         }
     }
 
@@ -107,30 +120,65 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         history.push(player.uniqueId, route)
     }
 
-    override fun open(player: Player, route: MenuRoute): Boolean {
-        val opener = openers[RouteKey(route.owner, route.id)] ?: return false
-        val opened = runCatching { opener.open(player, route) }.getOrDefault(false)
-        if (opened) {
+    override fun open(player: Player, route: MenuRoute): Boolean = openResult(player, route).successful
+
+    override fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
+        val opener = openers[RouteKey(route.owner, route.id)] ?: return MenuRuntimeOperationResult.failed(
+            MenuRuntimeOperation.OPEN,
+            route,
+            MenuRuntimeOperationFailureReason.MISSING_OPENER,
+        )
+        val result = try {
+            opener.open(player, route).forOperation(MenuRuntimeOperation.OPEN).copy(route = route)
+        } catch (failure: Throwable) {
+            failure.rethrowIfUnrecoverableMenuRuntimeFailure()
+            MenuRuntimeOperationResult.failed(
+                MenuRuntimeOperation.OPEN,
+                route,
+                MenuRuntimeOperationFailureReason.OPENER_EXCEPTION,
+                exceptionType = failure.javaClass.name,
+            )
+        }
+        if (result.successful) {
             currentRoutes[player.uniqueId] = route
         }
-        return opened
+        return result
     }
 
-    override fun pushAndOpen(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean {
+    override fun pushAndOpen(player: Player, currentRoute: MenuRoute, targetRoute: MenuRoute): Boolean =
+        pushAndOpenResult(player, currentRoute, targetRoute).successful
+
+    override fun pushAndOpenResult(
+        player: Player,
+        currentRoute: MenuRoute,
+        targetRoute: MenuRoute,
+    ): MenuRuntimeOperationResult {
         val previousHistory = history.snapshot(player.uniqueId)
         history.push(player.uniqueId, currentRoute)
-        if (open(player, targetRoute)) return true
+        val result = openResult(player, targetRoute)
+        if (result.successful) return result
         history.restore(player.uniqueId, previousHistory)
-        return false
+        return result
     }
 
-    override fun openRoot(player: Player, route: MenuRoute): Boolean {
+    override fun openRoot(player: Player, route: MenuRoute): Boolean = openRootResult(player, route).successful
+
+    override fun openRootResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
         clear(player)
-        return open(player, route)
+        return openResult(player, route)
     }
 
-    override fun openPrevious(player: Player): Boolean {
-        return history.popPrevious(player.uniqueId) { route -> open(player, route) } != null
+    override fun openPrevious(player: Player): Boolean = openPreviousResult(player)?.successful == true
+
+    override fun openPreviousResult(player: Player): MenuRuntimeOperationResult? {
+        var lastFailure: MenuRuntimeOperationResult? = null
+        val opened = history.popPrevious(player.uniqueId) { route ->
+            openResult(player, route).also { result ->
+                if (!result.successful) lastFailure = result
+            }.successful
+        }
+        return opened?.let { MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.NAVIGATE, it) }
+            ?: lastFailure
     }
 
     override fun canGoBack(player: Player): Boolean =
@@ -146,7 +194,7 @@ class MenuNavigationServiceImpl : MenuNavigationService {
     ): Int {
         var closed = 0
         players.forEach { player ->
-            if (runCatching { matches(player.openInventory.topInventory) }.getOrDefault(false)) {
+            if (matchesSafely { matches(player.openInventory.topInventory) }) {
                 player.closeInventory()
                 clear(player)
                 closed++
@@ -157,7 +205,14 @@ class MenuNavigationServiceImpl : MenuNavigationService {
 
     private fun matchesOwner(owner: String, inventory: Inventory): Boolean {
         val matcher = menuMatchers[owner] ?: return false
-        return runCatching { matcher.matches(inventory) }.getOrDefault(false)
+        return matchesSafely { matcher.matches(inventory) }
+    }
+
+    private fun matchesSafely(block: () -> Boolean): Boolean = try {
+        block()
+    } catch (failure: Throwable) {
+        failure.rethrowIfUnrecoverableMenuRuntimeFailure()
+        false
     }
 
     private data class RouteKey(
@@ -169,4 +224,26 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         val owner: String,
         val policy: GuiInventoryPolicy,
     )
+
+    private sealed interface RegisteredOpener {
+        fun open(player: Player, route: MenuRoute): MenuRuntimeOperationResult
+
+        data class Legacy(val opener: MenuRouteOpener) : RegisteredOpener {
+            override fun open(player: Player, route: MenuRoute): MenuRuntimeOperationResult =
+                if (opener.open(player, route)) {
+                    MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.OPEN, route)
+                } else {
+                    MenuRuntimeOperationResult.failed(
+                        MenuRuntimeOperation.OPEN,
+                        route,
+                        MenuRuntimeOperationFailureReason.OPENER_RETURNED_FALSE,
+                    )
+                }
+        }
+
+        data class Detailed(val opener: MenuRouteResultOpener) : RegisteredOpener {
+            override fun open(player: Player, route: MenuRoute): MenuRuntimeOperationResult =
+                opener.open(player, route)
+        }
+    }
 }

@@ -106,6 +106,9 @@ gui:
     page_shift_next: 5ページ進む
     page_shift_prev: 5ページ戻る
     status_display: 'ステータス: {color}{status}'
+    action:
+      page: ページを移動
+      open: メニューを開く
 lore:
   click:
     any: クリック

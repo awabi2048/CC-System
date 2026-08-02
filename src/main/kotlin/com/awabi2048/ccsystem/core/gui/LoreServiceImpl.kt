@@ -19,7 +19,8 @@ class LoreServiceImpl(
     private data class RenderedLine(
         val component: Component,
         val spacer: Boolean = false,
-        val separator: Boolean = false
+        val separator: Boolean = false,
+        val preserveStyle: Boolean = false,
     )
 
     override fun render(spec: GuiLoreSpec): List<Component> {
@@ -27,11 +28,36 @@ class LoreServiceImpl(
             GuiLoreSpec.None -> emptyList()
             GuiLoreSpec.NameOnly -> emptyList()
             is GuiLoreSpec.Blocks -> renderBlocks(spec.blocks)
+            is GuiLoreSpec.FramedBlocks -> renderBlocks(spec.blocks, spec.frame)
             is GuiLoreSpec.Rich -> renderRich(spec.lines, spec.frame)
+            is GuiLoreSpec.Opaque -> renderRich(spec.lines.map(GuiLoreLine::Opaque), spec.frame)
+            is GuiLoreSpec.WithActions -> renderWithActions(spec)
         }
     }
 
-    private fun renderBlocks(blocks: List<GuiLoreBlock>): List<Component> {
+    override fun compose(spec: GuiLoreSpec, actions: List<GuiLoreLine.Interaction>): GuiLoreSpec =
+        GuiLoreComposer.compose(spec, actions)
+
+    private fun renderWithActions(spec: GuiLoreSpec.WithActions): List<Component> {
+        val actionBlock = GuiLoreComposer.actionBlock(spec.actions)
+        return when (val base = spec.base) {
+            GuiLoreSpec.None -> renderBlocks(listOf(actionBlock))
+            GuiLoreSpec.NameOnly -> emptyList()
+            is GuiLoreSpec.Blocks -> renderBlocks(base.blocks + actionBlock)
+            is GuiLoreSpec.FramedBlocks -> renderBlocks(base.blocks + actionBlock, base.frame)
+            is GuiLoreSpec.Rich -> renderRich(base.lines + GuiLoreLine.Spacer + actionBlock.lines, base.frame)
+            is GuiLoreSpec.Opaque -> renderRich(
+                base.lines.map(GuiLoreLine::Opaque) + GuiLoreLine.Spacer + actionBlock.lines,
+                base.frame,
+            )
+            is GuiLoreSpec.WithActions -> error("Nested Lore actions are not allowed")
+        }
+    }
+
+    private fun renderBlocks(
+        blocks: List<GuiLoreBlock>,
+        frame: GuiLoreFrame = GuiLoreFrame.BOTH,
+    ): List<Component> {
         val lines = buildList {
             blocks.forEachIndexed { index, block ->
                 // Blocks の境界は情報のまとまりを保つ空行とし、中間の区切り線は明示指定だけに任せる。
@@ -39,7 +65,7 @@ class LoreServiceImpl(
                 addAll(block.lines)
             }
         }
-        return renderRich(lines, GuiLoreFrame.BOTH)
+        return renderRich(lines, frame)
     }
 
     private fun renderRich(lines: List<GuiLoreLine>, frame: GuiLoreFrame): List<Component> {
@@ -77,7 +103,7 @@ class LoreServiceImpl(
         }
         // 先頭・末尾に残った Spacer を削除（枠線として意味をなさない空行）
         return compressed.dropWhile(RenderedLine::spacer).dropLastWhile(RenderedLine::spacer)
-            .map { normalize(it.component) }
+            .map { if (it.preserveStyle) it.component else normalize(it.component) }
     }
 
     private fun renderLine(line: GuiLoreLine, interactionCount: Int): List<RenderedLine> = when (line) {
@@ -85,6 +111,7 @@ class LoreServiceImpl(
         GuiLoreLine.Separator ->
             listOf(RenderedLine(LoreFormatter.separatorComponent(emptyList()), separator = true))
         is GuiLoreLine.Component -> listOf(RenderedLine(line.value))
+        is GuiLoreLine.Opaque -> listOf(RenderedLine(line.value, preserveStyle = true))
         is GuiLoreLine.ComponentData ->
             listOf(RenderedLine(LoreFormatter.dataComponent(line.label, line.value, line.valueColor)))
         is GuiLoreLine.StyledText ->
@@ -211,7 +238,8 @@ class LoreServiceImpl(
         is GuiLoreLine.ProgressPath,
         is GuiLoreLine.UserText,
         is GuiLoreLine.Interaction,
-        is GuiLoreLine.Component -> error("Non-formatted lore line reached formatted renderer")
+        is GuiLoreLine.Component,
+        is GuiLoreLine.Opaque -> error("Non-formatted lore line reached formatted renderer")
     }
 
     private fun normalize(component: Component): Component = component

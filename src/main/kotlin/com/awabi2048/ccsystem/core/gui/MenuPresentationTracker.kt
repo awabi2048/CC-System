@@ -22,6 +22,13 @@ internal class MenuPresentationTracker {
         return revision
     }
 
+    fun markRefreshed(player: Player): Long {
+        val current = presentations[player.uniqueId] ?: return sequence.get()
+        val revision = sequence.incrementAndGet()
+        presentations[player.uniqueId] = current.copy(revision = revision)
+        return revision
+    }
+
     fun current(player: Player): Presentation? = presentations[player.uniqueId]
 
     data class Presentation(

@@ -106,6 +106,9 @@ gui:
     page_shift_next: Jump 5 pages forward
     page_shift_prev: Jump 5 pages back
     status_display: 'Status: {color}{status}'
+    action:
+      page: Navigate pages
+      open: Open menu
 lore:
   click:
     any: Click
