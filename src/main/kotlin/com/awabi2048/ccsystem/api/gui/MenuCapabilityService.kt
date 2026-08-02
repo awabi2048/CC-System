@@ -139,6 +139,8 @@ data class MenuCapabilityPresentation(
     var compositionMode: MenuCapabilityCompositionMode = MenuCapabilityCompositionMode.FULL_ITEM
         internal set
 
+    var actionGuidance: MenuCapabilityActionGuidance = MenuCapabilityActionGuidance.STANDARD
+
     companion object {
         @JvmStatic
         fun hostAugmentation(embeddedLoreBlocks: List<GuiLoreBlock>): MenuCapabilityPresentation =
@@ -165,6 +167,12 @@ fun MenuCapabilityPresentation.copyPreservingCompositionMetadata(
     embeddedLoreBlocks: List<GuiLoreBlock> = this.embeddedLoreBlocks,
 ): MenuCapabilityPresentation = copy(item, glint, playerHeadOwner, embeddedLoreBlocks).also {
     it.compositionMode = compositionMode
+    it.actionGuidance = actionGuidance
+}
+
+enum class MenuCapabilityActionGuidance {
+    STANDARD,
+    HIDDEN,
 }
 
 object MenuCapabilityPresentationValidator {

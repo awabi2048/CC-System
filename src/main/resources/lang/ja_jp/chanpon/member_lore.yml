@@ -19,4 +19,4 @@ chanpon:
         moderator: "モデレーター"
         action: "権限を切り替える"
     click_edit_action: "メニューを開く"
-    tool_permission_operation: "ツールの使用権限を変更する"
+    tool_permission_operation: "権限を設定する"

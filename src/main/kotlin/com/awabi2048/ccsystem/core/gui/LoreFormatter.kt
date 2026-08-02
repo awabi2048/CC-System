@@ -63,6 +63,17 @@ object LoreFormatter {
         return "$marker $color$label"
     }
 
+    fun checkboxLine(
+        label: String,
+        checked: Boolean,
+        checkedColor: String,
+        uncheckedColor: String,
+        marker: String,
+    ): String {
+        val color = if (checked) checkedColor else uncheckedColor
+        return "$color$marker $label"
+    }
+
     fun textLine(text: String): String {
         return "§7$text"
     }

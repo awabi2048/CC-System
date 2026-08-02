@@ -87,6 +87,18 @@ sealed interface GuiLoreLine {
         val selectedColor: String,
         val inactiveColor: String
     ) : GuiLoreLine
+    data class Checkbox(
+        val label: String,
+        val checked: Boolean,
+        val checkedColor: String,
+        val uncheckedColor: String,
+        val marker: String = "◆",
+    ) : GuiLoreLine {
+        init {
+            require(label.isNotBlank()) { "checkbox label must not be blank" }
+            require(marker.isNotBlank()) { "checkbox marker must not be blank" }
+        }
+    }
     data class Warning(val content: String) : GuiLoreLine
     data class Danger(val content: String) : GuiLoreLine
     data class Text(val text: String) : GuiLoreLine
