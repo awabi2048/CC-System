@@ -153,6 +153,13 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         currentRoute: MenuRoute,
         targetRoute: MenuRoute,
     ): MenuRuntimeOperationResult {
+        // 外部ダイアログから同じメニューへ復帰する場合など、同一Routeへの遷移を
+        // 通常の画面遷移として扱うと、現在Route自身が履歴へ積まれて戻る操作を
+        // 余分に消費してしまうため、履歴を追加せず再表示だけを行う。
+        if (currentRoute.key() == targetRoute.key()) {
+            return openResult(player, targetRoute)
+        }
+
         val previousHistory = history.snapshot(player.uniqueId)
         history.push(player.uniqueId, currentRoute)
         val result = openResult(player, targetRoute)

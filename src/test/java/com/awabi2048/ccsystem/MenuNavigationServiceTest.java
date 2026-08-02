@@ -38,6 +38,20 @@ class MenuNavigationServiceTest {
     }
 
     @Test
+    void navigatingToTheCurrentRouteDoesNotAddItToBreadcrumbs() {
+        var service = new MenuNavigationServiceImpl();
+        var player = player(UUID.randomUUID());
+        var route = route("same-route");
+        service.registerOpener(route.getOwner(), route.getId(), (target, openedRoute) -> true);
+
+        assertTrue(service.openRoot(player, route));
+        assertTrue(service.pushAndOpen(player, route, route));
+
+        assertTrue(service.breadcrumbs(player).isEmpty());
+        assertEquals(route, service.currentRoute(player));
+    }
+
+    @Test
     void inventoryInstancePolicyIsRegisteredAndRemovedByIdentity() {
         var service = new MenuNavigationServiceImpl();
         var inventory = inventory();
