@@ -2,7 +2,6 @@ chanpon:
   submission:
     common:
       action_next: "切り替え"
-      action_previous: "前へ戻す"
       "on": オン
       "off": オフ
     creation:
