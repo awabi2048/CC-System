@@ -26,6 +26,16 @@ class LanguageResourceValidationTest {
         LanguageResourceValidator.validate(
             Path.of("src/main/resources/lang"),
             List.of(
+                "brewery.item.name.wort",
+                "brewery.item.data.next_stage",
+                "brewery.item.stage.wort",
+                "brewery.item.next_stage.fermentation",
+                "brewery.item.next_stage.distillation",
+                "brewery.item.next_stage.aging",
+                "brewery.item.next_stage.completed",
+                "brewery.item.next_stage.none",
+                "brewery.process.preparation_started",
+                "brewery.error.aging_not_ready",
                 "gui.creation.template_detail.status_label",
                 "gui.creation.template_detail.status_available",
                 "gui.creation.template_detail.status_unavailable",
