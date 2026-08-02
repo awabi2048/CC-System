@@ -39,10 +39,15 @@ data class MenuRuntimeInspectionSlotSnapshot(
 {
     var presentationSemantics: MenuElementPresentationSemantics = MenuElementPresentationSemantics.opaque()
         internal set
+    var capabilityComposition: MenuCapabilityCompositionSnapshot? = null
+        internal set
 }
 
 fun MenuRuntimeInspectionSlotSnapshot.copyWithPresentationSemantics(): MenuRuntimeInspectionSlotSnapshot =
-    copy().also { it.presentationSemantics = presentationSemantics }
+    copy().also {
+        it.presentationSemantics = presentationSemantics
+        it.capabilityComposition = capabilityComposition
+    }
 
 /** 実行時に解決されるinteraction契約を、attributesを含めて保持する診断型です。 */
 data class MenuRuntimeInspectionInteractionSnapshot(

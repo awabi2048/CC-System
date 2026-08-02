@@ -66,12 +66,21 @@ class MenuCapabilityServiceImpl : MenuCapabilityService {
             }
             ResolvedMenuCapabilityAction(action.id, action.trigger, text, action.safety, action.reversibleContract)
         }
+        val presentation = definition.presentationProvider.resolve(context)
+        com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentationValidator.requireValid(presentation)
         return ResolvedMenuCapability(
             capabilityId = capabilityId,
-            presentation = definition.presentationProvider.resolve(context),
+            presentation = presentation,
             actions = resolvedActions,
         ).also {
             it.placement = definition.placement
+            it.compositionMode = presentation.compositionMode
+            if (presentation.compositionMode == com.awabi2048.ccsystem.api.gui.MenuCapabilityCompositionMode.HOST_AUGMENTATION) {
+                it.augmentationSource = com.awabi2048.ccsystem.api.gui.MenuCapabilityAugmentationSource(
+                    capabilityId,
+                    presentation.embeddedLoreBlocks,
+                )
+            }
             it.availabilityResult = when {
                 definitionAvailability !is MenuAvailabilityResult.Available -> definitionAvailability
                 resolvedActions.isEmpty() && definition.actions.isNotEmpty() && actionUnavailableReason != null ->

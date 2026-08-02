@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.api.gui.MenuClickType
 import com.awabi2048.ccsystem.api.gui.MenuInteraction
 import com.awabi2048.ccsystem.api.gui.MenuElement
 import com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics
+import com.awabi2048.ccsystem.api.gui.copyPreservingCapabilityComposition
 import com.awabi2048.ccsystem.api.gui.MenuPresentationProfile
 import com.awabi2048.ccsystem.api.gui.MenuCloseContext
 import com.awabi2048.ccsystem.api.gui.MenuCloseReason
@@ -1677,7 +1678,10 @@ internal class MenuRuntimeServiceImpl(
                 role = element.role,
                 enabled = element.enabled,
                 interaction = element.resolvedInteraction().inspectionSnapshot(),
-            ).also { it.presentationSemantics = element.effectivePresentationSemantics() }
+            ).also {
+                it.presentationSemantics = element.effectivePresentationSemantics()
+                it.capabilityComposition = it.presentationSemantics.capabilityComposition
+            }
         },
     )
 
@@ -1869,6 +1873,7 @@ internal class MenuRuntimeServiceImpl(
         ).also { snapshot ->
             snapshot.presentationSemantics = element?.effectivePresentationSemantics()
                 ?: com.awabi2048.ccsystem.api.gui.MenuElementPresentationSemantics.opaque()
+            snapshot.capabilityComposition = snapshot.presentationSemantics.capabilityComposition
         }
     }
 
@@ -1877,7 +1882,7 @@ internal class MenuRuntimeServiceImpl(
         return when {
             resolved is MenuInteraction.Unavailable && resolved.message != null &&
                 presentationSemantics.profile != MenuPresentationProfile.DISABLED ->
-                presentationSemantics.copy(
+                presentationSemantics.copyPreservingCapabilityComposition(
                     profile = MenuPresentationProfile.DISABLED,
                     disabledReason = resolved.message,
                 )
@@ -1886,7 +1891,7 @@ internal class MenuRuntimeServiceImpl(
                 MenuPresentationProfile.SINGLE_CUSTOM_ACTION,
                 MenuPresentationProfile.MULTI_ACTION,
                 MenuPresentationProfile.PAGE_NAVIGATION,
-            ) -> presentationSemantics.copy(profile = MenuPresentationProfile.DISPLAY_ONLY)
+            ) -> presentationSemantics.copyPreservingCapabilityComposition(profile = MenuPresentationProfile.DISPLAY_ONLY)
             else -> presentationSemantics
         }
     }

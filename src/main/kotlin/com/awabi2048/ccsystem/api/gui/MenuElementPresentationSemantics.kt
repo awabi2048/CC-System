@@ -91,6 +91,15 @@ data class MenuElementPresentationSemantics(
     val profile: MenuPresentationProfile,
     val disabledReason: Component? = null,
 ) {
+    var capabilityCompositionMode: MenuCapabilityCompositionMode? = null
+        internal set
+
+    var augmentationSource: MenuCapabilityAugmentationSource? = null
+        internal set
+
+    var capabilityComposition: MenuCapabilityCompositionSnapshot? = null
+        internal set
+
     companion object {
         @JvmStatic
         fun opaque(): MenuElementPresentationSemantics = MenuElementPresentationSemantics(
@@ -99,6 +108,27 @@ data class MenuElementPresentationSemantics(
             MenuPresentationProfile.UNKNOWN,
         )
     }
+}
+
+fun MenuElementPresentationSemantics.copyPreservingCapabilityComposition(
+    name: MenuNameSemantic = this.name,
+    lore: MenuLoreSemantics = this.lore,
+    profile: MenuPresentationProfile = this.profile,
+    disabledReason: Component? = this.disabledReason,
+): MenuElementPresentationSemantics = copy(name, lore, profile, disabledReason).also {
+    it.capabilityCompositionMode = capabilityCompositionMode
+    it.augmentationSource = augmentationSource
+    it.capabilityComposition = capabilityComposition
+}
+
+/** Hostがaugmentationを完成itemへ合成した後、監査用の由来情報を要素へ付与します。 */
+fun MenuElement.withCapabilityComposition(
+    capability: ResolvedMenuCapability,
+    snapshot: MenuCapabilityCompositionSnapshot? = null,
+): MenuElement = apply {
+    presentationSemantics.capabilityCompositionMode = capability.compositionMode
+    presentationSemantics.augmentationSource = capability.augmentationSource
+    presentationSemantics.capabilityComposition = snapshot
 }
 
 sealed interface MenuAvailabilityResult {

@@ -251,6 +251,9 @@ class GuiElementServiceImpl(
     }
 
     private fun capabilityItem(player: Player?, capability: ResolvedMenuCapability): Pair<ItemStack, GuiLoreSpec> {
+        require(capability.compositionMode == com.awabi2048.ccsystem.api.gui.MenuCapabilityCompositionMode.FULL_ITEM) {
+            "HOST_AUGMENTATION must be composed into a host item with MenuCapabilityComposer"
+        }
         val presentation = capability.presentation
         val actions = capability.actions.map { action ->
             GuiMenuEntryAction(
@@ -335,7 +338,10 @@ class GuiElementServiceImpl(
                 loreSpec,
                 profile,
                 capability.unavailableReason,
-            ),
+            ).also {
+                it.capabilityCompositionMode = capability.compositionMode
+                it.augmentationSource = capability.augmentationSource
+            },
         )
     }
 

@@ -3,6 +3,8 @@ package com.awabi2048.ccsystem.api.gui
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import java.util.UUID
+import java.security.MessageDigest
+import org.bukkit.Material
 
 data class MenuCapabilityContext(
     val player: Player,
@@ -33,12 +35,161 @@ fun MenuCapabilityAvailability.resolveAvailability(context: MenuCapabilityContex
     else if (isAvailable(context)) MenuAvailabilityResult.Available
     else MenuAvailabilityResult.UnavailableUnknown
 
+enum class MenuCapabilityCompositionMode {
+    FULL_ITEM,
+    HOST_AUGMENTATION,
+}
+
+class MenuCapabilityAugmentationSource(
+    val capabilityId: String,
+    sourceBlocks: List<GuiLoreBlock>,
+) {
+    val blocks: List<GuiLoreBlock> = sourceBlocks.map { GuiLoreBlock(it.lines.toList()) }
+    val fingerprint: String = MenuCapabilityCanonicalFingerprint.of(blocks)
+
+    init {
+        require(capabilityId.isNotBlank()) { "capabilityId must not be blank" }
+        require(sourceBlocks.isNotEmpty()) { "augmentation blocks must not be empty" }
+    }
+}
+
+enum class MenuCapabilityInsertionBoundary {
+    AFTER_HOST_BLOCKS_BEFORE_ACTIONS,
+}
+
+class MenuCapabilityCompositionSnapshot(
+    val contributorCapabilityId: String,
+    val mode: MenuCapabilityCompositionMode,
+    val insertionBoundary: MenuCapabilityInsertionBoundary,
+    augmentationBlocks: List<GuiLoreBlock>,
+    val hostBlocksFingerprint: String,
+    val actionsFingerprint: String,
+    val hostItemFingerprint: String,
+    val completedCompositionFingerprint: String,
+) {
+    val augmentationBlocks: List<GuiLoreBlock> = augmentationBlocks.map { GuiLoreBlock(it.lines.toList()) }
+    val augmentationBlockFingerprints: List<String> = this.augmentationBlocks.map(MenuCapabilityCanonicalFingerprint::of)
+    val augmentationFingerprint: String = MenuCapabilityCanonicalFingerprint.of(this.augmentationBlocks)
+}
+
+data class MenuCapabilityCompositionResult(
+    val lore: GuiLoreSpec,
+    val snapshot: MenuCapabilityCompositionSnapshot,
+)
+
+object MenuCapabilityComposer {
+    @JvmStatic
+    fun composeHostAugmentation(
+        capability: ResolvedMenuCapability,
+        hostItem: GuiItemSpec,
+        hostBlocks: List<GuiLoreBlock>,
+        actions: List<GuiLoreLine.Interaction> = emptyList(),
+    ): MenuCapabilityCompositionResult {
+        require(capability.compositionMode == MenuCapabilityCompositionMode.HOST_AUGMENTATION) {
+            "composeHostAugmentation requires HOST_AUGMENTATION"
+        }
+        val augmentation = requireNotNull(capability.augmentationSource) {
+            "resolved host augmentation requires augmentation source"
+        }.blocks.map { GuiLoreBlock(it.lines.toList()) }
+        val copiedHost = hostBlocks.map { GuiLoreBlock(it.lines.toList()) }
+        val completed = buildList {
+            addAll(copiedHost)
+            addAll(augmentation)
+            if (actions.isNotEmpty()) add(GuiLoreBlock(actions.toList()))
+        }
+        return MenuCapabilityCompositionResult(
+            lore = GuiLoreSpec.Blocks(completed),
+            snapshot = MenuCapabilityCompositionSnapshot(
+                contributorCapabilityId = capability.capabilityId,
+                mode = capability.compositionMode,
+                insertionBoundary = MenuCapabilityInsertionBoundary.AFTER_HOST_BLOCKS_BEFORE_ACTIONS,
+                augmentationBlocks = augmentation,
+                hostBlocksFingerprint = MenuCapabilityCanonicalFingerprint.of(copiedHost),
+                actionsFingerprint = MenuCapabilityCanonicalFingerprint.of(actions),
+                hostItemFingerprint = MenuCapabilityCanonicalFingerprint.of(hostItem),
+                completedCompositionFingerprint = MenuCapabilityCanonicalFingerprint.of(completed),
+            ),
+        )
+    }
+}
+
+internal object MenuCapabilityCanonicalFingerprint {
+    fun of(value: Any?): String = MessageDigest.getInstance("SHA-256")
+        .digest(canonical(value).toByteArray(Charsets.UTF_8))
+        .joinToString("") { "%02x".format(it.toInt() and 0xff) }
+
+    private fun canonical(value: Any?): String = when (value) {
+        null -> "null"
+        is List<*> -> value.joinToString(prefix = "[", postfix = "]", separator = ",") { canonical(it) }
+        is GuiLoreBlock -> "block:${canonical(value.lines)}"
+        is GuiLoreLine.Interaction -> "interaction:${canonical(value.gesture)}:${value.label}"
+        is GuiItemSpec -> "item:${value.material.name}:${canonical(value.name)}:${canonical(value.lore)}:${value.role}:${value.amount}"
+        is GuiLoreSpec.Blocks -> "blocks:${canonical(value.blocks)}"
+        else -> "${value::class.qualifiedName}:${value}"
+    }
+}
+
 data class MenuCapabilityPresentation(
     val item: GuiItemSpec,
     val glint: Boolean? = null,
     val playerHeadOwner: UUID? = null,
     val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
-)
+) {
+    /** FULL_ITEMではitemが完成表示を所有し、embeddedLoreBlocksはitem loreを置換してactionより前へ配置します。 */
+    var compositionMode: MenuCapabilityCompositionMode = MenuCapabilityCompositionMode.FULL_ITEM
+        internal set
+
+    companion object {
+        @JvmStatic
+        fun hostAugmentation(embeddedLoreBlocks: List<GuiLoreBlock>): MenuCapabilityPresentation =
+            MenuCapabilityPresentation(
+                item = GuiItemSpec(
+                    material = Material.AIR,
+                    name = GuiNameSpec.Empty,
+                    lore = GuiLoreSpec.None,
+                    role = GuiElementRole.CONTENT,
+                    amount = 1,
+                ),
+                embeddedLoreBlocks = embeddedLoreBlocks.map { GuiLoreBlock(it.lines.toList()) },
+            ).also {
+                it.compositionMode = MenuCapabilityCompositionMode.HOST_AUGMENTATION
+                MenuCapabilityPresentationValidator.requireValid(it)
+            }
+    }
+}
+
+fun MenuCapabilityPresentation.copyPreservingCompositionMetadata(
+    item: GuiItemSpec = this.item,
+    glint: Boolean? = this.glint,
+    playerHeadOwner: UUID? = this.playerHeadOwner,
+    embeddedLoreBlocks: List<GuiLoreBlock> = this.embeddedLoreBlocks,
+): MenuCapabilityPresentation = copy(item, glint, playerHeadOwner, embeddedLoreBlocks).also {
+    it.compositionMode = compositionMode
+}
+
+object MenuCapabilityPresentationValidator {
+    @JvmStatic
+    fun violations(presentation: MenuCapabilityPresentation): List<String> = buildList {
+        if (presentation.compositionMode == MenuCapabilityCompositionMode.HOST_AUGMENTATION) {
+            if (presentation.embeddedLoreBlocks.isEmpty()) add("HOST_AUGMENTATION_BLOCKS_EMPTY")
+            if (presentation.item.material != Material.AIR) add("HOST_AUGMENTATION_OWNS_MATERIAL")
+            if (presentation.item.name != GuiNameSpec.Empty) add("HOST_AUGMENTATION_OWNS_NAME")
+            if (presentation.item.lore != GuiLoreSpec.None) add("HOST_AUGMENTATION_OWNS_LORE")
+            if (presentation.item.role != GuiElementRole.CONTENT || presentation.item.amount != 1) {
+                add("HOST_AUGMENTATION_OWNS_ITEM_PROPERTIES")
+            }
+            if (presentation.glint != null || presentation.playerHeadOwner != null) {
+                add("HOST_AUGMENTATION_OWNS_ITEM_METADATA")
+            }
+        }
+    }
+
+    @JvmStatic
+    fun requireValid(presentation: MenuCapabilityPresentation) {
+        val violations = violations(presentation)
+        require(violations.isEmpty()) { "Invalid capability presentation: ${violations.joinToString()}" }
+    }
+}
 
 /** 表示・inspectから呼ばれる読取専用のpresentation生成です。 */
 fun interface MenuCapabilityPresentationProvider {
@@ -164,6 +315,12 @@ data class ResolvedMenuCapability(
     var availabilityResult: MenuAvailabilityResult = MenuAvailabilityResult.Available
         internal set
 
+    var compositionMode: MenuCapabilityCompositionMode = presentation.compositionMode
+        internal set
+
+    var augmentationSource: MenuCapabilityAugmentationSource? = null
+        internal set
+
     val unavailableReason: net.kyori.adventure.text.Component?
         get() = (availabilityResult as? MenuAvailabilityResult.Unavailable)?.reason
 
@@ -207,6 +364,8 @@ fun ResolvedMenuCapability.copyPreservingResolutionMetadata(
 ): ResolvedMenuCapability = copy(capabilityId, presentation, actions).also {
     it.placement = placement
     it.availabilityResult = availabilityResult
+    it.compositionMode = compositionMode
+    it.augmentationSource = augmentationSource
 }
 
 /**

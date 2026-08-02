@@ -19,3 +19,4 @@ chanpon:
         moderator: "Moderator"
         action: "Change role"
     click_edit_action: "Open menu"
+    tool_permission_operation: "Change tool permissions"

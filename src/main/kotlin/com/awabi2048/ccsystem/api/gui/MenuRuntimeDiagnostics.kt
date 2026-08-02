@@ -179,10 +179,15 @@ data class MenuRuntimeSlotSnapshot(
 {
     var presentationSemantics: MenuElementPresentationSemantics = MenuElementPresentationSemantics.opaque()
         internal set
+    var capabilityComposition: MenuCapabilityCompositionSnapshot? = null
+        internal set
 }
 
 fun MenuRuntimeSlotSnapshot.copyWithPresentationSemantics(): MenuRuntimeSlotSnapshot =
-    copy().also { it.presentationSemantics = presentationSemantics }
+    copy().also {
+        it.presentationSemantics = presentationSemantics
+        it.capabilityComposition = capabilityComposition
+    }
 
 /** inventory surfaceでは全slotを、Dialog/Formでは空のslot一覧を返します。 */
 data class MenuRuntimeSnapshot(
