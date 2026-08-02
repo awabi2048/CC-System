@@ -35,4 +35,25 @@ object InputMacroExpander {
             }
         }
     }
+
+    /**
+     * Dialog 表示用に、`%player_input%` だけを未解決のまま残して他を解決する。
+     *
+     * 入力前の Dialog で実行コマンドの内容を案内するために使用し、実行時の [expand] とは異なり
+     * `%player_input%` を入力値へ置換しない。`%player_name%` / `%player_uuid%` と
+     * 未知の `%...%` の扱いは [expand] と同じである。
+     */
+    fun expandForDialog(
+        command: String,
+        playerName: String,
+        playerUuid: String,
+    ): String {
+        return macroPattern.replace(command) { match ->
+            when (match.groupValues[1]) {
+                "player_input" -> InputMacroExpander.PLAYER_INPUT
+                "player_name" -> playerName
+                else -> playerUuid
+            }
+        }
+    }
 }

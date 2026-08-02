@@ -264,12 +264,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 lwcExpansionCommand.execute(sender, args.drop(1).toTypedArray())
             }
             "input_macro" -> {
-                val player = sender as? Player
-                if (player == null) {
-                    sender.sendMessage(LanguageManager.getMessage(null, "input_macro.player_only"))
-                    return true
-                }
-                inputMacroCommandHandler.execute(player, args.drop(1))
+                inputMacroCommandHandler.execute(sender, args.drop(1))
             }
             "enable", "disable" -> {
                 if (args.size < 2) {
@@ -462,6 +457,14 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
         }
 
         if (args[0].equals("input_macro", ignoreCase = true)) {
+            if (!hasPermissionForSubCommand(sender, "input_macro")) return emptyList()
+            // args[1] は対象プレイヤー名を補完する。
+            if (args.size == 2) {
+                return Bukkit.getOnlinePlayers().map { it.name }.filter {
+                    it.startsWith(args[1], ignoreCase = true)
+                }
+            }
+            // それ以降の最後の引数は、実行モードの補完を提示する。
             return InputMacroMode.entries
                 .filter { hasPluginPermission(sender, it.permission) }
                 .map { it.label }

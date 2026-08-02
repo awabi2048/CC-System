@@ -1,18 +1,12 @@
 # input_macro: CC-System common dialog based command execution
 # Spec: .docs/planning/active-review/2026-08-02-cc-system-input-macro-dialog-spec.md
 input_macro:
-  usage: "§cUsage: /cc-system input_macro '<command template>' <console|player>"
-  player_only: §cThis command can only be executed by a player.
-  invalid_mode: §cSpecify the execution mode as console or player.
+  usage: "§cUsage: /cc-system input_macro <player> '<command template>' [console|player]"
   invalid_template: §cThe command template is invalid.
-  empty_input: §cThe input is empty. Please enter it again.
+  empty_input: §cPlease enter a string.
   forbidden_input: §cThe input contains characters that cannot be used (such as newlines). Please enter it again.
   no_permission: §cYou do not have permission to execute this feature.
-  execute_success: §aThe command has been executed.
-  execute_failure: §cFailed to execute the command.
   dialog:
-    title: Command Input
-    body: "The entered text is expanded into a command and executed. Executor: {mode}"
-    input_label: Text to expand into the command
+    input_label: "The entered string is expanded into a command and executed.\n(Command to execute: {command})"
     confirm: Execute
     cancel: Cancel
