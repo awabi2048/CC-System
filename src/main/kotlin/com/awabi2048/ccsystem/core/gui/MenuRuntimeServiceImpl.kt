@@ -1311,6 +1311,10 @@ internal class MenuRuntimeServiceImpl(
             closeReasons.mark(previousInventory, MenuCloseReason.ROUTE_REPLACED)
             preserveCloseInventories += previousInventory
         }
+        // MenuSoundServiceImplは、現在のtopInventoryがCRAFTINGかどうかで
+        // 「閉じた状態からの初回開封」を判定するため、Inventoryを表示する前に呼び出す。
+        // 表示後に呼ぶと新しいInventoryがCHESTになり、初回開封音まで抑止される。
+        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
         try {
             player.openInventory(inventory)
         } catch (failure: Throwable) {
@@ -1339,7 +1343,6 @@ internal class MenuRuntimeServiceImpl(
             view.standardFrame,
             policy.inputSlots,
         )
-        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
         presentations.markOpened(
             player,
             com.awabi2048.ccsystem.api.gui.MenuSurface.INVENTORY,
