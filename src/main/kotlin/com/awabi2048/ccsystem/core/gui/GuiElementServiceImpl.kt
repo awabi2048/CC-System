@@ -263,10 +263,13 @@ class GuiElementServiceImpl(
                 label = action.text,
             )
         }
-        val actionLines = GuiMenuEntryLoreFactory.actionLines(
-            actions,
-            player,
-        )
+        val actionLines = if (
+            presentation.actionGuidance == com.awabi2048.ccsystem.api.gui.MenuCapabilityActionGuidance.HIDDEN
+        ) {
+            emptyList()
+        } else {
+            GuiMenuEntryLoreFactory.actionLines(actions, player)
+        }
         val baseItem = if (presentation.embeddedLoreBlocks.isNotEmpty()) {
             presentation.item.copy(lore = GuiLoreSpec.Blocks(presentation.embeddedLoreBlocks))
         } else {

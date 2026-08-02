@@ -60,7 +60,7 @@ internal class MenuPresentationSemanticsFactory(
         is GuiLoreLine.Data, is GuiLoreLine.ComponentData, is GuiLoreLine.SubData, is GuiLoreLine.Metadata,
         is GuiLoreLine.StatusData, is GuiLoreLine.StatusComponentData, is GuiLoreLine.ProgressPath ->
             MenuLoreLineSemantics(MenuLoreLineKind.DATA)
-        is GuiLoreLine.Option -> MenuLoreLineSemantics(MenuLoreLineKind.CHOICE)
+        is GuiLoreLine.Option, is GuiLoreLine.Checkbox -> MenuLoreLineSemantics(MenuLoreLineKind.CHOICE)
         is GuiLoreLine.Warning -> MenuLoreLineSemantics(MenuLoreLineKind.WARNING)
         is GuiLoreLine.Danger -> MenuLoreLineSemantics(MenuLoreLineKind.DANGER)
         is GuiLoreLine.Interaction -> MenuLoreLineSemantics(

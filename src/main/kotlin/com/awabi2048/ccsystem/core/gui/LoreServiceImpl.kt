@@ -223,6 +223,13 @@ class LoreServiceImpl(
             line.selectedColor,
             line.inactiveColor
         )
+        is GuiLoreLine.Checkbox -> LoreFormatter.checkboxLine(
+            line.label,
+            line.checked,
+            line.checkedColor,
+            line.uncheckedColor,
+            line.marker,
+        )
         is GuiLoreLine.Danger -> LoreFormatter.dangerLine(line.content)
         is GuiLoreLine.Data -> LoreFormatter.dataLine(line.label, line.value, line.valueColor)
         is GuiLoreLine.Metadata -> LoreFormatter.metadataLine(line.label, line.value)

@@ -7,7 +7,6 @@ chanpon:
       not_set: "Not set"
       current_label: "Current"
       action_next: "Toggle"
-      action_previous: "Previous"
       action_set: "Set"
       must_be_in_world_warning: "You must be in this world to change this setting!"
     weather:

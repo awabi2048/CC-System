@@ -30,8 +30,7 @@ chanpon:
       public_description: "Shown in Discovery and directly visitable."
       development_description: "Hidden from lists; Meet uses requests."
       private_description: "Only members can visit."
-      cycle_next_action: "Select next option"
-      cycle_previous_action: "Select previous option"
+      cycle_action: "Toggle"
     expand:
       display: "§eExpand world border"
       status_available: []

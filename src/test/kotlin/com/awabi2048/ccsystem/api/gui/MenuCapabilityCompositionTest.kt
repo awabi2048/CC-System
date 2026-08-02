@@ -11,6 +11,18 @@ import org.junit.jupiter.api.Test
 
 class MenuCapabilityCompositionTest {
     @Test
+    fun `操作案内省略指定はコピー後も保持される`() {
+        val presentation = MenuCapabilityPresentation(item(Material.STONE)).also {
+            it.actionGuidance = MenuCapabilityActionGuidance.HIDDEN
+        }
+
+        assertEquals(
+            MenuCapabilityActionGuidance.HIDDEN,
+            presentation.copyPreservingCompositionMetadata().actionGuidance,
+        )
+    }
+
+    @Test
     fun `legacy presentation remains full item and generated copy ABI remains usable`() {
         val presentation = MenuCapabilityPresentation(item(Material.STONE))
 
