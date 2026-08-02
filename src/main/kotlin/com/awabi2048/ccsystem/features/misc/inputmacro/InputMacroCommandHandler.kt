@@ -11,6 +11,7 @@ import com.awabi2048.ccsystem.api.gui.MenuUpdate
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -99,8 +100,6 @@ class InputMacroCommandHandler {
         command: String,
         warningTitle: Component? = null,
     ) {
-        // Dialog 表示用には %player_input% を未解決のまま、実行コマンドの内容を案内する。
-        val commandPreview = InputMacroExpander.expandForDialog(command, target.name, target.uniqueId.toString())
         val title = warningTitle ?: Component.empty()
         CCSystem.getAPI().getMenuDialogService().show(
             target,
@@ -112,11 +111,7 @@ class InputMacroCommandHandler {
                 inputs = listOf(
                     MenuDialogInput.Text(
                         id = "player_input",
-                        label = LanguageManager.getMessageWithoutPrefix(
-                            target,
-                            "input_macro.dialog.input_label",
-                            "command" to commandPreview,
-                        ),
+                        label = LanguageManager.getMessageWithoutPrefix(target, "input_macro.dialog.input_label"),
                         initial = "",
                         maxLength = 128,
                     )
@@ -162,7 +157,7 @@ class InputMacroCommandHandler {
     }
 
     /**
-     * エラー時の警告タイトル付き Dialog を再表示する。
+     * エラー時の警告タイトル付き Dialog を再表示し、エラーを示す効果音を再生する。
      */
     private fun showWarning(
         sender: CommandSender,
@@ -172,6 +167,7 @@ class InputMacroCommandHandler {
         messageKey: String,
     ) {
         val warning = LanguageManager.getMessageWithoutPrefix(target, messageKey)
+        target.playSound(target.location, Sound.BLOCK_NOTE_BLOCK_BIT, 1.0f, 0.5f)
         showDialog(sender, target, mode, command, warning)
     }
 

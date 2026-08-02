@@ -7,6 +7,6 @@ input_macro:
   forbidden_input: §cThe input contains characters that cannot be used (such as newlines). Please enter it again.
   no_permission: §cYou do not have permission to execute this feature.
   dialog:
-    input_label: "The entered string is expanded into a command and executed.\n(Command to execute: {command})"
+    input_label: "The entered string is expanded into a command and executed."
     confirm: Execute
     cancel: Cancel

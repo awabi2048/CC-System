@@ -464,11 +464,14 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                     it.startsWith(args[1], ignoreCase = true)
                 }
             }
-            // それ以降の最後の引数は、実行モードの補完を提示する。
-            return InputMacroMode.entries
-                .filter { hasPluginPermission(sender, it.permission) }
-                .map { it.label }
-                .filter { it.startsWith(args.last(), ignoreCase = true) }
+            // args[2] はコマンドテンプレート位置であり、補完を提示しない。
+            // モード位置（args[3] 以降）でのみ実行モードの補完を提示する。
+            if (args.size >= 4) {
+                return InputMacroMode.entries
+                    .filter { hasPluginPermission(sender, it.permission) }
+                    .map { it.label }
+                    .filter { it.startsWith(args.last(), ignoreCase = true) }
+            }
         }
 
         return emptyList()

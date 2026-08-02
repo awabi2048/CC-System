@@ -7,6 +7,6 @@ input_macro:
   forbidden_input: §c入力に使用できない文字（改行など）が含まれています。もう一度入力してください。
   no_permission: §cこの機能を実行する権限がありません。
   dialog:
-    input_label: "入力した文字列をもとにコマンドを実行します。\n（実行コマンド: {command}）"
+    input_label: "入力した文字列をもとにコマンドを実行します。"
     confirm: 実行
     cancel: キャンセル
