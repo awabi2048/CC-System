@@ -1,0 +1,18 @@
+# input_macro: CC-System共通Dialog経由のコマンド実行機能
+# 仕様: .docs/planning/active-review/2026-08-02-cc-system-input-macro-dialog-spec.md
+input_macro:
+  usage: "§c使用法: /cc-system input_macro '<コマンドテンプレート>' <console|player>"
+  player_only: §cこのコマンドはプレイヤーからのみ実行できます。
+  invalid_mode: §c実行モードは console または player を指定してください。
+  invalid_template: §cコマンドテンプレートが不正です。
+  empty_input: §c入力が空です。もう一度入力してください。
+  forbidden_input: §c入力に使用できない文字（改行など）が含まれています。もう一度入力してください。
+  no_permission: §cこの機能を実行する権限がありません。
+  execute_success: §aコマンドを実行しました。
+  execute_failure: §cコマンドの実行に失敗しました。
+  dialog:
+    title: コマンド実行入力
+    body: "入力した文字列をコマンドへ展開して実行します。実行主体: {mode}"
+    input_label: コマンドへ展開する文字列
+    confirm: 実行
+    cancel: キャンセル

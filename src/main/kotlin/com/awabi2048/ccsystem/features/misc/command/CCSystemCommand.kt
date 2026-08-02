@@ -12,6 +12,8 @@ import com.awabi2048.ccsystem.features.publicsign.manager.PublicSignManager
 import com.awabi2048.ccsystem.features.rentalarea.manager.RentalAreaManager
 import com.awabi2048.ccsystem.features.announce.manager.AnnouncementManager
 import com.awabi2048.ccsystem.features.lwcx.command.LwcExpansionCommand
+import com.awabi2048.ccsystem.features.misc.inputmacro.InputMacroCommandHandler
+import com.awabi2048.ccsystem.features.misc.inputmacro.InputMacroMode
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -27,6 +29,7 @@ import java.time.LocalDate
 class CCSystemCommand : CommandExecutor, TabCompleter {
 
     private val lwcExpansionCommand = LwcExpansionCommand()
+    private val inputMacroCommandHandler = InputMacroCommandHandler()
 
     private val manageableFeatures = listOf(
         "resource_world",
@@ -260,6 +263,14 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             "lwc-expansion" -> {
                 lwcExpansionCommand.execute(sender, args.drop(1).toTypedArray())
             }
+            "input_macro" -> {
+                val player = sender as? Player
+                if (player == null) {
+                    sender.sendMessage(LanguageManager.getMessage(null, "input_macro.player_only"))
+                    return true
+                }
+                inputMacroCommandHandler.execute(player, args.drop(1))
+            }
             "enable", "disable" -> {
                 if (args.size < 2) {
                     sender.sendMessage(LanguageManager.getMessage(player, "feature_toggle_usage"))
@@ -335,6 +346,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
                 "enable" -> "cc-system.enable"
                 "disable" -> "cc-system.disable"
                 "lwc-expansion" -> "cc-system.lwc.expansion"
+                "input_macro" -> return InputMacroMode.entries.any { hasPluginPermission(sender, it.permission) }
                 else -> return true
             }
         return hasPluginPermission(sender, permission)
@@ -361,7 +373,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     ): List<String>? {
         if (args.size == 1) {
             val subCommands =
-                listOf("toggle", "reload", "update-day", "rental-ticket", "status", "enable", "disable", "lwc-expansion").filter {
+                listOf("toggle", "reload", "update-day", "rental-ticket", "status", "enable", "disable", "lwc-expansion", "input_macro").filter {
                     hasPermissionForSubCommand(sender, it) &&
                         when (it) {
                             "rental-ticket" -> ConfigManager.isRentalAreaEnabled()
@@ -447,6 +459,13 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
             return listOf("1", "16", "64").filter {
                 it.startsWith(args[3], ignoreCase = true)
             }
+        }
+
+        if (args[0].equals("input_macro", ignoreCase = true)) {
+            return InputMacroMode.entries
+                .filter { hasPluginPermission(sender, it.permission) }
+                .map { it.label }
+                .filter { it.startsWith(args.last(), ignoreCase = true) }
         }
 
         return emptyList()

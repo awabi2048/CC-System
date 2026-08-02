@@ -64,4 +64,39 @@ class MenuDialogInputTest {
             )
         }
     }
+
+    @Test
+    fun `dialog allows escape close by default`() {
+        val button = MenuDialogButton(
+            Component.text("決定"),
+            MenuDialogHandler { _, _ -> MenuActionResult.Success() },
+        )
+        val request = MenuDialogRequest(
+            owner = "test",
+            id = "escape-default",
+            title = Component.text("確認"),
+            body = emptyList(),
+            confirm = button,
+            cancel = button,
+        )
+        assertEquals(true, request.canCloseWithEscape)
+    }
+
+    @Test
+    fun `dialog can opt out of escape close`() {
+        val button = MenuDialogButton(
+            Component.text("決定"),
+            MenuDialogHandler { _, _ -> MenuActionResult.Success() },
+        )
+        val request = MenuDialogRequest(
+            owner = "test",
+            id = "escape-off",
+            title = Component.text("確認"),
+            body = emptyList(),
+            confirm = button,
+            cancel = button,
+            canCloseWithEscape = false,
+        )
+        assertEquals(false, request.canCloseWithEscape)
+    }
 }

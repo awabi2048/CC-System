@@ -66,6 +66,7 @@ internal class MenuDialogServiceImpl(
             factory.empty()
                 .base(
                     DialogBase.builder(request.title)
+                        .canCloseWithEscape(request.canCloseWithEscape)
                         .body(request.body.map { DialogBody.plainMessage(it) })
                         .inputs(inputs)
                         .afterAction(DialogBase.DialogAfterAction.CLOSE)

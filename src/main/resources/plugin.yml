@@ -101,6 +101,8 @@ permissions:
       cc-system.npc_message.use: true
       cc-system.delay.use: true
       cc-system.clock.set: true
+      cc-system.input-macro.player: true
+      cc-system.input-macro.console: true
   
   cc-system.admin:
     description: CC-System管理権限
@@ -221,6 +223,14 @@ permissions:
 
   cc-system.clock.set:
     description: /clock コマンド使用権限
+    default: op
+
+  cc-system.input-macro.player:
+    description: input_macroコマンドの player モード利用権限
+    default: op
+
+  cc-system.input-macro.console:
+    description: input_macroコマンドの console モード利用権限
     default: op
   
   craftercrossing.test:

@@ -73,6 +73,7 @@ data class MenuDialogRequest(
     val additionalActions: List<MenuDialogButton> = emptyList(),
     val columns: Int = 1,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
+    val canCloseWithEscape: Boolean = true,
 ) {
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }

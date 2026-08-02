@@ -1237,6 +1237,9 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(event.player.uniqueId)
         externalFinishResults.clear(event.player.uniqueId)
         reversibleTokens.clear(event.player.uniqueId)
+        // 外部画面（Dialog等）を開いたまま退出した場合も、サスペンド状態と表示状態を解放する。
+        completeExternal(event.player)
+        presentations.markClosed(event.player)
     }
 
     private fun openDirectResult(
