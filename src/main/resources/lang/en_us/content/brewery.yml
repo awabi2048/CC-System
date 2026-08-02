@@ -1,6 +1,7 @@
 brewery:
   item:
     name:
+      wort: §b{recipe} brewing base
       muddy: §7Muddy {recipe}
       fermented: §b{product}
       distilled: §e{product}
@@ -14,11 +15,19 @@ brewery:
       distill_count: Distillations
       alcohol: Alcohol
       rating: Rating
+      next_stage: Next stage
     stage:
+      wort: Prepared
       fermented: Fermented
       distilled: Distilled
       aged: Aged
       failed: Failed
+    next_stage:
+      fermentation: Ferment in a signed vanilla barrel
+      distillation: Distill in a brewing stand
+      aging: Age in a multiblock barrel
+      completed: Completed
+      none: None
     filter:
       name: Sample Distillation Filter
       description:
@@ -30,6 +39,7 @@ brewery:
     title: Brewery Catalog {page}/{pages}
     discovered: '&6Discovered in the brewery catalog: &f{recipe}'
   process:
+    preparation_started: '&aStarted preparing the {recipe} brewing base.'
     fermentation_started: '&aFermentation started. &7(Recipe: {recipe})'
     distillation_started: '&aDistillation started.'
     distillation_stopped: '&eDistillation stopped.'
@@ -41,6 +51,7 @@ brewery:
     no_yeast: '&cAdd cultured yeast before starting fermentation.'
     already_fermenting: '&eFermentation is already in progress in this barrel.'
     fermentation_not_ready: '&eFermentation has not finished yet.'
+    aging_not_ready: '&eAging has not finished yet.'
     fermentation_barrel_required: '&cAttach this sign to the side of a vanilla barrel.'
     no_ingredients: '&cPlace ingredients in the input slots.'
     recipe_not_found: '&cNo matching recipe was found.'

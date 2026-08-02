@@ -1,6 +1,7 @@
 brewery:
   item:
     name:
+      wort: §b{recipe}の醸造原液
       muddy: §7泥状の{recipe}
       fermented: §b{product}
       distilled: §e{product}
@@ -14,11 +15,19 @@ brewery:
       distill_count: 蒸留回数
       alcohol: アルコール
       rating: 評価
+      next_stage: 次工程
     stage:
+      wort: 仕込み済み
       fermented: 発酵済み
       distilled: 蒸留済み
       aged: 熟成済み
       failed: 失敗
+    next_stage:
+      fermentation: 看板付きバニラ樽で発酵
+      distillation: 醸造台で蒸留
+      aging: マルチブロック樽で熟成
+      completed: 完成
+      none: なし
     filter:
       name: 蒸留フィルター（試作品）
       description:
@@ -30,6 +39,7 @@ brewery:
     title: 醸造図鑑 {page}/{pages}
     discovered: '&6醸造図鑑に新しく発見しました: &f{recipe}'
   process:
+    preparation_started: '&a{recipe}の原液を仕込み始めました。'
     fermentation_started: '&a発酵を開始しました。&7（レシピ: {recipe}）'
     distillation_started: '&a蒸留を開始しました。'
     distillation_stopped: '&e蒸留を停止しました。'
@@ -41,6 +51,7 @@ brewery:
     no_yeast: '&c培養済み酵母を投入してください。'
     already_fermenting: '&eこの樽では発酵が進行中です。'
     fermentation_not_ready: '&e発酵はまだ完了していません。'
+    aging_not_ready: '&e熟成はまだ完了していません。'
     fermentation_barrel_required: '&c指定の看板はバニラ樽の側面に取り付けてください。'
     no_ingredients: '&c材料スロットにアイテムを入れてください。'
     recipe_not_found: '&c一致するレシピが見つかりません。'
