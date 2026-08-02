@@ -1,8 +1,5 @@
 messages:
   world_name_duplicate: §cYou already have a world with that name.
-  world_name_prompt: §ePlease type the world name in chat.
-  chat_input_cancel_hint: §7(Type §e{word} §7in chat to cancel)
-  wizard_cancel_word: §7(Type §e{word} §7in chat to cancel)
   unlink_success: §aWorld unlinked successfully.
   unlink_failed: §cFailed to unlink world.
   unlink_not_myworld: §cThis world is not a MyWorld.
@@ -18,11 +15,9 @@ messages:
   icon_changed: §aWorld icon changed to "{icon}".
   icon_cancelled: §eIcon change cancelled.
   icon_forbidden: §cThis icon cannot be selected.
-  operation_cancelled: §c operation canceled.
   insufficient_points: You don't have enough §c points.
   creation_insufficient_points: §cInsufficient points.
   invalid_biome_data: §c Biome data is incorrect.
-  creation_cancelled: §c Creation of My World has been canceled.
   creation_success: §a World creation completed!
   creation_failed: §c creation failed.
   world_creation_processing: §aCreating world...
@@ -117,8 +112,6 @@ messages:
   env_cost_paid_remaining: '(Remaining: §6🛖 §e{remaining})'
   env_flight_enabled: §aFlight is now available in this world.
   env_flight_disabled: §cFlight is disabled in this world.
-  creation_start: §a Creating world...
-  creation_seed_prompt: Please enter the seed value to be used for §a generation in the chat.
   wizard_input_mode_ended: §e Exited input mode.
   wizard_name_set: '§a Template name set: {name} (ID: {id})'
   wizard_desc_set: §a Explanation text has been set.
@@ -255,12 +248,10 @@ messages:
   world_gate_place_success: §aWorld gate placed successfully.
   world_gate_removed_refund: '§aWorld gate removed. Refunded §6🛖 §e{points} §ato owner §e{owner}§a. (Rate: §e{percent}%§a)'
   world_gate_world_mismatch: §cPlease select both points in the same world. Point 1 was reset.
-  world_created_warp: §aMoved to the created world.
   status_on: 'ON'
   status_off: 'OFF'
   status_visible: §aVisible
   status_hidden: §cHidden
-  wizard_start: §aStarting creation wizard.
   wizard_name_prompt: §eEnter the name of the world to create.
   wizard_seed_prompt: §ePlease type a seed value.
   creation_timeout: §cWorld creation session timed out due to inactivity.
@@ -272,7 +263,6 @@ messages:
   spotlight_removed: §cRemoved world "{world}" from SPOTLIGHT.
   discovery_spotlight_description_updated: §aUpdated the SPOTLIGHT description.
   discovery_spotlight_description_reset: §aReset the SPOTLIGHT description to default.
-  world_creation_started: §e Started creating my world "{world}"...
   world_creation_success: §a My world “§a{world}§a” was successfully created!
   world_unloading_evacuation: §c The world has been unloaded, so move to the spawn point.
   mspt_warning_chat: §c [WARNING] §f The MSPT of world "§a{world}§f" has reached §e{mspt}ms§f. §7(Load may be high)
