@@ -225,6 +225,12 @@ chanpon:
         lore:
           - "§7すべての本番用ワールドを復元ポイントとして保存します。"
     owner_backup:
+      unavailable:
+        display: "§cワールドバックアップを利用できません"
+        not_production: "このワールドは本番用ワールドではありません。"
+        protected: "提出済みまたは保護中のワールドでは利用できません。"
+        owner_only: "ワールドの所有者だけが利用できます。"
+        world_missing: "対象ワールドを確認できません。"
       display: "§aワールドをバックアップ"
       description: "この本番用ワールドの手動バックアップを作成します。"
       action: "バックアップ管理"

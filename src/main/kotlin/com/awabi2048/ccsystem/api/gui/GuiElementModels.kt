@@ -365,6 +365,7 @@ data class GuiMenuCapabilityInvocationSpec(
     val capability: ResolvedMenuCapability,
     val arguments: Map<String, String> = emptyMap(),
     val attributes: Map<String, Any> = emptyMap(),
+    val unavailableInteraction: GuiUnavailableInteraction = GuiUnavailableInteraction.REJECT_WITH_REASON,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -381,6 +382,11 @@ data class GuiMenuCapabilityInvocationSpec(
 
     val reversibleContractByClick: Map<ClickType, MenuReversibleContract>
         get() = capability.reversibleContractByClick
+}
+
+enum class GuiUnavailableInteraction {
+    REJECT_WITH_REASON,
+    DISPLAY_ONLY,
 }
 
 /**

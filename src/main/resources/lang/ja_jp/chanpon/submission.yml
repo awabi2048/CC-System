@@ -12,6 +12,15 @@ chanpon:
         state: 状態
     production:
       display: "§e本番用ワールドに設定する"
+      unavailable:
+        display: "§c本番用ワールドに設定できません"
+        submission_closed: "現在は提出受付を締め切っています。"
+        phase: "現在は本番用ワールドを設定できない運用段階です。"
+        protected: "提出済みまたは保護中のワールドは変更できません。"
+        owner_only: "ワールドの所有者だけが設定できます。"
+        limit: "既に別の本番用ワールドが存在します。"
+        state: "現在の提出状態ではこの操作を利用できません。"
+        world_missing: "対象ワールドを確認できません。"
       lore:
         action: "本番用ワールドに変更"
         limit_warning: "本番用ワールドは1人につき1つまでです。"

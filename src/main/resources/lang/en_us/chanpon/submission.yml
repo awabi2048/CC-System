@@ -12,6 +12,15 @@ chanpon:
         state: State
     production:
       display: "§eSet as production world"
+      unavailable:
+        display: "§cCannot set as production world"
+        submission_closed: "Submissions are currently closed."
+        phase: "Production worlds cannot be configured during the current phase."
+        protected: "Submitted or protected worlds cannot be changed."
+        owner_only: "Only the world owner can change this setting."
+        limit: "Another production world already exists."
+        state: "This operation is unavailable in the current submission state."
+        world_missing: "The target world could not be found."
       lore:
         action: "Set as production world"
         limit_warning: "Each owner can have only one production world."

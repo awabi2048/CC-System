@@ -87,7 +87,8 @@ class GuiElementServiceImpl(
         val enabledActions = spec.expandedActions().filter { it.enabled }
         val implicitBack = spec.role == GuiElementRole.BACK && spec.actions.any { it === GuiMenuActionIntent.Back }
         val presentationActions = if (implicitBack) {
-            listOf(navigationAction(requireI18n(player, "gui.common.return", emptyMap())))
+            // 戻る項目は例外的にNameだけで役割が明確なため、操作案内Loreを重ねない。
+            emptyList()
         } else {
             enabledActions
         }
@@ -295,7 +296,10 @@ class GuiElementServiceImpl(
                 role = GuiElementRole.ACTION,
                 interaction = GuiMenuCapabilityInteractionFactory.create(spec),
             )
-        } else if (capability.unavailableReason != null) {
+        } else if (
+            capability.unavailableReason != null &&
+            spec.unavailableInteraction == com.awabi2048.ccsystem.api.gui.GuiUnavailableInteraction.REJECT_WITH_REASON
+        ) {
             MenuElement(
                 slot = spec.slot,
                 item = item,
