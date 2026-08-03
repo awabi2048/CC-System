@@ -43,7 +43,7 @@ gui:
       use: このテンプレートを使用
       use_action: ワールド名の入力へ進む
       preview: テンプレートをプレビュー
-      preview_action: 登録されたスポーン位置から確認
+      preview_action: テンプレートをプレビュー
       error:
         missing_directory: テンプレートのワールドデータが見つかりません。
         missing_origin: 作成時スポーンが登録されていません。

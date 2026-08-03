@@ -43,7 +43,7 @@ gui:
       use: Use This Template
       use_action: Continue to world name
       preview: Preview Template
-      preview_action: Preview from the registered spawn
+      preview_action: Preview template
       error:
         missing_directory: The template world data could not be found.
         missing_origin: No creation spawn is registered.
