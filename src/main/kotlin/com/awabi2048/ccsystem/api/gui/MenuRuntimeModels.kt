@@ -678,6 +678,32 @@ data class InventoryMenuDefinition(
         actionContracts = emptyMap(),
     )
 
+    /**
+     * openSound追加前にコンパイルされた独立プラグイン向けのABIを維持します。
+     * CC-Systemは複数のプラグインからprovided依存で参照されるため、表示音の既定値を
+     * 適用するだけのAPI拡張で、既存プラグインの有効化まで失敗させないようにします。
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        owner: String,
+        id: String,
+        renderer: InventoryMenuRenderer,
+        actions: Map<String, MenuActionHandler>,
+        sounds: MenuActionSoundPolicy?,
+        onClose: MenuCloseHandler?,
+        actionContracts: Map<String, MenuActionContract>,
+        mask: Int,
+        marker: kotlin.jvm.internal.DefaultConstructorMarker?,
+    ) : this(
+        owner = owner,
+        id = id,
+        renderer = renderer,
+        actions = actions,
+        sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else requireNotNull(sounds),
+        onClose = if (mask and 0x20 != 0) null else onClose,
+        actionContracts = if (mask and 0x40 != 0) emptyMap() else actionContracts,
+    )
+
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
         require(id.isNotBlank()) { "id must not be blank" }
