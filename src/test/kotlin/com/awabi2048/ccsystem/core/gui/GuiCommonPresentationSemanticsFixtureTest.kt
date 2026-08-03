@@ -22,7 +22,7 @@ class GuiCommonPresentationSemanticsFixtureTest {
         val itemBody = source.substringAfter("override fun item(spec: GuiItemSpec)")
             .substringBefore("override fun menuEntry")
 
-        assertTrue(itemBody.contains("val lore = lore(spec.lore)"))
+        assertTrue(itemBody.contains("val lore = lore(normalizedSpec.lore)"))
         assertTrue(!itemBody.contains("nameOnlyRole"))
         assertTrue(!itemBody.contains("emptyList() else lore"))
     }

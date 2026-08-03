@@ -38,6 +38,7 @@ class MenuRuntimeTraceCoverageTest {
             "MenuUpdate.Refresh",
             "MenuUpdate.Resume",
             "MenuUpdate.Close",
+            "MenuUpdate.Cancel",
             "MenuUpdate.Back",
             "is MenuUpdate.Replace",
             "is MenuUpdate.Navigate",

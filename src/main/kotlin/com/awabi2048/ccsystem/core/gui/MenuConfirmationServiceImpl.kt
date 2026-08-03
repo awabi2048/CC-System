@@ -19,6 +19,7 @@ import com.awabi2048.ccsystem.api.gui.MenuConfirmationDraft
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuRoute
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeService
+import com.awabi2048.ccsystem.api.gui.MenuViewCategory
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.entity.Player
@@ -120,6 +121,7 @@ internal class MenuConfirmationServiceImpl(
                     ),
                 ),
             ),
+            category = MenuViewCategory.CONFIRMATION,
         )
     }
 

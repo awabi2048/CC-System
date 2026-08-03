@@ -149,6 +149,10 @@ internal class MenuDialogServiceImpl(
                 when (update) {
                     MenuUpdate.None -> Unit
                     MenuUpdate.Close -> runtime.close(player)
+                    MenuUpdate.Cancel -> {
+                        runtime.close(player)
+                        runtime.clear(player)
+                    }
                     MenuUpdate.Refresh -> show(player, request)
                     MenuUpdate.Resume -> runtime.finishExternal(player)
                     MenuUpdate.Back -> runtime.back(player)

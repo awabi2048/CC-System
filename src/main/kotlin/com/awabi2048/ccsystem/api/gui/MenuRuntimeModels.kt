@@ -13,6 +13,12 @@ enum class MenuSurface {
     FORM,
 }
 
+/** Inventory画面の意味区分です。確認画面は共通の表示・音ポリシーを持ちます。 */
+enum class MenuViewCategory {
+    STANDARD,
+    CONFIRMATION,
+}
+
 /** 既定音、明示的な無音、任意音を曖昧さなく表す。 */
 sealed interface MenuSoundPolicy {
     data object Default : MenuSoundPolicy
@@ -423,6 +429,59 @@ data class InventoryMenuView(
     val inputItems: Map<Int, ItemStack> = emptyMap(),
     val playerInventoryInteraction: PlayerInventoryInteraction = PlayerInventoryInteraction.INTERACTIVE,
 ) {
+    /**
+     * 確認画面の区分です。既存のdata classコンストラクター互換性を保つため、
+     * primary constructorには追加せず、専用コンストラクターとwithCategoryで設定します。
+     */
+    var category: MenuViewCategory = MenuViewCategory.STANDARD
+        private set
+
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        category: MenuViewCategory,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+    ) {
+        this.category = category
+    }
+
+    constructor(
+        size: Int,
+        title: Component,
+        elements: List<MenuElement>,
+        standardFrame: Boolean,
+        inputSlots: Set<Int>,
+        inputItems: Map<Int, ItemStack>,
+        playerInventoryInteraction: PlayerInventoryInteraction,
+        category: MenuViewCategory,
+    ) : this(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = standardFrame,
+        inputSlots = inputSlots,
+        inputItems = inputItems,
+        playerInventoryInteraction = playerInventoryInteraction,
+    ) {
+        this.category = category
+    }
+
+    /** 既存の表示属性を保ったまま、画面の意味区分だけを変更します。 */
+    fun withCategory(category: MenuViewCategory): InventoryMenuView = InventoryMenuView(
+        size = size,
+        title = title,
+        elements = elements,
+        standardFrame = standardFrame,
+        inputSlots = inputSlots,
+        inputItems = inputItems,
+        playerInventoryInteraction = playerInventoryInteraction,
+        category = category,
+    )
+
     @Deprecated(
         message = "playerInventoryInteractionで画面の入力モードを明示してください",
         replaceWith = ReplaceWith("playerInventoryInteraction != PlayerInventoryInteraction.BLOCKED"),
@@ -579,6 +638,13 @@ sealed interface MenuUpdate {
     data object Refresh : MenuUpdate
     data object Resume : MenuUpdate
     data object Close : MenuUpdate
+    /**
+     * 現在の確認フローを履歴ごと破棄して終了します。
+     *
+     * [Back] は直前画面へ戻るため、多段階確認の途中で使うと確認フローの一部が
+     * 履歴に残ります。確認処理を全体として中止する場合はこの更新を使います。
+     */
+    data object Cancel : MenuUpdate
     data object Back : MenuUpdate
     data class Replace(val route: MenuRoute) : MenuUpdate
     data class Navigate(val route: MenuRoute) : MenuUpdate

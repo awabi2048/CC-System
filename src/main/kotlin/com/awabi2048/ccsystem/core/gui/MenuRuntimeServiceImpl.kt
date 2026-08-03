@@ -63,6 +63,7 @@ import com.awabi2048.ccsystem.api.gui.MenuReversibleStateToken
 import com.awabi2048.ccsystem.api.gui.MenuSnapshotValueException
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeReversibleContractSnapshot
 import com.awabi2048.ccsystem.api.gui.MenuSurface
+import com.awabi2048.ccsystem.api.gui.MenuViewCategory
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
@@ -628,7 +629,9 @@ internal class MenuRuntimeServiceImpl(
         }
         navigation.registerInventory(request.route.owner, request.inventory, request.policy)
         presentedInventories[request.inventory] = ManagedPresentation(player.uniqueId, request.route)
-        if (!isDialogTransition(player)) {
+        // ダイアログから戻る際も、明示されたカスタム音は表示仕様として再生します。
+        // 既定音だけは入力面からの復帰音を重ねないため従来どおり抑制します。
+        if (!isDialogTransition(player) || request.openSound is MenuSoundPolicy.Custom) {
             when (val openSound = request.openSound) {
                 MenuSoundPolicy.Default -> sounds.onMenuOpen(player, request.route.id)
                 MenuSoundPolicy.Silent -> Unit
@@ -762,6 +765,18 @@ internal class MenuRuntimeServiceImpl(
         completeExternal(player)
         closeInventory(player, MenuCloseReason.RUNTIME_CLOSED)
         presentations.markClosed(player)
+    }
+
+    /**
+     * 確認フローのキャンセルは単にInventoryを閉じるだけでなく、戻り履歴とRuntime状態も破棄します。
+     * これにより、2段階目から1段階目へ戻るような履歴の再露出を防ぎます。
+     */
+    private fun cancel(player: Player) {
+        close(player)
+        externalFinishResults.clear(player.uniqueId)
+        reversibleTokens.clear(player.uniqueId)
+        sessions.remove(player.uniqueId)
+        navigation.clear(player)
     }
 
     override fun clear(player: Player) {
@@ -1318,7 +1333,7 @@ internal class MenuRuntimeServiceImpl(
         // 表示後に呼ぶと新しいInventoryがCHESTになり、初回開封音まで抑止される。
         // 確認画面だけは、通常の遷移音抑制を越えて明示した表示音を再生する。
         // これにより、確認画面の1段目・2段目や戻る操作でも表示音の仕様がぶれない。
-        playDefinitionOpenSound(player, route, definition, playOpenSound)
+        playDefinitionOpenSound(player, route, definition, view, playOpenSound)
         try {
             player.openInventory(inventory)
         } catch (failure: Throwable) {
@@ -1370,7 +1385,11 @@ internal class MenuRuntimeServiceImpl(
     private fun InventoryMenuView.withHistoryNavigation(canGoBack: Boolean): InventoryMenuView {
         if (canGoBack) return this
         val visibleElements = elements.filterNot { it.role == GuiElementRole.BACK }
-        return if (visibleElements.size == elements.size) this else copy(elements = visibleElements)
+        return if (visibleElements.size == elements.size) {
+            this
+        } else {
+            copy(elements = visibleElements).withCategory(category)
+        }
     }
 
     private fun inventoryPolicy(view: InventoryMenuView): GuiInventoryPolicy =
@@ -1488,7 +1507,7 @@ internal class MenuRuntimeServiceImpl(
                     is MenuUpdate.Replace -> update.route.runtimeSnapshot()
                     MenuUpdate.Refresh, MenuUpdate.Resume -> beforeRoute
                     MenuUpdate.Back -> navigation.breadcrumbs(player).lastOrNull()?.runtimeSnapshot()
-                    MenuUpdate.Close, MenuUpdate.None -> null
+                    MenuUpdate.Cancel, MenuUpdate.Close, MenuUpdate.None -> null
                 }
                 if (!MenuStaleUpdatePolicy.shouldApply(
                         update,
@@ -1519,6 +1538,10 @@ internal class MenuRuntimeServiceImpl(
                             finishExternalResult(player, traceIdentity).asUpdateOutcome()
                         MenuUpdate.Close -> {
                             close(player)
+                            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
+                        }
+                        MenuUpdate.Cancel -> {
+                            cancel(player)
                             MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
                         }
                         MenuUpdate.Back -> {
@@ -1590,10 +1613,18 @@ internal class MenuRuntimeServiceImpl(
         player: Player,
         route: MenuRoute,
         definition: InventoryMenuDefinition,
+        view: InventoryMenuView,
         playOpenSound: Boolean,
     ) {
-        if (playOpenSound && !isDialogTransition(player)) {
-            val policy = definition.openSoundResolver?.invoke(route) ?: definition.openSound
+        val declaredPolicy = definition.openSoundResolver?.invoke(route) ?: definition.openSound
+        // 確認ボタンの意味ロールをRuntimeで判定し、MWM/MWM-Chanponなどの直接定義でも
+        // 個別のopenSound指定を漏らさず共通の確認音を適用します。明示的なSilent/Customは尊重します。
+        val policy = if (isConfirmationView(view) && declaredPolicy == MenuSoundPolicy.Default) {
+            com.awabi2048.ccsystem.api.gui.MenuSoundPresets.CONFIRMATION_OPEN
+        } else {
+            declaredPolicy
+        }
+        if (playOpenSound && (!isDialogTransition(player) || policy is MenuSoundPolicy.Custom)) {
             if (player.uniqueId in suppressOpenSound && policy !is MenuSoundPolicy.Custom) return
             when (policy) {
                 MenuSoundPolicy.Default -> sounds.onMenuOpen(player, route.id)
@@ -1601,6 +1632,12 @@ internal class MenuRuntimeServiceImpl(
                 is MenuSoundPolicy.Custom -> sounds.play(player, policy.sound)
             }
         }
+    }
+
+    private fun isConfirmationView(view: InventoryMenuView): Boolean {
+        if (view.category == MenuViewCategory.CONFIRMATION) return true
+        val roles = view.elements.asSequence().map { it.role }.toSet()
+        return GuiElementRole.CONFIRM in roles && GuiElementRole.CANCEL in roles
     }
 
     private fun playResolved(
@@ -2264,6 +2301,7 @@ internal class MenuRuntimeServiceImpl(
             MenuUpdate.Refresh -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.REFRESH)
             MenuUpdate.Resume -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.RESUME)
             MenuUpdate.Close -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CLOSE)
+            MenuUpdate.Cancel -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CANCEL)
             MenuUpdate.Back -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.BACK)
             is MenuUpdate.Replace -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.REPLACE, update.route.runtimeSnapshot())
             is MenuUpdate.Navigate -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.NAVIGATE, update.route.runtimeSnapshot())

@@ -70,6 +70,7 @@ enum class MenuRuntimeUpdateKind {
     REFRESH,
     RESUME,
     CLOSE,
+    CANCEL,
     BACK,
     REPLACE,
     NAVIGATE,
@@ -215,6 +216,7 @@ data class MenuRuntimeUpdateSnapshot(
                 MenuUpdate.Refresh -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.REFRESH)
                 MenuUpdate.Resume -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.RESUME)
                 MenuUpdate.Close -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CLOSE)
+                MenuUpdate.Cancel -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.CANCEL)
                 MenuUpdate.Back -> MenuRuntimeUpdateSnapshot(MenuRuntimeUpdateKind.BACK)
                 is MenuUpdate.Replace -> MenuRuntimeUpdateSnapshot(
                     MenuRuntimeUpdateKind.REPLACE,

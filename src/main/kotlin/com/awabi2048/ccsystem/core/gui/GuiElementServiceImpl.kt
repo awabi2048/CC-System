@@ -27,6 +27,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -59,10 +60,19 @@ class GuiElementServiceImpl(
     }
 
     override fun item(spec: GuiItemSpec): ItemStack {
-        val item = ItemStack(spec.material, spec.amount.coerceIn(1, spec.material.maxStackSize.coerceAtLeast(1)))
+        // 確認ボタンはLoreの操作案内に使う言語キーをNameへ流用する場合があるため、
+        // ボタンの意味ロールを境界にして元テキストのLegacy装飾だけを除去します。
+        // GuiNameSpec.Textの指定色は意味上の装飾として維持し、固定ラベル由来の装飾は
+        // 確認ボタン本来の既定スタイルへ戻します。
+        val normalizedSpec = if (spec.role == GuiElementRole.CONFIRM || spec.role == GuiElementRole.CANCEL) {
+            spec.copy(name = confirmationName(spec.name))
+        } else {
+            spec
+        }
+        val item = ItemStack(normalizedSpec.material, normalizedSpec.amount.coerceIn(1, normalizedSpec.material.maxStackSize.coerceAtLeast(1)))
         val meta = item.itemMeta ?: return item
-        meta.displayName(renderName(spec.name))
-        val lore = lore(spec.lore)
+        meta.displayName(renderName(normalizedSpec.name))
+        val lore = lore(normalizedSpec.lore)
         if (lore.isNotEmpty()) {
             meta.lore(lore)
         }
@@ -72,11 +82,31 @@ class GuiElementServiceImpl(
             ItemFlag.HIDE_ENCHANTS,
             ItemFlag.HIDE_ADDITIONAL_TOOLTIP
         )
-        meta.isHideTooltip = spec.role == GuiElementRole.DECORATION
-        GuiItemMarker.mark(meta, spec.role)
+        meta.isHideTooltip = normalizedSpec.role == GuiElementRole.DECORATION
+        GuiItemMarker.mark(meta, normalizedSpec.role)
         item.itemMeta = meta
         return item
     }
+
+    private fun confirmationName(name: GuiNameSpec): GuiNameSpec = when (name) {
+        GuiNameSpec.Empty -> GuiNameSpec.Empty
+        is GuiNameSpec.Text -> GuiNameSpec.Text(stripLegacyFormatting(name.text), name.style)
+        is GuiNameSpec.FixedLabel -> GuiNameSpec.FixedLabel(
+            this.name(PlainTextComponentSerializer.plainText().serialize(name.value), GuiNameStyle.DEFAULT),
+        )
+        is GuiNameSpec.TargetIdentity -> GuiNameSpec.FixedLabel(
+            this.name(PlainTextComponentSerializer.plainText().serialize(name.value), GuiNameStyle.DEFAULT),
+        )
+        is GuiNameSpec.Opaque -> GuiNameSpec.FixedLabel(
+            this.name(PlainTextComponentSerializer.plainText().serialize(name.value), GuiNameStyle.DEFAULT),
+        )
+        is GuiNameSpec.Component -> GuiNameSpec.FixedLabel(
+            this.name(PlainTextComponentSerializer.plainText().serialize(name.value), GuiNameStyle.DEFAULT),
+        )
+    }
+
+    private fun stripLegacyFormatting(text: String): String =
+        colorCodePattern.replace(text, "")
 
     override fun mark(item: ItemStack, role: GuiElementRole): ItemStack {
         item.editMeta { meta -> GuiItemMarker.mark(meta, role) }

@@ -18,13 +18,16 @@ class DialogSoundContractTest {
     }
 
     @Test
-    fun `inventory opened by a dialog handler suppresses its open sound`() {
+    fun `confirmation inventory opened by a dialog handler keeps its explicit open sound`() {
         val source = Path.of(
             "src/main/kotlin/com/awabi2048/ccsystem/core/gui/MenuRuntimeServiceImpl.kt"
         ).readText()
 
         assertTrue("isDialogTransition(player)" in source)
-        assertTrue("playOpenSound && !isDialogTransition(player)" in source)
-        assertTrue("if (!isDialogTransition(player))" in source)
+        assertTrue("isConfirmationView(view)" in source)
+        assertTrue("MenuViewCategory.CONFIRMATION" in source)
+        assertTrue("policy is MenuSoundPolicy.Custom" in source)
+        assertTrue("MenuSoundPresets.CONFIRMATION_OPEN" in source)
+        assertFalse("playOpenSound && !isDialogTransition(player)" in source)
     }
 }

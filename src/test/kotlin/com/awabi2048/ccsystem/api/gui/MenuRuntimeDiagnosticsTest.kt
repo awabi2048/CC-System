@@ -96,6 +96,7 @@ class MenuRuntimeDiagnosticsTest {
         assertEquals(MenuRuntimeUpdateKind.NONE, MenuRuntimeUpdateSnapshot.from(MenuActionResult.Success(MenuUpdate.None))?.kind)
         assertEquals(MenuRuntimeUpdateKind.REFRESH, MenuRuntimeUpdateSnapshot.from(MenuActionResult.Success(MenuUpdate.Refresh))?.kind)
         assertEquals(MenuRuntimeUpdateKind.CLOSE, MenuRuntimeUpdateSnapshot.from(MenuActionResult.Success(MenuUpdate.Close))?.kind)
+        assertEquals(MenuRuntimeUpdateKind.CANCEL, MenuRuntimeUpdateSnapshot.from(MenuActionResult.Success(MenuUpdate.Cancel))?.kind)
         assertEquals(MenuRuntimeUpdateKind.BACK, MenuRuntimeUpdateSnapshot.from(MenuActionResult.Success(MenuUpdate.Back))?.kind)
         assertEquals(
             MenuRuntimeUpdateKind.REPLACE,
