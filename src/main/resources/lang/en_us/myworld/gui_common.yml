@@ -62,7 +62,7 @@ gui:
       display: World Deletion Confirmation
       question: Are you sure you want to delete this world?
       warning: All world data will be lost permanently
-      next_warning: A final confirmation follows
+      next_warning: A second confirmation follows!
       next: §cProceed
     delete_2:
       title: Final Confirmation (2/2)

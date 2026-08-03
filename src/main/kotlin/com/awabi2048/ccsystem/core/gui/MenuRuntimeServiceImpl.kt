@@ -131,7 +131,9 @@ internal class MenuRuntimeServiceImpl(
                     MenuRuntimeOperationFailureReason.MISSING_DEFINITION,
                 )
             }
-            openDirectResult(player, route, playOpenSound = player.uniqueId !in suppressOpenSound)
+            // 既定音の抑制判定はopenDirectResult側で行う。確認画面の明示音だけは
+            // 多段階遷移でも再生し、通常画面の遷移音抑制は従来どおり維持する。
+            openDirectResult(player, route, playOpenSound = true)
         }
     }
 
@@ -1314,7 +1316,9 @@ internal class MenuRuntimeServiceImpl(
         // MenuSoundServiceImplは、現在のtopInventoryがCRAFTINGかどうかで
         // 「閉じた状態からの初回開封」を判定するため、Inventoryを表示する前に呼び出す。
         // 表示後に呼ぶと新しいInventoryがCHESTになり、初回開封音まで抑止される。
-        if (playOpenSound && !isDialogTransition(player)) sounds.onMenuOpen(player, route.id)
+        // 確認画面だけは、通常の遷移音抑制を越えて明示した表示音を再生する。
+        // これにより、確認画面の1段目・2段目や戻る操作でも表示音の仕様がぶれない。
+        playDefinitionOpenSound(player, route, definition, playOpenSound)
         try {
             player.openInventory(inventory)
         } catch (failure: Throwable) {
@@ -1579,6 +1583,23 @@ internal class MenuRuntimeServiceImpl(
             action()
         } finally {
             suppressOpenSound.remove(player.uniqueId)
+        }
+    }
+
+    private fun playDefinitionOpenSound(
+        player: Player,
+        route: MenuRoute,
+        definition: InventoryMenuDefinition,
+        playOpenSound: Boolean,
+    ) {
+        if (playOpenSound && !isDialogTransition(player)) {
+            val policy = definition.openSoundResolver?.invoke(route) ?: definition.openSound
+            if (player.uniqueId in suppressOpenSound && policy !is MenuSoundPolicy.Custom) return
+            when (policy) {
+                MenuSoundPolicy.Default -> sounds.onMenuOpen(player, route.id)
+                MenuSoundPolicy.Silent -> Unit
+                is MenuSoundPolicy.Custom -> sounds.play(player, policy.sound)
+            }
         }
     }
 

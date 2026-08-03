@@ -20,6 +20,16 @@ sealed interface MenuSoundPolicy {
     data class Custom(val sound: MenuSound) : MenuSoundPolicy
 }
 
+/**
+ * 複数の確認画面で同じ表示音を使うための共通プリセットです。
+ * 確認画面の遷移では通常の開封音を抑制するため、画面定義から明示的に選択します。
+ */
+object MenuSoundPresets {
+    val CONFIRMATION_OPEN: MenuSoundPolicy = MenuSoundPolicy.Custom(
+        MenuSound("minecraft:block.note_block.bit", pitch = 0.75f),
+    )
+}
+
 data class MenuActionSoundPolicy(
     val success: MenuSoundPolicy = MenuSoundPolicy.Default,
     val rejected: MenuSoundPolicy = MenuSoundPolicy.Default,
@@ -644,6 +654,10 @@ data class InventoryMenuDefinition(
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val onClose: MenuCloseHandler? = null,
     val actionContracts: Map<String, MenuActionContract> = emptyMap(),
+    /** 画面を表示するときの音。通常の戻る・遷移では既定音を抑制します。 */
+    val openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
+    /** 1つのroute定義内で画面状態ごとに表示音を切り替える場合に使用します。 */
+    val openSoundResolver: ((MenuRoute) -> MenuSoundPolicy)? = null,
 ) {
     @Suppress("UNUSED_PARAMETER")
     constructor(

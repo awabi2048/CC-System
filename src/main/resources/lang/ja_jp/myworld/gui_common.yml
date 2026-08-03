@@ -62,7 +62,7 @@ gui:
       display: ワールド削除の確認
       question: 本当にワールドを削除しますか？
       warning: ワールドの全データが失われ、復旧できなくなります
-      next_warning: 次の画面でもう一度確認があります
+      next_warning: このあとに再度確認を行います！
       next: §c次へ進む
     delete_2:
       title: §n最終確認

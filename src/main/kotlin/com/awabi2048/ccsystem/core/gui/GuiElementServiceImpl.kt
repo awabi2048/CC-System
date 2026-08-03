@@ -195,7 +195,12 @@ class GuiElementServiceImpl(
         } else {
             spec.item
         }
-        val loreSpec = GuiLoreComposer.compose(baseItem.lore, actionLines)
+        val loreSpec = if (baseItem.role == GuiElementRole.CONFIRM || baseItem.role == GuiElementRole.CANCEL) {
+            // 構造化エントリ経由でも、確認操作は共通してNameのみを表示する。
+            GuiLoreSpec.NameOnly
+        } else {
+            GuiLoreComposer.compose(baseItem.lore, actionLines)
+        }
         val icon = item(baseItem.copy(lore = loreSpec)).also { item ->
             spec.glint?.let { enabled -> item.editMeta { meta -> meta.setEnchantmentGlintOverride(enabled) } }
             spec.playerHeadOwner?.let { owner ->

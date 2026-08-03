@@ -132,21 +132,27 @@ class LoreServiceImpl(
                 )
                 is GuiInputGesture.Described -> gesture.operationLabel
             }
+            // 操作案内にName用の旧来キーを流用しても、Nameの色・装飾をLoreへ持ち込まない。
+            val actionLabel = LegacyFormatting.strip(line.label)
             val rendered = if (interactionCount == 1) {
-                LoreFormatter.singleActionLine(composeSingleAction(line, operation))
+                LoreFormatter.singleActionLine(composeSingleAction(line, operation, actionLabel))
             } else {
-                LoreFormatter.actionLine(operation, line.label)
+                LoreFormatter.actionLine(operation, actionLabel)
             }
             listOf(RenderedLine(LoreFormatter.component(rendered)))
         }
         else -> listOf(RenderedLine(LoreFormatter.component(renderFormattedLine(line))))
     }
 
-    private fun composeSingleAction(line: GuiLoreLine.Interaction, operation: String): String {
+    private fun composeSingleAction(
+        line: GuiLoreLine.Interaction,
+        operation: String,
+        actionLabel: String,
+    ): String {
         return if (line.viewer?.locale()?.language == "en") {
-            "$operation to ${line.label}"
+            "$operation to $actionLabel"
         } else {
-            "${operation}で${line.label}"
+            "${operation}で$actionLabel"
         }
     }
 

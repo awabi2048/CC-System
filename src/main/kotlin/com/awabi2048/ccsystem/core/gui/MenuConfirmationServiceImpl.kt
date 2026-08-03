@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuDisplaySpec
 import com.awabi2048.ccsystem.api.gui.GuiMenuActionIntent
 import com.awabi2048.ccsystem.api.gui.GuiStructuredMenuEntrySpec
@@ -67,6 +69,7 @@ internal class MenuConfirmationServiceImpl(
                     ACTION_CANCEL to MenuActionHandler(::cancel),
                 ),
                 onClose = MenuCloseHandler(::closed),
+                openSound = com.awabi2048.ccsystem.api.gui.MenuSoundPresets.CONFIRMATION_OPEN,
             ),
         )
     }
@@ -83,7 +86,10 @@ internal class MenuConfirmationServiceImpl(
                     player,
                     GuiStructuredMenuEntrySpec(
                         layout.confirmSlot,
-                        draft.confirmItem,
+                        draft.confirmItem.copy(
+                            lore = GuiLoreSpec.NameOnly,
+                            role = GuiElementRole.CONFIRM,
+                        ),
                         listOf(GuiMenuActionIntent.Confirm(
                             ACTION_CONFIRM,
                             draft.confirmActionText,
@@ -102,7 +108,10 @@ internal class MenuConfirmationServiceImpl(
                     player,
                     GuiStructuredMenuEntrySpec(
                         layout.cancelSlot,
-                        draft.cancelItem,
+                        draft.cancelItem.copy(
+                            lore = GuiLoreSpec.NameOnly,
+                            role = GuiElementRole.CANCEL,
+                        ),
                         listOf(GuiMenuActionIntent.Cancel(
                             ACTION_CANCEL,
                             draft.cancelActionText,
