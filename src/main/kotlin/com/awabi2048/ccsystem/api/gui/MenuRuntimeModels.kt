@@ -691,7 +691,7 @@ data class InventoryMenuDefinition(
         actions: Map<String, MenuActionHandler>,
         sounds: MenuActionSoundPolicy?,
         onClose: MenuCloseHandler?,
-        actionContracts: Map<String, MenuActionContract>,
+        actionContracts: Map<String, MenuActionContract>?,
         mask: Int,
         marker: kotlin.jvm.internal.DefaultConstructorMarker?,
     ) : this(
@@ -701,7 +701,7 @@ data class InventoryMenuDefinition(
         actions = actions,
         sounds = if (mask and 0x10 != 0) MenuActionSoundPolicy() else requireNotNull(sounds),
         onClose = if (mask and 0x20 != 0) null else onClose,
-        actionContracts = if (mask and 0x40 != 0) emptyMap() else actionContracts,
+        actionContracts = if (mask and 0x40 != 0) emptyMap() else requireNotNull(actionContracts),
     )
 
     init {
