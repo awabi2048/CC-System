@@ -67,7 +67,6 @@ import com.awabi2048.ccsystem.api.gui.MenuViewCategory
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
-import com.awabi2048.ccsystem.api.gui.MenuNavigationService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.PlayerInventoryInteraction
 import com.awabi2048.ccsystem.api.gui.MenuRuntimeUpdateApplicationState
@@ -94,7 +93,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 internal class MenuRuntimeServiceImpl(
     private val plugin: JavaPlugin,
-    private val navigation: MenuNavigationService,
+    private val navigation: MenuNavigationServiceImpl,
     private val sounds: MenuSoundService,
     private val layouts: GuiLayoutService,
     private val presentations: MenuPresentationTracker,
@@ -108,6 +107,10 @@ internal class MenuRuntimeServiceImpl(
     private val preserveCloseInventories = ConcurrentHashMap.newKeySet<Inventory>()
     private val externalSuspensions = ConcurrentHashMap<UUID, MenuRoute>()
     private val externalFinishResults = MenuRuntimeExternalFinishResultStore()
+    /** 確認画面を開始する直前の通常メニューと、その時点の外側の履歴です。 */
+    private val confirmationReturns = ConcurrentHashMap<UUID, ConfirmationReturn>()
+    /** root遷移でいったん履歴を消す場合にも、確認画面なら復帰先を保持します。 */
+    private val pendingRootOpens = ConcurrentHashMap<UUID, PendingRootOpen>()
     private val executing = ConcurrentHashMap.newKeySet<UUID>()
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val clickTraces = MenuRuntimeClickTraceStore()
@@ -466,8 +469,15 @@ internal class MenuRuntimeServiceImpl(
     override fun open(player: Player, route: MenuRoute): Boolean = openResult(player, route).successful
 
     override fun openResult(player: Player, route: MenuRoute): MenuRuntimeOperationResult {
+        val playerId = player.uniqueId
+        val pending = PendingRootOpen(RouteKey(route.owner, route.id), captureConfirmationReturn(player))
+        pendingRootOpens[playerId] = pending
         completeExternal(player)
-        return navigation.openRootResult(player, route).forOperation(MenuRuntimeOperation.OPEN)
+        val result = navigation.openRootResult(player, route).forOperation(MenuRuntimeOperation.OPEN)
+        if (!result.successful) {
+            pendingRootOpens.remove(playerId, pending)
+        }
+        return result
     }
 
     override fun replace(player: Player, route: MenuRoute): Boolean = replaceResult(player, route).successful
@@ -742,6 +752,7 @@ internal class MenuRuntimeServiceImpl(
                 session.preserveHistory,
                 view.standardFrame,
                 policy.inputSlots,
+                isConfirmationView(view),
             )
             presentations.markRefreshed(player)
             MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.REFRESH, session.route)
@@ -762,24 +773,53 @@ internal class MenuRuntimeServiceImpl(
     }
 
     override fun close(player: Player) {
+        clearConfirmationReturn(player)
         completeExternal(player)
         closeInventory(player, MenuCloseReason.RUNTIME_CLOSED)
         presentations.markClosed(player)
     }
 
     /**
-     * 確認フローのキャンセルは単にInventoryを閉じるだけでなく、戻り履歴とRuntime状態も破棄します。
-     * これにより、2段階目から1段階目へ戻るような履歴の再露出を防ぎます。
+     * 確認画面のキャンセルは、確認画面へ入る前の通常メニューへ戻します。
+     *
+     * 多段階確認の途中で [MenuUpdate.Back] を使うと確認画面が履歴に残るため、
+     * その履歴だけを開始前のスナップショットへ戻します。通常メニューより前の
+     * 履歴や、別の機能が保持するRuntime状態は破棄しません。
      */
-    private fun cancel(player: Player) {
-        close(player)
-        externalFinishResults.clear(player.uniqueId)
-        reversibleTokens.clear(player.uniqueId)
-        sessions.remove(player.uniqueId)
-        navigation.clear(player)
+    internal fun cancelConfirmation(player: Player): MenuRuntimeOperationResult {
+        val playerId = player.uniqueId
+        val returnState = confirmationReturns.remove(playerId)
+        pendingRootOpens.remove(playerId)
+        externalSuspensions.remove(playerId)
+        externalFinishResults.clear(playerId)
+        reversibleTokens.clear(playerId)
+
+        if (returnState == null) {
+            // コマンドなどから確認画面だけをroot表示した場合は、復帰先がありません。
+            // この場合に限り画面を閉じてRuntimeを空にします。
+            close(player)
+            sessions.remove(playerId)
+            navigation.clear(player)
+            return MenuRuntimeOperationResult.succeeded(MenuRuntimeOperation.BACK, null)
+        }
+
+        val result = withoutOpenSound(player) {
+            navigation.restoreAndOpenResult(
+                player,
+                returnState.route,
+                returnState.historyRoutes,
+            )
+        }.forOperation(MenuRuntimeOperation.BACK)
+        if (!result.successful) {
+            close(player)
+            sessions.remove(playerId)
+            navigation.clear(player)
+        }
+        return result
     }
 
     override fun clear(player: Player) {
+        clearConfirmationReturn(player)
         completeExternal(player)
         externalFinishResults.clear(player.uniqueId)
         reversibleTokens.clear(player.uniqueId)
@@ -1212,6 +1252,9 @@ internal class MenuRuntimeServiceImpl(
         val holder = event.inventory.holder as? MenuRuntimeHolder ?: return
         val player = event.player as? Player ?: return
         val closeReason = closeReasons.consume(event.inventory)
+        if (closeReason != MenuCloseReason.ROUTE_REPLACED) {
+            clearConfirmationReturn(player)
+        }
         definition(holder.route.owner, holder.route.id)?.onClose?.let { handler ->
             try {
                 handler.handle(MenuCloseContext(player, holder.route, event.inventory, closeReason))
@@ -1254,6 +1297,7 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(event.player.uniqueId)
         externalFinishResults.clear(event.player.uniqueId)
         reversibleTokens.clear(event.player.uniqueId)
+        clearConfirmationReturn(event.player)
         // 外部画面（Dialog等）を開いたまま退出した場合も、サスペンド状態と表示状態を解放する。
         completeExternal(event.player)
         presentations.markClosed(event.player)
@@ -1271,6 +1315,8 @@ internal class MenuRuntimeServiceImpl(
                 route,
                 MenuRuntimeOperationFailureReason.MISSING_DEFINITION,
             )
+        val currentRouteBeforeOpen = navigation.currentRoute(player)
+        val historyBeforeOpen = navigation.breadcrumbs(player)
         val view = when (
             val prepared = MenuRuntimeViewPreparation.renderValidated(
                 definition,
@@ -1361,6 +1407,14 @@ internal class MenuRuntimeServiceImpl(
             preserveHistory,
             view.standardFrame,
             policy.inputSlots,
+            isConfirmationView(view),
+        )
+        updateConfirmationReturn(
+            player,
+            route,
+            view,
+            currentRouteBeforeOpen,
+            historyBeforeOpen,
         )
         presentations.markOpened(
             player,
@@ -1541,8 +1595,7 @@ internal class MenuRuntimeServiceImpl(
                             MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
                         }
                         MenuUpdate.Cancel -> {
-                            cancel(player)
-                            MenuUpdateApplicationOutcome(true, MenuRuntimeUpdateFailureReason.NONE)
+                            cancelConfirmation(player).asUpdateOutcome()
                         }
                         MenuUpdate.Back -> {
                             val backResult = backResult(player)
@@ -1639,6 +1692,57 @@ internal class MenuRuntimeServiceImpl(
         val roles = view.elements.asSequence().map { it.role }.toSet()
         return GuiElementRole.CONFIRM in roles && GuiElementRole.CANCEL in roles
     }
+
+    private fun captureConfirmationReturn(player: Player): ConfirmationReturn? {
+        confirmationReturns[player.uniqueId]?.let { return it }
+        val session = sessions[player.uniqueId]
+        if (session?.isConfirmation == true) return null
+        val currentRoute = navigation.currentRoute(player) ?: return null
+        val historyRoutes = navigation.breadcrumbs(player)
+        return ConfirmationReturn(
+            currentRoute,
+            historyRoutes.removeCurrentRoute(currentRoute),
+        )
+    }
+
+    private fun updateConfirmationReturn(
+        player: Player,
+        route: MenuRoute,
+        view: InventoryMenuView,
+        currentRouteBeforeOpen: MenuRoute?,
+        historyBeforeOpen: List<MenuRoute>,
+    ) {
+        val pendingRoot = pendingRootOpens.remove(player.uniqueId)
+            ?.takeIf { it.routeKey == RouteKey(route.owner, route.id) }
+        if (!isConfirmationView(view)) {
+            confirmationReturns.remove(player.uniqueId)
+            return
+        }
+        if (confirmationReturns.containsKey(player.uniqueId)) return
+
+        val returnState = pendingRoot?.returnState
+            ?: currentRouteBeforeOpen?.let { currentRoute ->
+                if (currentRoute.key() == route.key()) {
+                    null
+                } else {
+                    ConfirmationReturn(
+                        currentRoute,
+                        historyBeforeOpen.removeCurrentRoute(currentRoute),
+                    )
+                }
+            }
+        if (returnState != null) {
+            confirmationReturns.putIfAbsent(player.uniqueId, returnState)
+        }
+    }
+
+    private fun clearConfirmationReturn(player: Player) {
+        confirmationReturns.remove(player.uniqueId)
+        pendingRootOpens.remove(player.uniqueId)
+    }
+
+    private fun List<MenuRoute>.removeCurrentRoute(currentRoute: MenuRoute): List<MenuRoute> =
+        if (lastOrNull()?.key() == currentRoute.key()) dropLast(1) else this
 
     private fun playResolved(
         player: Player,
@@ -2362,6 +2466,17 @@ internal class MenuRuntimeServiceImpl(
         val preserveHistory: Boolean,
         val standardFrame: Boolean,
         val inputSlots: Set<Int>,
+        val isConfirmation: Boolean,
+    )
+
+    private data class ConfirmationReturn(
+        val route: MenuRoute,
+        val historyRoutes: List<MenuRoute>,
+    )
+
+    private data class PendingRootOpen(
+        val routeKey: RouteKey,
+        val returnState: ConfirmationReturn?,
     )
 
     private data class ManagedPresentation(

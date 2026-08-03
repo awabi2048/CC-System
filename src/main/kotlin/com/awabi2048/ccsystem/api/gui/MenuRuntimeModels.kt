@@ -639,10 +639,10 @@ sealed interface MenuUpdate {
     data object Resume : MenuUpdate
     data object Close : MenuUpdate
     /**
-     * 現在の確認フローを履歴ごと破棄して終了します。
+     * 確認画面に属する履歴だけを取り除き、確認へ進む直前の通常メニューへ戻ります。
      *
-     * [Back] は直前画面へ戻るため、多段階確認の途中で使うと確認フローの一部が
-     * 履歴に残ります。確認処理を全体として中止する場合はこの更新を使います。
+     * [Back] は直前の1画面へ戻るため、多段階確認の途中で使うと別の確認画面が
+     * 履歴に残ります。確認処理を開始前のメニューまで中止する場合はこの更新を使います。
      */
     data object Cancel : MenuUpdate
     data object Back : MenuUpdate

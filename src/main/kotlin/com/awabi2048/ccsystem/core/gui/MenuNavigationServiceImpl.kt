@@ -175,6 +175,35 @@ class MenuNavigationServiceImpl : MenuNavigationService {
         return openResult(player, route)
     }
 
+    /**
+     * 確認画面へ進む前に保存した履歴へ復元してから、復帰先を開きます。
+     *
+     * [MenuNavigationService] の公開契約を増やさず、確認フローのキャンセルだけが
+     * 履歴を差し替えられるようにするためのRuntime内部操作です。復帰先の表示に失敗した
+     * 場合は、キャンセル前の履歴と現在Routeを戻して、通常の失敗処理へ委ねます。
+     */
+    internal fun restoreAndOpenResult(
+        player: Player,
+        route: MenuRoute,
+        historyRoutes: List<MenuRoute>,
+    ): MenuRuntimeOperationResult {
+        val playerId = player.uniqueId
+        val previousHistory = history.snapshot(playerId)
+        val previousRoute = currentRoutes[playerId]
+
+        history.restore(playerId, historyRoutes)
+        val result = try {
+            openResult(player, route)
+        } catch (failure: Throwable) {
+            restoreNavigationState(playerId, previousHistory, previousRoute)
+            throw failure
+        }
+        if (!result.successful) {
+            restoreNavigationState(playerId, previousHistory, previousRoute)
+        }
+        return result
+    }
+
     override fun openPrevious(player: Player): Boolean = openPreviousResult(player)?.successful == true
 
     override fun openPreviousResult(player: Player): MenuRuntimeOperationResult? {
@@ -193,6 +222,19 @@ class MenuNavigationServiceImpl : MenuNavigationService {
 
     override fun breadcrumbs(player: Player): List<MenuRoute> {
         return history.snapshot(player.uniqueId)
+    }
+
+    private fun restoreNavigationState(
+        playerId: UUID,
+        routes: List<MenuRoute>,
+        currentRoute: MenuRoute?,
+    ) {
+        history.restore(playerId, routes)
+        if (currentRoute == null) {
+            currentRoutes.remove(playerId)
+        } else {
+            currentRoutes[playerId] = currentRoute
+        }
     }
 
     private fun closeMatchingMenus(

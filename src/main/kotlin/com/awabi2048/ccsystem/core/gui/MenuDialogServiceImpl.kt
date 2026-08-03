@@ -149,10 +149,7 @@ internal class MenuDialogServiceImpl(
                 when (update) {
                     MenuUpdate.None -> Unit
                     MenuUpdate.Close -> runtime.close(player)
-                    MenuUpdate.Cancel -> {
-                        runtime.close(player)
-                        runtime.clear(player)
-                    }
+                    MenuUpdate.Cancel -> runtime.cancelConfirmationFlow(player)
                     MenuUpdate.Refresh -> show(player, request)
                     MenuUpdate.Resume -> runtime.finishExternal(player)
                     MenuUpdate.Back -> runtime.back(player)
@@ -161,5 +158,18 @@ internal class MenuDialogServiceImpl(
                 }
             }
         }
+    }
+}
+
+/**
+ * Dialog/Formからも、確認画面と同じCancel意味論を共有します。
+ * 公開Runtime実装を差し替えるテスト環境では、旧来の終了処理を安全な代替として使います。
+ */
+internal fun MenuRuntimeService.cancelConfirmationFlow(player: Player) {
+    if (this is MenuRuntimeServiceImpl) {
+        cancelConfirmation(player)
+    } else {
+        close(player)
+        clear(player)
     }
 }
