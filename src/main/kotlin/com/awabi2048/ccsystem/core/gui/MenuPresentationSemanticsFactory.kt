@@ -75,11 +75,21 @@ internal class MenuPresentationSemanticsFactory(
         is GuiLoreLine.Opaque -> MenuLoreLineSemantics(MenuLoreLineKind.UNKNOWN)
     }
 
-    private fun operationLabel(line: GuiLoreLine.Interaction): String = when (val gesture = line.gesture) {
-        is GuiInputGesture.MenuClicks -> requireNotNull(i18n) {
-            "Gui interaction semantics require translated operation labels"
-        }(line.viewer, GuiInteractionLabelResolver.languageKey(gesture.acceptedClicks), emptyMap())
-        is GuiInputGesture.Described -> gesture.operationLabel
+    private fun operationLabel(line: GuiLoreLine.Interaction): String {
+        return line.operationLabelKey?.let { key ->
+            requireNotNull(i18n) {
+                "Gui interaction semantics require translated operation labels"
+            }(line.viewer, key, emptyMap())
+        } ?: when (val gesture = line.gesture) {
+            is GuiInputGesture.MenuClicks -> requireNotNull(i18n) {
+                "Gui interaction semantics require translated operation labels"
+            }(
+                line.viewer,
+                GuiInteractionLabelResolver.languageKey(gesture.acceptedClicks),
+                emptyMap(),
+            )
+            is GuiInputGesture.Described -> gesture.operationLabel
+        }
     }
 
     private fun GuiInputGesture.defensiveCopy(): GuiInputGesture = when (this) {

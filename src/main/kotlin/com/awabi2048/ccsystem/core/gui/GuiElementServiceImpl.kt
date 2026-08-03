@@ -219,7 +219,11 @@ class GuiElementServiceImpl(
 
     override fun menuStructuredEntry(player: Player?, spec: GuiStructuredMenuEntrySpec): MenuElement {
         val enabledActions = spec.expandedActions().filter(GuiMenuEntryAction::enabled)
-        val actionLines = GuiMenuEntryLoreFactory.actionLines(enabledActions, player)
+        val actionLines = GuiMenuEntryLoreFactory.actionLines(
+            enabledActions,
+            player,
+            spec.interactionGuidance,
+        )
         val baseItem = if (spec.embeddedLoreBlocks.isNotEmpty()) {
             spec.item.copy(lore = GuiLoreSpec.Blocks(spec.embeddedLoreBlocks))
         } else {

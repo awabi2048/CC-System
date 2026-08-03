@@ -124,7 +124,9 @@ class LoreServiceImpl(
             val resolver = requireNotNull(i18n) {
                 "LoreService instance does not support translated interaction hints"
             }
-            val operation = when (val gesture = line.gesture) {
+            val operation = line.operationLabelKey?.let { key ->
+                resolver(line.viewer, key, emptyMap())
+            } ?: when (val gesture = line.gesture) {
                 is GuiInputGesture.MenuClicks -> resolver(
                     line.viewer,
                     GuiInteractionLabelResolver.languageKey(gesture.acceptedClicks),

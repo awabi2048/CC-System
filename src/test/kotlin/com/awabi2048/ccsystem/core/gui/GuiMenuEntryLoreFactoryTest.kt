@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import com.awabi2048.ccsystem.api.gui.GuiInputGesture
+import com.awabi2048.ccsystem.api.gui.GuiInteractionGuidance
 import com.awabi2048.ccsystem.api.gui.GuiMenuActionIntent
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryData
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryOption
@@ -10,8 +12,11 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
 import com.awabi2048.ccsystem.api.gui.GuiValueTone
+import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -181,5 +186,62 @@ class GuiMenuEntryLoreFactoryTest {
         assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.LEFT_RIGHT, expanded[0].acceptedClicks)
         assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.SHIFT_LEFT_RIGHT, expanded[1].acceptedClicks)
         assertEquals(com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks.MIDDLE, expanded[2].acceptedClicks)
+    }
+
+    @Test
+    fun `single action guidance changes only the displayed operation label`() {
+        val spec = GuiMenuEntrySpec(
+            slot = 0,
+            material = Material.STONE,
+            name = GuiNameSpec.Empty,
+            role = GuiElementRole.ACTION,
+            actions = listOf(GuiMenuActionIntent.LeftRightSame("open", "髢九￥")),
+            interactionGuidance = GuiInteractionGuidance.SINGLE_ACTION_CLICK,
+        )
+
+        val interaction = (GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null) as GuiLoreSpec.WithActions)
+            .actions
+            .single()
+
+        assertEquals(MenuAcceptedClicks.LEFT_RIGHT, (interaction.gesture as GuiInputGesture.MenuClicks).acceptedClicks)
+        assertEquals("lore.click.any", interaction.operationLabelKey)
+    }
+
+    @Test
+    fun `list setting guidance keeps the directional operation label`() {
+        val spec = GuiMenuEntrySpec(
+            slot = 0,
+            material = Material.STONE,
+            name = GuiNameSpec.Empty,
+            role = GuiElementRole.ACTION,
+            actions = listOf(GuiMenuActionIntent.LeftRightSame("sort", "譁ｰ逕ｨ")),
+            interactionGuidance = GuiInteractionGuidance.LIST_SETTING,
+        )
+
+        val interaction = (GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null) as GuiLoreSpec.WithActions)
+            .actions
+            .single()
+
+        assertEquals(MenuAcceptedClicks.LEFT_RIGHT, (interaction.gesture as GuiInputGesture.MenuClicks).acceptedClicks)
+        assertNull(interaction.operationLabelKey)
+    }
+
+    @Test
+    fun `single action guidance renders the generic click label`() {
+        val spec = GuiMenuEntrySpec(
+            slot = 0,
+            material = Material.STONE,
+            name = GuiNameSpec.Empty,
+            role = GuiElementRole.ACTION,
+            actions = listOf(GuiMenuActionIntent.LeftRightSame("open", "開く")),
+            interactionGuidance = GuiInteractionGuidance.SINGLE_ACTION_CLICK,
+        )
+        val lore = GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null)
+        val rendered = LoreServiceImpl { _, key, _ ->
+            assertEquals("lore.click.any", key)
+            "クリック"
+        }.render(lore)
+
+        assertTrue(rendered.map(PlainTextComponentSerializer.plainText()::serialize).contains("クリックで開く"))
     }
 }

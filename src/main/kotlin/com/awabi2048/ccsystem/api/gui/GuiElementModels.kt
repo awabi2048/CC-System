@@ -34,6 +34,17 @@ enum class GuiElementRole {
     DECORATION
 }
 
+/**
+ * 操作受付とは独立して、Loreの操作案内の意味を指定します。
+ * DEFAULTは既存のクリック種別から案内を生成し、LIST_SETTINGは循環設定の方向性を維持します。
+ * SINGLE_ACTION_CLICKは、単一操作項目の案内だけを汎用的な「クリック」にします。
+ */
+enum class GuiInteractionGuidance {
+    DEFAULT,
+    LIST_SETTING,
+    SINGLE_ACTION_CLICK,
+}
+
 enum class GuiLoreFrame {
     NONE,
     TOP,
@@ -64,18 +75,20 @@ sealed interface GuiLoreLine {
         val viewer: org.bukkit.entity.Player?,
         val gesture: GuiInputGesture,
         val label: String,
+        /** クリック受付を変えずに、操作案内だけを上書きする言語キーです。 */
+        val operationLabelKey: String? = null,
     ) : GuiLoreLine {
         constructor(
             viewer: org.bukkit.entity.Player?,
             acceptedClicks: Set<ClickType>,
             label: String,
-        ) : this(viewer, GuiInputGesture.MenuClicks(acceptedClicks), label)
+        ) : this(viewer, GuiInputGesture.MenuClicks(acceptedClicks), label, null)
 
         constructor(
             viewer: org.bukkit.entity.Player?,
             gesture: MenuGesture,
             label: String,
-        ) : this(viewer, GuiInputGesture.MenuClicks(gesture.clicks), label)
+        ) : this(viewer, GuiInputGesture.MenuClicks(gesture.clicks), label, null)
 
         init {
             require(label.isNotBlank()) { "interaction label must not be blank" }
@@ -285,6 +298,8 @@ data class GuiMenuEntrySpec(
     val glint: Boolean? = null,
     val sounds: MenuActionSoundPolicy? = null,
     val playerHeadOwner: UUID? = null,
+    /** 操作受付を変えずに、操作案内の意味を明示するための表示方針です。 */
+    val interactionGuidance: GuiInteractionGuidance = GuiInteractionGuidance.DEFAULT,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }
@@ -341,6 +356,8 @@ data class GuiStructuredMenuEntrySpec(
     val playerHeadOwner: UUID? = null,
     /** Capability提供元が確定した意味ブロック。item.loreとは併用しない。 */
     val embeddedLoreBlocks: List<GuiLoreBlock> = emptyList(),
+    /** 操作受付を変えずに、操作案内の意味を明示するための表示方針です。 */
+    val interactionGuidance: GuiInteractionGuidance = GuiInteractionGuidance.DEFAULT,
 ) {
     init {
         require(slot >= 0) { "slot must not be negative" }

@@ -4,6 +4,8 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
+import com.awabi2048.ccsystem.api.gui.GuiInputGesture
+import com.awabi2048.ccsystem.api.gui.GuiInteractionGuidance
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
 
@@ -37,7 +39,7 @@ internal object GuiMenuEntryLoreFactory {
             }
             if (blocks.isEmpty()) GuiLoreSpec.None else GuiLoreSpec.Blocks(blocks)
         }
-        return GuiLoreComposer.compose(base, actionLines(enabledActions, viewer))
+        return GuiLoreComposer.compose(base, actionLines(enabledActions, viewer, spec.interactionGuidance))
     }
 
     private fun MutableList<GuiLoreBlock>.block(lines: List<GuiLoreLine>) {
@@ -47,9 +49,22 @@ internal object GuiMenuEntryLoreFactory {
     fun actionLines(
         actions: List<GuiMenuEntryAction>,
         viewer: org.bukkit.entity.Player?,
+        interactionGuidance: GuiInteractionGuidance = GuiInteractionGuidance.DEFAULT,
     ): List<GuiLoreLine.Interaction> {
         return actions.map { action ->
-            GuiLoreLine.Interaction(viewer, action.acceptedClicks, action.label)
+            val operationLabelKey = if (
+                interactionGuidance == GuiInteractionGuidance.SINGLE_ACTION_CLICK && actions.size == 1
+            ) {
+                "lore.click.any"
+            } else {
+                null
+            }
+            GuiLoreLine.Interaction(
+                viewer,
+                GuiInputGesture.MenuClicks(action.acceptedClicks),
+                action.label,
+                operationLabelKey,
+            )
         }
     }
 }
