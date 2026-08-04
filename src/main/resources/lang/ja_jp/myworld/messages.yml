@@ -155,6 +155,11 @@ messages:
     cancelled_edited: §e進行中のツアー内容が変更されたため、ツアーをキャンセルしました。
     cancelled_deleted: §e進行中のツアーが削除されたため、ツアーをキャンセルしました。
     waypoint_pick: §e経由点を設置したいブロックを右クリックしてください
+    waypoint_invalid_location: §c足元と頭上の2ブロックが通過可能な場所を選択してください。
+    waypoint_arrival: '§6【{waypoint}】§7に到着しました！（{current}/{out_of}）'
+    navigation_bossbar: '§7ワールドツアー§b【{tour}】 §7by {creator}'
+    navigation_passed_waypoint: '§6【{waypoint}】'
+    navigation_next_waypoint: '§7次の中継点まで {distance} ブロック §e{arrow}'
   expand_direction_prompt: §a拡張したい方角（北西・北東・南西・南東）を向いて左クリックしてください
   expand_direction_selected: '§a指定した方角: {direction}'
   expand_confirm_chat: §a変更後のワールドボーダーのプレビューを表示しています。この内容で拡張しますか？

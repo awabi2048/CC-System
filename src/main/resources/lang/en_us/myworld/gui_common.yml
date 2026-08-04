@@ -208,7 +208,8 @@ gui:
       display: §bWorld Tour
       blocks:
         description:
-        - §7Create and edit tours.
+        - §7Set up tour guides for players visiting the world,
+        - §7and guide them through the world.
       action:
         open: Open tour management
     menu:
@@ -216,6 +217,9 @@ gui:
       stop:
         display: §cStop Current Tour
         action: Stop the tour
+      skip:
+        display: §eSkip One Waypoint
+        action: Skip the waypoint
       start_confirm:
         replace_active: A tour is already in progress. Stop it and start this tour instead?
       stop_confirm:
@@ -225,6 +229,10 @@ gui:
       start_selection_title: Select Start Tour
       edit_title: Edit Tours
       single_edit_title: 'Edit Tour: {tour}'
+      waypoint_edit_title: 'Waypoint Settings: {waypoint}'
+      visitor_switch:
+        display: §bSwitch to Visitor View
+        action: Open visitor view
       add_sign_title: Add Signs
       back: §7Back
       add_sign_button: Add waypoint
@@ -236,21 +244,11 @@ gui:
         description: §7Create a new tour.
         action: Create tour
         action_open: Open tour
-      info:
-        display: §eInfo
-        lore:
-        - §7The target world appears in the header center.
-        - §7Tours are listed from the upper-left.
-        - §7Set waypoints from each tour's edit screen.
-        - §7Click a start sign to begin a tour.
       edit_text:
         display: §eEdit Display Info
         action:
           text: Edit name and description
           icon: Change icon
-      save:
-        display: §aSave
-        action: Save tour
       delete:
         display: §cDelete Tour
         action: Delete tour
@@ -275,7 +273,28 @@ gui:
         action_start: Start this tour
         action_bind: Bind this tour
       add_waypoint_button: Add waypoint
-      remove_waypoint_action: Remove waypoint
+      waypoint:
+        open_action: Open waypoint settings
+        name: Waypoint Name
+        name_action: Edit the name
+        description: Waypoint Description
+        description_action: Edit the description
+        icon: Waypoint Icon
+        icon_action: Edit the icon
+        position: Waypoint Position
+        position_action: Set the position
+        delete: Delete This Waypoint
+        delete_action: Delete the waypoint
+        reorder: Reorder Waypoint
+        reorder_action: Enter reorder mode
+        reorder_cancel_action: Cancel reorder and open settings
+        reorder_insert_action: Insert before this waypoint
+        reorder_end_action: Move to the end
+      waypoint_delete_confirm:
+        title: Confirm Waypoint Deletion
+        body: Delete this waypoint?
+        confirm: §aDelete
+        cancel: §cCancel
     bind_sign_title: Select Tour
     create_dialog:
       title: Create New Tour
@@ -286,3 +305,11 @@ gui:
     input:
       name: Tour Name
       description: Description
+    waypoint:
+      name_dialog:
+        title: Edit Waypoint Name
+        description: §7Enter the waypoint name.
+      description_dialog:
+        title: Edit Waypoint Description
+        description: §7Enter three description lines. Blank lines are preserved.
+      description_line: 'Line {line}'

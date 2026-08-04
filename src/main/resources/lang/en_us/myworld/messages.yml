@@ -155,6 +155,11 @@ messages:
     cancelled_edited: §eThe active tour was cancelled because its route was updated.
     cancelled_deleted: §eThe active tour was cancelled because it was deleted.
     waypoint_pick: §eRight-click a block to set the waypoint location
+    waypoint_invalid_location: §cChoose a location where the two blocks for feet and head are passable.
+    waypoint_arrival: '§6【{waypoint}】§7Arrived!（{current}/{out_of}）'
+    navigation_bossbar: '§7World Tour§b【{tour}】 §7by {creator}'
+    navigation_passed_waypoint: '§6【{waypoint}】'
+    navigation_next_waypoint: '§7{distance} blocks to the next waypoint §e{arrow}'
   expand_direction_prompt: §aLeft-click while facing the direction (NW, NE, SW, SE) you want to expand.
   expand_direction_selected: '§aDirection selected: {direction}'
   expand_confirm_chat: §aPreviewing world border. Confirm expansion with these details?

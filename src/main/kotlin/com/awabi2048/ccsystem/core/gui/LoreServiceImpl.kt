@@ -35,6 +35,8 @@ class LoreServiceImpl(
         }
     }
 
+    override fun separator(): String = LoreFormatter.separator(emptyList())
+
     override fun compose(spec: GuiLoreSpec, actions: List<GuiLoreLine.Interaction>): GuiLoreSpec =
         GuiLoreComposer.compose(spec, actions)
 

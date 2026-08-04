@@ -207,7 +207,8 @@ gui:
       display: §bワールドツアー
       blocks:
         description:
-        - §7ツアーの作成・編集を行います。
+        - §7ワールドを訪れたプレイヤーに向けて、
+        - §7ツアーガイドを設定することができます
       action:
         open: ツアー管理を開く
     menu:
@@ -215,6 +216,9 @@ gui:
       stop:
         display: §c現在のツアーを中断
         action: ツアーを中断する
+      skip:
+        display: §e経由地点をひとつスキップ
+        action: 経由地点をスキップする
       start_confirm:
         replace_active: 現在進行中のツアーがあります。これを中断して、新しく開始しますか？
       stop_confirm:
@@ -224,6 +228,10 @@ gui:
       start_selection_title: 起点ツアー選択
       edit_title: ツアー編集
       single_edit_title: 'ツアー編集: {tour}'
+      waypoint_edit_title: '経由地点の設定: {waypoint}'
+      visitor_switch:
+        display: §b訪問者向け画面に切り替え
+        action: 訪問者向け画面を開く
       add_sign_title: 看板を追加
       back: §7戻る
       add_sign_button: 経由地点を追加
@@ -235,21 +243,11 @@ gui:
         description: §7新しいツアーを作成します
         action: ツアーを作成
         action_open: ツアーを開く
-      info:
-        display: §eInfo
-        lore:
-        - §7ヘッダー中央に対象ワールドを表示します。
-        - §7ツアーは左上から順に一覧表示されます。
-        - §7各ツアーの編集画面から、中継点を設定します。
-        - §7スタート看板をクリックすることで、ツアーを開始できます。
       edit_text:
         display: §e表示情報を変更
         action:
           text: 名前と説明を編集
           icon: アイコンを編集
-      save:
-        display: §a保存
-        action: ツアーを保存
       delete:
         display: §cツアーを削除
         action: ツアーを削除
@@ -274,7 +272,28 @@ gui:
         action_start: ツアーを開始
         action_bind: ツアーに紐付け
       add_waypoint_button: 経由点を追加
-      remove_waypoint_action: 経由点を削除
+      waypoint:
+        open_action: 経由地点の詳細設定を開く
+        name: 経由地点の名前
+        name_action: 名前を編集する
+        description: 経由地点の説明文
+        description_action: 説明文を編集する
+        icon: 経由地点のアイコン
+        icon_action: アイコンを編集する
+        position: 経由地点の位置
+        position_action: 位置を設定する
+        delete: この経由地点を削除
+        delete_action: 経由地点を削除する
+        reorder: 経由地点の場所を入れ替え
+        reorder_action: 入れ替えモードにする
+        reorder_cancel_action: 入れ替えをキャンセルして設定を開く
+        reorder_insert_action: この位置のひとつ前に挿入
+        reorder_end_action: 最後尾に移動する
+      waypoint_delete_confirm:
+        title: 経由地点の削除確認
+        body: この経由地点を削除しますか？
+        confirm: §a削除する
+        cancel: §cキャンセル
     bind_sign_title: ツアーを選択
     create_dialog:
       title: ツアーを新規作成
@@ -285,3 +304,11 @@ gui:
     input:
       name: ツアー名
       description: 説明文
+    waypoint:
+      name_dialog:
+        title: 経由地点の名前を編集
+        description: §7経由地点の名前を入力してください
+      description_dialog:
+        title: 経由地点の説明文を編集
+        description: §7説明文を3行入力してください。空行もそのまま保存されます
+      description_line: '{line}行目'
