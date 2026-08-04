@@ -247,7 +247,9 @@ gui:
         display: §e表示情報を変更
         action:
           text: 名前と説明を編集
-          icon: アイコンを編集
+      icon:
+        display: §eツアーのアイコンを変更
+        action: アイコンを編集
       delete:
         display: §cツアーを削除
         action: ツアーを削除
@@ -298,6 +300,7 @@ gui:
     create_dialog:
       title: ツアーを新規作成
       description: §7ツアー名と説明を入力してください
+      name_required: §cツアー名を入力してください。
     edit_text:
       title: ツアーの表示情報を変更
       description: §7ツアー名と説明を入力してください

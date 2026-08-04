@@ -248,7 +248,9 @@ gui:
         display: §eEdit Display Info
         action:
           text: Edit name and description
-          icon: Change icon
+      icon:
+        display: §eChange Tour Icon
+        action: Change the icon
       delete:
         display: §cDelete Tour
         action: Delete tour
@@ -299,6 +301,7 @@ gui:
     create_dialog:
       title: Create New Tour
       description: §7Enter the tour name and description
+      name_required: §cEnter a tour name.
     edit_text:
       title: Edit Tour Display
       description: §7Enter the tour name and description
