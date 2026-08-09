@@ -169,6 +169,7 @@ error:
   custom_item:
     item_not_found_hand: §cItem not found in hand.
     no_permission: §cYou do not have permission to change the biome.
+    world_seed_disabled: §cWorld Seeds cannot be used while the world slot system is disabled.
     world_seed_limit_reached: '§cCannot expand slots further. (Limit: {limit})'
     biome_world_only: §cThe biome bottle can only be used inside a MyWorld.
   delete_failed: §cFailed to delete world.

@@ -217,6 +217,7 @@ messages:
   evacuated: §cワールドがアンロードされたため、スポーン地点へ移動しました。
   no_in_myworld: §cこの操作をするためには、マイワールドにいる必要があります！
   worldmenu_not_in_myworld: §cワールド設定を開くためには、マイワールドにいる必要があります！
+  worldmenu_members_only: §cこのコマンドを実行する権限がありません。（メンバー以上が必要）
   admin_portal_teleport: §a管理用ポータルでテレポートしました
   admin_portal_removed: §a管理用ポータルを撤去しました
   export_started: §eワールドデータのエクスポートを開始しました...

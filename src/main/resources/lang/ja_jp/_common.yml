@@ -169,6 +169,7 @@ error:
   custom_item:
     item_not_found_hand: §cアイテムを手に持っていません。
     no_permission: §c変更する権限がありません。
+    world_seed_disabled: §cワールドスロット機能が無効のため、ワールドの種は使用できません。
     world_seed_limit_reached: '§cこれ以上スロットを拡張できません。(上限: {limit})'
     biome_world_only: §cバイオームの瓶はマイワールド内でのみ使用できます。
   delete_failed: §cワールドの削除に失敗しました。

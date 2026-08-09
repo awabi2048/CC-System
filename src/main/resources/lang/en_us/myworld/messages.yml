@@ -217,6 +217,7 @@ messages:
   evacuated: §cWorld unloaded. Moving to spawn.
   no_in_myworld: §cYou must be in a MyWorld to perform this action!
   worldmenu_not_in_myworld: §cYou must be in a MyWorld to open world settings!
+  worldmenu_members_only: §cYou do not have permission to run this command. (Member access or higher is required.)
   admin_portal_teleport: §aTeleported via admin portal
   admin_portal_removed: §aAdmin portal removed
   export_started: §eStarting world data export...
