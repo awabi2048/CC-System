@@ -31,7 +31,9 @@ internal object MenuRuntimeViewPreparation {
             definition.renderer.render(context)
         } catch (failure: Throwable) {
             failure.rethrowIfUnrecoverableMenuRuntimeFailure()
-            return MenuRuntimePreparedViewResult.RenderFailed(failure.javaClass.name)
+            // 原因例外を保持して呼び出し側へ渡します。型名だけに縮退すると、
+            // 本番で同じ描画失敗が起きた際に原因行を特定できなくなります。
+            return MenuRuntimePreparedViewResult.RenderFailed(failure.javaClass.name, failure)
         }
         return contractInvalid(
             definition,
@@ -84,7 +86,10 @@ internal object MenuRuntimeViewPreparation {
 internal sealed interface MenuRuntimePreparedViewResult {
     data class Ready(val view: InventoryMenuView) : MenuRuntimePreparedViewResult
 
-    data class RenderFailed(val exceptionType: String) : MenuRuntimePreparedViewResult
+    data class RenderFailed(
+        val exceptionType: String,
+        val cause: Throwable,
+    ) : MenuRuntimePreparedViewResult
 
     data class ContractInvalid(
         val violations: List<MenuContractViolation>,

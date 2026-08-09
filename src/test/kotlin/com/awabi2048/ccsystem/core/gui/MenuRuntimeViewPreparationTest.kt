@@ -76,6 +76,7 @@ class MenuRuntimeViewPreparationTest {
 
         val failed = assertInstanceOf(MenuRuntimePreparedViewResult.RenderFailed::class.java, result)
         assertEquals(IllegalStateException::class.java.name, failed.exceptionType)
+        assertEquals("boom", failed.cause.message)
     }
 
     @Test

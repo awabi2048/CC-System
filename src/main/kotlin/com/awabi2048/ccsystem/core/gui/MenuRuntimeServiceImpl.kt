@@ -233,6 +233,11 @@ internal class MenuRuntimeServiceImpl(
             )
         } catch (failure: Throwable) {
             if (failure is Error) throw failure
+            plugin.logger.log(
+                Level.SEVERE,
+                "可逆状態の捕捉に失敗しました: route=${holder.route} player=${player.uniqueId}",
+                failure,
+            )
             return reversibleCaptureFailure(
                 MenuReversibleStateFailureReason.CAPTURE_EXCEPTION,
                 exceptionType = failure.javaClass.name,
@@ -329,6 +334,11 @@ internal class MenuRuntimeServiceImpl(
             )
         } catch (failure: Throwable) {
             if (failure is Error) throw failure
+            plugin.logger.log(
+                Level.SEVERE,
+                "可逆状態の復元に失敗しました: route=${entry.route} player=${player.uniqueId}",
+                failure,
+            )
             return reversibleRestoreFailure(
                 MenuReversibleStateFailureReason.RESTORE_EXCEPTION,
                 exceptionType = failure.javaClass.name,
@@ -708,9 +718,11 @@ internal class MenuRuntimeServiceImpl(
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
-                plugin.logger.severe(
+                plugin.logger.log(
+                    Level.SEVERE,
                     "メニュー再描画に失敗しました: route=${definition.routeId} " +
                         "player=${player.uniqueId} exception=${prepared.exceptionType}",
+                    prepared.cause,
                 )
                 return MenuRuntimeOperationResult.failed(
                     MenuRuntimeOperation.REFRESH,
@@ -1327,8 +1339,10 @@ internal class MenuRuntimeServiceImpl(
         ) {
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
-                plugin.logger.severe(
+                plugin.logger.log(
+                    Level.SEVERE,
                     "メニュー描画に失敗しました: route=${definition.routeId} exception=${prepared.exceptionType}",
+                    prepared.cause,
                 )
                 return MenuRuntimeOperationResult.failed(
                     MenuRuntimeOperation.OPEN,
