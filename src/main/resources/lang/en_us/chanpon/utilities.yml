@@ -1,6 +1,21 @@
 chanpon_utilities:
   common:
     prefix: "&7[&bChanpon-Utilities&7] "
+  management:
+    usage: "&cUsage: /cu status|enable <module>|disable <module>"
+    no_permission: "&cYou do not have permission to use this command."
+    unknown_module: "&cUnknown module: {id}"
+    feature_disabled: "&eModule {id} is currently disabled."
+    changed: "&aModule {id} changed to {state}."
+    unchanged: "&7Module {id} is already {state}."
+    failed: "&cFailed to change module {id}. The previous setting was restored."
+    status:
+      header: "&bChanpon-Utilities module status"
+      entry: "&7- &f{id}&7: {state}"
+    state:
+      enabled: "&aenabled"
+      disabled: "&cdisabled"
+      unavailable: "&eenabled (dependency unavailable)"
   unlink:
     success: "&aUnlinked from the lectern"
     already: "&eThis bookshelf is not linked"

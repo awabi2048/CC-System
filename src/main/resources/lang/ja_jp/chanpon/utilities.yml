@@ -1,6 +1,21 @@
 chanpon_utilities:
   common:
     prefix: "&7[&bChanpon-Utilities&7] "
+  management:
+    usage: "&c使用方法: /cu status|enable <module>|disable <module>"
+    no_permission: "&cこのコマンドを実行する権限がありません。"
+    unknown_module: "&c不明なモジュールです: {id}"
+    feature_disabled: "&eモジュール {id} は現在無効です。"
+    changed: "&aモジュール {id} を {state} に変更しました。"
+    unchanged: "&7モジュール {id} はすでに {state} です。"
+    failed: "&cモジュール {id} の変更に失敗しました。設定を元に戻しました。"
+    status:
+      header: "&bChanpon-Utilities モジュール状態"
+      entry: "&7- &f{id}&7: {state}"
+    state:
+      enabled: "&a有効"
+      disabled: "&c無効"
+      unavailable: "&e有効（依存プラグインなし）"
   unlink:
     success: "&a書見台とのリンクを解除しました"
     already: "&eこの本棚はリンクされていません"
