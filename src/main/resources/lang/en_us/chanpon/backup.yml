@@ -187,8 +187,11 @@ chanpon:
         owner_label: "Owner"
         created_label: "Created"
         backups_label: "Backups"
-        backup_action: "Create backup"
         list_action: "Backup list"
+      world_backup:
+        display: "§aBack up {world}"
+        description: "Back up this production world only."
+        action: "Back up this world"
     backup_list:
       title: "§0Backup List"
       info:

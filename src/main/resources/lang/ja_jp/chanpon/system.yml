@@ -17,6 +17,8 @@ chanpon:
   settings:
     common:
       must_be_in_world_warning: "この設定を変更するには、ワールド内にいる必要があります！"
+      member_cannot_change_warning: "ワールドメンバーは変更できない項目です"
+      moderator_cannot_change_warning: "モデレーターは変更できない項目です"
       "on": "有効"
       "off": "無効"
       back: "§7戻る"
@@ -148,4 +150,7 @@ chanpon:
       - "§cこのワールドは現在封鎖中のため通行できません。"
 
   message:
+    offline_member_invite:
+      - "§7オフラインの間に、§a【{world}】§7のワールドメンバーに招待されました！"
+      - "§b/myworld §7のメニューから確認できます"
     protected_world: "§cこのワールドは提出済み/完成済みのため保護されています。公開レベル・訪問通知・ポータル取得以外の設定は変更できません。"

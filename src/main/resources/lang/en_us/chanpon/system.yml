@@ -17,6 +17,8 @@ chanpon:
   settings:
     common:
       must_be_in_world_warning: "You must be in this world to change this setting!"
+      member_cannot_change_warning: "World members cannot change this setting"
+      moderator_cannot_change_warning: "Moderators cannot change this setting"
       "on": "Enabled"
       "off": "Disabled"
       back: "§7Back"
@@ -147,4 +149,7 @@ chanpon:
     locked:
       - "§cThis world is currently locked and cannot be entered."
   message:
+    offline_member_invite:
+      - "§7While you were offline, you were invited to become a member of §a【{world}】§7!"
+      - "Check the menu with §b/myworld"
     protected_world: "§cThis world is protected because it has been submitted/marked as completed. Only public level, visit notifications, and portal acquisition can be changed."

@@ -187,8 +187,11 @@ chanpon:
         owner_label: "オーナー"
         created_label: "作成日"
         backups_label: "保存済みバックアップ"
-        backup_action: "個別バックアップ"
         list_action: "バックアップ一覧"
+      world_backup:
+        display: "§a{world}をバックアップ"
+        description: "この本番用ワールドだけをバックアップします。"
+        action: "このワールドをバックアップ"
     backup_list:
       title: "§0バックアップ一覧"
       info:

@@ -164,12 +164,12 @@ chanpon:
           - "§7管理メニューへ戻ります。"
       visibility:
         public: "§a開放中"
-        development: "§e開発中"
+        development: "§e制作中"
         private: "§7封鎖中"
       visibility_filter:
         all: "§fすべて"
         public: "§a開放中"
-        development: "§e開発中"
+        development: "§e制作中"
         private: "§7封鎖中"
         display: "§e公開状態フィルター"
         label: "現在"
