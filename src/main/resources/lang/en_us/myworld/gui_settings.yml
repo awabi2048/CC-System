@@ -190,6 +190,13 @@ gui:
         - Set whether the "Critical Settings" icon
         - is shown in the world management menu.
         current_label: Current setting
+    favorite_group_invites:
+      display: §eNearby group invitations
+      blocks:
+        description:
+        - Choose whether to receive group invitations
+        - from players in your current world.
+        current_label: Current status
     tour_navigation:
       display: §bWorld tour navigation
       blocks:

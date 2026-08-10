@@ -332,6 +332,21 @@ messages:
       body: '{player}さんが「{world}」への訪問を申請しました！'
       action: '{command} で訪問を許可できます！'
     hover: '{command} を実行します'
+  favorite_group_invite:
+    recipient:
+      body: '§e{player} さん§7がワールド§a【{world}】§7にあなたを招待しました！'
+      java_action: §e§nクリックしてこのワールドへワープ
+      bedrock_action: '§e§n{command} を実行してワールドにワープ'
+    sender:
+      prefix: §7同じワールドにいる
+      count: '§b{count}名'
+      suffix: §7のプレイヤーに招待を送りました！
+      action: §e§nクリックして取り消し
+      hover: "§7招待したプレイヤー:\n{players}"
+      cancelled: '§a未処理の招待を{count}件取り消しました。'
+      cancel_not_found: §cこの一括招待は存在しないか、すでに期限切れです。
+    no_recipients: §e現在、招待を送信できるプレイヤーはいません。
+    not_allowed: §c現在の公開状態では、このワールドへ一括招待できません。
   myworld_pending_code_invalid: §c4桁の通知コードを入力してください。
   myworld_pending_code_not_found: §c指定した通知は存在しないか、すでに処理されています。
   myworld_pending_code_expired: §c指定した通知は有効期限が切れています。

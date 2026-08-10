@@ -5,10 +5,13 @@ gui:
     empty_message_no_favorites: §7まだお気に入りがありません
     current_world:
       name: §b現在のワールド
+      unmanaged: §eマイワールド管理対象外のワールドです
     world_item:
       warp: このワールドへワープ
       preview: このワールドをプレビュー
       unfavorite: お気に入りを解除
+      open_actions: 操作メニューを開く
+      direct_warp_unavailable: §e公開設定などにより、このワールドへ直接ワープできません
       archived_label: §c【アーカイブされています】
     info:
       display: §f統計情報
@@ -16,7 +19,6 @@ gui:
       name: §b{player}
       lore_count: お気に入りしたワールド数
     favorite_menu:
-      title: お気に入りメニュー
       other_worlds:
         name: §aこのプレイヤーのほかのワールド
         lore:
@@ -32,12 +34,6 @@ gui:
         lore_restricted_owner: §c自分のワールドはお気に入り登録できません。
         lore_restricted_not_managed: §cこの場所はお気に入り登録できません。
         action: お気に入りを切り替え
-      list:
-        name: §dお気に入り一覧
-        lore:
-        - §7あなたが登録したお気に入りワールドの
-        - §7一覧を表示します。
-        action: お気に入り一覧を表示
     remove_confirm:
       title: お気に入り解除の確認
       lore:
@@ -45,3 +41,19 @@ gui:
       - §cお気に入りから解除§fしますか？
       - §7解除すると、お気に入りリストから削除されます。
       confirm: §aお気に入り解除
+    actions:
+      title: "{world} の操作"
+      warp: §aワールドにワープ
+      preview: §bワールドをプレビュー
+      invite: §eこのワールドに他のプレイヤーを招待
+      invite_description:
+      - 現在同じワールドにいるプレイヤーを
+      - このお気に入りワールドへ招待します。
+      invite_recipient_count: 招待できるプレイヤー
+      invite_unavailable: §cこのワールドへ一括招待できません
+      invite_no_recipients: §e現在招待できるプレイヤーはいません
+      unfavorite: §cお気に入りを解除
+    invite_confirm:
+      title: 一括招待の確認
+      recipient_count: 招待するプレイヤー数
+      confirm: §a招待を送信

@@ -5,10 +5,13 @@ gui:
     empty_message_no_favorites: §7No favorites yet.
     current_world:
       name: §bCurrent World
+      unmanaged: §eThis world is not managed as a MyWorld.
     world_item:
       warp: Warp to this world
       preview: Preview this world
       unfavorite: Remove from favorites
+      open_actions: Open world actions
+      direct_warp_unavailable: §eThe current access settings do not allow a direct warp to this world.
       archived_label: §c§l[ARCHIVED]
     info:
       display: §fStatistics
@@ -16,7 +19,6 @@ gui:
       name: §b{player}
       lore_count: Favorited Worlds
     favorite_menu:
-      title: Favorite Menu
       other_worlds:
         name: §aOther Worlds of this Player
         lore:
@@ -32,12 +34,6 @@ gui:
         lore_restricted_owner: §cYou cannot favorite your own world.
         lore_restricted_not_managed: §cThis location cannot be favorited.
         action: Toggle favorite
-      list:
-        name: §dView Favorite List
-        lore:
-        - §7View the list of worlds you
-        - §7have added to your favorites.
-        action: View favorite worlds
     remove_confirm:
       title: Confirmation of cancellation of favorites
       lore:
@@ -45,3 +41,19 @@ gui:
       - §cRemove from favorites§f?
       - If you cancel §7, it will be removed from your favorites list.
       confirm: §aRemove Favorite
+    actions:
+      title: "Actions for {world}"
+      warp: §aWarp to World
+      preview: §bPreview World
+      invite: §eInvite Nearby Players to This World
+      invite_description:
+      - Invite eligible players in your current world
+      - to this favorite world.
+      invite_recipient_count: Eligible Players
+      invite_unavailable: §cGroup invitations are unavailable for this world.
+      invite_no_recipients: §eThere are no eligible players in your current world.
+      unfavorite: §cRemove from Favorites
+    invite_confirm:
+      title: Confirm Group Invitation
+      recipient_count: Players to Invite
+      confirm: §aSend Invitations

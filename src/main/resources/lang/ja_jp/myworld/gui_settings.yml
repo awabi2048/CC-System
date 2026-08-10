@@ -190,6 +190,13 @@ gui:
         - ワールド管理メニュー内の
         - 「重大な設定」アイコンを表示するか設定します。
         current_label: 現在の設定
+    favorite_group_invites:
+      display: §e同一ワールドからの一括招待
+      blocks:
+        description:
+        - 同じワールドにいるプレイヤーから
+        - お気に入りワールドへの一括招待を受け取るか設定します。
+        current_label: 現在の状態
     tour_navigation:
       display: §bワールドツアーのナビゲーション
       blocks:

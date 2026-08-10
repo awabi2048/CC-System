@@ -332,6 +332,21 @@ messages:
       body: '{player} requested permission to visit "{world}"!'
       action: 'Use {command} to allow the visit!'
     hover: 'Run {command}'
+  favorite_group_invite:
+    recipient:
+      body: '§e{player} §7invited you to §a【{world}】§7!'
+      java_action: §e§nClick to warp to this world
+      bedrock_action: '§e§nRun {command} to warp to this world'
+    sender:
+      prefix: §7Sent invitations to
+      count: ' §b{count}'
+      suffix: §7 players in your current world!
+      action: §e§nClick to cancel
+      hover: "§7Invited players:\n{players}"
+      cancelled: '§aCancelled {count} pending invitations.'
+      cancel_not_found: §cThis invitation batch does not exist or has expired.
+    no_recipients: §eThere are no eligible players to invite right now.
+    not_allowed: §cThe current access settings do not allow group invitations to this world.
   myworld_pending_code_invalid: §cEnter a four-digit notification code.
   myworld_pending_code_not_found: §cThat notification does not exist or has already been handled.
   myworld_pending_code_expired: §cThat notification has expired.
