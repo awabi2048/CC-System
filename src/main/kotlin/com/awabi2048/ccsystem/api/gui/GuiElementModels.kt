@@ -38,11 +38,13 @@ enum class GuiElementRole {
  * 操作受付とは独立して、Loreの操作案内の意味を指定します。
  * DEFAULTは既存のクリック種別から案内を生成し、LIST_SETTINGは循環設定の方向性を維持します。
  * SINGLE_ACTION_CLICKは、単一操作項目の案内だけを汎用的な「クリック」にします。
+ * HIDDENは操作受付を維持したまま案内Loreだけを表示しません。
  */
 enum class GuiInteractionGuidance {
     DEFAULT,
     LIST_SETTING,
     SINGLE_ACTION_CLICK,
+    HIDDEN,
 }
 
 enum class GuiLoreFrame {

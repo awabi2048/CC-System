@@ -51,6 +51,8 @@ internal object GuiMenuEntryLoreFactory {
         viewer: org.bukkit.entity.Player?,
         interactionGuidance: GuiInteractionGuidance = GuiInteractionGuidance.DEFAULT,
     ): List<GuiLoreLine.Interaction> {
+        // Nameだけで操作を提示する画面でも、クリック受付そのものはMenuRuntimeへ残します。
+        if (interactionGuidance == GuiInteractionGuidance.HIDDEN) return emptyList()
         return actions.map { action ->
             val operationLabelKey = if (
                 interactionGuidance == GuiInteractionGuidance.SINGLE_ACTION_CLICK && actions.size == 1

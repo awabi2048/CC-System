@@ -244,4 +244,19 @@ class GuiMenuEntryLoreFactoryTest {
 
         assertTrue(rendered.map(PlainTextComponentSerializer.plainText()::serialize).contains("クリックで開く"))
     }
+
+    @Test
+    fun `hidden guidance keeps the action while rendering no lore`() {
+        val spec = GuiMenuEntrySpec(
+            slot = 0,
+            material = Material.STONE,
+            name = GuiNameSpec.Empty,
+            role = GuiElementRole.ACTION,
+            actions = listOf(GuiMenuActionIntent.LeftRightSame("open", "開く")),
+            interactionGuidance = GuiInteractionGuidance.HIDDEN,
+        )
+
+        assertEquals(1, spec.expandedActions().size)
+        assertEquals(GuiLoreSpec.None, GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
+    }
 }
