@@ -212,7 +212,12 @@ error:
   world_already_exists: §cそのワールドは既に存在します。
   world_creation_failed: §c作成に失敗しました。
   world_creation_in_progress: §cワールド作成処理が進行中です。
+  world_directory_conflict: §cワールドデータが競合しているため利用できません。管理者へお問い合わせください。
+  world_directory_missing: §cワールドデータが見つからないため利用できません。管理者へお問い合わせください。
+  world_directory_unsafe: §cワールドデータの配置を安全に確認できないため利用できません。管理者へお問い合わせください。
   world_load_failed: §cワールドのロードに失敗しました。
+  world_migration_required: §eこのワールドは旧形式です。管理者による移行が完了するまで利用できません。
+  world_teleport_failed: §cワールドへの移動を完了できませんでした。
   spawn_set_blocked: §cその場所にはスポーンを設定できません。占有ブロック（足元/頭上）が空気または水の場所を選んでください。
   world_not_public: §cこのワールドは現在公開されていません。
   like_sign:

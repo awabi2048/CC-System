@@ -212,7 +212,12 @@ error:
   world_already_exists: §cWorld already exists.
   world_creation_failed: §cWorld creation failed.
   world_creation_in_progress: §cWorld creation is in progress.
+  world_directory_conflict: §cConflicting world data prevents access. Contact an administrator.
+  world_directory_missing: §cWorld data could not be found. Contact an administrator.
+  world_directory_unsafe: §cThe world data location could not be verified safely. Contact an administrator.
   world_load_failed: §cWorld load failed.
+  world_migration_required: §eThis world uses the legacy format and is unavailable until an administrator migrates it.
+  world_teleport_failed: §cThe world teleport could not be completed.
   spawn_set_blocked: §cYou cannot set spawn there. Choose a location where both feet and head blocks are air or water.
   world_not_public: §cThis world is not currently public.
   like_sign:
