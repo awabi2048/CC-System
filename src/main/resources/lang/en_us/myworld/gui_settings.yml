@@ -209,6 +209,8 @@ gui:
         none: None
     button:
       display: §6Personal settings
+      description:
+      - Change display language, notifications, and other personal options.
       action: Open personal settings
   environment:
     title: Environment Settings

@@ -209,6 +209,8 @@ gui:
         none: なし
     button:
       display: §6個人設定
+      description:
+      - 表示言語や通知などを変更します。
       action: 個人設定を開く
   environment:
     title: 環境設定
