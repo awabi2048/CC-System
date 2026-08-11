@@ -300,13 +300,19 @@ messages:
     pending: '§eLegacy world awaiting migration: {world} ({uuid})'
     none_pending: §7There are no legacy worlds to migrate.
     conflict: '§cMigration of world {world} was rejected because both legacy and current directories exist.'
-    usage: '§cUsage: /mwm migration execute | status'
+    usage: '§cUsage: /mwm migration execute | status | set-dimension world <UUID> <OVERWORLD|NETHER|END> confirm | template <ID> <OVERWORLD|NETHER|END> confirm'
     already_running: §eWorld migration is already running.
     console_confirm: '§eTo confirm, run /mwm migration execute confirm.'
-    started: '§aQueued {count} legacy worlds for migration.'
+    started: '§aProcessing {count} migration targets.'
     completed: §aThe world migration queue has completed.
     status_summary: '§eMigration: {state} §7| total: {total} / completed: {completed} / waiting: {waiting} / retry: {retries} / failed: {failed} / current: {current}'
     status_world: '§7- {world}: {status} / attempts {attempts} / last error {error} / updated {updated}'
+    dimension_usage: '§cUsage: /mwm migration set-dimension world <UUID> <OVERWORLD|NETHER|END> confirm | template <ID> <OVERWORLD|NETHER|END> confirm'
+    dimension_confirmation: '§eAppend confirm to execute. Verify the target dimension before proceeding.'
+    metadata_updated: '§aMetadata migration applied: {target} §7({reason})'
+    metadata_pending: '§eSome metadata remains quarantined because its dimension is unresolved: {target} §7({reason})'
+    metadata_failed: '§cMetadata migration failed: {target} §7({reason})'
+    metadata_remaining: §eSome metadata remains quarantined because its dimension is unresolved. Use status for details.
   seed_spawn:
     corrected: '§eThe configured spawn was unsafe and was moved to {x}, {y}, {z}.'
     safe_location_not_found: §cNo safe location was found near the configured spawn. Warp cancelled.
