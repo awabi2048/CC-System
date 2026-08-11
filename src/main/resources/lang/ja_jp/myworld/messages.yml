@@ -300,13 +300,19 @@ messages:
     pending: '§e移行待ちの旧ワールド: {world} ({uuid})'
     none_pending: §7移行対象の旧ワールドはありません。
     conflict: '§cワールド {world} の移行を拒否しました。旧構造と現行構造のディレクトリが両方存在します。'
-    usage: '§c使用法: /mwm migration execute | status'
+    usage: '§c使用法: /mwm migration execute | status | set-dimension world <UUID> <OVERWORLD|NETHER|END> confirm | template <ID> <OVERWORLD|NETHER|END> confirm'
     already_running: §eワールド移行はすでに実行中です。
     console_confirm: '§e実行を確認するには /mwm migration execute confirm を入力してください。'
-    started: '§a{count}件の旧ワールドを移行キューへ登録しました。'
+    started: '§a{count}件の移行対象を処理します。'
     completed: §aワールド移行キューの処理が完了しました。
     status_summary: '§e移行状態: {state} §7| 全体: {total} / 完了: {completed} / 待機: {waiting} / 再試行: {retries} / 失敗: {failed} / 処理中: {current}'
     status_world: '§7- {world}: {status} / 試行 {attempts} / 最終エラー {error} / 更新 {updated}'
+    dimension_usage: '§c使用法: /mwm migration set-dimension world <UUID> <OVERWORLD|NETHER|END> confirm | template <ID> <OVERWORLD|NETHER|END> confirm'
+    dimension_confirmation: '§e実行を確認するには末尾に confirm を付けてください。対象の次元を確認してから実行してください。'
+    metadata_updated: '§aメタデータ移行を反映しました: {target} §7({reason})'
+    metadata_pending: '§e一部のメタデータは次元を確定できないため隔離中です: {target} §7({reason})'
+    metadata_failed: '§cメタデータ移行に失敗しました: {target} §7({reason})'
+    metadata_remaining: §e一部のメタデータは次元を確定できないため隔離中です。statusで詳細を確認してください。
   seed_spawn:
     corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
     safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。
