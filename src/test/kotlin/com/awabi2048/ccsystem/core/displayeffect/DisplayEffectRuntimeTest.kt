@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class DisplayEffectRuntimeTest {
     @Test
@@ -97,10 +98,13 @@ class DisplayEffectRuntimeTest {
     @Test
     fun `runtime creates once updates and disposes on expiration`() {
         val backend = RecordingBackend()
-        val runtime = DisplayEffectRuntime(definition(), backend)
+        val runtime = DisplayEffectRuntime(definition(), backend, TEST_INSTANCE_ID)
 
         assertEquals(DisplayEffectRuntimeResult.Started, runtime.start())
         assertEquals(1, backend.created.size)
+        assertEquals(TEST_INSTANCE_ID, backend.created.single().request.instanceId)
+        assertEquals("test", backend.created.single().request.nodeId.value)
+        assertEquals("minecraft:red_concrete", backend.created.single().request.appearance.assetId.value)
         assertEquals(DisplayEffectRuntimeResult.Advanced, runtime.tick())
         assertEquals(DisplayEffectRuntimeResult.Advanced, runtime.tick())
         assertEquals(
@@ -125,6 +129,20 @@ class DisplayEffectRuntimeTest {
             runtime.tick()
         )
         assertEquals(DisplayEffectDisposalReason.BACKEND_INVALIDATED, backend.disposed.single().reason)
+    }
+
+    @Test
+    fun `backend reports unavailable world as a normal stopped runtime`() {
+        val backend = RecordingBackend()
+        val runtime = DisplayEffectRuntime(definition(), backend)
+        runtime.start()
+        backend.worldAvailable = false
+
+        assertEquals(
+            DisplayEffectRuntimeResult.Stopped(DisplayEffectDisposalReason.WORLD_UNAVAILABLE),
+            runtime.tick()
+        )
+        assertEquals(DisplayEffectDisposalReason.WORLD_UNAVAILABLE, backend.disposed.single().reason)
     }
 
     @Test
@@ -160,25 +178,27 @@ class DisplayEffectRuntimeTest {
         physics = DisplayEffectPhysics(lifetimeTicks = 2)
     )
 
+    companion object {
+        private val TEST_INSTANCE_ID: UUID = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    }
+
     private class RecordingBackend : DisplayEffectBackend {
-        data class Created(val handle: DisplayEffectHandle, val frame: com.awabi2048.ccsystem.api.displayeffect.DisplayEffectFrame)
+        data class Created(val handle: DisplayEffectHandle, val request: DisplayEffectSpawnRequest)
         data class Applied(val handle: DisplayEffectHandle, val frame: com.awabi2048.ccsystem.api.displayeffect.DisplayEffectFrame)
         data class Disposed(val handle: DisplayEffectHandle, val reason: DisplayEffectDisposalReason)
 
         private var nextToken = 1L
         private val handles = mutableSetOf<DisplayEffectHandle>()
         var alive: Boolean = true
+        var worldAvailable: Boolean = true
         val created = mutableListOf<Created>()
         val applied = mutableListOf<Applied>()
         val disposed = mutableListOf<Disposed>()
 
-        override fun create(
-            appearance: DisplayEffectAppearance,
-            initialFrame: com.awabi2048.ccsystem.api.displayeffect.DisplayEffectFrame
-        ): DisplayEffectHandle {
+        override fun create(request: DisplayEffectSpawnRequest): DisplayEffectHandle {
             val handle = DisplayEffectHandle(nextToken++)
             handles += handle
-            created += Created(handle, initialFrame)
+            created += Created(handle, request)
             return handle
         }
 
@@ -190,7 +210,12 @@ class DisplayEffectRuntimeTest {
             applied += Applied(handle, frame)
         }
 
-        override fun isAlive(handle: DisplayEffectHandle): Boolean = alive && handle in handles
+        override fun isAlive(handle: DisplayEffectHandle): Boolean {
+            if (!worldAvailable) {
+                throw DisplayEffectWorldUnavailableException("test world unavailable")
+            }
+            return alive && handle in handles
+        }
 
         override fun dispose(handle: DisplayEffectHandle, reason: DisplayEffectDisposalReason) {
             handles.remove(handle)

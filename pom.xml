@@ -7,7 +7,7 @@
 
     <groupId>com.awabi2048</groupId>
     <artifactId>CC-System</artifactId>
-    <version>26.812.3</version>
+    <version>26.812.4</version>
     <packaging>jar</packaging>
 
     <name>CC-System</name>

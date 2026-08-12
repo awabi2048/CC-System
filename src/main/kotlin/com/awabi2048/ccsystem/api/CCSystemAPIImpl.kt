@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
+import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectService
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -25,6 +26,7 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.cosmetic.CosmeticPlatformImpl
+import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiElementServiceImpl
 import com.awabi2048.ccsystem.core.gui.GuiLayoutServiceImpl
 import com.awabi2048.ccsystem.core.gui.LoreServiceImpl
@@ -127,6 +129,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
     }
     private val cosmeticPlatform = CosmeticPlatformImpl(plugin, dataFolder)
+    private val displayEffectService = DisplayEffectServiceImpl(plugin)
+
+    init {
+        plugin.server.pluginManager.registerEvents(displayEffectService, plugin)
+    }
 
     internal fun reloadTimeSettings() {
         sharedClockService.reload()
@@ -313,7 +320,10 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
 
     override fun getCosmeticPlatform(): CosmeticPlatform = cosmeticPlatform
 
+    override fun getDisplayEffectService(): DisplayEffectService = displayEffectService
+
     internal fun shutdown() {
+        displayEffectService.shutdown()
         cosmeticPlatform.shutdown()
     }
 

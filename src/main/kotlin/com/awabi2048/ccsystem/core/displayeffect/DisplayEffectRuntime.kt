@@ -1,11 +1,13 @@
 package com.awabi2048.ccsystem.core.displayeffect
 
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAppearance
+import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectNodeId
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectNodeDefinition
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectFrame
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectSimulation
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectState
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectStepResult
+import java.util.UUID
 
 /**
  * backend固有のEntity UUIDやパケットIDを公開しないための論理ハンドルです。
@@ -18,21 +20,36 @@ internal value class DisplayEffectHandle(val token: Long)
 internal enum class DisplayEffectDisposalReason {
     EXPIRED,
     CANCELLED,
+    OWNER_DISABLED,
     BACKEND_INVALIDATED,
     WORLD_UNAVAILABLE,
     SHUTDOWN,
     FAILED
 }
 
+/** Paper backendが、Entityではなくワールド／chunkの利用不能を通知する例外です。 */
+internal class DisplayEffectWorldUnavailableException(message: String) : IllegalStateException(message)
+
+/**
+ * Entity生成時にbackendへ渡す不変リクエストです。
+ *
+ * nodeIdをappearance/frameと同じリクエストに束ねることで、Paper backendが
+ * 生成したEntityへ所有者情報を記録できます。将来、viewer policyやrender
+ * profileを追加する場合も、Runtimeの引数を増やさずに拡張できます。
+ */
+internal data class DisplayEffectSpawnRequest(
+    val instanceId: UUID,
+    val nodeId: DisplayEffectNodeId,
+    val appearance: DisplayEffectAppearance,
+    val initialFrame: DisplayEffectFrame
+)
+
 /**
  * Display Effectの表示backend契約です。
  * Entity生成・更新・破棄はbackendが担当しますが、寿命と物理状態はRuntimeが所有します。
  */
 internal interface DisplayEffectBackend {
-    fun create(
-        appearance: DisplayEffectAppearance,
-        initialFrame: DisplayEffectFrame
-    ): DisplayEffectHandle
+    fun create(request: DisplayEffectSpawnRequest): DisplayEffectHandle
 
     fun apply(
         handle: DisplayEffectHandle,
@@ -69,7 +86,8 @@ internal sealed interface DisplayEffectRuntimeResult {
  */
 internal class DisplayEffectRuntime(
     private val definition: DisplayEffectNodeDefinition,
-    private val backend: DisplayEffectBackend
+    private val backend: DisplayEffectBackend,
+    private val instanceId: UUID = UUID.randomUUID()
 ) {
     private val simulation = DisplayEffectSimulation(definition.physics)
     private var state: DisplayEffectState = simulation.initialState()
@@ -83,7 +101,14 @@ internal class DisplayEffectRuntime(
             return DisplayEffectRuntimeResult.Ignored
         }
         return try {
-            handle = backend.create(definition.appearance, simulation.frame(state))
+            handle = backend.create(
+                DisplayEffectSpawnRequest(
+                    instanceId = instanceId,
+                    nodeId = definition.nodeId,
+                    appearance = definition.appearance,
+                    initialFrame = simulation.frame(state)
+                )
+            )
             status = DisplayEffectRuntimeStatus.ACTIVE
             DisplayEffectRuntimeResult.Started
         } catch (failure: Throwable) {
@@ -100,7 +125,13 @@ internal class DisplayEffectRuntime(
             ?: return fail(IllegalStateException("Display Effect Runtimeにbackend handleがありません"))
 
         val alive = runCatching { backend.isAlive(currentHandle) }
-            .getOrElse { failure -> return fail(failure) }
+            .getOrElse { failure ->
+                if (failure is DisplayEffectWorldUnavailableException) {
+                    dispose(DisplayEffectDisposalReason.WORLD_UNAVAILABLE)
+                    return DisplayEffectRuntimeResult.Stopped(DisplayEffectDisposalReason.WORLD_UNAVAILABLE)
+                }
+                return fail(failure)
+            }
         if (!alive) {
             dispose(DisplayEffectDisposalReason.BACKEND_INVALIDATED)
             return DisplayEffectRuntimeResult.Stopped(DisplayEffectDisposalReason.BACKEND_INVALIDATED)
@@ -119,7 +150,14 @@ internal class DisplayEffectRuntime(
                 runCatching { backend.apply(currentHandle, result.frame) }
                     .fold(
                         onSuccess = { DisplayEffectRuntimeResult.Advanced },
-                        onFailure = { failure -> fail(failure) }
+                        onFailure = { failure ->
+                            if (failure is DisplayEffectWorldUnavailableException) {
+                                dispose(DisplayEffectDisposalReason.WORLD_UNAVAILABLE)
+                                DisplayEffectRuntimeResult.Stopped(DisplayEffectDisposalReason.WORLD_UNAVAILABLE)
+                            } else {
+                                fail(failure)
+                            }
+                        }
                     )
             }
         }
