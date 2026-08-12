@@ -298,6 +298,7 @@ messages:
   world_operation_locked: §cこのワールドは別の操作を処理中です。完了後にもう一度お試しください。
   migration:
     pending: '§e移行待ちの旧ワールド: {world} ({uuid})'
+    required: §cこのワールドは移行が完了するまで利用できません。
     none_pending: §7移行対象の旧ワールドはありません。
     conflict: '§cワールド {world} の移行を拒否しました。旧構造と現行構造のディレクトリが両方存在します。'
     usage: '§c使用法: /mwm migration execute | status | set-dimension world <UUID> <OVERWORLD|NETHER|END> confirm | template <ID> <OVERWORLD|NETHER|END> confirm'
@@ -313,6 +314,7 @@ messages:
     metadata_pending: '§e一部のメタデータは次元を確定できないため隔離中です: {target} §7({reason})'
     metadata_failed: '§cメタデータ移行に失敗しました: {target} §7({reason})'
     metadata_remaining: §e一部のメタデータは次元を確定できないため隔離中です。statusで詳細を確認してください。
+    incomplete: "§c移行は一部失敗または隔離データを残して終了しました。status で確認してください。"
   seed_spawn:
     corrected: '§e指定スポーンが危険なため、安全な位置 {x}, {y}, {z} に変更しました。'
     safe_location_not_found: §c指定スポーンの周辺に安全な位置が見つからないため、ワープを中止しました。
