@@ -46,6 +46,7 @@ class GestureGuiServiceImpl(
         var revision: Long,
         var state: GestureGuiSessionState,
         var retainedYaw: Float,
+        var targetYaw: Float?,
         var anchorX: Double,
         var anchorZ: Double,
         var appliedYaw: Float,
@@ -84,7 +85,7 @@ class GestureGuiServiceImpl(
             ScreenRuntime(view, pose, renderer.spawnScreen(owner.world, id, revision, pose, view))
         }
         val session = Session(
-            id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw,
+            id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
             owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableMapOf(),
         )
         try {
@@ -221,10 +222,19 @@ class GestureGuiServiceImpl(
                 return@forEach
             }
             val currentHit = hit(session, owner, margin = 0.06)
-            if (currentHit == null) {
-                val delta = shortestYawDelta(session.retainedYaw, owner.location.yaw)
-                // 小さな揺れを無視し、大回転時も画面が瞬間移動しないよう追従量を制限します。
-                if (abs(delta) > 0.35f) session.retainedYaw += delta.coerceIn(-8f, 8f)
+            if (currentHit == null && session.targetYaw == null) {
+                // 画面外へ出た瞬間の移動先を固定します。画面が途中で視線内へ戻っても、
+                // このyawが画面中央へ来るまでは追従を中断しません。
+                session.targetYaw = owner.location.yaw
+            }
+            session.targetYaw?.let { targetYaw ->
+                val delta = shortestYawDelta(session.retainedYaw, targetYaw)
+                if (abs(delta) <= YAW_TARGET_EPSILON) {
+                    session.retainedYaw = targetYaw
+                    session.targetYaw = null
+                } else {
+                    session.retainedYaw += delta.coerceIn(-MAX_YAW_STEP, MAX_YAW_STEP)
+                }
             }
             val eye = owner.eyeLocation
             val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
@@ -367,5 +377,7 @@ class GestureGuiServiceImpl(
         const val ANIMATION_INITIAL_DELAY = 1L
         const val ANIMATION_SECOND_STAGE_DELAY = ANIMATION_INITIAL_DELAY + ANIMATION_STAGE_TICKS + 1L
         const val ANIMATION_COMPLETION_DELAY = ANIMATION_SECOND_STAGE_DELAY + ANIMATION_STAGE_TICKS + 1L
+        const val MAX_YAW_STEP = 8.0f
+        const val YAW_TARGET_EPSILON = 0.05f
     }
 }

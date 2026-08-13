@@ -18,14 +18,14 @@ class GestureGuiGeometryTest {
     }
 
     @Test
-    fun `pose normal connects screen center to player eye`() {
+    fun `pose normal points from player eye to screen center`() {
         val pose = GestureGuiGeometry.poses(GestureGuiVector3(10.0, 64.0, 20.0), 0.0, 1).single()
         val eye = GestureGuiVector3(10.0, 64.0, 20.0)
 
         assertEquals(10.0, pose.center.x, 1.0e-9)
         assertEquals(64.0 - 1.5 * kotlin.math.sin(Math.toRadians(20.0)), pose.center.y, 1.0e-9)
         assertEquals(20.0 + 1.5 * kotlin.math.cos(Math.toRadians(20.0)), pose.center.z, 1.0e-9)
-        val expectedNormal = (eye - pose.center).normalized()
+        val expectedNormal = (pose.center - eye).normalized()
         assertEquals(expectedNormal.x, pose.normal.x, 1.0e-9)
         assertEquals(expectedNormal.y, pose.normal.y, 1.0e-9)
         assertEquals(expectedNormal.z, pose.normal.z, 1.0e-9)
@@ -36,12 +36,12 @@ class GestureGuiGeometryTest {
     @Test
     fun `display rotation follows the screen normal without reversing yaw`() {
         val eastFacingPose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 90.0, 3)[1]
-        // Minecraft yaw +90°は-X向きなので、その手前側を向く画面法線は+X（Display yaw -90°）です。
-        assertEquals(-90.0, GestureGuiGeometry.displayYaw(eastFacingPose).toDouble(), 1.0e-6)
+        // Minecraft yaw +90°は-X向きであり、画面法線も視点から画面へ向く-Xです。
+        assertEquals(90.0, GestureGuiGeometry.displayYaw(eastFacingPose).toDouble(), 1.0e-6)
         assertEquals(0.0, GestureGuiGeometry.displayPitch(eastFacingPose).toDouble(), 1.0e-6)
 
         val lowerPose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 1).single()
-        assertEquals(-20.0, GestureGuiGeometry.displayPitch(lowerPose).toDouble(), 1.0e-6)
+        assertEquals(20.0, GestureGuiGeometry.displayPitch(lowerPose).toDouble(), 1.0e-6)
     }
 
     @Test

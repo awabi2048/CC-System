@@ -48,10 +48,10 @@ object GestureGuiGeometry {
                 -sin(pitch),
                 forward.z * cos(pitch),
             )
-            // normalは画面から開設者の目へ向く正面方向です。rightとの外積から、
-            // 各画面のpitchに沿って傾いた上方向を一意に導出します。
-            val normal = direction * -1.0
-            val up = normal.cross(right).normalized()
+            // Displayのローカル+Zに合わせ、normalは開設者の目から画面中心へ向けます。
+            // right×normalから、各画面のpitchに沿って傾いた上方向を導出します。
+            val normal = direction
+            val up = right.cross(normal).normalized()
             GestureGuiScreenPose(
                 screenIndex = index,
                 centerPitchDegrees = pitchDegrees,
@@ -82,9 +82,10 @@ object GestureGuiGeometry {
         pose: GestureGuiScreenPose,
         definition: GestureGuiScreenDefinition,
     ): GestureGuiHit? {
+        // normalは視点から画面へ向くため、正面からの視線との内積は正になります。
         // 背面からの操作と面に平行な視線を同じ入口で除外します。
         val denominator = direction.dot(pose.normal)
-        if (denominator >= -INTERSECTION_EPSILON) return null
+        if (denominator <= INTERSECTION_EPSILON) return null
 
         val distance = (pose.center - origin).dot(pose.normal) / denominator
         if (distance <= INTERSECTION_EPSILON) return null
