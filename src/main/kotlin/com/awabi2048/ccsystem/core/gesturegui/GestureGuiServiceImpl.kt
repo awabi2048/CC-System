@@ -15,7 +15,9 @@ import com.awabi2048.ccsystem.api.input.PlayerInteractionClaim
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import java.util.UUID
 import org.bukkit.Bukkit
+import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
@@ -128,7 +130,7 @@ class GestureGuiServiceImpl(
     override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean {
         val candidate = sessions.values.asSequence()
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
-            .mapNotNull { session -> hit(session, actor)?.let { session to it } }
+            .mapNotNull { session -> accessibleHit(session, actor)?.let { session to it } }
             .filter { (session, hit) -> session.screens[hit.screenIndex].view.definition.canOperate(session.ownerId, actor.uniqueId) }
             .minByOrNull { (_, hit) -> hit.distance }
             ?: return false
@@ -213,8 +215,16 @@ class GestureGuiServiceImpl(
             }
             session.actors.values.toList().forEach { actor ->
                 val player = Bukkit.getPlayer(actor.playerId)
-                if (player == null || !player.isOnline || player.world.uid != owner.world.uid) removeActor(session, actor.playerId)
-                else renderer.moveCatcher(actor.catcher, catcherLocation(player))
+                if (player == null || !player.isOnline || player.world.uid != owner.world.uid) {
+                    removeActor(session, actor.playerId)
+                } else if (actor.playerId != session.ownerId) {
+                    // 第三者の入力占有は、公開画面を実際に注視している間だけ維持します。
+                    val actorHit = accessibleHit(session, player)
+                    if (actorHit == null) removeActor(session, actor.playerId)
+                    else renderer.moveCatcher(actor.catcher, catcherLocation(player, actorHit.distance))
+                } else {
+                    renderer.moveCatcher(actor.catcher, catcherLocation(player))
+                }
             }
         }
     }
@@ -255,6 +265,24 @@ class GestureGuiServiceImpl(
         session.screens.map { screen -> screen.pose.copy(width = screen.pose.width + margin * 2, height = screen.pose.height + margin * 2) to screen.view.definition },
     )
 
+    private fun accessibleHit(session: Session, player: Player): com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit? {
+        val hit = hit(session, player) ?: return null
+        val screen = session.screens.getOrNull(hit.screenIndex) ?: return null
+        if (!screen.view.definition.canOperate(session.ownerId, player.uniqueId)) return null
+        val maximum = (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
+        if (hit.distance > maximum) return null
+        val eye = player.eyeLocation
+        val block = player.world.rayTraceBlocks(
+            eye,
+            eye.direction,
+            hit.distance,
+            FluidCollisionMode.NEVER,
+            true,
+        )
+        val blockDistance = block?.hitPosition?.distance(eye.toVector())
+        return hit.takeIf { blockDistance == null || blockDistance + 0.01 >= hit.distance }
+    }
+
     private fun ray(player: Player): GestureGuiRay {
         val eye = player.eyeLocation
         val direction = eye.direction
@@ -268,7 +296,8 @@ class GestureGuiServiceImpl(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z), yaw.toDouble(), count
     )
 
-    private fun catcherLocation(player: Player): Location = player.eyeLocation.clone().add(player.eyeLocation.direction.multiply(1.25))
+    private fun catcherLocation(player: Player, hitDistance: Double = 1.25): Location =
+        player.eyeLocation.clone().add(player.eyeLocation.direction.multiply((hitDistance - 0.05).coerceAtLeast(0.1)))
 
     private fun shortestYawDelta(from: Float, to: Float): Float = ((to - from + 540f) % 360f) - 180f
 

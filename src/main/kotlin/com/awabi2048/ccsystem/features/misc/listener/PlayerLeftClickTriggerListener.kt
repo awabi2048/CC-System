@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.api.event.PlayerLeftClickPlayerEvent
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
 import org.bukkit.attribute.Attribute
@@ -23,6 +24,10 @@ class PlayerLeftClickTriggerListener : Listener {
         }
 
         val player = event.player
+        val channel = if (player.isSneaking) PlayerInteractionChannel.SHIFT_PRIMARY else PlayerInteractionChannel.PRIMARY
+        if (CCSystem.getAPI().getPlayerInteractionClaimService().isClaimed(player.uniqueId, channel)) {
+            return
+        }
         val currentTick = Bukkit.getCurrentTick()
         if (lastTriggeredTicks[player.uniqueId] == currentTick) {
             return
