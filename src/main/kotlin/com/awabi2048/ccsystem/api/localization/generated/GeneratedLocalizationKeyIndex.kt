@@ -3,8 +3,8 @@ package com.awabi2048.ccsystem.api.localization.generated
 import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
 /** 生成済みキーとカタログ値型の完全対応をビルド時に検証する索引です。 */
-internal object GeneratedLocalizationKeyIndex {
-    fun all(): List<LocalizationKey<*>> = buildList {
+object GeneratedLocalizationKeyIndex {
+    @JvmStatic fun all(): List<LocalizationKey<*>> = buildList {
         addAll(CommonKeys.all())
         addAll(AnnounceKeys.all())
         addAll(ChanponAdminWizardKeys.all())

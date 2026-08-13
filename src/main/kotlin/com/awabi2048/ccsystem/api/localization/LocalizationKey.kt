@@ -7,12 +7,15 @@ package com.awabi2048.ccsystem.api.localization
 class LocalizationKey<T> private constructor(
     val id: String,
     val valueType: ValueType,
+    val placeholders: Set<String>,
 ) {
     enum class ValueType { TEXT, TEXT_LIST }
 
     companion object {
-        fun text(id: String): LocalizationKey<String> = LocalizationKey(id, ValueType.TEXT)
+        fun text(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<String> =
+            LocalizationKey(id, ValueType.TEXT, placeholders)
 
-        fun textList(id: String): LocalizationKey<List<String>> = LocalizationKey(id, ValueType.TEXT_LIST)
+        fun textList(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<List<String>> =
+            LocalizationKey(id, ValueType.TEXT_LIST, placeholders)
     }
 }

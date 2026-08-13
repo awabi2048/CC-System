@@ -69,6 +69,10 @@ object EmbeddedLocalizationCatalog {
                 if (!matches) {
                     errors += "型付きキーとカタログ値型が一致しません: locale=$locale key=${key.id} expected=${key.valueType}"
                 }
+                val actualPlaceholders = value?.let(::placeholders).orEmpty()
+                if (actualPlaceholders != key.placeholders) {
+                    errors += "型付きキーとカタログのプレースホルダーが一致しません: locale=$locale key=${key.id} expected=${key.placeholders} actual=$actualPlaceholders"
+                }
             }
         }
         val catalogKeys = entriesByLocale["ja_jp"].orEmpty().keys

@@ -1,7 +1,0 @@
-custom_messages:
-  example_message:
-    style: random
-    texts:
-    - §aメッセージ例1
-    - §bメッセージ例2
-    - §cメッセージ例3
