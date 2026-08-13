@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
 
 class UnifiedManagementCommand(
     private val displayParticleCountProvider: () -> Int
@@ -48,26 +49,47 @@ class UnifiedManagementCommand(
         }
         if (args.size == 1) {
             val used = displayParticleCountProvider()
-            val limit = ConfigManager.getDisplayParticleLimit()
-            sender.sendMessage(message(sender, "management.particle.status", mapOf("used" to used, "limit" to limit, "remaining" to (limit - used).coerceAtLeast(0))))
+            sender.sendMessage(message(sender, "management.particle.status_header", mapOf("used" to used)))
+            DisplayParticleLimitType.entries.forEach { type -> sender.sendMessage(limitStatus(sender, type)) }
             return true
         }
-        if (args.size != 3 || !args[1].equals("set", true)) {
+        val type = DisplayParticleLimitType.fromCommandName(args[1])
+        if (type == null) {
             sender.sendMessage(message(sender, "management.particle.usage"))
             return true
         }
-        val limit = args[2].toIntOrNull()
-        if (limit == null || limit !in 1..4096) {
-            sender.sendMessage(message(sender, "management.particle.invalid_limit"))
+        if (args.size == 2) {
+            sender.sendMessage(limitStatus(sender, type))
             return true
         }
-        if (!ConfigManager.setDisplayParticleLimit(limit)) {
+        if (args.size != 4 || !args[2].equals("set", true)) {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        val limit = args[3].toIntOrNull()
+        if (limit == null || limit !in type.allowedRange) {
+            sender.sendMessage(message(sender, "management.particle.invalid_limit", limitPlaceholders(type)))
+            return true
+        }
+        if (!ConfigManager.setDisplayParticleLimit(type, limit)) {
             sender.sendMessage(message(sender, "management.particle.save_failed"))
             return true
         }
-        sender.sendMessage(message(sender, "management.particle.changed", mapOf("limit" to limit, "used" to displayParticleCountProvider())))
+        sender.sendMessage(message(sender, "management.particle.changed", limitPlaceholders(type) + ("limit" to limit)))
         return true
     }
+
+    private fun limitStatus(sender: CommandSender, type: DisplayParticleLimitType): String = message(
+        sender,
+        "management.particle.status_line",
+        limitPlaceholders(type) + ("limit" to ConfigManager.getDisplayParticleLimit(type))
+    )
+
+    private fun limitPlaceholders(type: DisplayParticleLimitType): Map<String, Any> = mapOf(
+        "type" to type.commandName,
+        "minimum" to type.allowedRange.first,
+        "maximum" to type.allowedRange.last
+    )
 
     private fun handleConfig(sender: CommandSender, args: List<String>): Boolean {
         if (!hasPermission(sender, "cc.command.config")) {
@@ -251,8 +273,11 @@ class UnifiedManagementCommand(
             }
             "particle" -> when (args.size) {
                 2 -> filter(listOf("limit"), input)
-                3 -> if (args.getOrNull(1).equals("limit", true)) filter(listOf("set"), input) else emptyList()
-                4 -> if (args.getOrNull(2).equals("set", true)) filter(listOf("128", "256", "512", "1024"), input) else emptyList()
+                3 -> if (args.getOrNull(1).equals("limit", true)) filter(DisplayParticleLimitType.entries.map { it.commandName }, input) else emptyList()
+                4 -> if (DisplayParticleLimitType.fromCommandName(args.getOrNull(2).orEmpty()) != null) filter(listOf("set"), input) else emptyList()
+                5 -> if (args.getOrNull(3).equals("set", true)) {
+                    filter(limitSuggestions(DisplayParticleLimitType.fromCommandName(args.getOrNull(2).orEmpty())), input)
+                } else emptyList()
                 else -> emptyList()
             }
             else -> emptyList()
@@ -270,6 +295,14 @@ class UnifiedManagementCommand(
 
     private fun filter(values: Collection<String>, input: String): List<String> =
         values.filter { it.startsWith(input, ignoreCase = true) }.sorted()
+
+    private fun limitSuggestions(type: DisplayParticleLimitType?): List<String> = when (type) {
+        DisplayParticleLimitType.GLOBAL -> listOf("128", "256", "512", "1024")
+        DisplayParticleLimitType.OWNER -> listOf("32", "64", "128", "256")
+        DisplayParticleLimitType.PER_TICK -> listOf("16", "32", "64", "128")
+        DisplayParticleLimitType.EMISSION -> listOf("1", "8", "16", "32")
+        null -> emptyList()
+    }
 
     private fun message(
         sender: CommandSender,

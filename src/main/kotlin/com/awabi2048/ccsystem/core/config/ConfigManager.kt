@@ -29,7 +29,7 @@ object ConfigManager {
     private lateinit var coreConfig: YamlConfiguration
     private lateinit var displayEffectConfigFile: File
     private lateinit var displayEffectConfig: YamlConfiguration
-    private var displayParticleLimit: Int = 512
+    private val displayParticleLimits = DisplayParticleLimitType.entries.associateWith { it.defaultValue }.toMutableMap()
 
     // === 機能トグル ===
     private var featureResourceWorldEnabled: Boolean = true
@@ -211,8 +211,12 @@ object ConfigManager {
         loadResourceWorldSettings(resourceWorld)
         loadAnnounceSettings(announce)
         loadQueueSettings(queue)
-        displayParticleLimit = displayEffect.getInt("particle.max_active", 512).also {
-            require(it in 1..4096) { "particle.max_activeは1..4096で指定してください: $it" }
+        DisplayParticleLimitType.entries.forEach { type ->
+            displayParticleLimits[type] = displayEffect.getInt(type.configPath, type.defaultValue).also { value ->
+                require(value in type.allowedRange) {
+                    "${type.configPath}は${type.allowedRange.first}..${type.allowedRange.last}で指定してください: $value"
+                }
+            }
         }
     }
 
@@ -580,19 +584,25 @@ object ConfigManager {
     fun getDefaultLanguage(): String = defaultLanguage
     fun getLanguage(): String = defaultLanguage
     fun isDebug(): Boolean = debug
-    fun getDisplayParticleLimit(): Int = displayParticleLimit
+    internal fun getDisplayParticleLimit(type: DisplayParticleLimitType = DisplayParticleLimitType.GLOBAL): Int =
+        requireNotNull(displayParticleLimits[type]) { "Displayパーティクル制限が初期化されていません: $type" }
 
     /** 保存成功後にだけ実行値を切り替え、ディスクとメモリの不一致を防ぎます。 */
-    fun setDisplayParticleLimit(limit: Int): Boolean {
-        require(limit in 1..4096) { "Displayパーティクル上限は1..4096です" }
+    internal fun setDisplayParticleLimit(type: DisplayParticleLimitType, limit: Int): Boolean {
+        require(limit in type.allowedRange) {
+            "${type.commandName}上限は${type.allowedRange.first}..${type.allowedRange.last}です"
+        }
         if (!::displayEffectConfig.isInitialized || !::displayEffectConfigFile.isInitialized) return false
-        displayEffectConfig.set("particle.max_active", limit)
+        val previous = displayEffectConfig.get(type.configPath)
+        displayEffectConfig.set(type.configPath, limit)
         return runCatching {
             displayEffectConfig.save(displayEffectConfigFile)
-            displayParticleLimit = limit
+            displayParticleLimits[type] = limit
             true
         }.getOrElse {
-            CCSystem.instance.logger.warning("particle.max_activeの保存に失敗しました: ${it.message}")
+            // 次回の保存で未反映値が混入しないよう、インメモリYAMLも保存前へ戻します。
+            displayEffectConfig.set(type.configPath, previous)
+            CCSystem.instance.logger.warning("${type.configPath}の保存に失敗しました: ${it.message}")
             false
         }
     }

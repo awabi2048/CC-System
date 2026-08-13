@@ -24,6 +24,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
 import java.util.UUID
 import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
 
 /** CC-SystemのメインスレッドでDisplay Effect Runtime群を進行させるサービスです。 */
 internal class DisplayEffectServiceImpl(
@@ -170,16 +171,26 @@ internal class DisplayEffectServiceImpl(
         }
 
         val entityCost = request.count
+        if (entityCost > ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.EMISSION)) {
+            return DisplayEffectStartResult.Rejected(
+                DisplayEffectStartRejection.CAPACITY_EXCEEDED,
+                "1回のDisplayパーティクル放出上限を超えます: required=$entityCost " +
+                    "limit=${ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.EMISSION)}"
+            )
+        }
         val ownerEntityCount = activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.runtime.liveEntityCount }
         val totalEntityCount = currentDisplayParticleCount()
         val tickCount = startsThisTick[owner] ?: 0
-        if (totalEntityCount + entityCost > ConfigManager.getDisplayParticleLimit() ||
-            ownerEntityCount + entityCost > MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER ||
-            tickCount + entityCost > MAX_SPAWNED_DISPLAY_ENTITIES_PER_TICK_PER_OWNER
+        if (totalEntityCount + entityCost > ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.GLOBAL) ||
+            ownerEntityCount + entityCost > ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.OWNER) ||
+            tickCount + entityCost > ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.PER_TICK)
         ) {
             return DisplayEffectStartResult.Rejected(
                 DisplayEffectStartRejection.CAPACITY_EXCEEDED,
-                "Displayパーティクル上限を超えます: required=$entityCost active=$totalEntityCount limit=${ConfigManager.getDisplayParticleLimit()}"
+                "Displayパーティクル上限を超えます: required=$entityCost active=$totalEntityCount " +
+                    "global=${ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.GLOBAL)} " +
+                    "owner=${ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.OWNER)} " +
+                    "perTick=${ConfigManager.getDisplayParticleLimit(DisplayParticleLimitType.PER_TICK)}"
             )
         }
 
@@ -404,8 +415,8 @@ internal class DisplayEffectServiceImpl(
         private const val MAX_ACTIVE_EFFECTS = 512
         private const val MAX_ACTIVE_EFFECTS_PER_OWNER = 128
         private const val MAX_STARTS_PER_TICK_PER_OWNER = 32
+        // 通常Display Effect向けの防御上限です。パーティクルのowner制限とは独立に維持します。
         private const val MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER = 128
-        private const val MAX_SPAWNED_DISPLAY_ENTITIES_PER_TICK_PER_OWNER = 64
         private const val NORMAL_VIEW_DISTANCE_SQUARED = 32.0 * 32.0
     }
 }

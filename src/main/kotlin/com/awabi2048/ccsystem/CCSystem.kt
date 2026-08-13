@@ -342,7 +342,10 @@ class CCSystem : JavaPlugin() {
             "config/display_effect.yml"
         )
         val specs = paths.map { resourcePath ->
-            val currentVersion = if (resourcePath == "config/misc.yml") 2 else 1
+            val currentVersion = when (resourcePath) {
+                "config/misc.yml", "config/display_effect.yml" -> 2
+                else -> 1
+            }
             ManagedConfigSpec(
                 owner = "cc-system",
                 sourcePlugin = this,
@@ -350,8 +353,8 @@ class CCSystem : JavaPlugin() {
                 targetPath = File(dataFolder, resourcePath).toPath(),
                 currentVersion = currentVersion,
                 classification = ConfigClassification.MANAGED_CONFIG,
-                migrations = if (resourcePath == "config/misc.yml") {
-                    mapOf(
+                migrations = when (resourcePath) {
+                    "config/misc.yml" -> mapOf(
                         1 to ConfigMigration { configuration ->
                             val worlds = configuration.getConfigurationSection("music.worlds")
                             worlds?.getKeys(false)
@@ -365,8 +368,18 @@ class CCSystem : JavaPlugin() {
                                 }
                         }
                     )
-                } else {
-                    emptyMap()
+                    "config/display_effect.yml" -> mapOf(
+                        1 to ConfigMigration { configuration ->
+                            // 既存の全体上限は維持し、新しい制限だけを安全な初期値で追加します。
+                            mapOf(
+                                "particle.max_active_per_owner" to 128,
+                                "particle.max_spawned_per_tick_per_owner" to 64,
+                                "particle.max_per_emission" to 32
+                            ).filterKeys { !configuration.contains(it) }
+                                .forEach(configuration::set)
+                        }
+                    )
+                    else -> emptyMap()
                 },
                 validator = com.awabi2048.ccsystem.api.config.ConfigValidator {},
                 reloadAction = {

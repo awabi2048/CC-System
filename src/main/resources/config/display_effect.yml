@@ -1,4 +1,7 @@
 particle:
-  # `/cc particle limit set`で変更される、Displayパーティクル専用の同時存在上限です。
+  # `/cc particle limit <種類> set <値>` で変更されるDisplayパーティクル専用の運用上限です。
   max_active: 512
-config_version: 1
+  max_active_per_owner: 128
+  max_spawned_per_tick_per_owner: 64
+  max_per_emission: 32
+config_version: 2

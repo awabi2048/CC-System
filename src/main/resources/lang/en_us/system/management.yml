@@ -19,8 +19,9 @@ management:
     success: "§aOpened {menu} for {player}."
     failed: "§cCould not open {menu} for {player}."
   particle:
-    usage: "§eUsage: /cc particle limit [set <1..4096>]"
-    status: "§eDisplay particles: {used} active / {limit} limit / {remaining} remaining"
-    invalid_limit: "§cSpecify an integer limit from 1 to 4096."
+    usage: "§eUsage: /cc particle limit [global|owner|per-tick|emission] [set <value>]"
+    status_header: "§eDisplay particle limits ({used} currently active)"
+    status_line: "§7- {type}: §f{limit} §8(range: {minimum}–{maximum})"
+    invalid_limit: "§cSpecify {type} as an integer from {minimum} to {maximum}."
     save_failed: "§cCould not save the Display particle limit."
-    changed: "§aChanged the Display particle limit to {limit}. Currently active: {used}"
+    changed: "§aChanged Display particle limit {type} to {limit}."
