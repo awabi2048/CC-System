@@ -48,18 +48,35 @@ class DisplayParticleBookJsonParserTest {
     }
 
     @Test
-    fun `同一ページの複数項目と項目の重複を拒否する`() {
-        assertThrows(IllegalArgumentException::class.java) {
-            DisplayParticleBookJsonParser.parsePages(
-                DisplayParticleBookSample.pages.toMutableList().also {
-                    it[0] = it[0] + "," + it[1]
-                    it.removeAt(1)
-                }
-            )
-        }
+    fun `項目の重複を拒否する`() {
         assertThrows(IllegalArgumentException::class.java) {
             DisplayParticleBookJsonParser.parsePages(DisplayParticleBookSample.pages.toMutableList().also { it[1] = it[0] })
         }
+    }
+
+    @Test
+    fun `ページ項目の外側にある文字列を破棄する`() {
+        val decorated = DisplayParticleBookSample.pages.mapIndexed { index, page ->
+            "ページ${index + 1} \"memo\":{\"ignored\":true} $page この外側は無視"
+        }
+
+        val parsed = DisplayParticleBookJsonParser.parsePages(decorated)
+
+        assertEquals(4, parsed.request.count)
+    }
+
+    @Test
+    fun `文字列値が不正な場合は使用可能な候補を返す`() {
+        val pages = DisplayParticleBookSample.pages.toMutableList().also {
+            it[4] = it[4].replace("\"burst\"", "\"unknown\"")
+        }
+
+        val failure = assertThrows(DisplayParticleBookStringChoiceException::class.java) {
+            DisplayParticleBookJsonParser.parsePages(pages)
+        }
+
+        assertEquals("motion.preset", failure.field)
+        assertTrue(failure.choices.any { it.value == "burst" })
     }
 
     private fun validJson() = """

@@ -47,11 +47,15 @@ internal class UnifiedManagementCommand(
             return true
         }
         val player = sender as? Player
-        if (player == null || args.size != 1 || !args[0].equals("toggle_particle_test", ignoreCase = true)) {
+        if (player == null || args.size != 1) {
             sender.sendMessage(message(sender, "management.debug.usage"))
             return true
         }
-        displayParticleBookTestController.toggle(player)
+        when (args[0].lowercase()) {
+            "toggle_particle_test" -> displayParticleBookTestController.toggle(player)
+            "particle_test_guide" -> displayParticleBookTestController.showGuide(player)
+            else -> sender.sendMessage(message(sender, "management.debug.usage"))
+        }
         return true
     }
 
@@ -297,7 +301,9 @@ internal class UnifiedManagementCommand(
                 } else emptyList()
                 else -> emptyList()
             }
-            "debug" -> if (args.size == 2) filter(listOf("toggle_particle_test"), input) else emptyList()
+            "debug" -> if (args.size == 2) {
+                filter(listOf("toggle_particle_test", "particle_test_guide"), input)
+            } else emptyList()
             else -> emptyList()
         }
     }

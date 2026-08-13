@@ -13,6 +13,18 @@ import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleVisibilityMode
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import org.bukkit.Material
+
+internal data class DisplayParticleBookStringChoice(
+    val value: String,
+    val descriptionKey: String
+)
+
+internal class DisplayParticleBookStringChoiceException(
+    val field: String,
+    val choices: List<DisplayParticleBookStringChoice>,
+    message: String
+) : IllegalArgumentException(message)
 
 internal data class ParsedDisplayParticleBook(
     val preset: DisplayParticlePreset,
@@ -26,12 +38,14 @@ internal object DisplayParticleBookJsonParser {
      * 各ページを外側の波括弧を持たないトップレベル項目として検証し、
      * ページ間に空白を加えず単一のJSONオブジェクトへ組み立てます。
      */
-    fun parsePages(pages: List<String>): ParsedDisplayParticleBook {
+    fun parsePages(
+        pages: List<String>,
+        blockChoices: List<DisplayParticleBookStringChoice> = emptyList()
+    ): ParsedDisplayParticleBook {
         require(pages.isNotEmpty()) { "JSONページがありません" }
         val seenKeys = mutableSetOf<String>()
         val fragments = pages.mapIndexed { index, page ->
-            val fragment = page.trim()
-            require(fragment.isNotEmpty()) { "${index + 1}ページ目が空です" }
+            val fragment = extractTopLevelFragment(page, index + 1)
             val pageObject = JsonParser.parseString("{$fragment}").objectValue("${index + 1}ページ目")
             require(pageObject.size() == 1) { "${index + 1}ページ目には項目を1つだけ記述してください" }
             val key = pageObject.keySet().single()
@@ -47,10 +61,13 @@ internal object DisplayParticleBookJsonParser {
                 if (unknown.isNotEmpty()) append("未対応項目: ${unknown.sorted().joinToString()}")
             }
         }
-        return parse("{${fragments.joinToString(",")}}")
+        return parse("{${fragments.joinToString(",")}}", blockChoices)
     }
 
-    fun parse(json: String): ParsedDisplayParticleBook {
+    fun parse(
+        json: String,
+        blockChoices: List<DisplayParticleBookStringChoice> = emptyList()
+    ): ParsedDisplayParticleBook {
         require(json.toByteArray(Charsets.UTF_8).size <= MAX_JSON_BYTES) { "JSONは${MAX_JSON_BYTES}byte以内です" }
         val root = JsonParser.parseString(json).objectValue("root")
         root.requireOnly("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission")
@@ -80,7 +97,7 @@ internal object DisplayParticleBookJsonParser {
             root.requiredArray("textures").mapIndexed { index, element ->
                 val texture = element.objectValue("textures[$index]").also { it.requireOnly("block", "weight") }
                 DisplayParticleTexture(
-                    DisplayEffectAssetId(texture.requiredString("block")),
+                    DisplayEffectAssetId(texture.requiredBlockId("block", blockChoices)),
                     texture.requiredInt("weight")
                 )
             },
@@ -100,10 +117,16 @@ internal object DisplayParticleBookJsonParser {
             lifetime.requiredInt("spawn_delay")
         )
 
-        val collisionMode = enumValue<DisplayParticleCollisionMode>(collision.requiredString("mode"), "collision.mode")
+        val collisionMode = choiceEnumValue<DisplayParticleCollisionMode>(
+            collision.requiredString("mode"),
+            "collision.mode",
+            "management.debug.particle_test_choice.collision"
+        )
+        val motionPresetId = DisplayParticleMotionPresetId(namespaced(motion.requiredString("preset")))
+        requireMotionPreset(motionPresetId)
         val request = DisplayParticleEmissionRequest(
             presetId = DisplayParticlePresetId(TRANSIENT_PRESET_ID),
-            motionPresetId = DisplayParticleMotionPresetId(namespaced(motion.requiredString("preset"))),
+            motionPresetId = motionPresetId,
             collisionMode = collisionMode,
             motionProperties = DisplayParticleMotionProperties(
                 initialVelocity = motion.optionalVector("initial_velocity"),
@@ -122,7 +145,11 @@ internal object DisplayParticleBookJsonParser {
             delta = emission.requiredVector("delta"),
             speed = emission.requiredDouble("speed"),
             count = emission.requiredInt("count"),
-            visibilityMode = enumValue(emission.requiredString("visibility"), "emission.visibility")
+            visibilityMode = choiceEnumValue(
+                emission.requiredString("visibility"),
+                "emission.visibility",
+                "management.debug.particle_test_choice.visibility"
+            )
         )
         // 動作ごとの無効プロパティも、本をクリックする前と同じ検証規則で確定させます。
         DisplayParticleMotionCatalog.resolve(
@@ -150,6 +177,22 @@ internal object DisplayParticleBookJsonParser {
     private fun JsonObject.requiredString(name: String) = required(name).let {
         require(it.isJsonPrimitive && it.asJsonPrimitive.isString) { "${name}は文字列です" }
         it.asString
+    }
+    private fun JsonObject.requiredBlockId(
+        name: String,
+        blockChoices: List<DisplayParticleBookStringChoice>
+    ): String {
+        val value = namespaced(requiredString(name))
+        val syntacticallyValid = MINECRAFT_BLOCK_ID_PATTERN.matches(value)
+        if (!syntacticallyValid || blockChoices.isNotEmpty() && blockChoices.none { it.value == value }) {
+            throw DisplayParticleBookStringChoiceException(
+                "textures.$name",
+                // Materialは数が多くチャットを埋めるため、候補一覧には表示しません。
+                emptyList(),
+                "textures.$name が不正です: $value"
+            )
+        }
+        return value
     }
     private fun JsonObject.requiredBoolean(name: String) = required(name).let {
         require(it.isJsonPrimitive && it.asJsonPrimitive.isBoolean) { "${name}は真偽値です" }
@@ -187,12 +230,92 @@ internal object DisplayParticleBookJsonParser {
             asJsonArray[2].numberValue("$name[2]")
         )
     }
-    private inline fun <reified T : Enum<T>> enumValue(value: String, name: String): T =
-        enumValues<T>().firstOrNull { it.name.equals(value, ignoreCase = true) }
-            ?: throw IllegalArgumentException("${name}が不正です: $value")
+    private inline fun <reified T : Enum<T>> choiceEnumValue(
+        value: String,
+        name: String,
+        descriptionKeyPrefix: String
+    ): T = enumValues<T>().firstOrNull { it.name.equals(value, ignoreCase = true) }
+        ?: throw DisplayParticleBookStringChoiceException(
+            name,
+            enumValues<T>().map {
+                DisplayParticleBookStringChoice(it.name.lowercase(), "$descriptionKeyPrefix.${it.name.lowercase()}")
+            },
+            "$name が不正です: $value"
+        )
+
+    private fun requireMotionPreset(id: DisplayParticleMotionPresetId) {
+        if (DisplayParticleMotionCatalog.list().none { it.id == id.value }) {
+            throw DisplayParticleBookStringChoiceException(
+                "motion.preset",
+                DisplayParticleMotionCatalog.list().map {
+                    val value = it.id.substringAfter(':')
+                    DisplayParticleBookStringChoice(value, "management.debug.particle_test_choice.motion.$value")
+                },
+                "motion.preset が不正です: ${id.value}"
+            )
+        }
+    }
+
+    /** ページ外周のメモ等を捨て、最初のJSON項目と対応する配列・オブジェクトだけを抽出します。 */
+    private fun extractTopLevelFragment(page: String, pageNumber: Int): String {
+        val match = TOP_LEVEL_FIELD_PATTERN.find(page)
+            ?: throw IllegalArgumentException("${pageNumber}ページ目にJSON項目がありません")
+        val valueStart = page.indexOfFirstFrom(match.range.last + 1) { !it.isWhitespace() }
+        require(valueStart >= 0 && page[valueStart] in charArrayOf('{', '[')) {
+            "${pageNumber}ページ目のJSON値はオブジェクトまたは配列で記述してください"
+        }
+        val closing = if (page[valueStart] == '{') '}' else ']'
+        var depth = 0
+        var inString = false
+        var escaped = false
+        for (index in valueStart until page.length) {
+            val character = page[index]
+            if (inString) {
+                when {
+                    escaped -> escaped = false
+                    character == '\\' -> escaped = true
+                    character == '"' -> inString = false
+                }
+                continue
+            }
+            when (character) {
+                '"' -> inString = true
+                page[valueStart] -> depth++
+                closing -> {
+                    depth--
+                    if (depth == 0) return page.substring(match.range.first, index + 1)
+                }
+            }
+        }
+        throw IllegalArgumentException("${pageNumber}ページ目のJSON値が閉じられていません")
+    }
+
+    private inline fun String.indexOfFirstFrom(startIndex: Int, predicate: (Char) -> Boolean): Int {
+        for (index in startIndex until length) if (predicate(this[index])) return index
+        return -1
+    }
     private fun namespaced(value: String) = if (':' in value) value else "cc:$value"
 
     private const val TRANSIENT_PRESET_ID = "cc:book-test"
     private const val MAX_JSON_BYTES = 16_384
     private val TOP_LEVEL_FIELDS = setOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission")
+    private val TOP_LEVEL_FIELD_PATTERN = Regex(
+        "\\\"(?:${TOP_LEVEL_FIELDS.joinToString("|")})\\\"\\s*:"
+    )
+    private val MINECRAFT_BLOCK_ID_PATTERN = Regex("minecraft:[a-z0-9_./-]+")
+
+    /** Bukkit Registryが利用可能なサーバー起動後にだけ呼び出します。 */
+    fun availableBlockChoices(): List<DisplayParticleBookStringChoice> = Material.entries.asSequence()
+        .filter { material ->
+            material.isBlock && material != Material.AIR && !material.isLegacy &&
+                runCatching(material::createBlockData).isSuccess
+        }
+        .map {
+            DisplayParticleBookStringChoice(
+                "minecraft:${it.key.key}",
+                "management.debug.particle_test_choice.block"
+            )
+        }
+        .sortedBy(DisplayParticleBookStringChoice::value)
+        .toList()
 }
