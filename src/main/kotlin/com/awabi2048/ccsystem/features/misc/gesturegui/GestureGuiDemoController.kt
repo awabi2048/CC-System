@@ -38,7 +38,7 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                     text = label(owner, gesture),
                     x = centerX,
                     y = 0.06,
-                    scale = 0.006,
+                    size = 0.006,
                     lineWidth = 100,
                 ),
                 targetVisualId = "icon-${gesture.name}",
@@ -51,7 +51,7 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                 text = text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION),
                 x = 0.0,
                 y = 0.10,
-                scale = 0.005,
+                size = 0.005,
             ),
             targetVisualId = "title",
         )
@@ -62,8 +62,8 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                     Bukkit.createBlockData(Material.BLACK_CONCRETE), background = true,
                 )
             )
-            add(GestureGuiVisual.Text("title", 0.0, 0.27, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_TITLE), scale = 0.010))
-            add(GestureGuiVisual.Text("description", 0.0, 0.15, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION), scale = 0.0065))
+            add(GestureGuiVisual.Text("title", 0.0, 0.27, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_TITLE), size = 0.010))
+            add(GestureGuiVisual.Text("description", 0.0, 0.15, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION), size = 0.0065))
             gestures.forEachIndexed { column, gesture ->
                 val centerX = startX + column * 0.30
                 add(
@@ -74,9 +74,9 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                     )
                 )
                 add(GestureGuiVisual.Item("icon-${gesture.name}", centerX, -0.09, ItemStack(icon(gesture)), scale = 0.14))
-                add(GestureGuiVisual.Text("label-${gesture.name}", centerX, -0.23, label(owner, gesture), scale = 0.0045, lineWidth = 70))
+                add(GestureGuiVisual.Text("label-${gesture.name}", centerX, -0.23, label(owner, gesture), size = 0.0045, lineWidth = 70))
             }
-            add(GestureGuiVisual.Text("exit", 0.0, -0.33, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), scale = 0.005))
+            add(GestureGuiVisual.Text("exit", 0.0, -0.33, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), size = 0.005))
         }
         return GestureGuiView(
             GestureGuiScreenDefinition("demo-$index", elements, access = GestureGuiAccess.PUBLIC),

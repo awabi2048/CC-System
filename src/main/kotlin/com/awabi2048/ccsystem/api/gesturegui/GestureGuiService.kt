@@ -36,7 +36,8 @@ sealed interface GestureGuiVisual {
         override val x: Double,
         override val y: Double,
         val text: Component,
-        val scale: Double = 0.0125,
+        /** 画面上の論理文字サイズです。rendererがTextDisplay用の倍率へ変換します。 */
+        val size: Double = 0.0125,
         val lineWidth: Int = 160,
         override val layer: Int = 20,
         val seeThrough: Boolean = false,
@@ -44,7 +45,7 @@ sealed interface GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
-            require(scale > 0.0) { "gesture GUI text scale must be positive" }
+            require(size > 0.0) { "gesture GUI text size must be positive" }
             require(lineWidth > 0) { "gesture GUI text lineWidth must be positive" }
         }
     }

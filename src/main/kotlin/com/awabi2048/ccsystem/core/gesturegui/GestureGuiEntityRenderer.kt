@@ -126,11 +126,15 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.lineWidth = hover.lineWidth
             it.isSeeThrough = false
             it.alignment = TextDisplay.TextAlignment.CENTER
-            val scale = hover.scale.toFloat()
+            val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
             mark(it, sessionId, revision)
         }
-        player.showEntity(plugin, entity)
+        // isVisibleByDefault=falseの実体はtracking開始後に個別表示します。同一tickのshowは
+        // クライアントへspawn packetが送られる前に消費される実装差があるため、次tickへ分離します。
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            if (player.isOnline && entity.isValid) player.showEntity(plugin, entity)
+        })
         return HoverHandle(player.uniqueId, entity)
     }
 
@@ -165,7 +169,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.lineWidth = visual.lineWidth
             it.isSeeThrough = visual.seeThrough
             it.alignment = TextDisplay.TextAlignment.CENTER
-            val scale = visual.scale.toFloat()
+            val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
         }
 
@@ -194,7 +198,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     private fun blockTransform(width: Float, height: Float) = Transformation(
         Vector3f(-width / 2f, -height / 2f, 0f),
         AxisAngle4f(),
-        Vector3f(width, height, 0.0125f),
+        Vector3f(width, height, BLOCK_NORMAL_DEPTH),
         AxisAngle4f(),
     )
 
@@ -223,6 +227,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     private companion object {
-        const val LAYER_DEPTH = 0.003
+        // 斜め視点の深度量子化でも隣接レイヤーが重ならないよう、従来値の5/3倍を確保します。
+        const val LAYER_DEPTH = 0.005
+        // パネルの画面法線方向の厚みは従来値の約2倍です。
+        const val BLOCK_NORMAL_DEPTH = 0.025f
     }
 }

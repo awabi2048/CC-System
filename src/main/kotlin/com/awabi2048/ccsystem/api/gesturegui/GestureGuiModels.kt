@@ -63,13 +63,14 @@ data class GestureGuiHoverText(
     val text: Component,
     val x: Double,
     val y: Double,
-    val scale: Double = 0.006,
+    /** 画面上の文字サイズです。通常テキストと同じ規則でTextDisplay用の倍率へ変換されます。 */
+    val size: Double = 0.006,
     val lineWidth: Int = 160,
     val layer: Int = 30,
 ) {
     init {
         require(x.isFinite() && y.isFinite()) { "gesture GUI hover position must be finite" }
-        require(scale > 0.0) { "gesture GUI hover scale must be positive" }
+        require(size > 0.0) { "gesture GUI hover size must be positive" }
         require(lineWidth > 0) { "gesture GUI hover lineWidth must be positive" }
         require(layer > 0) { "gesture GUI hover layer must be in front of the background" }
     }
