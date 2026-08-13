@@ -48,10 +48,13 @@ class DisplayParticleBookJsonParserTest {
     }
 
     @Test
-    fun `項目の重複を拒否する`() {
-        assertThrows(IllegalArgumentException::class.java) {
-            DisplayParticleBookJsonParser.parsePages(DisplayParticleBookSample.pages.toMutableList().also { it[1] = it[0] })
-        }
+    fun `項目の重複を削除が必要な修正として返す`() {
+        val prepared = DisplayParticleBookJsonParser.preparePages(
+            DisplayParticleBookSample.pages.toMutableList().also { it[1] = it[0] }
+        )
+
+        assertTrue("textures(duplicate)" in prepared.removedPaths)
+        assertTrue("scale" in prepared.addedPaths)
     }
 
     @Test
@@ -77,6 +80,34 @@ class DisplayParticleBookJsonParserTest {
 
         assertEquals("motion.preset", failure.field)
         assertTrue(failure.choices.any { it.value == "burst" })
+    }
+
+    @Test
+    fun `不足項目をサンプル値で補完する`() {
+        val incomplete = DisplayParticleBookSample.pages.dropLast(1).toMutableList().also {
+            it[1] = "\"scale\":{\"initial\":0.05}"
+        }
+
+        val prepared = DisplayParticleBookJsonParser.preparePages(incomplete)
+
+        assertTrue("emission" in prepared.addedPaths)
+        assertTrue("scale.peak" in prepared.addedPaths)
+        assertTrue(prepared.removedPaths.isEmpty())
+        assertEquals(7, prepared.pages.size)
+    }
+
+    @Test
+    fun `削除を伴う修正を保留情報として返す`() {
+        val decorated = DisplayParticleBookSample.pages.toMutableList().also {
+            it[1] = "前置き ${it[1]} 後置き"
+            it[2] = it[2].replace("}", ",\"unknown\":1}")
+        }
+
+        val prepared = DisplayParticleBookJsonParser.preparePages(decorated)
+
+        assertTrue(prepared.removedPaths.any { it.endsWith(".outside") })
+        assertTrue("rotation.unknown" in prepared.removedPaths)
+        assertEquals(7, prepared.pages.size)
     }
 
     private fun validJson() = """

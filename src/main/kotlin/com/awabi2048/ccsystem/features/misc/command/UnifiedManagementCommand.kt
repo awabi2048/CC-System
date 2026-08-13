@@ -47,13 +47,15 @@ internal class UnifiedManagementCommand(
             return true
         }
         val player = sender as? Player
-        if (player == null || args.size != 1) {
+        if (player == null || args.isEmpty()) {
             sender.sendMessage(message(sender, "management.debug.usage"))
             return true
         }
         when (args[0].lowercase()) {
             "toggle_particle_test" -> displayParticleBookTestController.toggle(player)
-            "particle_test_guide" -> displayParticleBookTestController.showGuide(player)
+            "particle_test_guide" -> displayParticleBookTestController.showGuide(player, args.getOrNull(1))
+            "apply_particle_book_fix" -> args.getOrNull(1)?.let { displayParticleBookTestController.applyPendingFix(player, it) }
+                ?: sender.sendMessage(message(sender, "management.debug.usage"))
             else -> sender.sendMessage(message(sender, "management.debug.usage"))
         }
         return true
@@ -301,9 +303,13 @@ internal class UnifiedManagementCommand(
                 } else emptyList()
                 else -> emptyList()
             }
-            "debug" -> if (args.size == 2) {
-                filter(listOf("toggle_particle_test", "particle_test_guide"), input)
-            } else emptyList()
+            "debug" -> when (args.size) {
+                2 -> filter(listOf("toggle_particle_test", "particle_test_guide"), input)
+                3 -> if (args.getOrNull(1).equals("particle_test_guide", true)) {
+                    filter(listOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission"), input)
+                } else emptyList()
+                else -> emptyList()
+            }
             else -> emptyList()
         }
     }

@@ -62,7 +62,10 @@ management:
         force: "対象プレイヤーの有無にかかわらず生成します。"
     particle_test_guide:
       open_hover: "§7クリックして全設定項目の説明を表示します。"
-      header: "§6ボクセルパーティクル設定ガイド §7（各項目にカーソルを合わせてください）"
+      header: "§6ボクセルパーティクル設定ガイド §e{genre} §7({page}/{total})"
+      previous: "§8[§e前のジャンル§8]"
+      next: "§8[§e次のジャンル§8]"
+      navigation_hover: "§7{genre}の設定項目を表示します。"
       field:
         textures_entry_block: "§7表示するバニラブロックIDです。例: minecraft:orange_concrete"
         textures_entry_weight: "§7同じtextures内で選択される相対的な重みです。1以上の整数です。"
@@ -98,6 +101,13 @@ management:
         emission_speed: "§7delta方向へ与えるランダムな初速です。"
         emission_count: "§7一度に生成するボクセル数です。1～32で指定します。"
         emission_visibility: "§7表示対象の扱いです。無効値では候補一覧が表示されます。"
+    particle_test_fix:
+      added: "§a不足していた設定項目を自動で追加しました: {fields}"
+      requires_removal: "§e削除を伴う修正が必要です: {fields}"
+      apply: "§8[§6本を自動修正§8]"
+      apply_hover: "§7クリックすると、現在持っている本から不要部分を削除して正規化します。"
+      applied: "§a本を自動修正し、パーティクル設定をキャッシュしました。"
+      expired: "§c修正対象の本が異なるか、修正リンクの有効期限が切れています。"
     particle_sample_item:
       name: "§6ボクセルパーティクル サンプル"
       description: "§7ページごとに外観・動作設定を記述した編集用サンプルです。"

@@ -32,8 +32,55 @@ internal data class ParsedDisplayParticleBook(
     val offset: DisplayEffectVector3
 )
 
+internal data class PreparedDisplayParticleBook(
+    val parsed: ParsedDisplayParticleBook,
+    val pages: List<String>,
+    val addedPaths: List<String>,
+    val removedPaths: List<String>
+)
+
 /** 本のJSONを一時的な外観・動作スナップショットへ変換します。 */
 internal object DisplayParticleBookJsonParser {
+    fun preparePages(
+        pages: List<String>,
+        blockChoices: List<DisplayParticleBookStringChoice> = emptyList()
+    ): PreparedDisplayParticleBook {
+        val defaults = sampleRoot()
+        val selected = linkedMapOf<String, JsonElement>()
+        val added = mutableListOf<String>()
+        val removed = mutableListOf<String>()
+
+        pages.forEachIndexed { index, page ->
+            val extracted = extractAnyTopLevelFragment(page, index + 1)
+            if (extracted == null) {
+                if (page.isNotBlank()) removed += "page[${index + 1}]"
+                return@forEachIndexed
+            }
+            if (extracted.hasOutsideText) removed += "page[${index + 1}].outside"
+            if (extracted.key !in TOP_LEVEL_FIELDS) {
+                removed += extracted.key
+                return@forEachIndexed
+            }
+            if (selected.putIfAbsent(extracted.key, extracted.value) != null) {
+                removed += "${extracted.key}(duplicate)"
+            }
+        }
+
+        TOP_LEVEL_FIELDS.forEach { key ->
+            if (key !in selected) {
+                selected[key] = defaults[key].deepCopy()
+                added += key
+            }
+        }
+        TOP_LEVEL_FIELDS.forEach { key ->
+            selected[key] = mergeWithDefaults(key, selected.getValue(key), defaults.get(key), added, removed)
+        }
+
+        val correctedPages = TOP_LEVEL_FIELDS.map { key -> "\"$key\":${selected.getValue(key)}" }
+        val parsed = parse("{${correctedPages.joinToString(",")}}", blockChoices)
+        return PreparedDisplayParticleBook(parsed, correctedPages, added, removed)
+    }
+
     /**
      * 各ページを外側の波括弧を持たないトップレベル項目として検証し、
      * ページ間に空白を加えず単一のJSONオブジェクトへ組み立てます。
@@ -42,26 +89,7 @@ internal object DisplayParticleBookJsonParser {
         pages: List<String>,
         blockChoices: List<DisplayParticleBookStringChoice> = emptyList()
     ): ParsedDisplayParticleBook {
-        require(pages.isNotEmpty()) { "JSONページがありません" }
-        val seenKeys = mutableSetOf<String>()
-        val fragments = pages.mapIndexed { index, page ->
-            val fragment = extractTopLevelFragment(page, index + 1)
-            val pageObject = JsonParser.parseString("{$fragment}").objectValue("${index + 1}ページ目")
-            require(pageObject.size() == 1) { "${index + 1}ページ目には項目を1つだけ記述してください" }
-            val key = pageObject.keySet().single()
-            require(seenKeys.add(key)) { "JSON項目が重複しています: $key" }
-            fragment
-        }
-        require(seenKeys == TOP_LEVEL_FIELDS) {
-            val missing = TOP_LEVEL_FIELDS - seenKeys
-            val unknown = seenKeys - TOP_LEVEL_FIELDS
-            buildString {
-                if (missing.isNotEmpty()) append("不足項目: ${missing.sorted().joinToString()}")
-                if (missing.isNotEmpty() && unknown.isNotEmpty()) append(" / ")
-                if (unknown.isNotEmpty()) append("未対応項目: ${unknown.sorted().joinToString()}")
-            }
-        }
-        return parse("{${fragments.joinToString(",")}}", blockChoices)
+        return preparePages(pages, blockChoices).parsed
     }
 
     fun parse(
@@ -256,10 +284,12 @@ internal object DisplayParticleBookJsonParser {
         }
     }
 
-    /** ページ外周のメモ等を捨て、最初のJSON項目と対応する配列・オブジェクトだけを抽出します。 */
-    private fun extractTopLevelFragment(page: String, pageNumber: Int): String {
-        val match = TOP_LEVEL_FIELD_PATTERN.find(page)
-            ?: throw IllegalArgumentException("${pageNumber}ページ目にJSON項目がありません")
+    private fun extractAnyTopLevelFragment(page: String, pageNumber: Int): ExtractedFragment? {
+        val matches = ANY_FIELD_PATTERN.findAll(page).toList()
+        val match = matches.firstOrNull { it.groupValues[1] in TOP_LEVEL_FIELDS }
+            ?: matches.firstOrNull()
+            ?: return null
+        val key = match.groupValues[1]
         val valueStart = page.indexOfFirstFrom(match.range.last + 1) { !it.isWhitespace() }
         require(valueStart >= 0 && page[valueStart] in charArrayOf('{', '[')) {
             "${pageNumber}ページ目のJSON値はオブジェクトまたは配列で記述してください"
@@ -283,12 +313,74 @@ internal object DisplayParticleBookJsonParser {
                 page[valueStart] -> depth++
                 closing -> {
                     depth--
-                    if (depth == 0) return page.substring(match.range.first, index + 1)
+                    if (depth == 0) {
+                        val fragment = page.substring(match.range.first, index + 1)
+                        val value = JsonParser.parseString("{$fragment}").asJsonObject.get(key)
+                        val outside = page.substring(0, match.range.first).isNotBlank() ||
+                            page.substring(index + 1).isNotBlank()
+                        return ExtractedFragment(key, value, outside)
+                    }
                 }
             }
         }
         throw IllegalArgumentException("${pageNumber}ページ目のJSON値が閉じられていません")
     }
+
+    private fun mergeWithDefaults(
+        path: String,
+        current: JsonElement,
+        defaults: JsonElement,
+        added: MutableList<String>,
+        removed: MutableList<String>
+    ): JsonElement {
+        if (path == "textures" && current.isJsonArray) {
+            val defaultEntry = defaults.asJsonArray.first().asJsonObject
+            if (current.asJsonArray.isEmpty) {
+                current.asJsonArray.add(defaultEntry.deepCopy())
+                added += "textures[0]"
+            }
+            current.asJsonArray.forEachIndexed { index, element ->
+                if (!element.isJsonObject) return@forEachIndexed
+                mergeObject(
+                    "textures[$index]", element.asJsonObject, defaultEntry,
+                    TEXTURE_FIELDS, TEXTURE_FIELDS, added, removed
+                )
+            }
+            return current
+        }
+        if (current.isJsonObject && defaults.isJsonObject) {
+            mergeObject(
+                path, current.asJsonObject, defaults.asJsonObject,
+                CHILD_FIELDS.getValue(path), REQUIRED_CHILD_FIELDS.getValue(path), added, removed
+            )
+        }
+        return current
+    }
+
+    private fun mergeObject(
+        path: String,
+        current: JsonObject,
+        defaults: JsonObject,
+        allowedFields: Set<String>,
+        requiredFields: Set<String>,
+        added: MutableList<String>,
+        removed: MutableList<String>
+    ) {
+        (current.keySet() - allowedFields).forEach { unknown ->
+            current.remove(unknown)
+            removed += "$path.$unknown"
+        }
+        defaults.entrySet().filter { it.key in requiredFields }.forEach { (key, defaultValue) ->
+            if (!current.has(key)) {
+                current.add(key, defaultValue.deepCopy())
+                added += "$path.$key"
+            }
+        }
+    }
+
+    private fun sampleRoot(): JsonObject = JsonParser.parseString(
+        "{${DisplayParticleBookSample.pages.joinToString(",")}}"
+    ).asJsonObject
 
     private inline fun String.indexOfFirstFrom(startIndex: Int, predicate: (Char) -> Boolean): Int {
         for (index in startIndex until length) if (predicate(this[index])) return index
@@ -298,11 +390,29 @@ internal object DisplayParticleBookJsonParser {
 
     private const val TRANSIENT_PRESET_ID = "cc:book-test"
     private const val MAX_JSON_BYTES = 16_384
-    private val TOP_LEVEL_FIELDS = setOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission")
-    private val TOP_LEVEL_FIELD_PATTERN = Regex(
-        "\\\"(?:${TOP_LEVEL_FIELDS.joinToString("|")})\\\"\\s*:"
-    )
+    private val TOP_LEVEL_FIELDS = linkedSetOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission")
+    private val ANY_FIELD_PATTERN = Regex("\\\"([a-z_]+)\\\"\\s*:")
     private val MINECRAFT_BLOCK_ID_PATTERN = Regex("minecraft:[a-z0-9_./-]+")
+    private val TEXTURE_FIELDS = setOf("block", "weight")
+    private val CHILD_FIELDS = mapOf(
+        "scale" to setOf("initial", "peak", "peak_progress", "scale_in_ticks", "variation"),
+        "rotation" to setOf("random_initial", "angular_velocity", "variation"),
+        "lifetime" to setOf("ticks", "variation", "fade_out_ticks", "fade_variation", "spawn_delay"),
+        "motion" to setOf(
+            "preset", "initial_velocity", "acceleration", "retention", "turbulence", "frequency",
+            "radial_speed", "spawn_radius", "orbit_speed", "radial_pull", "attraction", "max_speed"
+        ),
+        "collision" to setOf("mode", "restitution"),
+        "emission" to setOf("offset", "delta", "speed", "count", "visibility")
+    )
+    private val REQUIRED_CHILD_FIELDS = mapOf(
+        "scale" to CHILD_FIELDS.getValue("scale"),
+        "rotation" to CHILD_FIELDS.getValue("rotation"),
+        "lifetime" to CHILD_FIELDS.getValue("lifetime"),
+        "motion" to setOf("preset"),
+        "collision" to setOf("mode"),
+        "emission" to CHILD_FIELDS.getValue("emission")
+    )
 
     /** Bukkit Registryが利用可能なサーバー起動後にだけ呼び出します。 */
     fun availableBlockChoices(): List<DisplayParticleBookStringChoice> = Material.entries.asSequence()
@@ -318,4 +428,10 @@ internal object DisplayParticleBookJsonParser {
         }
         .sortedBy(DisplayParticleBookStringChoice::value)
         .toList()
+
+    private data class ExtractedFragment(
+        val key: String,
+        val value: JsonElement,
+        val hasOutsideText: Boolean
+    )
 }

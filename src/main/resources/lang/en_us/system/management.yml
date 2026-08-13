@@ -62,7 +62,10 @@ management:
         force: "Spawns regardless of whether target players are present."
     particle_test_guide:
       open_hover: "§7Click to show descriptions for all configurable fields."
-      header: "§6Voxel Particle Settings Guide §7(Hover each field for details)"
+      header: "§6Voxel Particle Settings Guide §e{genre} §7({page}/{total})"
+      previous: "§8[§ePrevious category§8]"
+      next: "§8[§eNext category§8]"
+      navigation_hover: "§7Show the {genre} settings."
       field:
         textures_entry_block: "§7Vanilla block ID used for the voxel, for example minecraft:orange_concrete."
         textures_entry_weight: "§7Relative selection weight within textures; use an integer of 1 or greater."
@@ -98,6 +101,13 @@ management:
         emission_speed: "§7Random initial speed applied along delta."
         emission_count: "§7Number of voxels spawned at once, from 1 to 32."
         emission_visibility: "§7Visibility behavior. Invalid input displays available values."
+    particle_test_fix:
+      added: "§aAutomatically added missing settings: {fields}"
+      requires_removal: "§eA correction that removes content is required: {fields}"
+      apply: "§8[§6Automatically fix book§8]"
+      apply_hover: "§7Click to remove unsupported content from the held book and normalize it."
+      applied: "§aAutomatically fixed the book and cached the particle settings."
+      expired: "§cThe held book differs from the target, or the correction link has expired."
     particle_sample_item:
       name: "§6Voxel Particle Sample"
       description: "§7An editable sample with appearance and motion settings split across pages."

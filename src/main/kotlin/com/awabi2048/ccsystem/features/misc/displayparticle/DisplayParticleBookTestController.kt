@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.core.config.LanguageManager
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBookJsonParser
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBookStringChoiceException
+import com.awabi2048.ccsystem.core.displayeffect.PreparedDisplayParticleBook
 import com.awabi2048.ccsystem.core.displayeffect.ParsedDisplayParticleBook
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -35,7 +36,9 @@ internal class DisplayParticleBookTestController(
     private val enabledPlayers = mutableSetOf<UUID>()
     private val lastHandledTick = mutableMapOf<UUID, Int>()
     private val cachedBooks = mutableMapOf<UUID, CachedBook>()
+    private val pendingFixes = mutableMapOf<UUID, PendingFix>()
     private val cacheIdKey = NamespacedKey(plugin, "display-particle-book-cache")
+    private val fixTokenKey = NamespacedKey(plugin, "display-particle-book-fix")
     // Material Registryの準備後に生成し、各編集イベントで全ブロックを列挙し直さないよう保持します。
     private val blockChoices by lazy(DisplayParticleBookJsonParser::availableBlockChoices)
 
@@ -46,6 +49,7 @@ internal class DisplayParticleBookTestController(
         }
         if (!enabled) {
             cachedBooks.remove(player.uniqueId)
+            pendingFixes.remove(player.uniqueId)
             lastHandledTick.remove(player.uniqueId)
         }
         player.sendMessage(message(player, if (enabled) "management.debug.particle_test_enabled" else "management.debug.particle_test_disabled"))
@@ -58,54 +62,94 @@ internal class DisplayParticleBookTestController(
         if (player.uniqueId !in enabledPlayers) return
 
         val editedMeta = event.newBookMeta
+        // 新しい編集結果を受け取った時点で、過去の修正案は再利用できないよう失効させます。
+        pendingFixes.remove(player.uniqueId)
+        editedMeta.persistentDataContainer.remove(fixTokenKey)
         // 署名すると本と羽ペンではなくなるため、テスト用キャッシュとしては扱いません。
         if (event.isSigning) {
             cachedBooks.remove(player.uniqueId)
+            pendingFixes.remove(player.uniqueId)
             editedMeta.persistentDataContainer.remove(cacheIdKey)
+            editedMeta.persistentDataContainer.remove(fixTokenKey)
             event.newBookMeta = editedMeta
             return
         }
 
         val serializer = PlainTextComponentSerializer.plainText()
         val pages = editedMeta.pages().map(serializer::serialize)
-        runCatching { DisplayParticleBookJsonParser.parsePages(pages, blockChoices) }
-            .onSuccess { parsed ->
-                // PDCの識別子とプレイヤー単位キャッシュを対応させ、別の本や編集前の本の誤使用を防ぎます。
-                val cacheId = UUID.randomUUID().toString()
-                editedMeta.persistentDataContainer.set(cacheIdKey, PersistentDataType.STRING, cacheId)
-                event.newBookMeta = editedMeta
-                cachedBooks[player.uniqueId] = CachedBook(cacheId, parsed)
-                player.sendMessage(
-                    LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_cached"))
-                        .append(Component.space())
-                        .append(
-                            LanguageManager.deserializeLegacy("§8[§6ガイドを表示§8]")
-                                .clickEvent(ClickEvent.runCommand("/cc debug particle_test_guide"))
-                                .hoverEvent(LanguageManager.deserializeLegacy(
-                                    message(player, "management.debug.particle_test_guide.open_hover")
-                                ))
-                        )
-                )
+        runCatching { DisplayParticleBookJsonParser.preparePages(pages, blockChoices) }
+            .onSuccess { prepared ->
+                if (prepared.removedPaths.isNotEmpty()) {
+                    val token = UUID.randomUUID().toString()
+                    editedMeta.persistentDataContainer.remove(cacheIdKey)
+                    editedMeta.persistentDataContainer.set(fixTokenKey, PersistentDataType.STRING, token)
+                    event.newBookMeta = editedMeta
+                    cachedBooks.remove(player.uniqueId)
+                    pendingFixes[player.uniqueId] = PendingFix(token, prepared)
+                    sendDestructiveFixOffer(player, prepared, token)
+                    return@onSuccess
+                }
+
+                // 不足項目の追加だけで済む場合は、その場で本を正規化してからキャッシュします。
+                editedMeta.pages(prepared.pages.map(Component::text))
+                editedMeta.persistentDataContainer.remove(fixTokenKey)
+                cachePreparedBook(player, editedMeta, prepared) { event.newBookMeta = editedMeta }
+                if (prepared.addedPaths.isNotEmpty()) {
+                    player.sendMessage(message(player, "management.debug.particle_test_fix.added", mapOf(
+                        "fields" to prepared.addedPaths.joinToString()
+                    )))
+                }
             }
             .onFailure { failure ->
                 cachedBooks.remove(player.uniqueId)
+                pendingFixes.remove(player.uniqueId)
                 editedMeta.persistentDataContainer.remove(cacheIdKey)
+                editedMeta.persistentDataContainer.remove(fixTokenKey)
                 event.newBookMeta = editedMeta
                 sendValidationFailure(player, failure)
             }
     }
 
-    fun showGuide(player: Player) {
-        player.sendMessage(message(player, "management.debug.particle_test_guide.header"))
-        PARTICLE_GUIDE_FIELDS.chunked(GUIDE_FIELDS_PER_LINE).forEach { line ->
-            val components = line.map { field ->
-                Component.text(field.path, NamedTextColor.GOLD)
-                    .hoverEvent(LanguageManager.deserializeLegacy(message(player, field.descriptionKey)))
-            }
+    fun showGuide(player: Player, genreName: String? = null) {
+        val index = GUIDE_GENRES.indexOfFirst { it.id.equals(genreName, true) }.takeIf { it >= 0 } ?: 0
+        val genre = GUIDE_GENRES[index]
+        player.sendMessage(message(player, "management.debug.particle_test_guide.header", mapOf(
+            "genre" to genre.id,
+            "page" to index + 1,
+            "total" to GUIDE_GENRES.size
+        )))
+        genre.fields.forEach { field ->
             player.sendMessage(
-                Component.join(JoinConfiguration.separator(Component.text(", ", NamedTextColor.DARK_GRAY)), components)
+                Component.text("- ${field.path}", NamedTextColor.GOLD)
+                    .hoverEvent(LanguageManager.deserializeLegacy(message(player, field.descriptionKey)))
+                    .clickEvent(ClickEvent.copyToClipboard(field.path))
             )
         }
+        val navigation = Component.text()
+        if (index > 0) navigation.append(guideNavigation(player, GUIDE_GENRES[index - 1], "previous"))
+        if (index > 0 && index < GUIDE_GENRES.lastIndex) navigation.append(Component.space())
+        if (index < GUIDE_GENRES.lastIndex) navigation.append(guideNavigation(player, GUIDE_GENRES[index + 1], "next"))
+        player.sendMessage(navigation.build())
+    }
+
+    fun applyPendingFix(player: Player, token: String) {
+        val pending = pendingFixes[player.uniqueId]
+        val item = player.inventory.itemInMainHand
+        if (item.type != Material.WRITABLE_BOOK) {
+            player.sendMessage(message(player, "management.debug.particle_test_fix.expired"))
+            return
+        }
+        val meta = item.itemMeta as? BookMeta
+        val itemToken = meta?.persistentDataContainer?.get(fixTokenKey, PersistentDataType.STRING)
+        if (pending == null || meta == null || pending.token != token || itemToken != token) {
+            player.sendMessage(message(player, "management.debug.particle_test_fix.expired"))
+            return
+        }
+        meta.pages(pending.prepared.pages.map(Component::text))
+        meta.persistentDataContainer.remove(fixTokenKey)
+        cachePreparedBook(player, meta, pending.prepared) { item.itemMeta = meta }
+        pendingFixes.remove(player.uniqueId)
+        player.sendMessage(message(player, "management.debug.particle_test_fix.applied"))
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -164,6 +208,7 @@ internal class DisplayParticleBookTestController(
         enabledPlayers.remove(event.player.uniqueId)
         lastHandledTick.remove(event.player.uniqueId)
         cachedBooks.remove(event.player.uniqueId)
+        pendingFixes.remove(event.player.uniqueId)
     }
 
     private fun message(player: Player, key: String, placeholders: Map<String, Any> = emptyMap()): String =
@@ -182,6 +227,7 @@ internal class DisplayParticleBookTestController(
         val choices = failure.choices.map { choice ->
             Component.text(choice.value, NamedTextColor.WHITE)
                 .hoverEvent(LanguageManager.deserializeLegacy(message(player, choice.descriptionKey)))
+                .clickEvent(ClickEvent.copyToClipboard(choice.value))
         }
         choices.chunked(CHOICES_PER_LINE).forEach { line ->
             player.sendMessage(
@@ -195,24 +241,64 @@ internal class DisplayParticleBookTestController(
         val parsed: ParsedDisplayParticleBook
     )
 
+    private data class PendingFix(val token: String, val prepared: PreparedDisplayParticleBook)
+
+    private fun cachePreparedBook(
+        player: Player,
+        meta: BookMeta,
+        prepared: PreparedDisplayParticleBook,
+        persistMeta: () -> Unit
+    ) {
+        val cacheId = UUID.randomUUID().toString()
+        meta.persistentDataContainer.set(cacheIdKey, PersistentDataType.STRING, cacheId)
+        // 本へのページ・PDC反映が完了してから、メモリ上のキャッシュを有効化します。
+        persistMeta()
+        cachedBooks[player.uniqueId] = CachedBook(cacheId, prepared.parsed)
+        player.sendMessage(
+            LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_cached"))
+                .append(Component.space())
+                .append(
+                    LanguageManager.deserializeLegacy("§8[§6ガイドを表示§8]")
+                        .clickEvent(ClickEvent.runCommand("/cc debug particle_test_guide textures"))
+                        .hoverEvent(LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_guide.open_hover")))
+                )
+        )
+    }
+
+    private fun sendDestructiveFixOffer(player: Player, prepared: PreparedDisplayParticleBook, token: String) {
+        player.sendMessage(message(player, "management.debug.particle_test_fix.requires_removal", mapOf(
+            "fields" to prepared.removedPaths.joinToString()
+        )))
+        player.sendMessage(
+            LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_fix.apply"))
+                .clickEvent(ClickEvent.runCommand("/cc debug apply_particle_book_fix $token"))
+                .hoverEvent(LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_fix.apply_hover")))
+        )
+    }
+
+    private fun guideNavigation(player: Player, genre: GuideGenre, direction: String): Component =
+        LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_guide.$direction"))
+            .clickEvent(ClickEvent.runCommand("/cc debug particle_test_guide ${genre.id}"))
+            .hoverEvent(LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_guide.navigation_hover", mapOf(
+                "genre" to genre.id
+            ))))
+
     private companion object {
         const val DISPLAY_DISTANCE_BLOCKS = 4.0
         const val CHOICES_PER_LINE = 24
-        const val GUIDE_FIELDS_PER_LINE = 5
-        val PARTICLE_GUIDE_FIELDS = listOf(
-            "textures[].block", "textures[].weight",
-            "scale.initial", "scale.peak", "scale.peak_progress", "scale.scale_in_ticks", "scale.variation",
-            "rotation.random_initial", "rotation.angular_velocity", "rotation.variation",
-            "lifetime.ticks", "lifetime.variation", "lifetime.fade_out_ticks", "lifetime.fade_variation", "lifetime.spawn_delay",
-            "motion.preset", "motion.initial_velocity", "motion.acceleration", "motion.retention", "motion.turbulence",
-            "motion.frequency", "motion.radial_speed", "motion.spawn_radius", "motion.orbit_speed", "motion.radial_pull",
-            "motion.attraction", "motion.max_speed",
-            "collision.mode", "collision.restitution",
-            "emission.offset", "emission.delta", "emission.speed", "emission.count", "emission.visibility"
-        ).map { path ->
-            GuideField(path, "management.debug.particle_test_guide.field.${path.replace("[]", "_entry").replace('.', '_')}")
+        val GUIDE_GENRES = linkedMapOf(
+            "textures" to listOf("textures[].block", "textures[].weight"),
+            "scale" to listOf("scale.initial", "scale.peak", "scale.peak_progress", "scale.scale_in_ticks", "scale.variation"),
+            "rotation" to listOf("rotation.random_initial", "rotation.angular_velocity", "rotation.variation"),
+            "lifetime" to listOf("lifetime.ticks", "lifetime.variation", "lifetime.fade_out_ticks", "lifetime.fade_variation", "lifetime.spawn_delay"),
+            "motion" to listOf("motion.preset", "motion.initial_velocity", "motion.acceleration", "motion.retention", "motion.turbulence", "motion.frequency", "motion.radial_speed", "motion.spawn_radius", "motion.orbit_speed", "motion.radial_pull", "motion.attraction", "motion.max_speed"),
+            "collision" to listOf("collision.mode", "collision.restitution"),
+            "emission" to listOf("emission.offset", "emission.delta", "emission.speed", "emission.count", "emission.visibility")
+        ).map { (id, paths) ->
+            GuideGenre(id, paths.map { path -> GuideField(path, "management.debug.particle_test_guide.field.${path.replace("[]", "_entry").replace('.', '_')}") })
         }
     }
 
     private data class GuideField(val path: String, val descriptionKey: String)
+    private data class GuideGenre(val id: String, val fields: List<GuideField>)
 }
