@@ -34,6 +34,6 @@ internal class SystemItemGrantProvider : ItemGrantProvider {
     }
 
     private companion object {
-        const val DISPLAY_PARTICLE_SAMPLE_ID = "display_particle_sample"
+        const val DISPLAY_PARTICLE_SAMPLE_ID = "cc-system.display_particle_book_sample"
     }
 }

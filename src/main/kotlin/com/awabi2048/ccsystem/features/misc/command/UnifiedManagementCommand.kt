@@ -47,7 +47,7 @@ internal class UnifiedManagementCommand(
             return true
         }
         val player = sender as? Player
-        if (player == null || args.size != 1 || !args[0].equals("toggle_test", ignoreCase = true)) {
+        if (player == null || args.size != 1 || !args[0].equals("toggle_particle_test", ignoreCase = true)) {
             sender.sendMessage(message(sender, "management.debug.usage"))
             return true
         }
@@ -297,7 +297,7 @@ internal class UnifiedManagementCommand(
                 } else emptyList()
                 else -> emptyList()
             }
-            "debug" -> if (args.size == 2) filter(listOf("toggle_test"), input) else emptyList()
+            "debug" -> if (args.size == 2) filter(listOf("toggle_particle_test"), input) else emptyList()
             else -> emptyList()
         }
     }

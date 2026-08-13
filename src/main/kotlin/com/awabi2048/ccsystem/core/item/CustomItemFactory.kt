@@ -18,7 +18,7 @@ import org.bukkit.persistence.PersistentDataType
 
 object CustomItemFactory {
     private const val RENTAL_TICKET_ITEM_ID = "rental_ticket"
-    private const val DISPLAY_PARTICLE_SAMPLE_ITEM_ID = "display_particle_sample"
+    private const val DISPLAY_PARTICLE_SAMPLE_ITEM_ID = "cc-system.display_particle_book_sample"
 
     private val itemIdKey: NamespacedKey
         get() = NamespacedKey(CCSystem.instance, "custom_item_id")

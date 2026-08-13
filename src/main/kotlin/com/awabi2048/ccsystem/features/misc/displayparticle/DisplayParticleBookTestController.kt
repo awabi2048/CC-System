@@ -100,7 +100,11 @@ internal class DisplayParticleBookTestController(
 
         runCatching {
             val parsed = cached.parsed
-            val location = player.location.clone().add(parsed.offset.x, parsed.offset.y, parsed.offset.z)
+            // 視線に追従する確認位置を基準にし、JSONのoffsetはその基準位置への微調整として適用します。
+            val eyeLocation = player.eyeLocation
+            val location = eyeLocation.clone()
+                .add(eyeLocation.direction.normalize().multiply(DISPLAY_DISTANCE_BLOCKS))
+                .add(parsed.offset.x, parsed.offset.y, parsed.offset.z)
             // キャッシュされた設定は再利用しつつ、発生ごとの個体差は固定されないようシードだけを更新します。
             val request = parsed.request.copy(randomSeed = System.nanoTime())
             displayEffectService.emitTransientDisplayParticles(plugin, location, parsed.preset, request)
@@ -135,4 +139,8 @@ internal class DisplayParticleBookTestController(
         val cacheId: String,
         val parsed: ParsedDisplayParticleBook
     )
+
+    private companion object {
+        const val DISPLAY_DISTANCE_BLOCKS = 4.0
+    }
 }

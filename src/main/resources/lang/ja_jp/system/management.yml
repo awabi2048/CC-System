@@ -31,7 +31,7 @@ management:
     save_failed: "§cDisplayパーティクル制限を保存できませんでした。"
     changed: "§aDisplayパーティクル制限 {type} を{limit}に変更しました。"
   debug:
-    usage: "§e使用法: /cc debug toggle_test（プレイヤーのみ）"
+    usage: "§e使用法: /cc debug toggle_particle_test（プレイヤーのみ）"
     particle_test_enabled: "§a本と羽ペンによるボクセルパーティクルテストを有効にしました。項目ごとにページを分け、編集画面を閉じてから左クリックしてください。"
     particle_test_disabled: "§e本と羽ペンによるボクセルパーティクルテストを無効にしました。"
     particle_test_empty_book: "§c本と羽ペンにJSONを記述してください。"
