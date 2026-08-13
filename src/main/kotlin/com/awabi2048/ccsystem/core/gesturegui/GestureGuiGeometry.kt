@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import kotlin.math.cos
 import kotlin.math.asin
 import kotlin.math.atan2
+import kotlin.math.atan
 import kotlin.math.sin
 
 /** ジェスチャーGUIの配置と視線判定を一つの座標定義から算出します。 */
@@ -25,6 +26,29 @@ object GestureGuiGeometry {
     /** BukkitのEntity回転へ渡すpitchです。Minecraftでは下向きが正です。 */
     fun displayPitch(pose: GestureGuiScreenPose): Float =
         Math.toDegrees(-asin(pose.normal.y.coerceIn(-1.0, 1.0))).toFloat()
+
+    /**
+     * 複数画面の外周と、その間の余白を一つの連続した操作領域として判定します。
+     * 個々の傾斜面との交差ではなく視線角を使うため、画面間の空間でも追従を開始しません。
+     */
+    fun containsScreenEnvelope(
+        rayDirection: GestureGuiVector3,
+        retainedYawDegrees: Double,
+        screenCount: Int,
+    ): Boolean {
+        require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
+        val direction = rayDirection.normalized()
+        val rayYaw = Math.toDegrees(atan2(-direction.x, direction.z))
+        val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
+        val horizontalHalfAngle = Math.toDegrees(atan((SCREEN_WIDTH / 2.0) / SCREEN_DISTANCE))
+        val verticalHalfAngle = Math.toDegrees(atan((SCREEN_HEIGHT / 2.0) / SCREEN_DISTANCE))
+        val pitches = centerPitches(screenCount)
+        return angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle &&
+            rayPitch in (pitches.first() - verticalHalfAngle)..(pitches.last() + verticalHalfAngle)
+    }
+
+    private fun angularDistance(first: Double, second: Double): Double =
+        kotlin.math.abs(((first - second + 540.0) % 360.0) - 180.0)
 
     /** 画面数ごとの上・中・下の並びを、Minecraft pitch（下が正）で返します。 */
     fun centerPitches(screenCount: Int): List<Double> = when (screenCount) {

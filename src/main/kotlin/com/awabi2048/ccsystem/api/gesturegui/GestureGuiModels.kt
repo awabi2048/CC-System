@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api.gesturegui
 
 import java.util.UUID
 import kotlin.math.sqrt
+import net.kyori.adventure.text.Component
 
 /** ジェスチャーGUIで画面ごとに割り当てられる入力です。 */
 enum class GestureGuiGesture {
@@ -45,9 +46,32 @@ data class GestureGuiElement(
     val elementId: String,
     val bounds: GestureGuiBounds,
     val acceptedGestures: Set<GestureGuiGesture> = emptySet(),
+    val hoverText: GestureGuiHoverText? = null,
+    /** Text・Item・Blockのどの表示物に対する操作領域かを明示します。 */
+    val targetVisualId: String? = null,
 ) {
     init {
         require(elementId.isNotBlank()) { "gesture GUI elementId must not be blank" }
+        require(targetVisualId == null || targetVisualId.isNotBlank()) {
+            "gesture GUI targetVisualId must not be blank"
+        }
+    }
+}
+
+/** 操作者だけへ表示するホバーテキストです。位置は画面中央基準で自由に指定できます。 */
+data class GestureGuiHoverText(
+    val text: Component,
+    val x: Double,
+    val y: Double,
+    val scale: Double = 0.006,
+    val lineWidth: Int = 160,
+    val layer: Int = 30,
+) {
+    init {
+        require(x.isFinite() && y.isFinite()) { "gesture GUI hover position must be finite" }
+        require(scale > 0.0) { "gesture GUI hover scale must be positive" }
+        require(lineWidth > 0) { "gesture GUI hover lineWidth must be positive" }
+        require(layer > 0) { "gesture GUI hover layer must be in front of the background" }
     }
 }
 

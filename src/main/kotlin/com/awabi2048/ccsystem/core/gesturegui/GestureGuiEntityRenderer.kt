@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
@@ -37,6 +38,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     internal data class CatcherHandle(val actorId: UUID, val entity: Interaction)
+    internal data class HoverHandle(val actorId: UUID, val entity: TextDisplay)
 
     fun spawnScreen(
         world: World,
@@ -106,6 +108,37 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     fun removeCatcher(handle: CatcherHandle) = handle.entity.remove()
+
+    fun spawnHover(
+        player: Player,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        hover: GestureGuiHoverText,
+    ): HoverHandle {
+        val entity = player.world.spawn(
+            visualLocation(player.world, pose, hover.x, hover.y, hover.layer),
+            TextDisplay::class.java,
+        ) {
+            prepareDisplay(it, pose)
+            it.isVisibleByDefault = false
+            it.text(hover.text)
+            it.lineWidth = hover.lineWidth
+            it.isSeeThrough = false
+            it.alignment = TextDisplay.TextAlignment.CENTER
+            val scale = hover.scale.toFloat()
+            it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
+            mark(it, sessionId, revision)
+        }
+        player.showEntity(plugin, entity)
+        return HoverHandle(player.uniqueId, entity)
+    }
+
+    fun updateHover(handle: HoverHandle, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
+        handle.entity.teleport(visualLocation(handle.entity.world, pose, hover.x, hover.y, hover.layer))
+    }
+
+    fun removeHover(handle: HoverHandle) = handle.entity.remove()
 
     fun ownsCatcher(entity: Entity): Boolean = entity.persistentDataContainer.has(actorKey, PersistentDataType.STRING)
 
@@ -177,7 +210,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         y: Double,
         layer: Int,
     ): Location {
-        val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * 0.0005)
+        // 背景の厚みや斜め視点の深度精度に負けない距離を確保し、前景ほどプレイヤー側へ出します。
+        val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * LAYER_DEPTH)
         return Location(
             world,
             point.x,
@@ -186,5 +220,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             GestureGuiGeometry.displayYaw(pose),
             GestureGuiGeometry.displayPitch(pose),
         )
+    }
+
+    private companion object {
+        const val LAYER_DEPTH = 0.003
     }
 }

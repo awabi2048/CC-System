@@ -6,7 +6,9 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class GestureGuiGeometryTest {
@@ -42,6 +44,24 @@ class GestureGuiGeometryTest {
 
         val lowerPose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 1).single()
         assertEquals(20.0, GestureGuiGeometry.displayPitch(lowerPose).toDouble(), 1.0e-6)
+    }
+
+    @Test
+    fun `multiple screen envelope includes vertical gaps but excludes its outside`() {
+        fun direction(yaw: Double, pitch: Double): GestureGuiVector3 {
+            val yawRadians = Math.toRadians(yaw)
+            val pitchRadians = Math.toRadians(pitch)
+            return GestureGuiVector3(
+                -kotlin.math.sin(yawRadians) * kotlin.math.cos(pitchRadians),
+                -kotlin.math.sin(pitchRadians),
+                kotlin.math.cos(yawRadians) * kotlin.math.cos(pitchRadians),
+            )
+        }
+
+        assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 0.0), 0.0, 2))
+        assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 15.0), 0.0, 3))
+        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(31.0, 0.0), 0.0, 3))
+        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 46.0), 0.0, 3))
     }
 
     @Test

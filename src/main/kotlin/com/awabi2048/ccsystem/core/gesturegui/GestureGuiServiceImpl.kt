@@ -32,6 +32,8 @@ class GestureGuiServiceImpl(
         val playerId: UUID,
         val claims: List<PlayerInteractionClaim>,
         val catcher: GestureGuiEntityRenderer.CatcherHandle,
+        var hover: GestureGuiEntityRenderer.HoverHandle? = null,
+        var hoverIdentity: String? = null,
     )
 
     private data class ScreenRuntime(
@@ -221,8 +223,16 @@ class GestureGuiServiceImpl(
                 close(session.ownerId, GestureGuiCloseMode.IMMEDIATE)
                 return@forEach
             }
-            val currentHit = hit(session, owner, margin = 0.06)
-            if (currentHit == null && session.targetYaw == null) {
+            val insideScreenArea = if (session.screens.size == 1) {
+                hit(session, owner, margin = 0.06) != null
+            } else {
+                GestureGuiGeometry.containsScreenEnvelope(
+                    ray(owner).direction,
+                    session.retainedYaw.toDouble(),
+                    session.screens.size,
+                )
+            }
+            if (!insideScreenArea && session.targetYaw == null) {
                 // 画面外へ出た瞬間の移動先を固定します。画面が途中で視線内へ戻っても、
                 // このyawが画面中央へ来るまでは追従を中断しません。
                 session.targetYaw = owner.location.yaw
@@ -250,7 +260,12 @@ class GestureGuiServiceImpl(
                 session.anchorZ = eye.z
                 session.appliedYaw = session.retainedYaw
             }
-            session.actors[session.ownerId]?.let { renderer.moveCatcher(it.catcher, catcherLocation(owner)) }
+            session.actors[session.ownerId]?.let { actor ->
+                renderer.moveCatcher(actor.catcher, catcherLocation(owner))
+                // 開閉アニメーション中は内容より先にホバーだけが現れないよう、操作可能になってから表示します。
+                val hoverHit = if (session.state == GestureGuiSessionState.ACTIVE) hit(session, owner) else null
+                updateHover(session, actor, owner, hoverHit)
+            }
         }
         reconcileExternalActors()
     }
@@ -272,6 +287,7 @@ class GestureGuiServiceImpl(
             val (session, hit) = desired ?: return@forEach
             val actor = session.actors[player.uniqueId] ?: runCatching { createActor(session, player) }.getOrNull() ?: return@forEach
             renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.distance))
+            updateHover(session, actor, player, hit)
         }
         activeSessions.forEach { session ->
             session.actors.keys.filter { actorId ->
@@ -303,7 +319,35 @@ class GestureGuiServiceImpl(
     private fun removeActor(session: Session, actorId: UUID) {
         val actor = session.actors.remove(actorId) ?: return
         actor.claims.forEach(PlayerInteractionClaim::close)
+        actor.hover?.let(renderer::removeHover)
         renderer.removeCatcher(actor.catcher)
+    }
+
+    private fun updateHover(
+        session: Session,
+        actor: ActorRuntime,
+        player: Player,
+        hit: com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit?,
+    ) {
+        val screen = hit?.let { session.screens.getOrNull(it.screenIndex) }
+        val element = screen?.view?.definition?.elements?.firstOrNull { it.elementId == hit.elementId }
+        val hoverText = element?.hoverText
+        val identity = if (screen != null && element != null && hoverText != null) {
+            "${screen.view.definition.screenId}:${element.elementId}"
+        } else null
+        if (identity == null) {
+            actor.hover?.let(renderer::removeHover)
+            actor.hover = null
+            actor.hoverIdentity = null
+            return
+        }
+        if (actor.hoverIdentity != identity || actor.hover == null) {
+            actor.hover?.let(renderer::removeHover)
+            actor.hover = renderer.spawnHover(player, session.id, session.revision, screen!!.pose, hoverText!!)
+            actor.hoverIdentity = identity
+        } else {
+            renderer.updateHover(actor.hover!!, screen!!.pose, hoverText!!)
+        }
     }
 
     private fun destroy(session: Session) {

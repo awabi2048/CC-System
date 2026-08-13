@@ -84,6 +84,10 @@ data class GestureGuiView(
         require(visuals.map(GestureGuiVisual::visualId).distinct().size == visuals.size) {
             "gesture GUI visualId must be unique within a screen"
         }
+        val visualIds = visuals.mapTo(hashSetOf(), GestureGuiVisual::visualId)
+        require(definition.elements.mapNotNull { it.targetVisualId }.all { it in visualIds }) {
+            "gesture GUI element targetVisualId must reference a visual in the same screen"
+        }
     }
 }
 

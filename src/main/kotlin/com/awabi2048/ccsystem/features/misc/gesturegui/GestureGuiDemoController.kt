@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiElement
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
@@ -33,8 +34,27 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                 elementId = gesture.name.lowercase(),
                 bounds = GestureGuiBounds(centerX - elementWidth / 2, -0.27, centerX + elementWidth / 2, 0.02),
                 acceptedGestures = setOf(gesture),
+                hoverText = GestureGuiHoverText(
+                    text = label(owner, gesture),
+                    x = centerX,
+                    y = 0.06,
+                    scale = 0.006,
+                    lineWidth = 100,
+                ),
+                targetVisualId = "icon-${gesture.name}",
             )
-        }
+        } + GestureGuiElement(
+            elementId = "title-text",
+            bounds = GestureGuiBounds(-0.35, 0.21, 0.35, 0.34),
+            acceptedGestures = setOf(GestureGuiGesture.PRIMARY),
+            hoverText = GestureGuiHoverText(
+                text = text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION),
+                x = 0.0,
+                y = 0.10,
+                scale = 0.005,
+            ),
+            targetVisualId = "title",
+        )
         val visuals = buildList {
             add(
                 GestureGuiVisual.Block(

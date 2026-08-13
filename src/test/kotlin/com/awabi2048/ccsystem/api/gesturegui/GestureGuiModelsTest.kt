@@ -37,6 +37,42 @@ class GestureGuiModelsTest {
     }
 
     @Test
+    fun `hover text accepts arbitrary finite screen coordinates`() {
+        val hover = GestureGuiHoverText(Component.text("hover"), 0.61, -0.31, layer = 42)
+        assertTrue(hover.x == 0.61 && hover.y == -0.31 && hover.layer == 42)
+    }
+
+    @Test
+    fun `text visual can own hover and click interaction`() {
+        val textVisual = GestureGuiVisual.Text("title", 0.23, 0.17, Component.text("Title"))
+        val element = GestureGuiElement(
+            "title-action",
+            GestureGuiBounds(0.0, 0.0, 0.46, 0.34),
+            setOf(GestureGuiGesture.PRIMARY),
+            GestureGuiHoverText(Component.text("Open"), 0.23, 0.05),
+            targetVisualId = "title",
+        )
+        val view = GestureGuiView(
+            GestureGuiScreenDefinition("screen", listOf(element)),
+            listOf(textVisual),
+        ) {}
+
+        assertTrue(view.definition.elements.single().targetVisualId == textVisual.visualId)
+    }
+
+    @Test
+    fun `element cannot target a missing visual`() {
+        val element = GestureGuiElement(
+            "missing",
+            GestureGuiBounds(-0.1, -0.1, 0.1, 0.1),
+            targetVisualId = "unknown",
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiView(GestureGuiScreenDefinition("screen", listOf(element)), emptyList()) {}
+        }
+    }
+
+    @Test
     fun `view rejects duplicate visual ids independently of display type`() {
         val visual = GestureGuiVisual.Text("title", 0.0, 0.0, Component.text("test"))
         assertThrows(IllegalArgumentException::class.java) {
