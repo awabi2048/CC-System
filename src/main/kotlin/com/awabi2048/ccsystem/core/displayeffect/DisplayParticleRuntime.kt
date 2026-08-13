@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectQuaternion
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetId
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectVector3
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleEmissionRequest
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleCollisionMode
 import java.util.Random
 import kotlin.math.abs
 import kotlin.math.cos
@@ -37,7 +38,8 @@ internal interface DisplayParticleBackend {
         previousOffset: DisplayEffectVector3,
         proposedOffset: DisplayEffectVector3,
         proposedVelocity: DisplayEffectVector3,
-        motion: DisplayParticleMotionPreset
+        motion: DisplayParticleMotionPreset,
+        collisionMode: DisplayParticleCollisionMode
     ): DisplayParticleCollisionResult
     fun isAlive(): Boolean
     fun disposeAll(reason: DisplayEffectDisposalReason)
@@ -55,6 +57,14 @@ internal class DisplayParticleRuntime(
     request: DisplayParticleEmissionRequest,
     private val backend: DisplayParticleBackend
 ) {
+    private val motion = DisplayParticleMotionCatalog.resolve(
+        request.motionPresetId,
+        request.motionProperties,
+        request.collisionMode,
+        request.collisionProperties
+    )
+    private val collisionMode = request.collisionMode
+    private val requestedInitialVelocity = request.motionProperties.initialVelocity ?: DisplayEffectVector3.ZERO
     private var states = initialStates(request)
     private var active = false
     val entityCount: Int = request.count
@@ -113,10 +123,9 @@ internal class DisplayParticleRuntime(
             )
         }
         val age = (state.ageTicks + 1).coerceAtMost(state.lifetimeTicks)
-        val motion = DisplayParticleMotionCatalog.require(preset.motionPresetId)
         val proposed = advanceMotion(state, motion)
-        val collision = if (motion.collisionMode == DisplayParticleCollisionMode.NONE) proposed else {
-            backend.resolveCollision(state.originOffset, proposed.offset, proposed.velocity, motion)
+        val collision = if (collisionMode == DisplayParticleCollisionMode.NONE) proposed else {
+            backend.resolveCollision(state.originOffset, proposed.offset, proposed.velocity, motion, collisionMode)
         }
         if (collision.remove) {
             return state.copy(ageTicks = age, scale = DisplayEffectVector3.ZERO, phase = DisplayParticlePhase.RENDER_GRACE, renderGraceTicks = RENDER_GRACE_TICKS)
@@ -143,10 +152,13 @@ internal class DisplayParticleRuntime(
             DisplayParticleMotionKind.ORBIT -> {
                 val angle = state.ageTicks.coerceAtLeast(0) * motion.orbitRadiansPerTick
                 val initial = state.motionInitialOffset
+                val initialRadius = kotlin.math.sqrt(initial.x * initial.x + initial.z * initial.z)
+                val radius = (initialRadius - motion.radialPullPerTick * state.ageTicks.coerceAtLeast(0)).coerceAtLeast(0.0)
+                val radiusRatio = if (initialRadius < 1.0E-12) 0.0 else radius / initialRadius
                 offset = DisplayEffectVector3(
-                    initial.x * cos(angle) - initial.z * sin(angle),
+                    (initial.x * cos(angle) - initial.z * sin(angle)) * radiusRatio,
                     initial.y + state.velocity.y * state.ageTicks.coerceAtLeast(0),
-                    initial.x * sin(angle) + initial.z * cos(angle)
+                    (initial.x * sin(angle) + initial.z * cos(angle)) * radiusRatio
                 )
                 velocity = DisplayEffectVector3.ZERO
             }
@@ -215,12 +227,10 @@ internal class DisplayParticleRuntime(
             val lifetime = preset.lifetimeTicks + lifetimeRandom.symmetricInt(preset.lifetimeVariationTicks)
             val fade = preset.fadeOutTicks + lifetimeRandom.symmetricInt(preset.fadeOutVariationTicks)
             val spawnDelay = if (preset.maxSpawnDelayTicks == 0) 0 else delayRandom.nextInt(preset.maxSpawnDelayTicks + 1)
-            val motion = DisplayParticleMotionCatalog.require(preset.motionPresetId)
             val randomDirection = randomUnitVector(motionRandom)
             val motionVelocity = when {
-                motion.burstInitializer -> preset.initialVelocity + randomDirection * motion.radialSpeed
-                motion.kind == DisplayParticleMotionKind.ORBIT -> preset.initialVelocity
-                else -> preset.initialVelocity
+                motion.burstInitializer -> requestedInitialVelocity + randomDirection * motion.radialSpeed
+                else -> requestedInitialVelocity
             }
             val generatedOffset = DisplayEffectVector3(positionRandom.nextGaussian() * request.delta.x, positionRandom.nextGaussian() * request.delta.y, positionRandom.nextGaussian() * request.delta.z)
             val motionOffset = if (motion.spawnRadius > 0.0 && generatedOffset.lengthSquared() < 1.0E-12) randomDirection * motion.spawnRadius else generatedOffset

@@ -31,6 +31,8 @@ interface DisplayEffectService {
     /** CC-System組み込みのプロパティ駆動パーティクル・プリセット一覧を返します。 */
     fun listDisplayParticlePresets(): List<DisplayParticlePresetInfo>
 
+    fun listDisplayParticleMotionPresets(): List<DisplayParticleMotionPresetInfo>
+
     /**
      * 1パーティクルにつき1つの微小BlockDisplayを原子的に生成します。
      * 生成途中で失敗した場合は、同じ呼び出しで生成した Entity をすべて回収します。

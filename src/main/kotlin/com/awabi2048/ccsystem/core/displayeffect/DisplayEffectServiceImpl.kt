@@ -12,6 +12,7 @@ import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectStopResult
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectTerminationReason
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleEmissionRequest
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticlePresetInfo
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleMotionPresetInfo
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleVisibilityMode
 import com.awabi2048.ccsystem.core.displayeffect.paper.PaperDisplayEffectBackend
 import com.awabi2048.ccsystem.core.displayeffect.paper.PaperMaterialAssetResolver
@@ -150,6 +151,9 @@ internal class DisplayEffectServiceImpl(
     override fun listDisplayParticlePresets(): List<DisplayParticlePresetInfo> =
         DisplayParticleCatalog.list().map { it.info() }
 
+    override fun listDisplayParticleMotionPresets(): List<DisplayParticleMotionPresetInfo> =
+        DisplayParticleMotionCatalog.info()
+
     override fun emitDisplayParticles(
         owner: Plugin,
         anchor: Location,
@@ -161,6 +165,14 @@ internal class DisplayEffectServiceImpl(
                 DisplayEffectStartRejection.UNKNOWN_PATTERN,
                 "未登録のDisplayパーティクル・プリセットです: ${request.presetId.value}"
             )
+        runCatching {
+            DisplayParticleMotionCatalog.resolve(
+                request.motionPresetId,
+                request.motionProperties,
+                request.collisionMode,
+                request.collisionProperties
+            )
+        }.getOrElse { return rejected(it) }
         if (request.visibilityMode == DisplayParticleVisibilityMode.NORMAL &&
             anchor.world?.players.orEmpty().none { it.location.distanceSquared(anchor) <= NORMAL_VIEW_DISTANCE_SQUARED }
         ) {

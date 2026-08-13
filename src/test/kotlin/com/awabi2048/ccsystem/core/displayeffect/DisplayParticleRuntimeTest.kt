@@ -4,6 +4,8 @@ import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetId
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectQuaternion
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectVector3
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleEmissionRequest
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleCollisionMode
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleMotionPresetId
 import com.awabi2048.ccsystem.api.displayeffect.DisplayParticlePresetId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -15,7 +17,7 @@ class DisplayParticleRuntimeTest {
         val backend = RecordingBackend()
         val runtime = DisplayParticleRuntime(
             preset(randomized = false),
-            DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")),
+            request(),
             backend
         )
 
@@ -35,7 +37,7 @@ class DisplayParticleRuntimeTest {
             val backend = RecordingBackend()
             val runtime = DisplayParticleRuntime(
                 preset(randomized = false, maxSpawnDelayTicks = 3),
-                DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), randomSeed = seed),
+                request(seed = seed),
                 backend
             )
             runtime.start()
@@ -58,7 +60,7 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `countとEntity数は一対一で、最終scale zeroを描画してから破棄する`() {
         val backend = RecordingBackend()
-        val runtime = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = 3, randomSeed = 1), backend)
+        val runtime = DisplayParticleRuntime(preset(randomized = false), request(count = 3, seed = 1), backend)
 
         assertEquals(3, runtime.entityCount)
         assertEquals(DisplayEffectRuntimeResult.Started, runtime.start())
@@ -72,7 +74,7 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `fade区間ではsmoothstepでscaleが単調減少する`() {
         val backend = RecordingBackend()
-        val runtime = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend)
+        val runtime = DisplayParticleRuntime(preset(randomized = false), request(), backend)
         runtime.start()
         repeat(8) { runtime.tick() }
         val scales = backend.applied.takeLast(2).map { it.single().scale.x }
@@ -83,7 +85,7 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `生成失敗時は全体を回収する`() {
         val backend = RecordingBackend(failCreate = true)
-        val result = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend).start()
+        val result = DisplayParticleRuntime(preset(randomized = false), request(), backend).start()
         assertTrue(result is DisplayEffectRuntimeResult.Failed)
         assertTrue(backend.disposed)
     }
@@ -92,7 +94,7 @@ class DisplayParticleRuntimeTest {
     fun `同じseedは全個体プロパティを再現しcount増加でも既存prefixを維持する`() {
         fun generated(count: Int): List<DisplayParticleState> {
             val backend = RecordingBackend()
-            DisplayParticleRuntime(preset(), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = count, randomSeed = 9876), backend).start()
+            DisplayParticleRuntime(preset(), request(count = count, seed = 9876), backend).start()
             return backend.created.single()
         }
 
@@ -116,8 +118,6 @@ class DisplayParticleRuntimeTest {
         DisplayEffectVector3(0.2, 0.2, 0.2),
         0.25,
         2,
-        "cc:inertial",
-        DisplayEffectVector3.ZERO,
         DisplayEffectQuaternion.IDENTITY,
         DisplayEffectVector3(0.0, 0.1, 0.0),
         scaleVariation = if (randomized) 0.2 else 0.0,
@@ -128,6 +128,14 @@ class DisplayParticleRuntimeTest {
         fadeOutTicks = 2,
         fadeOutVariationTicks = 0,
         maxSpawnDelayTicks = maxSpawnDelayTicks
+    )
+
+    private fun request(count: Int = 1, seed: Long = 1) = DisplayParticleEmissionRequest(
+        DisplayParticlePresetId("cc:test"),
+        DisplayParticleMotionPresetId("cc:inertial"),
+        DisplayParticleCollisionMode.NONE,
+        count = count,
+        randomSeed = seed
     )
 
     private class RecordingBackend(private val failCreate: Boolean = false) : DisplayParticleBackend {
@@ -145,7 +153,8 @@ class DisplayParticleRuntimeTest {
             previousOffset: DisplayEffectVector3,
             proposedOffset: DisplayEffectVector3,
             proposedVelocity: DisplayEffectVector3,
-            motion: DisplayParticleMotionPreset
+            motion: DisplayParticleMotionPreset,
+            collisionMode: DisplayParticleCollisionMode
         ) = DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
         override fun isAlive() = true
         override fun disposeAll(reason: DisplayEffectDisposalReason) { disposed = true }

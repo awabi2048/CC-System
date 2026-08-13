@@ -45,7 +45,7 @@ content_management:
       cleared: '&aRemoved all current natural fishing grounds.'
   particle:
     no_permission: '&cYou do not have permission to display Display particles.'
-    usage: '&eUsage: /ccc particle <pattern> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]]'
+    usage: '&eUsage: /ccc particle <appearance> <motion> <collision> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]] [-- <property=value>...]'
     invalid_argument: '&cInvalid particle argument: {detail}'
     unknown_pattern: '&cUnknown Display particle preset: {pattern}'
     no_viewers: '&eSkipped creation because no player is in view range. Specify force if needed.'

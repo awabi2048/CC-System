@@ -5,7 +5,7 @@ import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectWorldUnavailableEx
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBackend
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticlePreset
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleState
-import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleCollisionMode
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleCollisionMode
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleCollisionResult
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleMotionPreset
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectVector3
@@ -75,11 +75,12 @@ internal class PaperDisplayParticleBackend(
         previousOffset: DisplayEffectVector3,
         proposedOffset: DisplayEffectVector3,
         proposedVelocity: DisplayEffectVector3,
-        motion: DisplayParticleMotionPreset
+        motion: DisplayParticleMotionPreset,
+        collisionMode: DisplayParticleCollisionMode
     ): DisplayParticleCollisionResult {
         val target = location(proposedOffset)
         if (!target.block.type.isSolid) return DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
-        return when (motion.collisionMode) {
+        return when (collisionMode) {
             DisplayParticleCollisionMode.NONE -> DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
             DisplayParticleCollisionMode.REMOVE -> DisplayParticleCollisionResult(previousOffset, DisplayEffectVector3.ZERO, remove = true)
             DisplayParticleCollisionMode.STOP -> DisplayParticleCollisionResult(previousOffset, DisplayEffectVector3.ZERO)
