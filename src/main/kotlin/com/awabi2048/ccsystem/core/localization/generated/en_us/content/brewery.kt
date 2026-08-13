@@ -1,0 +1,96 @@
+package com.awabi2048.ccsystem.core.localization.generated
+
+import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
+import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
+
+/** YAML資産から機械変換した不変カタログです。実行時に外部ファイルを参照しません。 */
+internal object EnUsContentBreweryCatalog {
+    const val LOCALE: String = "en_us"
+    const val DOMAIN: String = "content/brewery"
+
+    fun entries(): List<EmbeddedLocalizationEntry> = buildList {
+        addAll(chunk1())
+    }
+
+    private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "brewery.item.name.wort", value = EmbeddedLocalizedValue.Text("§b{recipe} brewing base"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.muddy", value = EmbeddedLocalizedValue.Text("§7Muddy {recipe}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.fermented", value = EmbeddedLocalizedValue.Text("§b{product}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.distilled", value = EmbeddedLocalizedValue.Text("§e{product}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.distilled_degraded", value = EmbeddedLocalizedValue.Text("§e{product} (distillation degraded)"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.aged", value = EmbeddedLocalizedValue.Text("§6{product} {stars}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.recipe", value = EmbeddedLocalizedValue.Text("Recipe"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.stage", value = EmbeddedLocalizedValue.Text("Stage"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.quality", value = EmbeddedLocalizedValue.Text("Quality"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.final_quality", value = EmbeddedLocalizedValue.Text("Final quality"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.distill_count", value = EmbeddedLocalizedValue.Text("Distillations"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.alcohol", value = EmbeddedLocalizedValue.Text("Alcohol"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.rating", value = EmbeddedLocalizedValue.Text("Rating"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.next_stage", value = EmbeddedLocalizedValue.Text("Next stage"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.wort", value = EmbeddedLocalizedValue.Text("Prepared"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.fermented", value = EmbeddedLocalizedValue.Text("Fermented"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.distilled", value = EmbeddedLocalizedValue.Text("Distilled"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.aged", value = EmbeddedLocalizedValue.Text("Aged"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.failed", value = EmbeddedLocalizedValue.Text("Failed"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.fermentation", value = EmbeddedLocalizedValue.Text("Ferment in a signed vanilla barrel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.distillation", value = EmbeddedLocalizedValue.Text("Distill in a brewing stand"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.aging", value = EmbeddedLocalizedValue.Text("Age in a multiblock barrel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.completed", value = EmbeddedLocalizedValue.Text("Completed"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.none", value = EmbeddedLocalizedValue.Text("None"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.filter.name", value = EmbeddedLocalizedValue.Text("Sample Distillation Filter"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.filter.description", value = EmbeddedLocalizedValue.TextList(listOf("Distillation time -15%", "Consumes 1 durability per distillation")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.drink.completed", value = EmbeddedLocalizedValue.Text("&aYou drank {recipe}. &7Intoxication: &e{alcohol}%"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.catalog.title", value = EmbeddedLocalizedValue.Text("Brewery Catalog {page}/{pages}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.catalog.discovered", value = EmbeddedLocalizedValue.Text("&6Discovered in the brewery catalog: &f{recipe}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.preparation_started", value = EmbeddedLocalizedValue.Text("&aStarted preparing the {recipe} brewing base."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.fermentation_started", value = EmbeddedLocalizedValue.Text("&aFermentation started. &7(Recipe: {recipe})"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.distillation_started", value = EmbeddedLocalizedValue.Text("&aDistillation started."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.distillation_stopped", value = EmbeddedLocalizedValue.Text("&eDistillation stopped."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.bottled", value = EmbeddedLocalizedValue.Text("&aBottling completed."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.aged", value = EmbeddedLocalizedValue.Text("&aAging completed."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.barrel_registered", value = EmbeddedLocalizedValue.Text("&aRegistered a {size} barrel made of {wood}."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.fermentation_barrel_registered", value = EmbeddedLocalizedValue.Text("&aRegistered the fermentation barrel."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_yeast", value = EmbeddedLocalizedValue.Text("&cAdd cultured yeast before starting fermentation."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.already_fermenting", value = EmbeddedLocalizedValue.Text("&eFermentation is already in progress in this barrel."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.fermentation_not_ready", value = EmbeddedLocalizedValue.Text("&eFermentation has not finished yet."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.aging_not_ready", value = EmbeddedLocalizedValue.Text("&eAging has not finished yet."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.fermentation_barrel_required", value = EmbeddedLocalizedValue.Text("&cAttach this sign to the side of a vanilla barrel."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_ingredients", value = EmbeddedLocalizedValue.Text("&cPlace ingredients in the input slots."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.recipe_not_found", value = EmbeddedLocalizedValue.Text("&cNo matching recipe was found."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.invalid_input", value = EmbeddedLocalizedValue.Text("&cThis brew cannot be inserted into this process."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_material", value = EmbeddedLocalizedValue.Text("&cThere is no brew material to start with."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.skill_required", value = EmbeddedLocalizedValue.Text("&cYou do not meet the profession level or skill requirement."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_size", value = EmbeddedLocalizedValue.Text("&cThe barrel size does not match. Replace the barrel."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.machine_locked", value = EmbeddedLocalizedValue.Text("&cThis equipment is being used by another player."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.level_required", value = EmbeddedLocalizedValue.Text("&cProfession level {level} is required."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.skills_required", value = EmbeddedLocalizedValue.Text("&cRequired skills: {skills}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.not_started", value = EmbeddedLocalizedValue.Text("&cFermentation has not started."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.batch_limit", value = EmbeddedLocalizedValue.Text("&eThis batch is limited to {capacity} bottles."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.single_item", value = EmbeddedLocalizedValue.Text("&cThis slot accepts one item at a time."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_type", value = EmbeddedLocalizedValue.Text("&cThis recipe requires a barrel sign of type {types}."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.invalid_slot", value = EmbeddedLocalizedValue.Text("&cThis item cannot be placed in this slot."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_structure", value = EmbeddedLocalizedValue.Text("&cThe barrel structure is incomplete. Location: {location} / expected: {expected} / actual: {actual}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_overlap", value = EmbeddedLocalizedValue.Text("&cThis barrel overlaps an existing registered barrel."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.fermentation", value = EmbeddedLocalizedValue.Text("§8Fermentation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.distillation", value = EmbeddedLocalizedValue.Text("§8Distillation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.aging_big", value = EmbeddedLocalizedValue.Text("§8Aging (Large Barrel)"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.aging_small", value = EmbeddedLocalizedValue.Text("§8Aging (Small Barrel)"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.fermentation_start", value = EmbeddedLocalizedValue.Text("Start fermentation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.fermentation_running", value = EmbeddedLocalizedValue.Text("Fermenting"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.distillation_start", value = EmbeddedLocalizedValue.Text("Start distillation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.distillation_stop", value = EmbeddedLocalizedValue.Text("Stop distillation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.start", value = EmbeddedLocalizedValue.Text("Start"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.stop", value = EmbeddedLocalizedValue.Text("Stop"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.current", value = EmbeddedLocalizedValue.Text("Current brew"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.none", value = EmbeddedLocalizedValue.Text("None"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.step_elapsed", value = EmbeddedLocalizedValue.Text("Step elapsed"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.session_runs", value = EmbeddedLocalizedValue.Text("Distillations this session"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.duration", value = EmbeddedLocalizedValue.Text("Time per distillation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.items", value = EmbeddedLocalizedValue.Text("Items inserted"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.barrel.big", value = EmbeddedLocalizedValue.Text("Large barrel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.barrel.small", value = EmbeddedLocalizedValue.Text("Small barrel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.aging_core", value = EmbeddedLocalizedValue.Text("Aging process"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.intoxication.status", value = EmbeddedLocalizedValue.Text("&7Current intoxication: &e{alcohol}%"), domain = DOMAIN),
+    )
+
+}
