@@ -1,0 +1,78 @@
+package com.awabi2048.ccsystem.core.gesturegui
+
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiElement
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Test
+
+class GestureGuiGeometryTest {
+    @Test
+    fun `screen pitches follow the one two and three screen specification`() {
+        assertEquals(listOf(20.0), GestureGuiGeometry.centerPitches(1))
+        assertEquals(listOf(-20.0, 20.0), GestureGuiGeometry.centerPitches(2))
+        assertEquals(listOf(-30.0, 0.0, 30.0), GestureGuiGeometry.centerPitches(3))
+    }
+
+    @Test
+    fun `pose uses pitched center but keeps the screen vertical`() {
+        val pose = GestureGuiGeometry.poses(GestureGuiVector3(10.0, 64.0, 20.0), 0.0, 1).single()
+
+        assertEquals(10.0, pose.center.x, 1.0e-9)
+        assertEquals(64.0 - 1.5 * kotlin.math.sin(Math.toRadians(20.0)), pose.center.y, 1.0e-9)
+        assertEquals(20.0 + 1.5 * kotlin.math.cos(Math.toRadians(20.0)), pose.center.z, 1.0e-9)
+        assertEquals(GestureGuiVector3(0.0, 1.0, 0.0), pose.up)
+        assertEquals(0.0, pose.normal.y, 1.0e-9)
+    }
+
+    @Test
+    fun `ray selects the element using the same local coordinates as rendering`() {
+        val pose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 3)[1]
+        val definition = GestureGuiScreenDefinition(
+            "center",
+            listOf(GestureGuiElement("button", GestureGuiBounds(-0.2, -0.2, 0.2, 0.2))),
+        )
+        val hit = GestureGuiGeometry.hitTest(
+            GestureGuiRay(GestureGuiVector3(0.0, 0.0, 0.0), GestureGuiVector3(0.0, 0.0, 1.0)),
+            listOf(pose to definition),
+        )
+
+        assertEquals("button", hit?.elementId)
+        assertEquals(1.5, hit?.distance ?: 0.0, 1.0e-9)
+    }
+
+    @Test
+    fun `ray outside the panel and ray from behind do not hit`() {
+        val pose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 3)[1]
+        val definition = GestureGuiScreenDefinition("center", emptyList())
+
+        assertNull(
+            GestureGuiGeometry.hitTest(
+                GestureGuiRay(GestureGuiVector3(0.0, 0.0, 0.0), GestureGuiVector3(1.0, 0.0, 1.0)),
+                listOf(pose to definition),
+            )
+        )
+        assertNull(
+            GestureGuiGeometry.hitTest(
+                GestureGuiRay(GestureGuiVector3(0.0, 0.0, 3.0), GestureGuiVector3(0.0, 0.0, -1.0)),
+                listOf(pose to definition),
+            )
+        )
+    }
+
+    @Test
+    fun `nearest visible screen wins independently of declaration order`() {
+        val near = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 3)[1]
+        val far = near.copy(center = GestureGuiVector3(0.0, 0.0, 2.5), screenIndex = 2)
+        val definition = GestureGuiScreenDefinition("screen", emptyList())
+        val hit = GestureGuiGeometry.hitTest(
+            GestureGuiRay(GestureGuiVector3(0.0, 0.0, 0.0), GestureGuiVector3(0.0, 0.0, 1.0)),
+            listOf(far to definition, near to definition),
+        )
+
+        assertEquals(1, hit?.screenIndex)
+    }
+}
