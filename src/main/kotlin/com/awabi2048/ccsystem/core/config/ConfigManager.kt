@@ -23,9 +23,13 @@ object ConfigManager {
     private const val PUBLIC_SIGN_CONFIG_PATH = "config/public_sign.yml"
     private const val ANNOUNCE_CONFIG_PATH = "config/announce.yml"
     private const val QUEUE_CONFIG_PATH = "config/queue.yml"
+    private const val DISPLAY_EFFECT_CONFIG_PATH = "config/display_effect.yml"
 
     private lateinit var coreConfigFile: File
     private lateinit var coreConfig: YamlConfiguration
+    private lateinit var displayEffectConfigFile: File
+    private lateinit var displayEffectConfig: YamlConfiguration
+    private var displayParticleLimit: Int = 512
 
     // === 機能トグル ===
     private var featureResourceWorldEnabled: Boolean = true
@@ -199,6 +203,7 @@ object ConfigManager {
         val publicSign = loadYaml(PUBLIC_SIGN_CONFIG_PATH)
         val announce = loadYaml(ANNOUNCE_CONFIG_PATH)
         val queue = loadYaml(QUEUE_CONFIG_PATH)
+        val displayEffect = loadYaml(DISPLAY_EFFECT_CONFIG_PATH)
 
         loadCoreSettings(core)
         loadMiscSettings(misc)
@@ -206,6 +211,9 @@ object ConfigManager {
         loadResourceWorldSettings(resourceWorld)
         loadAnnounceSettings(announce)
         loadQueueSettings(queue)
+        displayParticleLimit = displayEffect.getInt("particle.max_active", 512).also {
+            require(it in 1..4096) { "particle.max_activeは1..4096で指定してください: $it" }
+        }
     }
 
     fun reload() {
@@ -250,6 +258,10 @@ object ConfigManager {
         if (relativePath == CORE_CONFIG_PATH) {
             coreConfigFile = file
             coreConfig = yaml
+        }
+        if (relativePath == DISPLAY_EFFECT_CONFIG_PATH) {
+            displayEffectConfigFile = file
+            displayEffectConfig = yaml
         }
         return yaml
     }
@@ -568,6 +580,22 @@ object ConfigManager {
     fun getDefaultLanguage(): String = defaultLanguage
     fun getLanguage(): String = defaultLanguage
     fun isDebug(): Boolean = debug
+    fun getDisplayParticleLimit(): Int = displayParticleLimit
+
+    /** 保存成功後にだけ実行値を切り替え、ディスクとメモリの不一致を防ぎます。 */
+    fun setDisplayParticleLimit(limit: Int): Boolean {
+        require(limit in 1..4096) { "Displayパーティクル上限は1..4096です" }
+        if (!::displayEffectConfig.isInitialized || !::displayEffectConfigFile.isInitialized) return false
+        displayEffectConfig.set("particle.max_active", limit)
+        return runCatching {
+            displayEffectConfig.save(displayEffectConfigFile)
+            displayParticleLimit = limit
+            true
+        }.getOrElse {
+            CCSystem.instance.logger.warning("particle.max_activeの保存に失敗しました: ${it.message}")
+            false
+        }
+    }
 
     fun getShiftFBinderCommands(): List<String> = shiftFBinderCommands
     fun getPlayerLeftClickBinderCommands(): List<String> = playerLeftClickBinderCommands

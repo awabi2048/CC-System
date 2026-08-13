@@ -322,6 +322,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
 
     override fun getDisplayEffectService(): DisplayEffectService = displayEffectService
 
+    internal fun getDisplayParticleCount(): Int = displayEffectService.currentDisplayParticleCount()
+
     internal fun shutdown() {
         displayEffectService.shutdown()
         cosmeticPlatform.shutdown()

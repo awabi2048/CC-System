@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
 import java.util.UUID
+import com.awabi2048.ccsystem.core.config.ConfigManager
 
 /** CC-SystemのメインスレッドでDisplay Effect Runtime群を進行させるサービスです。 */
 internal class DisplayEffectServiceImpl(
@@ -39,8 +40,7 @@ internal class DisplayEffectServiceImpl(
         val instance: DisplayEffectInstanceImpl,
         val owner: Plugin,
         val runtime: DisplayParticleRuntime,
-        val backend: PaperDisplayParticleBackend,
-        val entityCount: Int
+        val backend: PaperDisplayParticleBackend
     )
 
     private val materialAssetResolver = PaperMaterialAssetResolver()
@@ -89,14 +89,14 @@ internal class DisplayEffectServiceImpl(
         }
         val ownerCount = activeEffects.values.count { it.owner === owner } +
             activeDisplayParticles.values.count { it.owner === owner }
-        val activeEntityCount = activeEffects.size + activeDisplayParticles.values.sumOf { it.entityCount }
+        val activeEntityCount = activeEffects.size
         val ownerEntityCount = activeEffects.values.count { it.owner === owner } +
-            activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
+            activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.runtime.liveEntityCount }
         val tickCount = startsThisTick[owner] ?: 0
         if (activeEffects.size >= MAX_ACTIVE_EFFECTS ||
             ownerCount >= MAX_ACTIVE_EFFECTS_PER_OWNER ||
             tickCount >= MAX_STARTS_PER_TICK_PER_OWNER ||
-            activeEntityCount >= MAX_ACTIVE_DISPLAY_ENTITIES ||
+            activeEntityCount >= MAX_ACTIVE_EFFECTS ||
             ownerEntityCount >= MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER
         ) {
             return DisplayEffectStartResult.Rejected(
@@ -170,17 +170,16 @@ internal class DisplayEffectServiceImpl(
         }
 
         val entityCost = request.count
-        val ownerEntityCount = activeEffects.values.count { it.owner === owner } +
-            activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
-        val totalEntityCount = activeEffects.size + activeDisplayParticles.values.sumOf { it.entityCount }
+        val ownerEntityCount = activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.runtime.liveEntityCount }
+        val totalEntityCount = currentDisplayParticleCount()
         val tickCount = startsThisTick[owner] ?: 0
-        if (totalEntityCount + entityCost > MAX_ACTIVE_DISPLAY_ENTITIES ||
+        if (totalEntityCount + entityCost > ConfigManager.getDisplayParticleLimit() ||
             ownerEntityCount + entityCost > MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER ||
             tickCount + entityCost > MAX_SPAWNED_DISPLAY_ENTITIES_PER_TICK_PER_OWNER
         ) {
             return DisplayEffectStartResult.Rejected(
                 DisplayEffectStartRejection.CAPACITY_EXCEEDED,
-                "ボクセル粒子のDisplay Entity予算を超えます: required=$entityCost active=$totalEntityCount"
+                "Displayパーティクル上限を超えます: required=$entityCost active=$totalEntityCount limit=${ConfigManager.getDisplayParticleLimit()}"
             )
         }
 
@@ -190,14 +189,14 @@ internal class DisplayEffectServiceImpl(
         return when (val result = runtime.start()) {
             DisplayEffectRuntimeResult.Started -> {
                 val instance = DisplayEffectInstanceImpl(instanceId, this)
-                activeDisplayParticles[instanceId] = ActiveDisplayParticle(instance, owner, runtime, backend, entityCost)
+                activeDisplayParticles[instanceId] = ActiveDisplayParticle(instance, owner, runtime, backend)
                 startsThisTick[owner] = tickCount + entityCost
                 DisplayEffectStartResult.Started(instance)
             }
             is DisplayEffectRuntimeResult.Failed -> rejected(result.error)
             else -> DisplayEffectStartResult.Rejected(
                 DisplayEffectStartRejection.BACKEND_FAILURE,
-                "ボクセル粒子の開始状態が不正です: $result"
+                "Displayパーティクルの開始状態が不正です: $result"
             )
         }
     }
@@ -220,6 +219,9 @@ internal class DisplayEffectServiceImpl(
             DisplayEffectStopResult.ServiceUnavailable
         }
     }
+
+    internal fun currentDisplayParticleCount(): Int =
+        activeDisplayParticles.values.sumOf { it.runtime.liveEntityCount }
 
     @EventHandler
     fun onPluginDisable(event: PluginDisableEvent) {
@@ -402,7 +404,6 @@ internal class DisplayEffectServiceImpl(
         private const val MAX_ACTIVE_EFFECTS = 512
         private const val MAX_ACTIVE_EFFECTS_PER_OWNER = 128
         private const val MAX_STARTS_PER_TICK_PER_OWNER = 32
-        private const val MAX_ACTIVE_DISPLAY_ENTITIES = 512
         private const val MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER = 128
         private const val MAX_SPAWNED_DISPLAY_ENTITIES_PER_TICK_PER_OWNER = 64
         private const val NORMAL_VIEW_DISTANCE_SQUARED = 32.0 * 32.0

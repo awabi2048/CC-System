@@ -14,7 +14,7 @@ softdepend:
 commands:
   cc:
     description: Config・アイテム付与・公開メニューの統合管理コマンド
-    usage: /cc <config|give|menu>
+    usage: /cc <config|give|menu|particle>
     permission: cc.command.use
   resource:
     description: 資源ワールド管理コマンド
@@ -67,6 +67,7 @@ permissions:
       cc.command.give: true
       cc.command.give.all: true
       cc.command.menu: true
+      cc.command.particle.limit: true
       cc.item.give.cc-content: true
       cc.item.give.myworld: true
       cc.item.give.kantan: true
@@ -81,6 +82,9 @@ permissions:
     default: op
   cc.command.menu:
     description: 公開メニュー起動権限
+    default: op
+  cc.command.particle.limit:
+    description: Displayパーティクルの同時存在上限を確認・変更する権限
     default: op
   cc.item.give.cc-content:
     description: CC-Content登録アイテム付与権限

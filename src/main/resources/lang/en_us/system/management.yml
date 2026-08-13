@@ -1,5 +1,5 @@
 management:
-  usage: "§eUsage: /cc <config|give|menu>"
+  usage: "§eUsage: /cc <config|give|menu|particle>"
   no_permission: "§cYou do not have permission to perform this action."
   player_not_found: "§cTarget player was not found: {player}"
   config:
@@ -18,3 +18,9 @@ management:
     invalid_argument: "§cInvalid menu argument: {argument}"
     success: "§aOpened {menu} for {player}."
     failed: "§cCould not open {menu} for {player}."
+  particle:
+    usage: "§eUsage: /cc particle limit [set <1..4096>]"
+    status: "§eDisplay particles: {used} active / {limit} limit / {remaining} remaining"
+    invalid_limit: "§cSpecify an integer limit from 1 to 4096."
+    save_failed: "§cCould not save the Display particle limit."
+    changed: "§aChanged the Display particle limit to {limit}. Currently active: {used}"

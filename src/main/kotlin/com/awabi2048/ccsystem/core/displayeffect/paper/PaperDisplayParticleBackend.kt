@@ -5,6 +5,10 @@ import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectWorldUnavailableEx
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBackend
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticlePreset
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleState
+import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleCollisionMode
+import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleCollisionResult
+import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleMotionPreset
+import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectVector3
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -67,6 +71,29 @@ internal class PaperDisplayParticleBackend(
         }
     }
 
+    override fun resolveCollision(
+        previousOffset: DisplayEffectVector3,
+        proposedOffset: DisplayEffectVector3,
+        proposedVelocity: DisplayEffectVector3,
+        motion: DisplayParticleMotionPreset
+    ): DisplayParticleCollisionResult {
+        val target = location(proposedOffset)
+        if (!target.block.type.isSolid) return DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
+        return when (motion.collisionMode) {
+            DisplayParticleCollisionMode.NONE -> DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
+            DisplayParticleCollisionMode.REMOVE -> DisplayParticleCollisionResult(previousOffset, DisplayEffectVector3.ZERO, remove = true)
+            DisplayParticleCollisionMode.STOP -> DisplayParticleCollisionResult(previousOffset, DisplayEffectVector3.ZERO)
+            DisplayParticleCollisionMode.SLIDE -> DisplayParticleCollisionResult(
+                DisplayEffectVector3(proposedOffset.x, previousOffset.y, proposedOffset.z),
+                DisplayEffectVector3(proposedVelocity.x, 0.0, proposedVelocity.z)
+            )
+            DisplayParticleCollisionMode.BOUNCE -> DisplayParticleCollisionResult(
+                previousOffset,
+                DisplayEffectVector3(proposedVelocity.x, -proposedVelocity.y * motion.restitution, proposedVelocity.z)
+            )
+        }
+    }
+
     override fun isAlive(): Boolean {
         requireMainThread()
         if (Bukkit.getWorld(world.uid) == null) throw DisplayEffectWorldUnavailableException("Worldが利用できません: ${world.uid}")
@@ -113,7 +140,11 @@ internal class PaperDisplayParticleBackend(
     }
 
     private fun location(state: DisplayParticleState): Location {
-        val target = anchor.clone().add(state.originOffset.x, state.originOffset.y, state.originOffset.z)
+        return location(state.originOffset)
+    }
+
+    private fun location(offset: DisplayEffectVector3): Location {
+        val target = anchor.clone().add(offset.x, offset.y, offset.z)
         if (!world.isChunkLoaded(target.blockX shr 4, target.blockZ shr 4)) {
             throw DisplayEffectWorldUnavailableException("移動先chunkが未ロードです: $target")
         }

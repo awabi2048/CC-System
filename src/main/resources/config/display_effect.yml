@@ -1,0 +1,4 @@
+particle:
+  # `/cc particle limit set`で変更される、Displayパーティクル専用の同時存在上限です。
+  max_active: 512
+config_version: 1

@@ -308,6 +308,7 @@ class CCSystem : JavaPlugin() {
             "config/announce.yml",
             "config/queue.yml",
             "config/season.yml",
+            "config/display_effect.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
             "data/announce/announce_data.yml",
@@ -337,7 +338,8 @@ class CCSystem : JavaPlugin() {
             "config/public_sign.yml",
             "config/announce.yml",
             "config/queue.yml",
-            "config/season.yml"
+            "config/season.yml",
+            "config/display_effect.yml"
         )
         val specs = paths.map { resourcePath ->
             val currentVersion = if (resourcePath == "config/misc.yml") 2 else 1
@@ -430,7 +432,7 @@ class CCSystem : JavaPlugin() {
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
-        val unifiedManagementCommand = UnifiedManagementCommand()
+        val unifiedManagementCommand = UnifiedManagementCommand { _api.getDisplayParticleCount() }
         getCommand("cc")?.setExecutor(unifiedManagementCommand)
         getCommand("cc")?.tabCompleter = unifiedManagementCommand
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())

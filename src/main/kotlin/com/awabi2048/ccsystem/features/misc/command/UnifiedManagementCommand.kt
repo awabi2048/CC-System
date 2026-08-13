@@ -10,8 +10,11 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import com.awabi2048.ccsystem.core.config.ConfigManager
 
-class UnifiedManagementCommand : CommandExecutor, TabCompleter {
+class UnifiedManagementCommand(
+    private val displayParticleCountProvider: () -> Int
+) : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender,
         command: Command,
@@ -26,11 +29,44 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
             "config" -> handleConfig(sender, args.drop(1))
             "give" -> handleGive(sender, args.drop(1))
             "menu" -> handleMenu(sender, args.drop(1))
+            "particle" -> handleParticle(sender, args.drop(1))
             else -> {
                 sender.sendMessage(message(sender, "management.usage"))
                 true
             }
         }
+    }
+
+    private fun handleParticle(sender: CommandSender, args: List<String>): Boolean {
+        if (!hasPermission(sender, "cc.command.particle.limit")) {
+            sender.sendMessage(message(sender, "management.no_permission"))
+            return true
+        }
+        if (args.firstOrNull()?.lowercase() != "limit") {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        if (args.size == 1) {
+            val used = displayParticleCountProvider()
+            val limit = ConfigManager.getDisplayParticleLimit()
+            sender.sendMessage(message(sender, "management.particle.status", mapOf("used" to used, "limit" to limit, "remaining" to (limit - used).coerceAtLeast(0))))
+            return true
+        }
+        if (args.size != 3 || !args[1].equals("set", true)) {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        val limit = args[2].toIntOrNull()
+        if (limit == null || limit !in 1..4096) {
+            sender.sendMessage(message(sender, "management.particle.invalid_limit"))
+            return true
+        }
+        if (!ConfigManager.setDisplayParticleLimit(limit)) {
+            sender.sendMessage(message(sender, "management.particle.save_failed"))
+            return true
+        }
+        sender.sendMessage(message(sender, "management.particle.changed", mapOf("limit" to limit, "used" to displayParticleCountProvider())))
+        return true
     }
 
     private fun handleConfig(sender: CommandSender, args: List<String>): Boolean {
@@ -189,7 +225,7 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
     ): List<String> {
         val input = args.lastOrNull().orEmpty()
         if (args.size == 1) {
-            return filter(listOf("config", "give", "menu"), input)
+            return filter(listOf("config", "give", "menu", "particle"), input)
         }
         return when (args[0].lowercase()) {
             "config" -> when (args.size) {
@@ -212,6 +248,12 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
                     val definition = args.getOrNull(1)?.let(CCSystem.getAPI().getMenuCommandService()::definition)
                     filter(definition?.argumentKeys?.map { "$it=" }.orEmpty(), input)
                 }
+            }
+            "particle" -> when (args.size) {
+                2 -> filter(listOf("limit"), input)
+                3 -> if (args.getOrNull(1).equals("limit", true)) filter(listOf("set"), input) else emptyList()
+                4 -> if (args.getOrNull(2).equals("set", true)) filter(listOf("128", "256", "512", "1024"), input) else emptyList()
+                else -> emptyList()
             }
             else -> emptyList()
         }

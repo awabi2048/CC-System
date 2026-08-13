@@ -24,6 +24,8 @@ internal data class DisplayParticleState(
     val angularVelocityRadiansPerTick: DisplayEffectVector3,
     val lifetimeTicks: Int,
     val fadeOutTicks: Int,
+    val motionSeed: Long,
+    val motionInitialOffset: DisplayEffectVector3,
     val phase: DisplayParticlePhase,
     val renderGraceTicks: Int
 )
@@ -31,9 +33,21 @@ internal data class DisplayParticleState(
 internal interface DisplayParticleBackend {
     fun create(preset: DisplayParticlePreset, states: List<DisplayParticleState>)
     fun apply(states: List<DisplayParticleState>)
+    fun resolveCollision(
+        previousOffset: DisplayEffectVector3,
+        proposedOffset: DisplayEffectVector3,
+        proposedVelocity: DisplayEffectVector3,
+        motion: DisplayParticleMotionPreset
+    ): DisplayParticleCollisionResult
     fun isAlive(): Boolean
     fun disposeAll(reason: DisplayEffectDisposalReason)
 }
+
+internal data class DisplayParticleCollisionResult(
+    val offset: DisplayEffectVector3,
+    val velocity: DisplayEffectVector3,
+    val remove: Boolean = false
+)
 
 /** 単一ボクセル粒子を進行し、scale=0の最終フレームを描画してからEntityを破棄します。 */
 internal class DisplayParticleRuntime(
@@ -44,6 +58,7 @@ internal class DisplayParticleRuntime(
     private var states = initialStates(request)
     private var active = false
     val entityCount: Int = request.count
+    val liveEntityCount: Int get() = states.count { it.phase != DisplayParticlePhase.COMPLETED }
 
     fun start(): DisplayEffectRuntimeResult = runCatching {
         if (active) return DisplayEffectRuntimeResult.Ignored
@@ -98,17 +113,72 @@ internal class DisplayParticleRuntime(
             )
         }
         val age = (state.ageTicks + 1).coerceAtMost(state.lifetimeTicks)
-        val velocity = (state.velocity + preset.accelerationPerTick) * preset.velocityRetentionPerTick
+        val motion = DisplayParticleMotionCatalog.require(preset.motionPresetId)
+        val proposed = advanceMotion(state, motion)
+        val collision = if (motion.collisionMode == DisplayParticleCollisionMode.NONE) proposed else {
+            backend.resolveCollision(state.originOffset, proposed.offset, proposed.velocity, motion)
+        }
+        if (collision.remove) {
+            return state.copy(ageTicks = age, scale = DisplayEffectVector3.ZERO, phase = DisplayParticlePhase.RENDER_GRACE, renderGraceTicks = RENDER_GRACE_TICKS)
+        }
         return state.copy(
             ageTicks = age,
-            originOffset = state.originOffset + state.velocity,
-            velocity = velocity,
+            originOffset = collision.offset,
+            velocity = collision.velocity,
             rotation = state.rotation.multiply(rotationDelta(state.angularVelocityRadiansPerTick)),
             scale = scaleAt(state, age),
             phase = if (age >= state.lifetimeTicks) DisplayParticlePhase.RENDER_GRACE else DisplayParticlePhase.ACTIVE,
             renderGraceTicks = if (age >= state.lifetimeTicks) RENDER_GRACE_TICKS else 0
         )
     }
+
+    private fun advanceMotion(state: DisplayParticleState, motion: DisplayParticleMotionPreset): DisplayParticleCollisionResult {
+        if (motion.kind == DisplayParticleMotionKind.STATIC) {
+            return DisplayParticleCollisionResult(state.originOffset, DisplayEffectVector3.ZERO)
+        }
+        val turbulence = turbulence(state, motion)
+        var velocity = state.velocity
+        var offset = state.originOffset
+        when (motion.kind) {
+            DisplayParticleMotionKind.ORBIT -> {
+                val angle = state.ageTicks.coerceAtLeast(0) * motion.orbitRadiansPerTick
+                val initial = state.motionInitialOffset
+                offset = DisplayEffectVector3(
+                    initial.x * cos(angle) - initial.z * sin(angle),
+                    initial.y + state.velocity.y * state.ageTicks.coerceAtLeast(0),
+                    initial.x * sin(angle) + initial.z * cos(angle)
+                )
+                velocity = DisplayEffectVector3.ZERO
+            }
+            DisplayParticleMotionKind.ATTRACT -> {
+                val towardAnchor = offset * -1.0
+                val attraction = if (towardAnchor.lengthSquared() < 1.0E-12) DisplayEffectVector3.ZERO
+                else towardAnchor.normalized() * motion.attractionPerTick
+                velocity = limitSpeed((velocity + attraction + turbulence) * motion.velocityRetentionPerTick, motion.maxSpeed)
+                offset += velocity
+            }
+            else -> {
+                velocity = (velocity + motion.accelerationPerTick + turbulence) * motion.velocityRetentionPerTick
+                offset += velocity
+            }
+        }
+        return DisplayParticleCollisionResult(offset, velocity)
+    }
+
+    /** 個体seedとageだけから連続的な外力を生成し、tickごとの白色雑音による震えを避けます。 */
+    private fun turbulence(state: DisplayParticleState, motion: DisplayParticleMotionPreset): DisplayEffectVector3 {
+        if (motion.turbulenceStrength == 0.0) return DisplayEffectVector3.ZERO
+        val phase = (state.motionSeed ushr 11).toDouble() / (1L shl 53).toDouble() * Math.PI * 2.0
+        val time = state.ageTicks.coerceAtLeast(0) * motion.turbulenceFrequency
+        return DisplayEffectVector3(
+            sin(time + phase),
+            sin(time * 0.73 + phase * 1.7) * 0.4,
+            cos(time * 1.13 + phase * 0.61)
+        ) * motion.turbulenceStrength
+    }
+
+    private fun limitSpeed(velocity: DisplayEffectVector3, maxSpeed: Double): DisplayEffectVector3 =
+        if (velocity.lengthSquared() <= maxSpeed * maxSpeed) velocity else velocity.normalized() * maxSpeed
 
     private fun scaleAt(state: DisplayParticleState, age: Int): DisplayEffectVector3 {
         val fadeStart = state.lifetimeTicks - state.fadeOutTicks
@@ -133,14 +203,24 @@ internal class DisplayParticleRuntime(
             val angularRandom = Random(deriveSeed(particleSeed, ANGULAR_SALT))
             val textureRandom = Random(deriveSeed(particleSeed, TEXTURE_SALT))
             val delayRandom = Random(deriveSeed(particleSeed, DELAY_SALT))
+            val motionRandom = Random(deriveSeed(particleSeed, MOTION_SALT))
             val scaleMultiplier = 1.0 + scaleRandom.symmetric(preset.scaleVariation)
             val lifetime = preset.lifetimeTicks + lifetimeRandom.symmetricInt(preset.lifetimeVariationTicks)
             val fade = preset.fadeOutTicks + lifetimeRandom.symmetricInt(preset.fadeOutVariationTicks)
             val spawnDelay = if (preset.maxSpawnDelayTicks == 0) 0 else delayRandom.nextInt(preset.maxSpawnDelayTicks + 1)
+            val motion = DisplayParticleMotionCatalog.require(preset.motionPresetId)
+            val randomDirection = randomUnitVector(motionRandom)
+            val motionVelocity = when {
+                motion.burstInitializer -> preset.initialVelocity + randomDirection * motion.radialSpeed
+                motion.kind == DisplayParticleMotionKind.ORBIT -> preset.initialVelocity
+                else -> preset.initialVelocity
+            }
+            val generatedOffset = DisplayEffectVector3(positionRandom.nextGaussian() * request.delta.x, positionRandom.nextGaussian() * request.delta.y, positionRandom.nextGaussian() * request.delta.z)
+            val motionOffset = if (motion.spawnRadius > 0.0 && generatedOffset.lengthSquared() < 1.0E-12) randomDirection * motion.spawnRadius else generatedOffset
             DisplayParticleState(
                 -spawnDelay,
-                DisplayEffectVector3(positionRandom.nextGaussian() * request.delta.x, positionRandom.nextGaussian() * request.delta.y, positionRandom.nextGaussian() * request.delta.z),
-                preset.initialVelocity + DisplayEffectVector3(velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed),
+                motionOffset,
+                motionVelocity + DisplayEffectVector3(velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed),
                 if (preset.randomInitialRotation) randomRotation(rotationRandom) else preset.initialRotation,
                 if (spawnDelay == 0) preset.initialScale * scaleMultiplier else DisplayEffectVector3.ZERO,
                 selectTexture(textureRandom),
@@ -153,6 +233,8 @@ internal class DisplayParticleRuntime(
                 ),
                 lifetime,
                 fade,
+                deriveSeed(particleSeed, TURBULENCE_SALT),
+                motionOffset,
                 if (spawnDelay == 0) DisplayParticlePhase.ACTIVE else DisplayParticlePhase.WAITING,
                 0
             )
@@ -180,6 +262,13 @@ internal class DisplayParticleRuntime(
             sqrt(u1) * sin(u3),
             sqrt(u1) * cos(u3)
         )
+    }
+
+    private fun randomUnitVector(random: Random): DisplayEffectVector3 {
+        val y = random.nextDouble() * 2.0 - 1.0
+        val angle = random.nextDouble() * Math.PI * 2.0
+        val radius = sqrt(1.0 - y * y)
+        return DisplayEffectVector3(radius * cos(angle), y, radius * sin(angle))
     }
 
     private fun deriveSeed(parentSeed: Long, stream: Long): Long {
@@ -216,5 +305,7 @@ internal class DisplayParticleRuntime(
         private const val ANGULAR_SALT = 6L
         private const val TEXTURE_SALT = 7L
         private const val DELAY_SALT = 8L
+        private const val MOTION_SALT = 9L
+        private const val TURBULENCE_SALT = 10L
     }
 }

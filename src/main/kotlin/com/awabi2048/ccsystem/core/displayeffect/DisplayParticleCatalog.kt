@@ -13,9 +13,8 @@ internal data class DisplayParticlePreset(
     val initialScale: DisplayEffectVector3,
     val peakScale: DisplayEffectVector3,
     val peakScaleProgress: Double,
+    val motionPresetId: String,
     val initialVelocity: DisplayEffectVector3,
-    val accelerationPerTick: DisplayEffectVector3,
-    val velocityRetentionPerTick: Double,
     val initialRotation: DisplayEffectQuaternion,
     val angularVelocityRadiansPerTick: DisplayEffectVector3,
     val scaleVariation: Double,
@@ -36,7 +35,7 @@ internal data class DisplayParticlePreset(
             }
         }
         require(peakScaleProgress in 0.0..1.0) { "peakScaleProgressが不正です" }
-        require(velocityRetentionPerTick in 0.0..1.0) { "velocityRetentionPerTickが不正です" }
+        DisplayParticleMotionCatalog.require(motionPresetId)
         require(scaleVariation in 0.0..0.9) { "scaleVariationは0..0.9です" }
         require(angularVelocityVariation in 0.0..1.0) { "angularVelocityVariationは0..1です" }
         require(lifetimeTicks in 2..200) { "lifetimeTicksは2..200です" }
@@ -60,10 +59,10 @@ internal data class DisplayParticleTexture(val assetId: DisplayEffectAssetId, va
 /** バニラ粒子の再現表ではなく、独自表現のためのプロパティ組合せ例を管理します。 */
 internal object DisplayParticleCatalog {
     private val patterns = listOf(
-        preset("cc:ember", textures("orange_concrete" to 5, "yellow_concrete" to 3, "red_concrete" to 2), 0.045, 0.12, 0.22, velocity(0.0, 0.025, 0.0), velocity(0.0, 0.0015, 0.0), 0.96, velocity(0.08, 0.13, 0.05), 0.22, 0.35, 24, 3, 7, 2, 2),
-        preset("cc:ash", textures("gray_concrete" to 5, "light_gray_concrete" to 3, "white_concrete" to 1, "black_concrete" to 1), 0.11, 0.15, 0.35, velocity(0.006, 0.012, -0.004), velocity(0.0, 0.0005, 0.0), 0.97, velocity(0.025, 0.04, 0.02), 0.18, 0.45, 38, 5, 12, 3, 4),
-        preset("cc:spark", textures("yellow_concrete" to 5, "white_concrete" to 2, "orange_concrete" to 2), 0.075, 0.105, 0.12, velocity(0.0, 0.035, 0.0), velocity(0.0, -0.004, 0.0), 0.91, velocity(0.18, 0.22, 0.12), 0.25, 0.30, 14, 2, 5, 1, 1),
-        preset("cc:verdant", textures("lime_concrete" to 5, "green_concrete" to 3, "white_concrete" to 1), 0.06, 0.14, 0.40, velocity(0.0, 0.018, 0.0), velocity(0.0, 0.0008, 0.0), 0.95, velocity(0.04, 0.09, 0.03), 0.20, 0.40, 28, 4, 8, 2, 3)
+        preset("cc:ember", "cc:buoyant", textures("orange_concrete" to 5, "yellow_concrete" to 3, "red_concrete" to 2), 0.045, 0.12, 0.22, velocity(0.0, 0.025, 0.0), velocity(0.08, 0.13, 0.05), 0.22, 0.35, 24, 3, 7, 2, 2),
+        preset("cc:ash", "cc:drift", textures("gray_concrete" to 5, "light_gray_concrete" to 3, "white_concrete" to 1, "black_concrete" to 1), 0.11, 0.15, 0.35, velocity(0.006, 0.012, -0.004), velocity(0.025, 0.04, 0.02), 0.18, 0.45, 38, 5, 12, 3, 4),
+        preset("cc:spark", "cc:burst", textures("yellow_concrete" to 5, "white_concrete" to 2, "orange_concrete" to 2), 0.075, 0.105, 0.12, velocity(0.0, 0.035, 0.0), velocity(0.18, 0.22, 0.12), 0.25, 0.30, 14, 2, 5, 1, 1),
+        preset("cc:verdant", "cc:orbit", textures("lime_concrete" to 5, "green_concrete" to 3, "white_concrete" to 1), 0.06, 0.14, 0.40, velocity(0.0, 0.018, 0.0), velocity(0.04, 0.09, 0.03), 0.20, 0.40, 28, 4, 8, 2, 3)
     )
     private val byId = patterns.associateBy { it.id }
 
@@ -72,13 +71,12 @@ internal object DisplayParticleCatalog {
 
     private fun preset(
         id: String,
+        motionPresetId: String,
         textures: List<DisplayParticleTexture>,
         initialSize: Double,
         peakSize: Double,
         peakProgress: Double,
         initialVelocity: DisplayEffectVector3,
-        acceleration: DisplayEffectVector3,
-        retention: Double,
         angularVelocity: DisplayEffectVector3,
         scaleVariation: Double,
         angularVariation: Double,
@@ -93,9 +91,8 @@ internal object DisplayParticleCatalog {
         scale(initialSize),
         scale(peakSize),
         peakProgress,
+        motionPresetId,
         initialVelocity,
-        acceleration,
-        retention,
         DisplayEffectQuaternion.IDENTITY,
         angularVelocity,
         scaleVariation,

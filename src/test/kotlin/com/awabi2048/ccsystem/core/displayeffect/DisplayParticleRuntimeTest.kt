@@ -70,9 +70,8 @@ class DisplayParticleRuntimeTest {
         DisplayEffectVector3(0.1, 0.1, 0.1),
         DisplayEffectVector3(0.2, 0.2, 0.2),
         0.25,
+        "cc:inertial",
         DisplayEffectVector3.ZERO,
-        DisplayEffectVector3.ZERO,
-        1.0,
         DisplayEffectQuaternion.IDENTITY,
         DisplayEffectVector3(0.0, 0.1, 0.0),
         scaleVariation = if (randomized) 0.2 else 0.0,
@@ -96,6 +95,12 @@ class DisplayParticleRuntimeTest {
         }
 
         override fun apply(states: List<DisplayParticleState>) { applied += states }
+        override fun resolveCollision(
+            previousOffset: DisplayEffectVector3,
+            proposedOffset: DisplayEffectVector3,
+            proposedVelocity: DisplayEffectVector3,
+            motion: DisplayParticleMotionPreset
+        ) = DisplayParticleCollisionResult(proposedOffset, proposedVelocity)
         override fun isAlive() = true
         override fun disposeAll(reason: DisplayEffectDisposalReason) { disposed = true }
     }

@@ -1,5 +1,5 @@
 management:
-  usage: "§e使用法: /cc <config|give|menu>"
+  usage: "§e使用法: /cc <config|give|menu|particle>"
   no_permission: "§cこの操作を実行する権限がありません。"
   player_not_found: "§c対象プレイヤーが見つかりません: {player}"
   config:
@@ -18,3 +18,9 @@ management:
     invalid_argument: "§cメニュー引数が不正です: {argument}"
     success: "§a{player}へ{menu}を開きました。"
     failed: "§c{player}へ{menu}を開けませんでした。"
+  particle:
+    usage: "§e使用法: /cc particle limit [set <1..4096>]"
+    status: "§eDisplayパーティクル: 使用中 {used} / 上限 {limit} / 残り {remaining}"
+    invalid_limit: "§c上限は1～4096の整数で指定してください。"
+    save_failed: "§cDisplayパーティクル上限を保存できませんでした。"
+    changed: "§aDisplayパーティクル上限を{limit}に変更しました。現在使用中: {used}"
