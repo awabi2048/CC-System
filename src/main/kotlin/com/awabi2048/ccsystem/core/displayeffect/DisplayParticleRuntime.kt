@@ -108,7 +108,7 @@ internal class DisplayParticleRuntime(
             val age = state.ageTicks + 1
             return state.copy(
                 ageTicks = age,
-                scale = if (age == 0) state.initialScale else DisplayEffectVector3.ZERO,
+                scale = DisplayEffectVector3.ZERO,
                 phase = if (age == 0) DisplayParticlePhase.ACTIVE else DisplayParticlePhase.WAITING
             )
         }
@@ -186,8 +186,15 @@ internal class DisplayParticleRuntime(
             val progress = (age - fadeStart).toDouble() / state.fadeOutTicks.toDouble()
             return state.peakScale * (1.0 - smoothStep(progress))
         }
-        val peakAge = (state.lifetimeTicks * preset.peakScaleProgress).coerceAtLeast(1.0)
-        val progress = (age / peakAge).coerceIn(0.0, 1.0)
+        // 出現演出と通常の成長演出を分離し、scaleInTicksだけを変えてもpeak到達速度を変えません。
+        if (age <= preset.scaleInTicks) {
+            val progress = age.toDouble() / preset.scaleInTicks.toDouble()
+            return state.initialScale * smoothStep(progress)
+        }
+        val growthAge = age - preset.scaleInTicks
+        val growthDuration =
+            ((state.lifetimeTicks - preset.scaleInTicks) * preset.peakScaleProgress).coerceAtLeast(1.0)
+        val progress = (growthAge / growthDuration).coerceIn(0.0, 1.0)
         return state.initialScale.lerp(state.peakScale, smoothStep(progress))
     }
 
@@ -222,7 +229,7 @@ internal class DisplayParticleRuntime(
                 motionOffset,
                 motionVelocity + DisplayEffectVector3(velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed, velocityRandom.nextGaussian() * request.speed),
                 if (preset.randomInitialRotation) randomRotation(rotationRandom) else preset.initialRotation,
-                if (spawnDelay == 0) preset.initialScale * scaleMultiplier else DisplayEffectVector3.ZERO,
+                DisplayEffectVector3.ZERO,
                 selectTexture(textureRandom),
                 preset.initialScale * scaleMultiplier,
                 preset.peakScale * scaleMultiplier,

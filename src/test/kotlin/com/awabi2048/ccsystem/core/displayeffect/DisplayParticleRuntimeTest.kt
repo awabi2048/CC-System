@@ -11,6 +11,51 @@ import org.junit.jupiter.api.Test
 
 class DisplayParticleRuntimeTest {
     @Test
+    fun `生成直後はscale zeroで描画しsmoothstepで拡大する`() {
+        val backend = RecordingBackend()
+        val runtime = DisplayParticleRuntime(
+            preset(randomized = false),
+            DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")),
+            backend
+        )
+
+        runtime.start()
+        assertEquals(DisplayEffectVector3.ZERO, backend.created.single().single().scale)
+
+        runtime.tick()
+        runtime.tick()
+        val scales = backend.applied.take(2).map { it.single().scale.x }
+        assertEquals(0.05, scales[0], 1.0E-9)
+        assertEquals(0.1, scales[1], 1.0E-9)
+    }
+
+    @Test
+    fun `遅延出現中は寿命を消費せず解除後にscale zeroから拡大する`() {
+        val delayed = (0L..100L).firstNotNullOf { seed ->
+            val backend = RecordingBackend()
+            val runtime = DisplayParticleRuntime(
+                preset(randomized = false, maxSpawnDelayTicks = 3),
+                DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), randomSeed = seed),
+                backend
+            )
+            runtime.start()
+            backend.created.single().single().takeIf { it.ageTicks < 0 }?.let { Triple(runtime, backend, it) }
+        }
+        val (runtime, backend, initial) = delayed
+
+        repeat(-initial.ageTicks) { runtime.tick() }
+        val released = backend.applied.last().single()
+        assertEquals(0, released.ageTicks)
+        assertEquals(DisplayParticlePhase.ACTIVE, released.phase)
+        assertEquals(DisplayEffectVector3.ZERO, released.scale)
+
+        runtime.tick()
+        val firstVisible = backend.applied.last().single()
+        assertEquals(1, firstVisible.ageTicks)
+        assertEquals(0.05, firstVisible.scale.x, 1.0E-9)
+    }
+
+    @Test
     fun `countとEntity数は一対一で、最終scale zeroを描画してから破棄する`() {
         val backend = RecordingBackend()
         val runtime = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = 3, randomSeed = 1), backend)
@@ -61,7 +106,7 @@ class DisplayParticleRuntimeTest {
         assertTrue(first.map { it.textureAssetId }.distinct().size > 1)
     }
 
-    private fun preset(randomized: Boolean = true) = DisplayParticlePreset(
+    private fun preset(randomized: Boolean = true, maxSpawnDelayTicks: Int = 0) = DisplayParticlePreset(
         DisplayParticlePresetId("cc:test"),
         listOf(
             DisplayParticleTexture(DisplayEffectAssetId("minecraft:white_concrete"), 3),
@@ -70,6 +115,7 @@ class DisplayParticleRuntimeTest {
         DisplayEffectVector3(0.1, 0.1, 0.1),
         DisplayEffectVector3(0.2, 0.2, 0.2),
         0.25,
+        2,
         "cc:inertial",
         DisplayEffectVector3.ZERO,
         DisplayEffectQuaternion.IDENTITY,
@@ -81,7 +127,7 @@ class DisplayParticleRuntimeTest {
         lifetimeVariationTicks = if (randomized) 2 else 0,
         fadeOutTicks = 2,
         fadeOutVariationTicks = 0,
-        maxSpawnDelayTicks = 0
+        maxSpawnDelayTicks = maxSpawnDelayTicks
     )
 
     private class RecordingBackend(private val failCreate: Boolean = false) : DisplayParticleBackend {

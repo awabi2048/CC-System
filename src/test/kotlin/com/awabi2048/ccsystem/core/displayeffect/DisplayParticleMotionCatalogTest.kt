@@ -20,4 +20,10 @@ class DisplayParticleMotionCatalogTest {
             DisplayParticleMotionCatalog.require(preset.motionPresetId)
         }
     }
+
+    @Test
+    fun `上昇と漂流の揺らぎ強度を3倍値で固定する`() {
+        assertEquals(0.0045, DisplayParticleMotionCatalog.require("cc:buoyant").turbulenceStrength)
+        assertEquals(0.0105, DisplayParticleMotionCatalog.require("cc:drift").turbulenceStrength)
+    }
 }
