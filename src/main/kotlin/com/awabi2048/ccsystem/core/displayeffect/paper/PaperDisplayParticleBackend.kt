@@ -28,19 +28,20 @@ internal class PaperDisplayParticleBackend(
 ) : DisplayParticleBackend {
     private val anchor = origin.clone()
     private val world = requireNotNull(anchor.world) { "DisplayパーティクルのanchorにはWorldが必要です" }
-    private val managed = mutableListOf<BlockDisplay>()
+    private val managed = mutableListOf<BlockDisplay?>()
     private val instanceKey = NamespacedKey(plugin, "display-effect-instance")
     private val ownerKey = NamespacedKey(plugin, "display-effect-owner")
 
     override fun create(preset: DisplayParticlePreset, states: List<DisplayParticleState>) {
         requireMainThread()
-        val blockData = resolver.resolveBlock(preset.blockAssetId)
+        // 候補をすべてspawn前に検証し、低確率素材だけが実行時に部分失敗することを防ぎます。
+        val blockDataByAsset = preset.textures.associate { it.assetId to resolver.resolveBlock(it.assetId) }
         try {
             states.forEach { state ->
                 val entity = world.spawn(location(state), BlockDisplay::class.java)
                 // spawn後の設定失敗も同じ生成要求の原子的ロールバック対象へ含めます。
                 managed += entity
-                entity.setBlock(blockData.clone())
+                entity.setBlock(requireNotNull(blockDataByAsset[state.textureAssetId]).clone())
                 configure(entity)
                 markOwned(entity)
                 applyTransform(entity, state)
@@ -55,6 +56,12 @@ internal class PaperDisplayParticleBackend(
         requireMainThread()
         check(states.size == managed.size) { "Displayパーティクルの状態数とEntity数が一致しません" }
         managed.forEachIndexed { index, entity ->
+            if (entity == null) return@forEachIndexed
+            if (states[index].phase == com.awabi2048.ccsystem.core.displayeffect.DisplayParticlePhase.COMPLETED) {
+                if (entity.isValid && !entity.isDead) entity.remove()
+                managed[index] = null
+                return@forEachIndexed
+            }
             check(entity.teleport(location(states[index]))) { "Displayパーティクルの移動に失敗しました" }
             applyTransform(entity, states[index])
         }
@@ -63,12 +70,13 @@ internal class PaperDisplayParticleBackend(
     override fun isAlive(): Boolean {
         requireMainThread()
         if (Bukkit.getWorld(world.uid) == null) throw DisplayEffectWorldUnavailableException("Worldが利用できません: ${world.uid}")
-        return managed.isNotEmpty() && managed.all { it.isValid && !it.isDead }
+        val active = managed.filterNotNull()
+        return active.isNotEmpty() && active.all { it.isValid && !it.isDead }
     }
 
     override fun disposeAll(reason: DisplayEffectDisposalReason) {
         requireMainThread()
-        managed.asReversed().forEach { entity ->
+        managed.asReversed().filterNotNull().forEach { entity ->
             runCatching { if (entity.isValid && !entity.isDead) entity.remove() }
                 .onFailure { plugin.logger.warning("[DisplayParticle] cleanup failed: reason=$reason error=${it.message}") }
         }

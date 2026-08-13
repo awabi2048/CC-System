@@ -13,11 +13,11 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `countとEntity数は一対一で、最終scale zeroを描画してから破棄する`() {
         val backend = RecordingBackend()
-        val runtime = DisplayParticleRuntime(preset(), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = 3, randomSeed = 1), backend)
+        val runtime = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = 3, randomSeed = 1), backend)
 
         assertEquals(3, runtime.entityCount)
         assertEquals(DisplayEffectRuntimeResult.Started, runtime.start())
-        repeat(6) { runtime.tick() }
+        repeat(11) { runtime.tick() }
 
         assertEquals(3, backend.created.single().size)
         assertTrue(backend.applied.last().all { it.scale == DisplayEffectVector3.ZERO })
@@ -27,9 +27,9 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `fade区間ではsmoothstepでscaleが単調減少する`() {
         val backend = RecordingBackend()
-        val runtime = DisplayParticleRuntime(preset(), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend)
+        val runtime = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend)
         runtime.start()
-        repeat(4) { runtime.tick() }
+        repeat(8) { runtime.tick() }
         val scales = backend.applied.takeLast(2).map { it.single().scale.x }
         assertTrue(scales[1] < scales[0])
         assertTrue(scales[1] >= 0.0)
@@ -38,14 +38,35 @@ class DisplayParticleRuntimeTest {
     @Test
     fun `生成失敗時は全体を回収する`() {
         val backend = RecordingBackend(failCreate = true)
-        val result = DisplayParticleRuntime(preset(), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend).start()
+        val result = DisplayParticleRuntime(preset(randomized = false), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test")), backend).start()
         assertTrue(result is DisplayEffectRuntimeResult.Failed)
         assertTrue(backend.disposed)
     }
 
-    private fun preset() = DisplayParticlePreset(
+    @Test
+    fun `同じseedは全個体プロパティを再現しcount増加でも既存prefixを維持する`() {
+        fun generated(count: Int): List<DisplayParticleState> {
+            val backend = RecordingBackend()
+            DisplayParticleRuntime(preset(), DisplayParticleEmissionRequest(DisplayParticlePresetId("cc:test"), count = count, randomSeed = 9876), backend).start()
+            return backend.created.single()
+        }
+
+        val first = generated(8)
+        assertEquals(first, generated(8))
+        assertEquals(first, generated(12).take(8))
+        assertTrue(first.map { it.rotation }.distinct().size > 1)
+        assertTrue(first.map { it.angularVelocityRadiansPerTick }.distinct().size > 1)
+        assertTrue(first.map { it.initialScale }.distinct().size > 1)
+        assertTrue(first.map { it.lifetimeTicks }.distinct().size > 1)
+        assertTrue(first.map { it.textureAssetId }.distinct().size > 1)
+    }
+
+    private fun preset(randomized: Boolean = true) = DisplayParticlePreset(
         DisplayParticlePresetId("cc:test"),
-        DisplayEffectAssetId("minecraft:white_concrete"),
+        listOf(
+            DisplayParticleTexture(DisplayEffectAssetId("minecraft:white_concrete"), 3),
+            DisplayParticleTexture(DisplayEffectAssetId("minecraft:gray_concrete"), 1)
+        ),
         DisplayEffectVector3(0.1, 0.1, 0.1),
         DisplayEffectVector3(0.2, 0.2, 0.2),
         0.25,
@@ -54,8 +75,14 @@ class DisplayParticleRuntimeTest {
         1.0,
         DisplayEffectQuaternion.IDENTITY,
         DisplayEffectVector3(0.0, 0.1, 0.0),
-        lifetimeTicks = 4,
-        fadeOutTicks = 2
+        scaleVariation = if (randomized) 0.2 else 0.0,
+        angularVelocityVariation = if (randomized) 0.4 else 0.0,
+        randomInitialRotation = randomized,
+        lifetimeTicks = 8,
+        lifetimeVariationTicks = if (randomized) 2 else 0,
+        fadeOutTicks = 2,
+        fadeOutVariationTicks = 0,
+        maxSpawnDelayTicks = 0
     )
 
     private class RecordingBackend(private val failCreate: Boolean = false) : DisplayParticleBackend {
