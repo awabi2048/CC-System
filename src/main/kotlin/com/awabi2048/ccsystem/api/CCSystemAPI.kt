@@ -39,9 +39,14 @@ interface CCSystemAPI {
     val guiRuntimeContractVersion: Int
         get() = GUI_RUNTIME_CONTRACT_VERSION
 
+    /** Gesture GUIは既存Inventory GUIと独立した契約として版管理します。 */
+    val gestureGuiContractVersion: Int
+        get() = GESTURE_GUI_CONTRACT_VERSION
+
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
-        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 9
+        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 8
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 1
     }
     /**
      * プレイヤーの言語設定を取得します
