@@ -27,6 +27,13 @@ object GestureGuiGeometry {
     fun displayPitch(pose: GestureGuiScreenPose): Float =
         Math.toDegrees(-asin(pose.normal.y.coerceIn(-1.0, 1.0))).toFloat()
 
+    /** TextDisplayは描画面の表がローカル-Z側にあるため、画面の+Z法線と逆向きのEntity回転を返します。 */
+    fun textDisplayYaw(pose: GestureGuiScreenPose): Float =
+        Math.toDegrees(atan2(pose.normal.x, -pose.normal.z)).toFloat()
+
+    fun textDisplayPitch(pose: GestureGuiScreenPose): Float =
+        Math.toDegrees(asin(pose.normal.y.coerceIn(-1.0, 1.0))).toFloat()
+
     /**
      * 複数画面の外周と、その間の余白を一つの連続した操作領域として判定します。
      * 個々の傾斜面との交差ではなく視線角を使うため、画面間の空間でも追従を開始しません。

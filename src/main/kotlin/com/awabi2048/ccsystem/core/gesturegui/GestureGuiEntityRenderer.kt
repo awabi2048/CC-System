@@ -70,7 +70,12 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
         view.visuals.forEach { visual ->
             val entity = handle.visualEntities[visual.visualId] ?: return@forEach
-            entity.teleport(visualLocation(entity.world, pose, visual.x, visual.y, visual.layer))
+            val location = if (visual is GestureGuiVisual.Text) {
+                textLocation(entity.world, pose, visual.x, visual.y, visual.layer)
+            } else {
+                visualLocation(entity.world, pose, visual.x, visual.y, visual.layer)
+            }
+            entity.teleport(location)
         }
     }
 
@@ -117,10 +122,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         hover: GestureGuiHoverText,
     ): HoverHandle {
         val entity = player.world.spawn(
-            visualLocation(player.world, pose, hover.x, hover.y, hover.layer),
+            textLocation(player.world, pose, hover.x, hover.y, hover.layer),
             TextDisplay::class.java,
         ) {
-            prepareDisplay(it, pose)
+            prepareTextDisplay(it, pose)
             it.isVisibleByDefault = false
             it.text(hover.text)
             it.lineWidth = hover.lineWidth
@@ -139,7 +144,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     fun updateHover(handle: HoverHandle, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
-        handle.entity.teleport(visualLocation(handle.entity.world, pose, hover.x, hover.y, hover.layer))
+        handle.entity.teleport(textLocation(handle.entity.world, pose, hover.x, hover.y, hover.layer))
     }
 
     fun removeHover(handle: HoverHandle) = handle.entity.remove()
@@ -163,8 +168,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         }
 
     private fun spawnText(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Text): TextDisplay =
-        world.spawn(visualLocation(world, pose, visual.x, visual.y, visual.layer), TextDisplay::class.java) {
-            prepareDisplay(it, pose)
+        world.spawn(textLocation(world, pose, visual.x, visual.y, visual.layer), TextDisplay::class.java) {
+            prepareTextDisplay(it, pose)
             it.text(visual.text)
             it.lineWidth = visual.lineWidth
             it.isSeeThrough = visual.seeThrough
@@ -180,6 +185,12 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         display.interpolationDelay = 0
         display.interpolationDuration = 3
         display.setRotation(GestureGuiGeometry.displayYaw(pose), GestureGuiGeometry.displayPitch(pose))
+    }
+
+    private fun prepareTextDisplay(display: TextDisplay, pose: GestureGuiScreenPose) {
+        prepareDisplay(display, pose)
+        // TextDisplayだけは描画面の表法線が他Displayと逆なので、画面法線へ表側を合わせます。
+        display.setRotation(GestureGuiGeometry.textDisplayYaw(pose), GestureGuiGeometry.textDisplayPitch(pose))
     }
 
     private fun setBackgroundSize(
@@ -224,6 +235,17 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             GestureGuiGeometry.displayYaw(pose),
             GestureGuiGeometry.displayPitch(pose),
         )
+    }
+
+    private fun textLocation(
+        world: World,
+        pose: GestureGuiScreenPose,
+        x: Double,
+        y: Double,
+        layer: Int,
+    ): Location = visualLocation(world, pose, x, y, layer).apply {
+        yaw = GestureGuiGeometry.textDisplayYaw(pose)
+        pitch = GestureGuiGeometry.textDisplayPitch(pose)
     }
 
     private companion object {

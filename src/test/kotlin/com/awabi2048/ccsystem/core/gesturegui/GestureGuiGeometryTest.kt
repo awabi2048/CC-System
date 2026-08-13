@@ -47,6 +47,17 @@ class GestureGuiGeometryTest {
     }
 
     @Test
+    fun `text display rotation compensates its reversed surface normal`() {
+        val eastFacingPose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 90.0, 3)[1]
+        assertEquals(-90.0, GestureGuiGeometry.textDisplayYaw(eastFacingPose).toDouble(), 1.0e-6)
+        assertEquals(0.0, GestureGuiGeometry.textDisplayPitch(eastFacingPose).toDouble(), 1.0e-6)
+
+        val lowerPose = GestureGuiGeometry.poses(GestureGuiVector3(0.0, 0.0, 0.0), 0.0, 1).single()
+        assertEquals(180.0, kotlin.math.abs(GestureGuiGeometry.textDisplayYaw(lowerPose).toDouble()), 1.0e-6)
+        assertEquals(-20.0, GestureGuiGeometry.textDisplayPitch(lowerPose).toDouble(), 1.0e-6)
+    }
+
+    @Test
     fun `multiple screen envelope includes vertical gaps but excludes its outside`() {
         fun direction(yaw: Double, pitch: Double): GestureGuiVector3 {
             val yawRadians = Math.toRadians(yaw)
