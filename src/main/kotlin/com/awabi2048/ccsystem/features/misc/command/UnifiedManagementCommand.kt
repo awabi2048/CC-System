@@ -10,8 +10,14 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import com.awabi2048.ccsystem.core.config.ConfigManager
+import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
+import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
 
-class UnifiedManagementCommand : CommandExecutor, TabCompleter {
+internal class UnifiedManagementCommand(
+    private val displayParticleCountProvider: () -> Int,
+    private val displayParticleBookTestController: DisplayParticleBookTestController
+) : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender,
         command: Command,
@@ -26,12 +32,87 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
             "config" -> handleConfig(sender, args.drop(1))
             "give" -> handleGive(sender, args.drop(1))
             "menu" -> handleMenu(sender, args.drop(1))
+            "particle" -> handleParticle(sender, args.drop(1))
+            "debug" -> handleDebug(sender, args.drop(1))
             else -> {
                 sender.sendMessage(message(sender, "management.usage"))
                 true
             }
         }
     }
+
+    private fun handleDebug(sender: CommandSender, args: List<String>): Boolean {
+        if (!hasPermission(sender, "cc.command.debug")) {
+            sender.sendMessage(message(sender, "management.no_permission"))
+            return true
+        }
+        val player = sender as? Player
+        if (player == null || args.isEmpty()) {
+            sender.sendMessage(message(sender, "management.debug.usage"))
+            return true
+        }
+        when (args[0].lowercase()) {
+            "toggle_particle_test" -> displayParticleBookTestController.toggle(player)
+            "particle_test_guide" -> displayParticleBookTestController.showGuide(player, args.getOrNull(1))
+            "apply_particle_book_fix" -> args.getOrNull(1)?.let { displayParticleBookTestController.applyPendingFix(player, it) }
+                ?: sender.sendMessage(message(sender, "management.debug.usage"))
+            else -> sender.sendMessage(message(sender, "management.debug.usage"))
+        }
+        return true
+    }
+
+    private fun handleParticle(sender: CommandSender, args: List<String>): Boolean {
+        if (!hasPermission(sender, "cc.command.particle.limit")) {
+            sender.sendMessage(message(sender, "management.no_permission"))
+            return true
+        }
+        if (args.firstOrNull()?.lowercase() != "limit") {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        if (args.size == 1) {
+            val used = displayParticleCountProvider()
+            sender.sendMessage(message(sender, "management.particle.status_header", mapOf("used" to used)))
+            DisplayParticleLimitType.entries.forEach { type -> sender.sendMessage(limitStatus(sender, type)) }
+            return true
+        }
+        val type = DisplayParticleLimitType.fromCommandName(args[1])
+        if (type == null) {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        if (args.size == 2) {
+            sender.sendMessage(limitStatus(sender, type))
+            return true
+        }
+        if (args.size != 4 || !args[2].equals("set", true)) {
+            sender.sendMessage(message(sender, "management.particle.usage"))
+            return true
+        }
+        val limit = args[3].toIntOrNull()
+        if (limit == null || limit !in type.allowedRange) {
+            sender.sendMessage(message(sender, "management.particle.invalid_limit", limitPlaceholders(sender, type)))
+            return true
+        }
+        if (!ConfigManager.setDisplayParticleLimit(type, limit)) {
+            sender.sendMessage(message(sender, "management.particle.save_failed"))
+            return true
+        }
+        sender.sendMessage(message(sender, "management.particle.changed", limitPlaceholders(sender, type) + ("limit" to limit)))
+        return true
+    }
+
+    private fun limitStatus(sender: CommandSender, type: DisplayParticleLimitType): String = message(
+        sender,
+        "management.particle.status_line",
+        limitPlaceholders(sender, type) + ("limit" to ConfigManager.getDisplayParticleLimit(type))
+    )
+
+    private fun limitPlaceholders(sender: CommandSender, type: DisplayParticleLimitType): Map<String, Any> = mapOf(
+        "type" to message(sender, "management.particle.type.${type.commandName}"),
+        "minimum" to type.allowedRange.first,
+        "maximum" to type.allowedRange.last
+    )
 
     private fun handleConfig(sender: CommandSender, args: List<String>): Boolean {
         if (!hasPermission(sender, "cc.command.config")) {
@@ -189,7 +270,7 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
     ): List<String> {
         val input = args.lastOrNull().orEmpty()
         if (args.size == 1) {
-            return filter(listOf("config", "give", "menu"), input)
+            return filter(listOf("config", "debug", "give", "menu", "particle"), input)
         }
         return when (args[0].lowercase()) {
             "config" -> when (args.size) {
@@ -213,6 +294,22 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
                     filter(definition?.argumentKeys?.map { "$it=" }.orEmpty(), input)
                 }
             }
+            "particle" -> when (args.size) {
+                2 -> filter(listOf("limit"), input)
+                3 -> if (args.getOrNull(1).equals("limit", true)) filter(DisplayParticleLimitType.entries.map { it.commandName }, input) else emptyList()
+                4 -> if (DisplayParticleLimitType.fromCommandName(args.getOrNull(2).orEmpty()) != null) filter(listOf("set"), input) else emptyList()
+                5 -> if (args.getOrNull(3).equals("set", true)) {
+                    filter(limitSuggestions(DisplayParticleLimitType.fromCommandName(args.getOrNull(2).orEmpty())), input)
+                } else emptyList()
+                else -> emptyList()
+            }
+            "debug" -> when (args.size) {
+                2 -> filter(listOf("toggle_particle_test", "particle_test_guide"), input)
+                3 -> if (args.getOrNull(1).equals("particle_test_guide", true)) {
+                    filter(listOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission"), input)
+                } else emptyList()
+                else -> emptyList()
+            }
             else -> emptyList()
         }
     }
@@ -228,6 +325,14 @@ class UnifiedManagementCommand : CommandExecutor, TabCompleter {
 
     private fun filter(values: Collection<String>, input: String): List<String> =
         values.filter { it.startsWith(input, ignoreCase = true) }.sorted()
+
+    private fun limitSuggestions(type: DisplayParticleLimitType?): List<String> = when (type) {
+        DisplayParticleLimitType.GLOBAL -> listOf("128", "256", "512", "1024")
+        DisplayParticleLimitType.OWNER -> listOf("32", "64", "128", "256")
+        DisplayParticleLimitType.PER_TICK -> listOf("16", "32", "64", "128")
+        DisplayParticleLimitType.EMISSION -> listOf("1", "8", "16", "32")
+        null -> emptyList()
+    }
 
     private fun message(
         sender: CommandSender,

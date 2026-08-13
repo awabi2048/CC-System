@@ -22,6 +22,9 @@ import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
+import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
+import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
+import com.awabi2048.ccsystem.core.item.SystemItemGrantProvider
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
 import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickBinderListener
@@ -308,6 +311,7 @@ class CCSystem : JavaPlugin() {
             "config/announce.yml",
             "config/queue.yml",
             "config/season.yml",
+            "config/display_effect.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
             "data/announce/announce_data.yml",
@@ -337,10 +341,14 @@ class CCSystem : JavaPlugin() {
             "config/public_sign.yml",
             "config/announce.yml",
             "config/queue.yml",
-            "config/season.yml"
+            "config/season.yml",
+            "config/display_effect.yml"
         )
         val specs = paths.map { resourcePath ->
-            val currentVersion = if (resourcePath == "config/misc.yml") 2 else 1
+            val currentVersion = when (resourcePath) {
+                "config/misc.yml", "config/display_effect.yml" -> 2
+                else -> 1
+            }
             ManagedConfigSpec(
                 owner = "cc-system",
                 sourcePlugin = this,
@@ -348,8 +356,8 @@ class CCSystem : JavaPlugin() {
                 targetPath = File(dataFolder, resourcePath).toPath(),
                 currentVersion = currentVersion,
                 classification = ConfigClassification.MANAGED_CONFIG,
-                migrations = if (resourcePath == "config/misc.yml") {
-                    mapOf(
+                migrations = when (resourcePath) {
+                    "config/misc.yml" -> mapOf(
                         1 to ConfigMigration { configuration ->
                             val worlds = configuration.getConfigurationSection("music.worlds")
                             worlds?.getKeys(false)
@@ -363,8 +371,18 @@ class CCSystem : JavaPlugin() {
                                 }
                         }
                     )
-                } else {
-                    emptyMap()
+                    "config/display_effect.yml" -> mapOf(
+                        1 to ConfigMigration { configuration ->
+                            // 既存の全体上限は維持し、新しい制限だけを安全な初期値で追加します。
+                            mapOf(
+                                "particle.max_active_per_owner" to 128,
+                                "particle.max_spawned_per_tick_per_owner" to 64,
+                                "particle.max_per_emission" to 32
+                            ).filterKeys { !configuration.contains(it) }
+                                .forEach(configuration::set)
+                        }
+                    )
+                    else -> emptyMap()
                 },
                 validator = com.awabi2048.ccsystem.api.config.ConfigValidator {},
                 reloadAction = {
@@ -401,6 +419,8 @@ class CCSystem : JavaPlugin() {
         // マネージャー初期化
         ConfigManager.load()
         LanguageManager.load()
+        // CC-System所有のカスタムアイテムも、他モジュールと同じItemGrant APIから付与可能にします。
+        _api.getItemGrantService().register(SystemItemGrantProvider())
         MessageManager.load()
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()
@@ -430,7 +450,15 @@ class CCSystem : JavaPlugin() {
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
-        val unifiedManagementCommand = UnifiedManagementCommand()
+        val displayParticleBookTestController = DisplayParticleBookTestController(
+            this,
+            _api.getDisplayEffectService() as DisplayEffectServiceImpl
+        )
+        server.pluginManager.registerEvents(displayParticleBookTestController, this)
+        val unifiedManagementCommand = UnifiedManagementCommand(
+            { _api.getDisplayParticleCount() },
+            displayParticleBookTestController
+        )
         getCommand("cc")?.setExecutor(unifiedManagementCommand)
         getCommand("cc")?.tabCompleter = unifiedManagementCommand
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())

@@ -6,15 +6,19 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.MenuAcceptedClicks
 import com.awabi2048.ccsystem.core.config.LanguageManager
+import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBookSample
 import io.papermc.paper.datacomponent.DataComponentTypes
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.persistence.PersistentDataType
 
 object CustomItemFactory {
     private const val RENTAL_TICKET_ITEM_ID = "rental_ticket"
+    private const val DISPLAY_PARTICLE_SAMPLE_ITEM_ID = "cc-system.display_particle_book_sample"
 
     private val itemIdKey: NamespacedKey
         get() = NamespacedKey(CCSystem.instance, "custom_item_id")
@@ -60,5 +64,26 @@ object CustomItemFactory {
             return null
         }
         return item?.itemMeta?.persistentDataContainer?.get(rentalDaysKey, PersistentDataType.INTEGER)
+    }
+
+    /** 7ページの初期設定を編集できる、ボクセルパーティクル検証用の本と羽ペンを生成します。 */
+    fun createDisplayParticleSampleBook(player: Player?): ItemStack {
+        val item = ItemStack(Material.WRITABLE_BOOK)
+        val meta = item.itemMeta as? BookMeta ?: return item
+        meta.displayName(LanguageManager.getMessageWithoutPrefix(player, "management.debug.particle_sample_item.name"))
+        meta.lore(CCSystem.getAPI().getLoreService().render(GuiLoreSpec.Blocks(listOf(
+            GuiLoreBlock(listOf(GuiLoreLine.Text(
+                LanguageManager.getRawString(player, "management.debug.particle_sample_item.description")
+            ))),
+            GuiLoreBlock(listOf(GuiLoreLine.Interaction(
+                player,
+                MenuAcceptedClicks.RIGHT,
+                LanguageManager.getRawString(player, "management.debug.particle_sample_item.operation")
+            )))
+        ))))
+        meta.pages(DisplayParticleBookSample.pages.map(Component::text))
+        meta.persistentDataContainer.set(itemIdKey, PersistentDataType.STRING, DISPLAY_PARTICLE_SAMPLE_ITEM_ID)
+        item.itemMeta = meta
+        return item
     }
 }

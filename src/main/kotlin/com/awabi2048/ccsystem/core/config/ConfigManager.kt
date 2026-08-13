@@ -23,9 +23,13 @@ object ConfigManager {
     private const val PUBLIC_SIGN_CONFIG_PATH = "config/public_sign.yml"
     private const val ANNOUNCE_CONFIG_PATH = "config/announce.yml"
     private const val QUEUE_CONFIG_PATH = "config/queue.yml"
+    private const val DISPLAY_EFFECT_CONFIG_PATH = "config/display_effect.yml"
 
     private lateinit var coreConfigFile: File
     private lateinit var coreConfig: YamlConfiguration
+    private lateinit var displayEffectConfigFile: File
+    private lateinit var displayEffectConfig: YamlConfiguration
+    private val displayParticleLimits = DisplayParticleLimitType.entries.associateWith { it.defaultValue }.toMutableMap()
 
     // === 機能トグル ===
     private var featureResourceWorldEnabled: Boolean = true
@@ -199,6 +203,7 @@ object ConfigManager {
         val publicSign = loadYaml(PUBLIC_SIGN_CONFIG_PATH)
         val announce = loadYaml(ANNOUNCE_CONFIG_PATH)
         val queue = loadYaml(QUEUE_CONFIG_PATH)
+        val displayEffect = loadYaml(DISPLAY_EFFECT_CONFIG_PATH)
 
         loadCoreSettings(core)
         loadMiscSettings(misc)
@@ -206,6 +211,13 @@ object ConfigManager {
         loadResourceWorldSettings(resourceWorld)
         loadAnnounceSettings(announce)
         loadQueueSettings(queue)
+        DisplayParticleLimitType.entries.forEach { type ->
+            displayParticleLimits[type] = displayEffect.getInt(type.configPath, type.defaultValue).also { value ->
+                require(value in type.allowedRange) {
+                    "${type.configPath}は${type.allowedRange.first}..${type.allowedRange.last}で指定してください: $value"
+                }
+            }
+        }
     }
 
     fun reload() {
@@ -250,6 +262,10 @@ object ConfigManager {
         if (relativePath == CORE_CONFIG_PATH) {
             coreConfigFile = file
             coreConfig = yaml
+        }
+        if (relativePath == DISPLAY_EFFECT_CONFIG_PATH) {
+            displayEffectConfigFile = file
+            displayEffectConfig = yaml
         }
         return yaml
     }
@@ -568,6 +584,28 @@ object ConfigManager {
     fun getDefaultLanguage(): String = defaultLanguage
     fun getLanguage(): String = defaultLanguage
     fun isDebug(): Boolean = debug
+    internal fun getDisplayParticleLimit(type: DisplayParticleLimitType = DisplayParticleLimitType.GLOBAL): Int =
+        requireNotNull(displayParticleLimits[type]) { "Displayパーティクル制限が初期化されていません: $type" }
+
+    /** 保存成功後にだけ実行値を切り替え、ディスクとメモリの不一致を防ぎます。 */
+    internal fun setDisplayParticleLimit(type: DisplayParticleLimitType, limit: Int): Boolean {
+        require(limit in type.allowedRange) {
+            "${type.commandName}上限は${type.allowedRange.first}..${type.allowedRange.last}です"
+        }
+        if (!::displayEffectConfig.isInitialized || !::displayEffectConfigFile.isInitialized) return false
+        val previous = displayEffectConfig.get(type.configPath)
+        displayEffectConfig.set(type.configPath, limit)
+        return runCatching {
+            displayEffectConfig.save(displayEffectConfigFile)
+            displayParticleLimits[type] = limit
+            true
+        }.getOrElse {
+            // 次回の保存で未反映値が混入しないよう、インメモリYAMLも保存前へ戻します。
+            displayEffectConfig.set(type.configPath, previous)
+            CCSystem.instance.logger.warning("${type.configPath}の保存に失敗しました: ${it.message}")
+            false
+        }
+    }
 
     fun getShiftFBinderCommands(): List<String> = shiftFBinderCommands
     fun getPlayerLeftClickBinderCommands(): List<String> = playerLeftClickBinderCommands

@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.api
 
 import com.awabi2048.ccsystem.api.config.ConfigSchemaService
 import com.awabi2048.ccsystem.api.cosmetic.CosmeticPlatform
+import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectService
 import com.awabi2048.ccsystem.api.gui.GuiElementService
 import com.awabi2048.ccsystem.api.gui.GuiLayoutService
 import com.awabi2048.ccsystem.api.gui.LoreService
@@ -145,6 +146,9 @@ interface CCSystemAPI {
     fun getNaturalOriginRegistry(): NaturalOriginRegistry
 
     fun getCosmeticPlatform(): CosmeticPlatform
+
+    /** Display Entityを用いたバニラ風エフェクトの実行サービスです。 */
+    fun getDisplayEffectService(): DisplayEffectService
 
     /**
      * 指定ワールドがCC-System管理の資源ワールドか判定します。
