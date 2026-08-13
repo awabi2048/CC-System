@@ -334,7 +334,7 @@ custom_items:
       name: §eAcorn Cookie
       lore:
       - §7The savory aroma whets your appetite.
-      - §8§oOage-chan: "I baked it!"
+      - '§8§oOage-chan: "I baked it!"'
     taro_snack:
       name: §bTaro's Snack
       lore:

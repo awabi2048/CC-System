@@ -193,6 +193,7 @@ error:
   player_not_found: §cPlayer not found.
   portal_bind_invalid_publish: §cOnly Public or Limited worlds can be bound.
   portal_bind_myworld_only: §cPortals can only be bound inside a MyWorld.
+  portal_place_in_world_gate: §cYou cannot place a world portal inside a world gate.
   portal_dest_locked: §cThe destination of this portal is currently locked.
   portal_not_bound: §cThis portal is not yet bound to a world.
   world_gate_bind_required: §cBind destination first with Shift+Right-Click before selecting points.

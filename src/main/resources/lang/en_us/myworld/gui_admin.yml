@@ -150,8 +150,8 @@ gui:
     plugin_info:
       display: §bMyWorldManager
       lore:
-      - §7Version: {version}
-      - §7Author: {author}
+      - '§7Version: {version}'
+      - '§7Author: {author}'
     menu_switch:
       display: §bAdmin Menu
       lore:

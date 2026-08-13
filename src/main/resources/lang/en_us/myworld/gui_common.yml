@@ -57,6 +57,10 @@ gui:
       description:
       - §7Players outside the new border may be moved into blocks.
       - §eDo you still want to continue this reset?
+      lore:
+      - §cThe spawn location is not safe after reset.
+      - §7Players outside the new border may be moved into blocks.
+      - §eDo you still want to continue this reset?
     delete_1:
       title: Delete Confirm (1/2)
       display: World Deletion Confirmation

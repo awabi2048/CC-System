@@ -193,6 +193,7 @@ error:
   player_not_found: §cプレイヤーが見つかりませんでした。
   portal_bind_invalid_publish: §c公開か限定公開のワールドのみ紐づけ可能です。
   portal_bind_myworld_only: §cポータルはマイワールド内でのみ紐づけ可能です。
+  portal_place_in_world_gate: §cワールドゲートの内部にはワールドポータルを設置できません。
   portal_dest_locked: §cこのポータルの先は現在閉鎖されています！
   portal_not_bound: §cこのポータルはまだワールドに紐づけられていません。
   world_gate_bind_required: §cワールドゲートを使うには、先にShift+右クリックでワールドを紐づけてください。

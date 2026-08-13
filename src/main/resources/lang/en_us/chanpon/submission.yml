@@ -2,8 +2,8 @@ chanpon:
   submission:
     common:
       action_next: "Toggle"
-      "on": On
-      "off": Off
+      "on": "On"
+      "off": "Off"
     creation:
       display: "§eSet as production world"
       lore:

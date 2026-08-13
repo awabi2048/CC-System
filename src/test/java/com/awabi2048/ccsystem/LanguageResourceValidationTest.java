@@ -39,6 +39,12 @@ class LanguageResourceValidationTest {
                 "gui.creation.template_detail.status_label",
                 "gui.creation.template_detail.status_available",
                 "gui.creation.template_detail.status_unavailable",
+                // MyWorldManagerの移行ガードはCC-Systemの言語資源を実行時契約として使用します。
+                // 日英双方から同時に欠落してもロケール間比較だけでは検出できないため、必須キーを固定します。
+                "messages.migration.required",
+                "messages.migration.incomplete",
+                "messages.migration.force_console_confirm",
+                "messages.migration.force_default_applied",
                 "chanpon.admin_wizard.detail_content_available",
                 "chanpon.admin_wizard.detail_content_unavailable",
                 "chanpon.admin_wizard.validation.missing_directory",
@@ -86,7 +92,7 @@ class LanguageResourceValidationTest {
 
     private static final class LanguageResourceValidator {
         private static final String BASE_LOCALE = "ja_jp";
-        private static final Pattern PLACEHOLDER = Pattern.compile("\\{[A-Za-z0-9_]+}");
+        private static final Pattern PLACEHOLDER = Pattern.compile("\\{[A-Za-z0-9_]+}|%[A-Za-z0-9_]+%");
 
         static void validate(Path langRoot, List<String> requiredKeys) throws IOException {
             Map<String, Map<String, Map<String, Object>>> locales = loadLocales(langRoot);
@@ -184,6 +190,18 @@ class LanguageResourceValidationTest {
                         compareNode(errors, locale, fileName, childPath, entry.getValue(), actualMap.get(entry.getKey()));
                     }
                 }
+            } else if (expected instanceof List<?> expectedList && actual instanceof List<?> actualList) {
+                // 翻訳では改行位置と行数が変わり得るため、リスト要素は文字列型と全体の置換契約を検証します。
+                for (int index = 0; index < actualList.size(); index++) {
+                    if (!(actualList.get(index) instanceof String)) {
+                        errors.add(format("list element type mismatch", locale, fileName, path + "[" + index + "]", "expected=String actual=" + nodeType(actualList.get(index))));
+                    }
+                }
+                Set<String> expectedPlaceholders = placeholders(expectedList);
+                Set<String> actualPlaceholders = placeholders(actualList);
+                if (!expectedPlaceholders.equals(actualPlaceholders)) {
+                    errors.add(format("placeholder mismatch", locale, fileName, displayPath(path), "expected=" + expectedPlaceholders + " actual=" + actualPlaceholders));
+                }
             } else if (expected instanceof String expectedString && actual instanceof String actualString) {
                 Set<String> expectedPlaceholders = placeholders(expectedString);
                 Set<String> actualPlaceholders = placeholders(actualString);
@@ -231,8 +249,11 @@ class LanguageResourceValidationTest {
         private static String nodeType(Object value) {
             if (value instanceof Map<?, ?>) return "Map";
             if (value instanceof List<?>) return "List";
+            if (value instanceof String) return "String";
+            if (value instanceof Number) return "Number";
+            if (value instanceof Boolean) return "Boolean";
             if (value == null) return "Null";
-            return "Scalar";
+            return value.getClass().getSimpleName();
         }
 
         private static Set<String> placeholders(String value) {
@@ -241,6 +262,12 @@ class LanguageResourceValidationTest {
             while (matcher.find()) {
                 placeholders.add(matcher.group());
             }
+            return placeholders;
+        }
+
+        private static Set<String> placeholders(List<?> values) {
+            Set<String> placeholders = new LinkedHashSet<>();
+            values.forEach(value -> placeholders.addAll(placeholders(String.valueOf(value))));
             return placeholders;
         }
 

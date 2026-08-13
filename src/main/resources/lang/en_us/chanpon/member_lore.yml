@@ -8,8 +8,8 @@ chanpon:
     permission_menu:
       title: "Member Permissions"
       state_label: State
-      enabled: On
-      disabled: Off
+      enabled: "On"
+      disabled: "Off"
       toggle_action: Toggle
       back: "Back"
       role:
