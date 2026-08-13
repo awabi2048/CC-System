@@ -2,12 +2,34 @@ package com.awabi2048.ccsystem.api.gesturegui
 
 import java.util.UUID
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class GestureGuiModelsTest {
+    @Test
+    fun `default panel doubles the legacy area and uses cyan terracotta frame`() {
+        val panel = GestureGuiPanel()
+        assertEquals(2.0 * 1.5 * 0.75, panel.width * panel.height, 1.0e-9)
+        assertEquals(2.0, panel.width / panel.height, 1.0e-9)
+        assertEquals(Material.CYAN_TERRACOTTA, panel.frameMaterial)
+    }
+
+    @Test
+    fun `child screen accepts arbitrary finite size through its view panel`() {
+        val view = GestureGuiView(
+            GestureGuiScreenDefinition("dialog", emptyList()),
+            emptyList(),
+            GestureGuiPanel(width = 0.8, height = 0.45),
+        ) {}
+        val options = GestureGuiChildOptions("parent", offsetX = 0.2, offsetY = -0.1)
+
+        assertEquals(0.8, view.panel.width)
+        assertFalse(options.allowParentInteraction)
+    }
     @Test
     fun `access policy separates owner allowlist and public operation`() {
         val owner = UUID.randomUUID()
@@ -38,8 +60,8 @@ class GestureGuiModelsTest {
 
     @Test
     fun `hover text accepts arbitrary finite screen coordinates`() {
-        val hover = GestureGuiHoverText(Component.text("hover"), 0.61, -0.31, layer = 42)
-        assertTrue(hover.x == 0.61 && hover.y == -0.31 && hover.layer == 42)
+        val hover = GestureGuiHoverText(Component.text("hover"), 0.61, -0.31, layer = 38)
+        assertTrue(hover.x == 0.61 && hover.y == -0.31 && hover.layer == 38)
     }
 
     @Test

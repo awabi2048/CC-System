@@ -15,6 +15,7 @@ object GestureGuiKeys {
     @JvmField val GESTURE_GUI_DEMO_CLOSED = LocalizationKey.text("gesture_gui.demo.closed")
     @JvmField val GESTURE_GUI_DEMO_ACTION = LocalizationKey.text("gesture_gui.demo.action", setOf("gesture"))
     @JvmField val GESTURE_GUI_DEMO_USAGE = LocalizationKey.text("gesture_gui.demo.usage")
+    @JvmField val GESTURE_GUI_DEMO_DIALOG_CLOSE = LocalizationKey.text("gesture_gui.demo.dialog_close")
     @JvmField val GESTURE_GUI_EXIT_GUIDANCE = LocalizationKey.text("gesture_gui.exit_guidance")
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
@@ -29,6 +30,7 @@ object GestureGuiKeys {
         GESTURE_GUI_DEMO_CLOSED,
         GESTURE_GUI_DEMO_ACTION,
         GESTURE_GUI_DEMO_USAGE,
+        GESTURE_GUI_DEMO_DIALOG_CLOSE,
         GESTURE_GUI_EXIT_GUIDANCE,
     )
 }

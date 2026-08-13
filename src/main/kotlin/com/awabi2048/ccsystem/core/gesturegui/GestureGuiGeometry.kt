@@ -13,8 +13,8 @@ import kotlin.math.sin
 
 /** ジェスチャーGUIの配置と視線判定を一つの座標定義から算出します。 */
 object GestureGuiGeometry {
-    const val SCREEN_WIDTH: Double = 1.5
-    const val SCREEN_HEIGHT: Double = 0.75
+    const val SCREEN_WIDTH: Double = 2.1213203435596424
+    const val SCREEN_HEIGHT: Double = 1.0606601717798212
     const val SCREEN_DISTANCE: Double = 1.5
 
     private const val INTERSECTION_EPSILON = 1.0e-9
@@ -42,16 +42,18 @@ object GestureGuiGeometry {
         rayDirection: GestureGuiVector3,
         retainedYawDegrees: Double,
         screenCount: Int,
+        sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
+        require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
         val direction = rayDirection.normalized()
         val rayYaw = Math.toDegrees(atan2(-direction.x, direction.z))
         val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
-        val horizontalHalfAngle = Math.toDegrees(atan((SCREEN_WIDTH / 2.0) / SCREEN_DISTANCE))
-        val verticalHalfAngle = Math.toDegrees(atan((SCREEN_HEIGHT / 2.0) / SCREEN_DISTANCE))
-        val pitches = centerPitches(screenCount)
-        return angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle &&
-            rayPitch in (pitches.first() - verticalHalfAngle)..(pitches.last() + verticalHalfAngle)
+        val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
+        val pitches = centerPitches(sizes)
+        val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
+        val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
+        return angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
     }
 
     private fun angularDistance(first: Double, second: Double): Double =
@@ -65,14 +67,33 @@ object GestureGuiGeometry {
         else -> throw IllegalArgumentException("gesture GUI supports one to three screens")
     }
 
+    /** 可変画面の上下角に約2度の余白を加え、中央pitchを動的に配置します。 */
+    fun centerPitches(sizes: List<Pair<Double, Double>>): List<Double> {
+        require(sizes.size in 1..3) { "gesture GUI requires one to three screens" }
+        if (sizes.size == 1) return listOf(20.0)
+        val halfAngles = sizes.map { Math.toDegrees(atan((it.second / 2.0) / SCREEN_DISTANCE)) }
+        val centers = MutableList(sizes.size) { 0.0 }
+        for (index in 1 until centers.size) {
+            centers[index] = centers[index - 1] + halfAngles[index - 1] + halfAngles[index] + SCREEN_VERTICAL_GAP_DEGREES
+        }
+        val midpoint = (centers.first() + centers.last()) / 2.0
+        return centers.map { it - midpoint }
+    }
+
     /** 画面中心への視線を法線とし、描画と当たり判定で共有する直交基底を作ります。 */
-    fun poses(eye: GestureGuiVector3, yawDegrees: Double, screenCount: Int): List<GestureGuiScreenPose> {
+    fun poses(
+        eye: GestureGuiVector3,
+        yawDegrees: Double,
+        screenCount: Int,
+        sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
+    ): List<GestureGuiScreenPose> {
         require(yawDegrees.isFinite()) { "gesture GUI yaw must be finite" }
+        require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
         val yaw = Math.toRadians(yawDegrees)
         val forward = GestureGuiVector3(-sin(yaw), 0.0, cos(yaw))
         val right = GestureGuiVector3(-cos(yaw), 0.0, -sin(yaw))
 
-        return centerPitches(screenCount).mapIndexed { index, pitchDegrees ->
+        return centerPitches(sizes).mapIndexed { index, pitchDegrees ->
             val pitch = Math.toRadians(pitchDegrees)
             val direction = GestureGuiVector3(
                 forward.x * cos(pitch),
@@ -90,11 +111,13 @@ object GestureGuiGeometry {
                 right = right,
                 up = up,
                 normal = normal,
-                width = SCREEN_WIDTH,
-                height = SCREEN_HEIGHT,
+                width = sizes[index].first,
+                height = sizes[index].second,
             )
         }
     }
+
+    private const val SCREEN_VERTICAL_GAP_DEGREES = 2.0
 
     /** 正面から画面矩形に入った交点のうち、視点に最も近いものを返します。 */
     fun hitTest(

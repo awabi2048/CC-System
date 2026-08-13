@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseMode
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiChildOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
@@ -42,6 +43,24 @@ class GestureGuiServiceImpl(
         val render: GestureGuiEntityRenderer.ScreenHandle,
     )
 
+    private data class ChildRuntime(
+        val view: GestureGuiView,
+        val options: GestureGuiChildOptions,
+        var pose: GestureGuiScreenPose,
+        val render: GestureGuiEntityRenderer.ScreenHandle,
+        val overlay: org.bukkit.entity.BlockDisplay?,
+    )
+
+    private data class TargetHit(
+        val screen: ScreenRuntime?,
+        val child: ChildRuntime?,
+        val hit: com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit,
+        val blocked: Boolean = false,
+    ) {
+        val view: GestureGuiView? get() = child?.view ?: screen?.view
+        val pose: GestureGuiScreenPose? get() = child?.pose ?: screen?.pose
+    }
+
     private data class Session(
         val id: UUID,
         val ownerId: UUID,
@@ -53,6 +72,7 @@ class GestureGuiServiceImpl(
         var anchorZ: Double,
         var appliedYaw: Float,
         var screens: List<ScreenRuntime>,
+        val children: MutableList<ChildRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
     )
 
@@ -82,13 +102,13 @@ class GestureGuiServiceImpl(
 
         val revision = nextRevision++
         val id = UUID.randomUUID()
-        val poses = poses(owner, owner.location.yaw, views.size)
+        val poses = poses(owner, owner.location.yaw, views)
         val screens = views.zip(poses).map { (view, pose) ->
             ScreenRuntime(view, pose, renderer.spawnScreen(owner.world, id, revision, pose, view))
         }
         val session = Session(
             id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
-            owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableMapOf(),
+            owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableListOf(), mutableMapOf(),
         )
         try {
             session.actors[owner.uniqueId] = createActor(session, owner)
@@ -117,6 +137,50 @@ class GestureGuiServiceImpl(
         return opened.ownerId == ownerId
     }
 
+    override fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean {
+        val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
+        val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        if (session.children.size >= MAX_CHILD_DEPTH) return false
+        val parent = session.screens.firstOrNull { it.view.definition.screenId == options.parentScreenId } ?: return false
+        require(session.screens.none { it.view.definition.screenId == view.definition.screenId } &&
+            session.children.none { it.view.definition.screenId == view.definition.screenId }) {
+            "gesture GUI screenId must be unique within a session"
+        }
+        val childIndex = session.children.size
+        session.revision = nextRevision++
+        val pose = childPose(parent.pose, view, options, session.screens.size + childIndex, childIndex)
+        var overlay: org.bukkit.entity.BlockDisplay? = null
+        val render = try {
+            if (!options.allowParentInteraction) {
+                overlay = renderer.spawnModalOverlay(
+                    owner.world,
+                    session.id,
+                    session.revision,
+                    modalOverlayPose(parent.pose, childIndex),
+                )
+            }
+            renderer.spawnScreen(owner.world, session.id, session.revision, pose, view)
+        } catch (failure: Throwable) {
+            overlay?.remove()
+            throw failure
+        }
+        renderer.setBackgroundSize(render, view.panel.width.toFloat(), view.panel.height.toFloat(), 0)
+        renderer.showContents(render)
+        session.children += ChildRuntime(view, options, pose, render, overlay)
+        return true
+    }
+
+    override fun closeChild(ownerId: UUID, screenId: String): Boolean {
+        val session = sessions[ownerId] ?: return false
+        val index = session.children.indexOfLast { it.view.definition.screenId == screenId }
+        if (index < 0) return false
+        // 子の上へ積まれたダイアログも同時に閉じ、親子関係のない孤立画面を残しません。
+        session.children.subList(index, session.children.size).toList().forEach(::destroyChild)
+        session.children.subList(index, session.children.size).clear()
+        session.revision = nextRevision++
+        return true
+    }
+
     override fun close(ownerId: UUID, mode: GestureGuiCloseMode): Boolean {
         val session = sessions[ownerId] ?: return false
         if (mode == GestureGuiCloseMode.IMMEDIATE) {
@@ -128,10 +192,14 @@ class GestureGuiServiceImpl(
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
         Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
+        session.children.toList().forEach(::destroyChild)
+        session.children.clear()
         session.screens.forEach { renderer.hideContents(it.render) }
         val expected = session.revision
         later(ANIMATION_INITIAL_DELAY, session, expected) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, ANIMATION_STAGE_TICKS) }
+            it.screens.forEach { screen ->
+                renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), 0.1f, ANIMATION_STAGE_TICKS)
+            }
         }
         later(ANIMATION_SECOND_STAGE_DELAY, session, expected) {
             it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 0.1f, 0.1f, ANIMATION_STAGE_TICKS) }
@@ -146,13 +214,13 @@ class GestureGuiServiceImpl(
     override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean {
         val candidate = sessions.values.asSequence()
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
-            .mapNotNull { session -> accessibleHit(session, actor)?.let { session to it } }
-            .filter { (session, hit) -> session.screens[hit.screenIndex].view.definition.canOperate(session.ownerId, actor.uniqueId) }
-            .minByOrNull { (_, hit) -> hit.distance }
+            .mapNotNull { session -> accessibleTarget(session, actor)?.let { session to it } }
+            .minByOrNull { (_, target) -> target.hit.distance }
             ?: return false
-        val (session, hit) = candidate
-        val screen = session.screens[hit.screenIndex]
-        val element = screen.view.definition.elements.firstOrNull { it.elementId == hit.elementId }
+        val (session, target) = candidate
+        if (target.blocked) return true
+        val view = target.view ?: return true
+        val element = view.definition.elements.firstOrNull { it.elementId == target.hit.elementId }
         // 画面内の未割当操作も吸収しますが、Actionは実行しません。
         if (element == null || gesture !in element.acceptedGestures) return true
         if (actor.uniqueId !in session.actors) {
@@ -160,8 +228,8 @@ class GestureGuiServiceImpl(
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
-        screen.view.onAction(
-            GestureGuiActionContext(session.ownerId, actor.uniqueId, screen.view.definition.screenId, element.elementId, gesture, revision)
+        view.onAction(
+            GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
         return true
     }
@@ -199,10 +267,10 @@ class GestureGuiServiceImpl(
         val revision = session.revision
         // 初期scaleを最低1 tickクライアントへ送った後、各補間の完了した次tickに次段階へ進みます。
         later(ANIMATION_INITIAL_DELAY, session, revision) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, ANIMATION_STAGE_TICKS) }
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), 0.1f, ANIMATION_STAGE_TICKS) }
         }
         later(ANIMATION_SECOND_STAGE_DELAY, session, revision) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.75f, ANIMATION_STAGE_TICKS) }
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), screen.view.panel.height.toFloat(), ANIMATION_STAGE_TICKS) }
         }
         later(ANIMATION_COMPLETION_DELAY, session, revision) {
             it.screens.forEach { screen -> renderer.showContents(screen.render) }
@@ -230,6 +298,7 @@ class GestureGuiServiceImpl(
                     ray(owner).direction,
                     session.retainedYaw.toDouble(),
                     session.screens.size,
+                    session.screens.map { it.view.panel.width to it.view.panel.height },
                 )
             }
             if (!insideScreenArea && session.targetYaw == null) {
@@ -251,10 +320,16 @@ class GestureGuiServiceImpl(
             val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
             // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
             if (horizontalMoved || yawMoved) {
-                val newPoses = poses(owner, session.retainedYaw, session.screens.size)
+                val newPoses = poses(owner, session.retainedYaw, session.screens.map(ScreenRuntime::view))
                 session.screens.zip(newPoses).forEach { (screen, pose) ->
                     screen.pose = pose
                     renderer.updatePose(screen.render, pose, screen.view)
+                }
+                session.children.forEachIndexed { index, child ->
+                    val parent = session.screens.first { it.view.definition.screenId == child.options.parentScreenId }
+                    child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
+                    renderer.updatePose(child.render, child.pose, child.view)
+                    child.overlay?.let { renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index)) }
                 }
                 session.anchorX = eye.x
                 session.anchorZ = eye.z
@@ -263,7 +338,7 @@ class GestureGuiServiceImpl(
             session.actors[session.ownerId]?.let { actor ->
                 renderer.moveCatcher(actor.catcher, catcherLocation(owner))
                 // 開閉アニメーション中は内容より先にホバーだけが現れないよう、操作可能になってから表示します。
-                val hoverHit = if (session.state == GestureGuiSessionState.ACTIVE) hit(session, owner) else null
+                val hoverHit = if (session.state == GestureGuiSessionState.ACTIVE) targetHit(session, owner) else null
                 updateHover(session, actor, owner, hoverHit)
             }
         }
@@ -279,14 +354,14 @@ class GestureGuiServiceImpl(
         Bukkit.getOnlinePlayers().forEach { player ->
             if (player.uniqueId in sessions) return@forEach
             val desired = activeSessions.mapNotNull { session ->
-                accessibleHit(session, player)?.let { session to it }
-            }.minByOrNull { (_, hit) -> hit.distance }
+                accessibleTarget(session, player)?.let { session to it }
+            }.minByOrNull { (_, hit) -> hit.hit.distance }
             activeSessions.forEach { session ->
                 if (session !== desired?.first && player.uniqueId in session.actors) removeActor(session, player.uniqueId)
             }
             val (session, hit) = desired ?: return@forEach
             val actor = session.actors[player.uniqueId] ?: runCatching { createActor(session, player) }.getOrNull() ?: return@forEach
-            renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.distance))
+            renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.hit.distance))
             updateHover(session, actor, player, hit)
         }
         activeSessions.forEach { session ->
@@ -327,13 +402,14 @@ class GestureGuiServiceImpl(
         session: Session,
         actor: ActorRuntime,
         player: Player,
-        hit: com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit?,
+        target: TargetHit?,
     ) {
-        val screen = hit?.let { session.screens.getOrNull(it.screenIndex) }
-        val element = screen?.view?.definition?.elements?.firstOrNull { it.elementId == hit.elementId }
+        val view = target?.view
+        val pose = target?.pose
+        val element = view?.definition?.elements?.firstOrNull { it.elementId == target.hit.elementId }
         val hoverText = element?.hoverText
-        val identity = if (screen != null && element != null && hoverText != null) {
-            "${screen.view.definition.screenId}:${element.elementId}"
+        val identity = if (view != null && element != null && hoverText != null) {
+            "${view.definition.screenId}:${element.elementId}"
         } else null
         if (identity == null) {
             actor.hover?.let(renderer::removeHover)
@@ -343,39 +419,83 @@ class GestureGuiServiceImpl(
         }
         if (actor.hoverIdentity != identity || actor.hover == null) {
             actor.hover?.let(renderer::removeHover)
-            actor.hover = renderer.spawnHover(player, session.id, session.revision, screen!!.pose, hoverText!!)
+            actor.hover = renderer.spawnHover(player, session.id, session.revision, pose!!, hoverText!!)
             actor.hoverIdentity = identity
         } else {
-            renderer.updateHover(actor.hover!!, screen!!.pose, hoverText!!)
+            renderer.updateHover(actor.hover!!, pose!!, hoverText!!)
         }
     }
 
     private fun destroy(session: Session) {
         session.actors.keys.toList().forEach { removeActor(session, it) }
         session.screens.forEach { renderer.remove(it.render) }
+        session.children.forEach(::destroyChild)
     }
 
-    private fun hit(session: Session, player: Player, margin: Double = 0.0) = GestureGuiGeometry.hitTest(
-        ray(player),
-        session.screens.map { screen -> screen.pose.copy(width = screen.pose.width + margin * 2, height = screen.pose.height + margin * 2) to screen.view.definition },
-    )
+    private fun destroyChild(child: ChildRuntime) {
+        renderer.remove(child.render)
+        child.overlay?.remove()
+    }
 
-    private fun accessibleHit(session: Session, player: Player): com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit? {
-        val hit = hit(session, player) ?: return null
-        val screen = session.screens.getOrNull(hit.screenIndex) ?: return null
-        if (!screen.view.definition.canOperate(session.ownerId, player.uniqueId)) return null
+    private fun hit(session: Session, player: Player, margin: Double = 0.0): TargetHit? =
+        targetHit(session, player, margin)
+
+    private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
+        val ray = ray(player)
+        fun childHit(child: ChildRuntime): TargetHit? = GestureGuiGeometry.hitTest(
+            ray,
+            listOf(child.pose.copy(width = child.pose.width + margin * 2, height = child.pose.height + margin * 2) to child.view.definition),
+        )?.let { TargetHit(null, child, it) }
+        fun parentHit(): TargetHit? = session.screens.mapNotNull { screen ->
+            GestureGuiGeometry.hitTest(
+                ray,
+                listOf(screen.pose.copy(width = screen.pose.width + margin * 2, height = screen.pose.height + margin * 2) to screen.view.definition),
+            )?.let { TargetHit(screen, null, it) }
+        }.minByOrNull { it.hit.distance }
+
+        session.children.asReversed().forEachIndexed { reversedIndex, child ->
+            childHit(child)?.let { return it }
+            if (!child.options.allowParentInteraction) {
+                val lowerChildren = session.children.dropLast(reversedIndex + 1).asReversed()
+                val covered = lowerChildren.firstNotNullOfOrNull(::childHit) ?: parentHit()
+                if (covered != null) return covered.copy(blocked = true)
+                return null
+            }
+        }
+        return parentHit()
+    }
+
+    private fun accessibleTarget(session: Session, player: Player): TargetHit? {
+        val target = targetHit(session, player) ?: return null
+        val targetAllowed = target.view?.definition?.canOperate(session.ownerId, player.uniqueId) == true
+        if (target.blocked) {
+            // 遮蔽対象（親または下位子画面）を操作できない第三者の入力までは奪いません。
+            if (!targetAllowed) return null
+        } else if (!targetAllowed) {
+            val child = target.child ?: return null
+            if (child.options.allowParentInteraction) return null
+            val parentAllowed = session.screens.firstOrNull {
+                it.view.definition.screenId == child.options.parentScreenId
+            }?.view?.definition?.canOperate(session.ownerId, player.uniqueId) == true
+            if (!parentAllowed) return null
+            return validateReach(session, player, target.copy(blocked = true))
+        }
+        return validateReach(session, player, target)
+    }
+
+    private fun validateReach(session: Session, player: Player, target: TargetHit): TargetHit? {
         val maximum = (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
-        if (hit.distance > maximum) return null
+        if (target.hit.distance > maximum) return null
         val eye = player.eyeLocation
         val block = player.world.rayTraceBlocks(
             eye,
             eye.direction,
-            hit.distance,
+            target.hit.distance,
             FluidCollisionMode.NEVER,
             true,
         )
         val blockDistance = block?.hitPosition?.distance(eye.toVector())
-        return hit.takeIf { blockDistance == null || blockDistance + 0.01 >= hit.distance }
+        return target.takeIf { blockDistance == null || blockDistance + 0.01 >= target.hit.distance }
     }
 
     private fun ray(player: Player): GestureGuiRay {
@@ -387,8 +507,29 @@ class GestureGuiServiceImpl(
         )
     }
 
-    private fun poses(player: Player, yaw: Float, count: Int) = GestureGuiGeometry.poses(
-        GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z), yaw.toDouble(), count
+    private fun poses(player: Player, yaw: Float, views: List<GestureGuiView>) = GestureGuiGeometry.poses(
+        GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
+        yaw.toDouble(),
+        views.size,
+        views.map { it.panel.width to it.panel.height },
+    )
+
+    private fun childPose(
+        parent: GestureGuiScreenPose,
+        view: GestureGuiView,
+        options: GestureGuiChildOptions,
+        stackIndex: Int,
+        childIndex: Int,
+    ): GestureGuiScreenPose = parent.copy(
+        screenIndex = stackIndex,
+        center = parent.center + parent.right * options.offsetX + parent.up * options.offsetY -
+            parent.normal * (CHILD_SCREEN_DEPTH + childIndex * CHILD_STACK_DEPTH),
+        width = view.panel.width,
+        height = view.panel.height,
+    )
+
+    private fun modalOverlayPose(parent: GestureGuiScreenPose, childIndex: Int): GestureGuiScreenPose = parent.copy(
+        center = parent.center - parent.normal * (childIndex * CHILD_STACK_DEPTH),
     )
 
     private fun catcherLocation(player: Player, hitDistance: Double = 1.25): Location =
@@ -414,6 +555,7 @@ class GestureGuiServiceImpl(
         session.screens.map { it.view.definition.screenId },
         session.retainedYaw,
         session.actors.keys.toSet(),
+        session.children.map { it.view.definition.screenId },
     )
 
     private companion object {
@@ -423,5 +565,9 @@ class GestureGuiServiceImpl(
         const val ANIMATION_COMPLETION_DELAY = ANIMATION_SECOND_STAGE_DELAY + ANIMATION_STAGE_TICKS + 1L
         const val MAX_YAW_STEP = 8.0f
         const val YAW_TARGET_EPSILON = 0.05f
+        const val CHILD_SCREEN_DEPTH = 0.25
+        // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
+        const val CHILD_STACK_DEPTH = 0.25
+        const val MAX_CHILD_DEPTH = 3
     }
 }

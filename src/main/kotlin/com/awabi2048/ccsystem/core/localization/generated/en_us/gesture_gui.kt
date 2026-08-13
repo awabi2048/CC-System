@@ -20,6 +20,7 @@ internal object EnUsGestureGuiCatalog {
         entry("gesture_gui.demo.closed", "§eClosed Gesture GUI."),
         entry("gesture_gui.demo.action", "§bGesture accepted: {gesture}"),
         entry("gesture_gui.demo.usage", "§eUsage: /cc gesture-gui demo [1|2|3|close]"),
+        entry("gesture_gui.demo.dialog_close", "Close"),
         entry("gesture_gui.exit_guidance", "Shift + jump to close"),
     )
 

@@ -20,14 +20,13 @@ sealed interface GestureGuiVisual {
         val width: Double,
         val height: Double,
         val blockData: BlockData,
-        override val layer: Int = 0,
-        /** trueの要素だけが画面の開閉アニメーションに使われます。 */
-        val background: Boolean = false,
+        override val layer: Int = 4,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
             require(width > 0.0 && height > 0.0) { "gesture GUI block visual size must be positive" }
+            require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
         }
     }
 
@@ -47,6 +46,7 @@ sealed interface GestureGuiVisual {
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
             require(size > 0.0) { "gesture GUI text size must be positive" }
             require(lineWidth > 0) { "gesture GUI text lineWidth must be positive" }
+            require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
         }
     }
 
@@ -62,6 +62,7 @@ sealed interface GestureGuiVisual {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
             require(scale > 0.0) { "gesture GUI item scale must be positive" }
+            require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
         }
     }
 }
@@ -79,6 +80,7 @@ data class GestureGuiActionContext(
 data class GestureGuiView(
     val definition: GestureGuiScreenDefinition,
     val visuals: List<GestureGuiVisual>,
+    val panel: GestureGuiPanel = GestureGuiPanel(),
     val onAction: (GestureGuiActionContext) -> Unit,
 ) {
     init {
@@ -104,6 +106,7 @@ data class GestureGuiSessionSnapshot(
     val screenIds: List<String>,
     val retainedYaw: Float,
     val actorIds: Set<UUID>,
+    val childScreenIds: List<String>,
 )
 
 /** Display Entityの詳細を外部へ漏らさず、セッション単位で操作する公開サービスです。 */
@@ -112,6 +115,8 @@ interface GestureGuiService {
     fun unregisterOwner(ownerId: UUID)
     fun open(owner: Player, views: List<GestureGuiView>): GestureGuiSessionSnapshot
     fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean
+    fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean
+    fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean
     fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean
     fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot?

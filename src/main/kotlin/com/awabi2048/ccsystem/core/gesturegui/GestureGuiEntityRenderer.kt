@@ -9,6 +9,7 @@ import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Display
@@ -50,6 +51,29 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val backgrounds = mutableListOf<BlockDisplay>()
         val contents = mutableListOf<Entity>()
         val entities = linkedMapOf<String, Entity>()
+        val panel = view.panel
+        // 全素材を先に解決し、枠素材の不正で背景だけが残る部分生成を防ぎます。
+        val backgroundData = Bukkit.createBlockData(panel.backgroundMaterial)
+        val frameData = Bukkit.createBlockData(panel.frameMaterial)
+        val background = spawnPanelBlock(
+            world, pose, backgroundData, 0.0, 0.0, panel.width, panel.height, PANEL_BACKGROUND_LAYER,
+        )
+        mark(background, sessionId, revision)
+        backgrounds += background
+        val innerHeight = panel.height - panel.frameWidth * 2.0
+        listOf(
+            PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+            PanelPart(0.0, -(panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+            PanelPart((panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+            PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+        ).forEachIndexed { index, part ->
+            val frame = spawnPanelBlock(
+                world, pose, frameData, part.x, part.y, part.width, part.height, PANEL_FRAME_LAYER,
+            )
+            mark(frame, sessionId, revision)
+            entities["__panel_frame_$index"] = frame
+            contents += frame
+        }
         view.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
             val entity = when (visual) {
                 is GestureGuiVisual.Block -> spawnBlock(world, pose, visual)
@@ -58,8 +82,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             }
             mark(entity, sessionId, revision)
             entities[visual.visualId] = entity
-            if (visual is GestureGuiVisual.Block && visual.background) backgrounds += entity as BlockDisplay
-            else contents += entity
+            contents += entity
         }
         // 内容は背景の展開完了まで送信せず、文字・アイコンが潰れる演出を避けます。
         contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
@@ -68,6 +91,20 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
+        handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
+        val panel = view.panel
+        val innerHeight = panel.height - panel.frameWidth * 2.0
+        val frameParts = listOf(
+            PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+            PanelPart(0.0, -(panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+            PanelPart((panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+            PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+        )
+        frameParts.forEachIndexed { index, part ->
+            handle.visualEntities["__panel_frame_$index"]?.teleport(
+                visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
+            )
+        }
         view.visuals.forEach { visual ->
             val entity = handle.visualEntities[visual.visualId] ?: return@forEach
             val location = if (visual is GestureGuiVisual.Text) {
@@ -91,6 +128,20 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     fun remove(handle: ScreenHandle) = handle.all.forEach(Entity::remove)
+
+    fun spawnModalOverlay(
+        world: World,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+    ): BlockDisplay = spawnPanelBlock(
+        world, pose, Bukkit.createBlockData(Material.GRAY_STAINED_GLASS),
+        0.0, 0.0, pose.width, pose.height, MODAL_OVERLAY_LAYER,
+    ).also { mark(it, sessionId, revision) }
+
+    fun updateModalOverlay(overlay: BlockDisplay, pose: GestureGuiScreenPose) {
+        overlay.teleport(visualLocation(overlay.world, pose, 0.0, 0.0, MODAL_OVERLAY_LAYER))
+    }
 
     fun spawnCatcher(player: Player, sessionId: UUID, revision: Long, location: Location): CatcherHandle {
         val entity = player.world.spawn(location, Interaction::class.java) {
@@ -157,6 +208,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.block = visual.blockData
             it.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
         }
+
+    private fun spawnPanelBlock(
+        world: World,
+        pose: GestureGuiScreenPose,
+        blockData: org.bukkit.block.data.BlockData,
+        x: Double,
+        y: Double,
+        width: Double,
+        height: Double,
+        layer: Int,
+    ): BlockDisplay = world.spawn(visualLocation(world, pose, x, y, layer), BlockDisplay::class.java) {
+        prepareDisplay(it, pose)
+        it.block = blockData
+        it.setTransformation(blockTransform(width.toFloat(), height.toFloat()))
+    }
 
     private fun spawnItem(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Item): ItemDisplay =
         world.spawn(visualLocation(world, pose, visual.x, visual.y, visual.layer), ItemDisplay::class.java) {
@@ -253,5 +319,11 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val LAYER_DEPTH = 0.005
         // パネルの画面法線方向の厚みは従来値の約2倍です。
         const val BLOCK_NORMAL_DEPTH = 0.025f
+        const val PANEL_BACKGROUND_LAYER = 0
+        const val PANEL_FRAME_LAYER = 2
+        // 0.24 block手前に置き、0.25 block手前から始まる子画面の直後へ重ねます。
+        const val MODAL_OVERLAY_LAYER = 48
     }
+
+    private data class PanelPart(val x: Double, val y: Double, val width: Double, val height: Double)
 }

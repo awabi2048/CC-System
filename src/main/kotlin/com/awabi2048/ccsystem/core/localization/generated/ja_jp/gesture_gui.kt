@@ -20,6 +20,7 @@ internal object JaJpGestureGuiCatalog {
         entry("gesture_gui.demo.closed", "§eジェスチャーGUIを閉じました。"),
         entry("gesture_gui.demo.action", "§bジェスチャーを受け付けました: {gesture}"),
         entry("gesture_gui.demo.usage", "§e使用法: /cc gesture-gui demo [1|2|3|close]"),
+        entry("gesture_gui.demo.dialog_close", "閉じる"),
         entry("gesture_gui.exit_guidance", "Shift＋ジャンプで終了"),
     )
 

@@ -17,6 +17,11 @@ class GestureGuiGeometryTest {
         assertEquals(listOf(20.0), GestureGuiGeometry.centerPitches(1))
         assertEquals(listOf(-20.0, 20.0), GestureGuiGeometry.centerPitches(2))
         assertEquals(listOf(-30.0, 0.0, 30.0), GestureGuiGeometry.centerPitches(3))
+
+        val expanded = List(3) { GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT }
+        val dynamic = GestureGuiGeometry.centerPitches(expanded)
+        assertEquals(0.0, dynamic[1], 1.0e-9)
+        assertTrue(dynamic[2] > 30.0)
     }
 
     @Test
@@ -71,8 +76,8 @@ class GestureGuiGeometryTest {
 
         assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 0.0), 0.0, 2))
         assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 15.0), 0.0, 3))
-        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(31.0, 0.0), 0.0, 3))
-        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 46.0), 0.0, 3))
+        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(50.0, 0.0), 0.0, 3))
+        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 62.0), 0.0, 3))
     }
 
     @Test
@@ -98,7 +103,7 @@ class GestureGuiGeometryTest {
 
         assertNull(
             GestureGuiGeometry.hitTest(
-                GestureGuiRay(GestureGuiVector3(0.0, 0.0, 0.0), GestureGuiVector3(1.0, 0.0, 1.0)),
+                GestureGuiRay(GestureGuiVector3(0.0, 0.0, 0.0), GestureGuiVector3(1.1, 0.0, 1.0)),
                 listOf(pose to definition),
             )
         )

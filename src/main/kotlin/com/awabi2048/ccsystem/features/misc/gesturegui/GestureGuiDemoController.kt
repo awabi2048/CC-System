@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.features.misc.gesturegui
 
 import com.awabi2048.ccsystem.api.CCSystemAPI
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiChildOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiElement
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
@@ -9,6 +10,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.localization.generated.GestureGuiKeys
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -56,12 +58,6 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
             targetVisualId = "title",
         )
         val visuals = buildList {
-            add(
-                GestureGuiVisual.Block(
-                    "background", 0.0, 0.0, 1.5, 0.75,
-                    Bukkit.createBlockData(Material.BLACK_CONCRETE), background = true,
-                )
-            )
             add(GestureGuiVisual.Text("title", 0.0, 0.27, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_TITLE), size = 0.010))
             add(GestureGuiVisual.Text("description", 0.0, 0.15, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION), size = 0.0065))
             gestures.forEachIndexed { column, gesture ->
@@ -82,14 +78,50 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
             GestureGuiScreenDefinition("demo-$index", elements, access = GestureGuiAccess.PUBLIC),
             visuals,
         ) { context ->
-            Bukkit.getPlayer(context.actorId)?.sendMessage(
+            val actor = Bukkit.getPlayer(context.actorId)
+            actor?.sendMessage(
                 api.getLocalized(
-                    Bukkit.getPlayer(context.actorId),
+                    actor,
                     GestureGuiKeys.GESTURE_GUI_DEMO_ACTION,
                     mapOf("gesture" to context.gesture.name),
                 )
             )
+            if (context.elementId == "title-text" && context.gesture == GestureGuiGesture.PRIMARY) {
+                api.getGestureGuiService().openChild(
+                    context.ownerId,
+                    dialog(owner),
+                    GestureGuiChildOptions(context.screenId, allowParentInteraction = false),
+                )
+            }
         }
+    }
+
+    private fun dialog(owner: Player): GestureGuiView = GestureGuiView(
+        GestureGuiScreenDefinition(
+            "demo-dialog",
+            listOf(
+                GestureGuiElement(
+                    "close-dialog",
+                    GestureGuiBounds(-0.32, -0.10, 0.32, 0.10),
+                    setOf(GestureGuiGesture.PRIMARY),
+                    targetVisualId = "dialog-close",
+                )
+            ),
+            access = GestureGuiAccess.PUBLIC,
+        ),
+        listOf(
+            GestureGuiVisual.Text(
+                "dialog-title", 0.0, 0.13,
+                text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION), size = 0.006, lineWidth = 120,
+            ),
+            GestureGuiVisual.Text(
+                "dialog-close", 0.0, 0.0,
+                text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DIALOG_CLOSE), size = 0.006,
+            ),
+        ),
+        GestureGuiPanel(width = 1.1, height = 0.55, backgroundMaterial = Material.GRAY_CONCRETE),
+    ) { context ->
+        api.getGestureGuiService().closeChild(context.ownerId, context.screenId)
     }
 
     private fun label(player: Player, gesture: GestureGuiGesture): Component = when (gesture) {

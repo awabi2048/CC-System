@@ -3,6 +3,44 @@ package com.awabi2048.ccsystem.api.gesturegui
 import java.util.UUID
 import kotlin.math.sqrt
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+
+/** 画面の実寸と共通外観です。寸法・枠幅はブロック単位です。 */
+data class GestureGuiPanel(
+    val width: Double = DEFAULT_WIDTH,
+    val height: Double = DEFAULT_HEIGHT,
+    val backgroundMaterial: Material = Material.BLACK_CONCRETE,
+    val frameMaterial: Material = Material.CYAN_TERRACOTTA,
+    val frameWidth: Double = 0.045,
+) {
+    init {
+        require(width.isFinite() && height.isFinite() && width > 0.0 && height > 0.0) {
+            "gesture GUI panel size must be positive and finite"
+        }
+        require(frameWidth.isFinite() && frameWidth > 0.0 && frameWidth * 2.0 < minOf(width, height)) {
+            "gesture GUI frame width must fit inside the panel"
+        }
+    }
+
+    companion object {
+        // 従来比で縦横を√2倍にし、縦横比を維持したまま面積を2倍にします。
+        const val DEFAULT_WIDTH: Double = 2.1213203435596424
+        const val DEFAULT_HEIGHT: Double = 1.0606601717798212
+    }
+}
+
+/** 親画面上へ重ねる子画面の配置と入力方針です。 */
+data class GestureGuiChildOptions(
+    val parentScreenId: String,
+    val offsetX: Double = 0.0,
+    val offsetY: Double = 0.0,
+    val allowParentInteraction: Boolean = false,
+) {
+    init {
+        require(parentScreenId.isNotBlank()) { "gesture GUI child parentScreenId must not be blank" }
+        require(offsetX.isFinite() && offsetY.isFinite()) { "gesture GUI child offset must be finite" }
+    }
+}
 
 /** ジェスチャーGUIで画面ごとに割り当てられる入力です。 */
 enum class GestureGuiGesture {
@@ -72,7 +110,7 @@ data class GestureGuiHoverText(
         require(x.isFinite() && y.isFinite()) { "gesture GUI hover position must be finite" }
         require(size > 0.0) { "gesture GUI hover size must be positive" }
         require(lineWidth > 0) { "gesture GUI hover lineWidth must be positive" }
-        require(layer > 0) { "gesture GUI hover layer must be in front of the background" }
+        require(layer in 1..40) { "gesture GUI hover layer must be between 1 and 40" }
     }
 }
 
