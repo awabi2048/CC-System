@@ -74,7 +74,7 @@ internal data class PaperDisplayEffectRenderConfig(
     val viewRange: Float = 32.0f,
     // Vanilla particleのように視点へ正対する初期表示です。固定姿勢が必要な
     // BlockDisplay用途では、利用側がFIXEDへ変更できます。
-    val billboard: Display.Billboard = Display.Billboard.CENTER,
+    val billboard: Display.Billboard = Display.Billboard.FIXED,
     val itemDisplayTransform: ItemDisplay.ItemDisplayTransform = ItemDisplay.ItemDisplayTransform.NONE,
     val visibleByDefault: Boolean = true,
     val persistent: Boolean = false,

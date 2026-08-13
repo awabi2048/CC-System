@@ -32,7 +32,7 @@ class PaperDisplayEffectAssetResolverTest {
 
         assertEquals(0, config.interpolationDurationTicks)
         assertEquals(0, config.teleportDurationTicks)
-        assertEquals(Display.Billboard.CENTER, config.billboard)
+        assertEquals(Display.Billboard.FIXED, config.billboard)
         assertEquals(
             org.bukkit.entity.ItemDisplay.ItemDisplayTransform.NONE,
             config.itemDisplayTransform

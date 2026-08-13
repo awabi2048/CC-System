@@ -27,6 +27,19 @@ interface DisplayEffectService {
         definition: DisplayEffectNodeDefinition,
         assetResolver: DisplayEffectAssetResolver
     ): DisplayEffectStartResult
+
+    /** CC-System 組み込みのボクセル粒子パターン一覧を返します。 */
+    fun listVoxelParticlePatterns(): List<VoxelParticlePatternInfo>
+
+    /**
+     * 複数の微小 BlockDisplay を1つの論理粒子群として原子的に生成します。
+     * 生成途中で失敗した場合は、同じ呼び出しで生成した Entity をすべて回収します。
+     */
+    fun emitVoxelParticles(
+        owner: Plugin,
+        anchor: Location,
+        request: VoxelParticleEmissionRequest
+    ): DisplayEffectStartResult
 }
 
 /**
@@ -63,6 +76,8 @@ enum class DisplayEffectStartRejection {
     ASSET_UNAVAILABLE,
     INVALID_DEFINITION,
     CAPACITY_EXCEEDED,
+    NO_VIEWERS,
+    UNKNOWN_PATTERN,
     BACKEND_FAILURE,
     SHUTDOWN
 }
