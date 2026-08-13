@@ -6,6 +6,8 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import kotlin.math.cos
+import kotlin.math.asin
+import kotlin.math.atan2
 import kotlin.math.sin
 
 /** ジェスチャーGUIの配置と視線判定を一つの座標定義から算出します。 */
@@ -16,6 +18,14 @@ object GestureGuiGeometry {
 
     private const val INTERSECTION_EPSILON = 1.0e-9
 
+    /** BukkitのEntity回転へ渡すyawです。画面のローカル+Zを正面法線へ合わせます。 */
+    fun displayYaw(pose: GestureGuiScreenPose): Float =
+        Math.toDegrees(atan2(-pose.normal.x, pose.normal.z)).toFloat()
+
+    /** BukkitのEntity回転へ渡すpitchです。Minecraftでは下向きが正です。 */
+    fun displayPitch(pose: GestureGuiScreenPose): Float =
+        Math.toDegrees(-asin(pose.normal.y.coerceIn(-1.0, 1.0))).toFloat()
+
     /** 画面数ごとの上・中・下の並びを、Minecraft pitch（下が正）で返します。 */
     fun centerPitches(screenCount: Int): List<Double> = when (screenCount) {
         1 -> listOf(20.0)
@@ -24,17 +34,12 @@ object GestureGuiGeometry {
         else -> throw IllegalArgumentException("gesture GUI supports one to three screens")
     }
 
-    /**
-     * 画面中心は指定pitchの視線上へ置きますが、面そのものは傾けません。
-     * normalは画面正面、すなわち開設者側を向きます。
-     */
+    /** 画面中心への視線を法線とし、描画と当たり判定で共有する直交基底を作ります。 */
     fun poses(eye: GestureGuiVector3, yawDegrees: Double, screenCount: Int): List<GestureGuiScreenPose> {
         require(yawDegrees.isFinite()) { "gesture GUI yaw must be finite" }
         val yaw = Math.toRadians(yawDegrees)
         val forward = GestureGuiVector3(-sin(yaw), 0.0, cos(yaw))
         val right = GestureGuiVector3(-cos(yaw), 0.0, -sin(yaw))
-        val up = GestureGuiVector3(0.0, 1.0, 0.0)
-        val normal = forward * -1.0
 
         return centerPitches(screenCount).mapIndexed { index, pitchDegrees ->
             val pitch = Math.toRadians(pitchDegrees)
@@ -43,6 +48,10 @@ object GestureGuiGeometry {
                 -sin(pitch),
                 forward.z * cos(pitch),
             )
+            // normalは画面から開設者の目へ向く正面方向です。rightとの外積から、
+            // 各画面のpitchに沿って傾いた上方向を一意に導出します。
+            val normal = direction * -1.0
+            val up = normal.cross(right).normalized()
             GestureGuiScreenPose(
                 screenIndex = index,
                 centerPitchDegrees = pitchDegrees,

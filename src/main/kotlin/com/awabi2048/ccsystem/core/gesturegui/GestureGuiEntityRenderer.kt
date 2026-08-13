@@ -69,7 +69,6 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         view.visuals.forEach { visual ->
             val entity = handle.visualEntities[visual.visualId] ?: return@forEach
             entity.teleport(visualLocation(entity.world, pose, visual.x, visual.y, visual.layer))
-            entity.setRotation((-poseYaw(pose)).toFloat(), 0f)
         }
     }
 
@@ -143,7 +142,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         display.teleportDuration = 1
         display.interpolationDelay = 0
         display.interpolationDuration = 3
-        display.setRotation((-poseYaw(pose)).toFloat(), 0f)
+        display.setRotation(GestureGuiGeometry.displayYaw(pose), GestureGuiGeometry.displayPitch(pose))
     }
 
     private fun setBackgroundSize(
@@ -179,10 +178,13 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         layer: Int,
     ): Location {
         val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * 0.0005)
-        return Location(world, point.x, point.y, point.z)
+        return Location(
+            world,
+            point.x,
+            point.y,
+            point.z,
+            GestureGuiGeometry.displayYaw(pose),
+            GestureGuiGeometry.displayPitch(pose),
+        )
     }
-
-    private fun poseYaw(pose: GestureGuiScreenPose): Double = Math.toDegrees(kotlin.math.atan2(-pose.normal.x, pose.normal.z))
 }
-
-private fun GestureGuiVector3.toLocation(world: World): Location = Location(world, x, y, z)

@@ -88,6 +88,11 @@ data class GestureGuiVector3(val x: Double, val y: Double, val z: Double) {
     operator fun minus(other: GestureGuiVector3) = GestureGuiVector3(x - other.x, y - other.y, z - other.z)
     operator fun times(scale: Double) = GestureGuiVector3(x * scale, y * scale, z * scale)
     fun dot(other: GestureGuiVector3): Double = x * other.x + y * other.y + z * other.z
+    fun cross(other: GestureGuiVector3): GestureGuiVector3 = GestureGuiVector3(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x,
+    )
     fun length(): Double = sqrt(dot(this))
     fun normalized(): GestureGuiVector3 {
         val length = length()

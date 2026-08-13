@@ -17,6 +17,7 @@ import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
@@ -45,6 +46,9 @@ class GestureGuiServiceImpl(
         var revision: Long,
         var state: GestureGuiSessionState,
         var retainedYaw: Float,
+        var anchorX: Double,
+        var anchorZ: Double,
+        var appliedYaw: Float,
         var screens: List<ScreenRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
     )
@@ -79,7 +83,10 @@ class GestureGuiServiceImpl(
         val screens = views.zip(poses).map { (view, pose) ->
             ScreenRuntime(view, pose, renderer.spawnScreen(owner.world, id, revision, pose, view))
         }
-        val session = Session(id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, screens, mutableMapOf())
+        val session = Session(
+            id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw,
+            owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableMapOf(),
+        )
         try {
             session.actors[owner.uniqueId] = createActor(session, owner)
         } catch (failure: Throwable) {
@@ -87,6 +94,7 @@ class GestureGuiServiceImpl(
             throw failure
         }
         sessions[owner.uniqueId] = session
+        playTransitionSound(owner, opening = true)
         animateOpen(session)
         return snapshot(session)
     }
@@ -116,11 +124,16 @@ class GestureGuiServiceImpl(
         if (session.state == GestureGuiSessionState.CLOSING) return true
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
+        Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
         session.screens.forEach { renderer.hideContents(it.render) }
         val expected = session.revision
-        later(0, session, expected) { it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, 3) } }
-        later(3, session, expected) { it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 0.1f, 0.1f, 3) } }
-        later(6, session, expected) {
+        later(ANIMATION_INITIAL_DELAY, session, expected) {
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, ANIMATION_STAGE_TICKS) }
+        }
+        later(ANIMATION_SECOND_STAGE_DELAY, session, expected) {
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 0.1f, 0.1f, ANIMATION_STAGE_TICKS) }
+        }
+        later(ANIMATION_COMPLETION_DELAY, session, expected) {
             sessions.remove(it.ownerId)
             destroy(it)
         }
@@ -181,9 +194,14 @@ class GestureGuiServiceImpl(
 
     private fun animateOpen(session: Session) {
         val revision = session.revision
-        later(0, session, revision) { it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, 3) } }
-        later(3, session, revision) { it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.75f, 3) } }
-        later(6, session, revision) {
+        // 初期scaleを最低1 tickクライアントへ送った後、各補間の完了した次tickに次段階へ進みます。
+        later(ANIMATION_INITIAL_DELAY, session, revision) {
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.1f, ANIMATION_STAGE_TICKS) }
+        }
+        later(ANIMATION_SECOND_STAGE_DELAY, session, revision) {
+            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 1.5f, 0.75f, ANIMATION_STAGE_TICKS) }
+        }
+        later(ANIMATION_COMPLETION_DELAY, session, revision) {
             it.screens.forEach { screen -> renderer.showContents(screen.render) }
             it.state = GestureGuiSessionState.ACTIVE
         }
@@ -208,10 +226,19 @@ class GestureGuiServiceImpl(
                 // 小さな揺れを無視し、大回転時も画面が瞬間移動しないよう追従量を制限します。
                 if (abs(delta) > 0.35f) session.retainedYaw += delta.coerceIn(-8f, 8f)
             }
-            val newPoses = poses(owner, session.retainedYaw, session.screens.size)
-            session.screens.zip(newPoses).forEach { (screen, pose) ->
-                screen.pose = pose
-                renderer.updatePose(screen.render, pose, screen.view)
+            val eye = owner.eyeLocation
+            val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
+            val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
+            // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
+            if (horizontalMoved || yawMoved) {
+                val newPoses = poses(owner, session.retainedYaw, session.screens.size)
+                session.screens.zip(newPoses).forEach { (screen, pose) ->
+                    screen.pose = pose
+                    renderer.updatePose(screen.render, pose, screen.view)
+                }
+                session.anchorX = eye.x
+                session.anchorZ = eye.z
+                session.appliedYaw = session.retainedYaw
             }
             session.actors[session.ownerId]?.let { renderer.moveCatcher(it.catcher, catcherLocation(owner)) }
         }
@@ -315,6 +342,16 @@ class GestureGuiServiceImpl(
 
     private fun shortestYawDelta(from: Float, to: Float): Float = ((to - from + 540f) % 360f) - 180f
 
+    private fun playTransitionSound(player: Player, opening: Boolean) {
+        player.world.playSound(
+            player.location,
+            if (opening) Sound.BLOCK_ENDER_CHEST_OPEN else Sound.BLOCK_ENDER_CHEST_CLOSE,
+            1.0f,
+            2.0f,
+        )
+        player.world.playSound(player.location, Sound.BLOCK_PISTON_EXTEND, 1.0f, 2.0f)
+    }
+
     private fun snapshot(session: Session) = GestureGuiSessionSnapshot(
         session.id,
         session.ownerId,
@@ -324,4 +361,11 @@ class GestureGuiServiceImpl(
         session.retainedYaw,
         session.actors.keys.toSet(),
     )
+
+    private companion object {
+        const val ANIMATION_STAGE_TICKS = 3
+        const val ANIMATION_INITIAL_DELAY = 1L
+        const val ANIMATION_SECOND_STAGE_DELAY = ANIMATION_INITIAL_DELAY + ANIMATION_STAGE_TICKS + 1L
+        const val ANIMATION_COMPLETION_DELAY = ANIMATION_SECOND_STAGE_DELAY + ANIMATION_STAGE_TICKS + 1L
+    }
 }
