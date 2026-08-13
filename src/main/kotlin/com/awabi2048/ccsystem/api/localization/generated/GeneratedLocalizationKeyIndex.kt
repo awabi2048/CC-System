@@ -37,6 +37,7 @@ object GeneratedLocalizationKeyIndex {
         addAll(ContentSukimaDungeonKeys.all())
         addAll(ContentTutorialRankKeys.all())
         addAll(CustomMessagesKeys.all())
+        addAll(GestureGuiKeys.all())
         addAll(KantanKantanCommanderCleanKeys.all())
         addAll(MyworldBiomesKeys.all())
         addAll(MyworldColorsKeys.all())
