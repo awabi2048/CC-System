@@ -1,5 +1,5 @@
 management:
-  usage: "§eUsage: /cc <config|give|menu|particle>"
+  usage: "§eUsage: /cc <config|debug|give|menu|particle>"
   no_permission: "§cYou do not have permission to perform this action."
   player_not_found: "§cTarget player was not found: {player}"
   config:
@@ -30,3 +30,11 @@ management:
     invalid_limit: "§cSpecify {type} as an integer from {minimum} to {maximum}."
     save_failed: "§cCould not save the Display particle limit."
     changed: "§aChanged Display particle limit {type} to {limit}."
+  debug:
+    usage: "§eUsage: /cc debug toggle_test (players only)"
+    particle_test_enabled: "§aEnabled book-based voxel particle testing. Hold a writable book containing JSON in your main hand and left-click."
+    particle_test_disabled: "§eDisabled book-based voxel particle testing."
+    particle_test_empty_book: "§cWrite JSON in the writable book first."
+    particle_test_started: "§aDisplayed voxel particles from the book JSON."
+    particle_test_rejected: "§cCould not display voxel particles: {detail}"
+    particle_test_invalid_json: "§cThe book JSON is invalid: {detail}"

@@ -127,7 +127,9 @@ data class DisplayParticleEmissionRequest(
 data class DisplayParticlePresetInfo(
     val id: DisplayParticlePresetId,
     val lifetimeTicks: Int,
-    val fadeOutTicks: Int
+    val fadeOutTicks: Int,
+    val defaultMotionPresetId: DisplayParticleMotionPresetId,
+    val defaultCollisionMode: DisplayParticleCollisionMode
 )
 
 data class DisplayParticleMotionPresetInfo(val id: DisplayParticleMotionPresetId)

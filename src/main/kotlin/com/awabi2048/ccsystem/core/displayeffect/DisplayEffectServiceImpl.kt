@@ -165,6 +165,26 @@ internal class DisplayEffectServiceImpl(
                 DisplayEffectStartRejection.UNKNOWN_PATTERN,
                 "未登録のDisplayパーティクル・プリセットです: ${request.presetId.value}"
             )
+        return emitDisplayParticles(owner, anchor, preset, request)
+    }
+
+    /** 本のJSONなど、カタログへ永続登録しない検証用外観を同じ制限下で表示します。 */
+    internal fun emitTransientDisplayParticles(
+        owner: Plugin,
+        anchor: Location,
+        preset: DisplayParticlePreset,
+        request: DisplayParticleEmissionRequest
+    ): DisplayEffectStartResult {
+        commonRejection(owner, anchor)?.let { return it }
+        return emitDisplayParticles(owner, anchor, preset, request)
+    }
+
+    private fun emitDisplayParticles(
+        owner: Plugin,
+        anchor: Location,
+        preset: DisplayParticlePreset,
+        request: DisplayParticleEmissionRequest
+    ): DisplayEffectStartResult {
         runCatching {
             DisplayParticleMotionCatalog.resolve(
                 request.motionPresetId,

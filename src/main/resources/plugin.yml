@@ -68,6 +68,7 @@ permissions:
       cc.command.give.all: true
       cc.command.menu: true
       cc.command.particle.limit: true
+      cc.command.debug: true
       cc.item.give.cc-content: true
       cc.item.give.myworld: true
       cc.item.give.kantan: true
@@ -85,6 +86,9 @@ permissions:
     default: op
   cc.command.particle.limit:
     description: Displayパーティクルの同時存在上限を確認・変更する権限
+    default: op
+  cc.command.debug:
+    description: ボクセルパーティクルの本JSONテスト切替権限
     default: op
   cc.item.give.cc-content:
     description: CC-Content登録アイテム付与権限

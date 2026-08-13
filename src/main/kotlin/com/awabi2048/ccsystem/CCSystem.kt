@@ -22,6 +22,8 @@ import com.awabi2048.ccsystem.features.misc.command.CCSystemCommand
 import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
+import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
+import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
 import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickBinderListener
@@ -445,7 +447,15 @@ class CCSystem : JavaPlugin() {
         getCommand("delay")?.setExecutor(DelayCommand())
         getCommand("npc_message")?.setExecutor(NpcMessageCommand())
         getCommand("cc-system")?.setExecutor(CCSystemCommand())
-        val unifiedManagementCommand = UnifiedManagementCommand { _api.getDisplayParticleCount() }
+        val displayParticleBookTestController = DisplayParticleBookTestController(
+            this,
+            _api.getDisplayEffectService() as DisplayEffectServiceImpl
+        )
+        server.pluginManager.registerEvents(displayParticleBookTestController, this)
+        val unifiedManagementCommand = UnifiedManagementCommand(
+            { _api.getDisplayParticleCount() },
+            displayParticleBookTestController
+        )
         getCommand("cc")?.setExecutor(unifiedManagementCommand)
         getCommand("cc")?.tabCompleter = unifiedManagementCommand
         getCommand("rental-receive")?.setExecutor(RentalReceiveCommand())

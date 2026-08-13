@@ -51,7 +51,16 @@ internal data class DisplayParticlePreset(
         require(maxSpawnDelayTicks in 0..20) { "maxSpawnDelayTicksは0..20です" }
     }
 
-    fun info() = DisplayParticlePresetInfo(id, lifetimeTicks, fadeOutTicks)
+    fun info(): DisplayParticlePresetInfo {
+        val composition = DisplayParticleDefaultCompositionCatalog.require(id)
+        return DisplayParticlePresetInfo(
+            id,
+            lifetimeTicks,
+            fadeOutTicks,
+            composition.motionPresetId,
+            composition.collisionMode
+        )
+    }
 }
 
 /** 同一プリセット内で選択できるBlockテクスチャと正の整数重みです。 */

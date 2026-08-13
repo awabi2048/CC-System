@@ -12,9 +12,11 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
+import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
 
-class UnifiedManagementCommand(
-    private val displayParticleCountProvider: () -> Int
+internal class UnifiedManagementCommand(
+    private val displayParticleCountProvider: () -> Int,
+    private val displayParticleBookTestController: DisplayParticleBookTestController
 ) : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender,
@@ -31,11 +33,26 @@ class UnifiedManagementCommand(
             "give" -> handleGive(sender, args.drop(1))
             "menu" -> handleMenu(sender, args.drop(1))
             "particle" -> handleParticle(sender, args.drop(1))
+            "debug" -> handleDebug(sender, args.drop(1))
             else -> {
                 sender.sendMessage(message(sender, "management.usage"))
                 true
             }
         }
+    }
+
+    private fun handleDebug(sender: CommandSender, args: List<String>): Boolean {
+        if (!hasPermission(sender, "cc.command.debug")) {
+            sender.sendMessage(message(sender, "management.no_permission"))
+            return true
+        }
+        val player = sender as? Player
+        if (player == null || args.size != 1 || !args[0].equals("toggle_test", ignoreCase = true)) {
+            sender.sendMessage(message(sender, "management.debug.usage"))
+            return true
+        }
+        displayParticleBookTestController.toggle(player)
+        return true
     }
 
     private fun handleParticle(sender: CommandSender, args: List<String>): Boolean {
@@ -247,7 +264,7 @@ class UnifiedManagementCommand(
     ): List<String> {
         val input = args.lastOrNull().orEmpty()
         if (args.size == 1) {
-            return filter(listOf("config", "give", "menu", "particle"), input)
+            return filter(listOf("config", "debug", "give", "menu", "particle"), input)
         }
         return when (args[0].lowercase()) {
             "config" -> when (args.size) {
@@ -280,6 +297,7 @@ class UnifiedManagementCommand(
                 } else emptyList()
                 else -> emptyList()
             }
+            "debug" -> if (args.size == 2) filter(listOf("toggle_test"), input) else emptyList()
             else -> emptyList()
         }
     }

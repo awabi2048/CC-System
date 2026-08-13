@@ -45,7 +45,7 @@ content_management:
       cleared: '&a現在の天然の好漁場をすべて削除しました'
   particle:
     no_permission: '&cDisplayパーティクルを表示する権限がありません'
-    usage: '&e使用法: /ccc particle <外観> <動作> <衝突> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]] [-- <プロパティ=値>...]'
+    usage: '&e使用法: /ccc particle <pattern> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]]'
     invalid_argument: '&cパーティクル引数が不正です: {detail}'
     unknown_pattern: '&c未登録のDisplayパーティクル・プリセットです: {pattern}'
     no_viewers: '&e表示範囲内にプレイヤーがいないため生成を省略しました。必要なら force を指定してください'
