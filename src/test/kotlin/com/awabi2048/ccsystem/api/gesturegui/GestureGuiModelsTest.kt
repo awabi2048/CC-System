@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.api.gesturegui
 
 import java.util.UUID
+import net.kyori.adventure.text.Component
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -33,6 +34,21 @@ class GestureGuiModelsTest {
         val bounds = GestureGuiBounds(-0.75, -0.375, 0.75, 0.375)
         assertTrue(bounds.contains(-0.75, 0.375))
         assertFalse(bounds.contains(0.751, 0.0))
+    }
+
+    @Test
+    fun `view rejects duplicate visual ids independently of display type`() {
+        val visual = GestureGuiVisual.Text("title", 0.0, 0.0, Component.text("test"))
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiView(screen(GestureGuiAccess.OWNER_ONLY), listOf(visual, visual)) {}
+        }
+    }
+
+    @Test
+    fun `visual position must be finite`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiVisual.Text("title", Double.NaN, 0.0, Component.empty())
+        }
     }
 
     private fun screen(access: GestureGuiAccess, allowlist: Set<UUID> = emptySet()) =
