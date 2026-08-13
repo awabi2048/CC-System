@@ -43,3 +43,11 @@ content_management:
       usage: '&e使用法: /ccc debug clear_fishing_grounds'
       unavailable: '&c天然の好漁場を管理する機能が利用できません'
       cleared: '&a現在の天然の好漁場をすべて削除しました'
+  particle:
+    no_permission: '&cボクセル粒子を表示する権限がありません'
+    usage: '&e使用法: /ccc particle <pattern> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]]'
+    invalid_argument: '&cパーティクル引数が不正です: {detail}'
+    unknown_pattern: '&c未登録のボクセル粒子です: {pattern}'
+    no_viewers: '&e表示範囲内にプレイヤーがいないため生成を省略しました。必要なら force を指定してください'
+    started: '&aボクセル粒子を表示しました: {pattern} x{count}'
+    rejected: '&cボクセル粒子を表示できませんでした: {detail}'

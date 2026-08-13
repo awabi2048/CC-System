@@ -43,3 +43,11 @@ content_management:
       usage: '&eUsage: /ccc debug clear_fishing_grounds'
       unavailable: '&cNatural fishing ground management is unavailable.'
       cleared: '&aRemoved all current natural fishing grounds.'
+  particle:
+    no_permission: '&cYou do not have permission to display voxel particles.'
+    usage: '&eUsage: /ccc particle <pattern> [<x> <y> <z>] [<dx> <dy> <dz> <speed> <count> [normal|force]]'
+    invalid_argument: '&cInvalid particle argument: {detail}'
+    unknown_pattern: '&cUnknown voxel particle: {pattern}'
+    no_viewers: '&eSkipped creation because no player is in view range. Specify force if needed.'
+    started: '&aDisplayed voxel particles: {pattern} x{count}'
+    rejected: '&cCould not display voxel particles: {detail}'
