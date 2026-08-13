@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerAnimationType
@@ -33,12 +34,14 @@ internal class DisplayParticleBookTestController(
         return enabled
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onLeftClick(event: PlayerAnimationEvent) {
         if (event.animationType != PlayerAnimationType.ARM_SWING) return
         val player = event.player
         if (player.uniqueId !in enabledPlayers) return
         if (player.inventory.itemInMainHand.type != Material.WRITABLE_BOOK) return
+        // テスト用の本を振った操作は、通常の左クリック連携へ重複配送しません。
+        event.isCancelled = true
         val tick = Bukkit.getCurrentTick()
         if (lastHandledTick.put(player.uniqueId, tick) == tick) return
 
