@@ -28,17 +28,17 @@ interface DisplayEffectService {
         assetResolver: DisplayEffectAssetResolver
     ): DisplayEffectStartResult
 
-    /** CC-System 組み込みのボクセル粒子パターン一覧を返します。 */
-    fun listVoxelParticlePatterns(): List<VoxelParticlePatternInfo>
+    /** CC-System組み込みのプロパティ駆動パーティクル・プリセット一覧を返します。 */
+    fun listDisplayParticlePresets(): List<DisplayParticlePresetInfo>
 
     /**
-     * 複数の微小 BlockDisplay を1つの論理粒子群として原子的に生成します。
+     * 1パーティクルにつき1つの微小BlockDisplayを原子的に生成します。
      * 生成途中で失敗した場合は、同じ呼び出しで生成した Entity をすべて回収します。
      */
-    fun emitVoxelParticles(
+    fun emitDisplayParticles(
         owner: Plugin,
         anchor: Location,
-        request: VoxelParticleEmissionRequest
+        request: DisplayParticleEmissionRequest
     ): DisplayEffectStartResult
 }
 

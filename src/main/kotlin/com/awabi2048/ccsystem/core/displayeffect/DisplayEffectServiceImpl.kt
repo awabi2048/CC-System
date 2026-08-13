@@ -10,12 +10,12 @@ import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectStartRejection
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectStartResult
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectStopResult
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectTerminationReason
-import com.awabi2048.ccsystem.api.displayeffect.VoxelParticleEmissionRequest
-import com.awabi2048.ccsystem.api.displayeffect.VoxelParticlePatternInfo
-import com.awabi2048.ccsystem.api.displayeffect.VoxelParticleVisibilityMode
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleEmissionRequest
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticlePresetInfo
+import com.awabi2048.ccsystem.api.displayeffect.DisplayParticleVisibilityMode
 import com.awabi2048.ccsystem.core.displayeffect.paper.PaperDisplayEffectBackend
 import com.awabi2048.ccsystem.core.displayeffect.paper.PaperMaterialAssetResolver
-import com.awabi2048.ccsystem.core.displayeffect.paper.PaperVoxelParticleBackend
+import com.awabi2048.ccsystem.core.displayeffect.paper.PaperDisplayParticleBackend
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.plugin.Plugin
@@ -35,18 +35,18 @@ internal class DisplayEffectServiceImpl(
         val backend: PaperDisplayEffectBackend
     )
 
-    private data class ActiveVoxelParticle(
+    private data class ActiveDisplayParticle(
         val instance: DisplayEffectInstanceImpl,
         val owner: Plugin,
-        val runtime: VoxelParticleRuntime,
-        val backend: PaperVoxelParticleBackend,
+        val runtime: DisplayParticleRuntime,
+        val backend: PaperDisplayParticleBackend,
         val entityCount: Int
     )
 
     private val materialAssetResolver = PaperMaterialAssetResolver()
     private val defaultAssetResolver: DisplayEffectAssetResolver = materialAssetResolver
     private val activeEffects = linkedMapOf<UUID, ActiveEffect>()
-    private val activeVoxelParticles = linkedMapOf<UUID, ActiveVoxelParticle>()
+    private val activeDisplayParticles = linkedMapOf<UUID, ActiveDisplayParticle>()
     private val startsThisTick = linkedMapOf<Plugin, Int>()
     private var shutdown = false
     private var currentTick = -1
@@ -88,10 +88,10 @@ internal class DisplayEffectServiceImpl(
             startsThisTick.clear()
         }
         val ownerCount = activeEffects.values.count { it.owner === owner } +
-            activeVoxelParticles.values.count { it.owner === owner }
-        val activeEntityCount = activeEffects.size + activeVoxelParticles.values.sumOf { it.entityCount }
+            activeDisplayParticles.values.count { it.owner === owner }
+        val activeEntityCount = activeEffects.size + activeDisplayParticles.values.sumOf { it.entityCount }
         val ownerEntityCount = activeEffects.values.count { it.owner === owner } +
-            activeVoxelParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
+            activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
         val tickCount = startsThisTick[owner] ?: 0
         if (activeEffects.size >= MAX_ACTIVE_EFFECTS ||
             ownerCount >= MAX_ACTIVE_EFFECTS_PER_OWNER ||
@@ -146,21 +146,21 @@ internal class DisplayEffectServiceImpl(
         }
     }
 
-    override fun listVoxelParticlePatterns(): List<VoxelParticlePatternInfo> =
-        VoxelParticleCatalog.list().map { it.info() }
+    override fun listDisplayParticlePresets(): List<DisplayParticlePresetInfo> =
+        DisplayParticleCatalog.list().map { it.info() }
 
-    override fun emitVoxelParticles(
+    override fun emitDisplayParticles(
         owner: Plugin,
         anchor: Location,
-        request: VoxelParticleEmissionRequest
+        request: DisplayParticleEmissionRequest
     ): DisplayEffectStartResult {
         commonRejection(owner, anchor)?.let { return it }
-        val pattern = VoxelParticleCatalog.find(request.patternId)
+        val preset = DisplayParticleCatalog.find(request.presetId)
             ?: return DisplayEffectStartResult.Rejected(
                 DisplayEffectStartRejection.UNKNOWN_PATTERN,
-                "未登録のボクセル粒子パターンです: ${request.patternId.value}"
+                "未登録のDisplayパーティクル・プリセットです: ${request.presetId.value}"
             )
-        if (request.visibilityMode == VoxelParticleVisibilityMode.NORMAL &&
+        if (request.visibilityMode == DisplayParticleVisibilityMode.NORMAL &&
             anchor.world?.players.orEmpty().none { it.location.distanceSquared(anchor) <= NORMAL_VIEW_DISTANCE_SQUARED }
         ) {
             return DisplayEffectStartResult.Rejected(
@@ -169,10 +169,10 @@ internal class DisplayEffectServiceImpl(
             )
         }
 
-        val entityCost = pattern.voxels.size * request.count
+        val entityCost = request.count
         val ownerEntityCount = activeEffects.values.count { it.owner === owner } +
-            activeVoxelParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
-        val totalEntityCount = activeEffects.size + activeVoxelParticles.values.sumOf { it.entityCount }
+            activeDisplayParticles.values.filter { it.owner === owner }.sumOf { it.entityCount }
+        val totalEntityCount = activeEffects.size + activeDisplayParticles.values.sumOf { it.entityCount }
         val tickCount = startsThisTick[owner] ?: 0
         if (totalEntityCount + entityCost > MAX_ACTIVE_DISPLAY_ENTITIES ||
             ownerEntityCount + entityCost > MAX_ACTIVE_DISPLAY_ENTITIES_PER_OWNER ||
@@ -185,12 +185,12 @@ internal class DisplayEffectServiceImpl(
         }
 
         val instanceId = UUID.randomUUID()
-        val backend = PaperVoxelParticleBackend(plugin, anchor, materialAssetResolver, owner.name, instanceId)
-        val runtime = VoxelParticleRuntime(pattern, request, backend)
+        val backend = PaperDisplayParticleBackend(plugin, anchor, materialAssetResolver, owner.name, instanceId)
+        val runtime = DisplayParticleRuntime(preset, request, backend)
         return when (val result = runtime.start()) {
             DisplayEffectRuntimeResult.Started -> {
                 val instance = DisplayEffectInstanceImpl(instanceId, this)
-                activeVoxelParticles[instanceId] = ActiveVoxelParticle(instance, owner, runtime, backend, entityCost)
+                activeDisplayParticles[instanceId] = ActiveDisplayParticle(instance, owner, runtime, backend, entityCost)
                 startsThisTick[owner] = tickCount + entityCost
                 DisplayEffectStartResult.Started(instance)
             }
@@ -204,10 +204,10 @@ internal class DisplayEffectServiceImpl(
 
     internal fun stop(instanceId: UUID): DisplayEffectStopResult {
         if (!Bukkit.isPrimaryThread()) return DisplayEffectStopResult.NotMainThread
-        val voxel = activeVoxelParticles.remove(instanceId)
-        if (voxel != null) {
-            val result = voxel.runtime.stop(DisplayEffectDisposalReason.CANCELLED)
-            voxel.instance.markStopped(result)
+        val particle = activeDisplayParticles.remove(instanceId)
+        if (particle != null) {
+            val result = particle.runtime.stop(DisplayEffectDisposalReason.CANCELLED)
+            particle.instance.markStopped(result)
             return if (result is DisplayEffectRuntimeResult.Stopped) DisplayEffectStopResult.Stopped
             else DisplayEffectStopResult.ServiceUnavailable
         }
@@ -236,10 +236,10 @@ internal class DisplayEffectServiceImpl(
                 )
             }
         startsThisTick.remove(event.plugin)
-        activeVoxelParticles.entries.toList()
+        activeDisplayParticles.entries.toList()
             .filter { (_, active) -> active.owner === event.plugin }
             .forEach { (instanceId, active) ->
-                activeVoxelParticles.remove(instanceId)
+                activeDisplayParticles.remove(instanceId)
                 active.runtime.stop(DisplayEffectDisposalReason.OWNER_DISABLED)
                 active.instance.markTerminated(DisplayEffectInstanceStatus.STOPPED, DisplayEffectTerminationReason.OWNER_DISABLED)
             }
@@ -262,11 +262,11 @@ internal class DisplayEffectServiceImpl(
             )
         }
         activeEffects.clear()
-        activeVoxelParticles.values.toList().forEach { active ->
+        activeDisplayParticles.values.toList().forEach { active ->
             active.runtime.stop(DisplayEffectDisposalReason.SHUTDOWN)
             active.instance.markTerminated(DisplayEffectInstanceStatus.STOPPED, DisplayEffectTerminationReason.SHUTDOWN)
         }
-        activeVoxelParticles.clear()
+        activeDisplayParticles.clear()
     }
 
     private fun tick() {
@@ -306,20 +306,20 @@ internal class DisplayEffectServiceImpl(
                 DisplayEffectRuntimeResult.Started -> Unit
             }
         }
-        activeVoxelParticles.entries.toList().forEach { (instanceId, active) ->
+        activeDisplayParticles.entries.toList().forEach { (instanceId, active) ->
             when (val result = active.runtime.tick()) {
                 DisplayEffectRuntimeResult.Advanced,
                 DisplayEffectRuntimeResult.Ignored,
                 DisplayEffectRuntimeResult.Started -> Unit
                 is DisplayEffectRuntimeResult.Stopped -> {
-                    activeVoxelParticles.remove(instanceId)
+                    activeDisplayParticles.remove(instanceId)
                     active.instance.markStopped(result)
                 }
                 is DisplayEffectRuntimeResult.Failed -> {
-                    activeVoxelParticles.remove(instanceId)
+                    activeDisplayParticles.remove(instanceId)
                     active.instance.markFailed(result.error)
                     active.backend.disposeAll(DisplayEffectDisposalReason.FAILED)
-                    plugin.logger.warning("[VoxelParticle] runtime failed: instance=$instanceId error=${result.error.message}")
+                    plugin.logger.warning("[DisplayParticle] runtime failed: instance=$instanceId error=${result.error.message}")
                 }
             }
         }
