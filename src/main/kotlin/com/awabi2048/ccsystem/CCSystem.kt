@@ -24,6 +24,7 @@ import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
 import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
+import com.awabi2048.ccsystem.core.item.SystemItemGrantProvider
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
 import com.awabi2048.ccsystem.features.misc.listener.DynamicDistanceListener
 import com.awabi2048.ccsystem.features.misc.listener.PlayerLeftClickBinderListener
@@ -418,6 +419,8 @@ class CCSystem : JavaPlugin() {
         // マネージャー初期化
         ConfigManager.load()
         LanguageManager.load()
+        // CC-System所有のカスタムアイテムも、他モジュールと同じItemGrant APIから付与可能にします。
+        _api.getItemGrantService().register(SystemItemGrantProvider())
         MessageManager.load()
         PlayerDataManager.load()
         PlacedBlockLedgerManager.load()

@@ -39,3 +39,7 @@ management:
     particle_test_invalid_json: "§cThe book JSON is invalid: {detail}"
     particle_test_cached: "§aValidated the book JSON and cached the particle settings."
     particle_test_not_cached: "§cThis book is not cached. Open it and close the editor first."
+    particle_sample_item:
+      name: "§6Voxel Particle Sample"
+      description: "§7An editable sample with appearance and motion settings split across pages."
+      operation: "§eOpen and close the book to cache its settings"

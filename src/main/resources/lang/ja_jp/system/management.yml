@@ -39,3 +39,7 @@ management:
     particle_test_invalid_json: "§c本のJSONが不正です: {detail}"
     particle_test_cached: "§a本のJSONを検証し、パーティクル設定をキャッシュしました。"
     particle_test_not_cached: "§cこの本の設定はキャッシュされていません。本を開き、編集画面を閉じてください。"
+    particle_sample_item:
+      name: "§6ボクセルパーティクル サンプル"
+      description: "§7ページごとに外観・動作設定を記述した編集用サンプルです。"
+      operation: "§e本を開いて閉じると設定をキャッシュします"
