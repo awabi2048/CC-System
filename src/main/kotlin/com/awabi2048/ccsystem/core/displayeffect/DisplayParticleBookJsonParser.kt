@@ -22,6 +22,34 @@ internal data class ParsedDisplayParticleBook(
 
 /** 本のJSONを一時的な外観・動作スナップショットへ変換します。 */
 internal object DisplayParticleBookJsonParser {
+    /**
+     * 各ページを外側の波括弧を持たないトップレベル項目として検証し、
+     * ページ間に空白を加えず単一のJSONオブジェクトへ組み立てます。
+     */
+    fun parsePages(pages: List<String>): ParsedDisplayParticleBook {
+        require(pages.isNotEmpty()) { "JSONページがありません" }
+        val seenKeys = mutableSetOf<String>()
+        val fragments = pages.mapIndexed { index, page ->
+            val fragment = page.trim()
+            require(fragment.isNotEmpty()) { "${index + 1}ページ目が空です" }
+            val pageObject = JsonParser.parseString("{$fragment}").objectValue("${index + 1}ページ目")
+            require(pageObject.size() == 1) { "${index + 1}ページ目には項目を1つだけ記述してください" }
+            val key = pageObject.keySet().single()
+            require(seenKeys.add(key)) { "JSON項目が重複しています: $key" }
+            fragment
+        }
+        require(seenKeys == TOP_LEVEL_FIELDS) {
+            val missing = TOP_LEVEL_FIELDS - seenKeys
+            val unknown = seenKeys - TOP_LEVEL_FIELDS
+            buildString {
+                if (missing.isNotEmpty()) append("不足項目: ${missing.sorted().joinToString()}")
+                if (missing.isNotEmpty() && unknown.isNotEmpty()) append(" / ")
+                if (unknown.isNotEmpty()) append("未対応項目: ${unknown.sorted().joinToString()}")
+            }
+        }
+        return parse("{${fragments.joinToString(",")}}")
+    }
+
     fun parse(json: String): ParsedDisplayParticleBook {
         require(json.toByteArray(Charsets.UTF_8).size <= MAX_JSON_BYTES) { "JSONは${MAX_JSON_BYTES}byte以内です" }
         val root = JsonParser.parseString(json).objectValue("root")
@@ -166,4 +194,5 @@ internal object DisplayParticleBookJsonParser {
 
     private const val TRANSIENT_PRESET_ID = "cc:book-test"
     private const val MAX_JSON_BYTES = 16_384
+    private val TOP_LEVEL_FIELDS = setOf("textures", "scale", "rotation", "lifetime", "motion", "collision", "emission")
 }

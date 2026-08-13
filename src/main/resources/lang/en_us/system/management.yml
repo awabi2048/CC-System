@@ -32,9 +32,10 @@ management:
     changed: "§aChanged Display particle limit {type} to {limit}."
   debug:
     usage: "§eUsage: /cc debug toggle_test (players only)"
-    particle_test_enabled: "§aEnabled book-based voxel particle testing. Hold a writable book containing JSON in your main hand and left-click."
+    particle_test_enabled: "§aEnabled book-based voxel particle testing. Put one field on each page, close the editor, then left-click."
     particle_test_disabled: "§eDisabled book-based voxel particle testing."
     particle_test_empty_book: "§cWrite JSON in the writable book first."
-    particle_test_started: "§aDisplayed voxel particles from the book JSON."
     particle_test_rejected: "§cCould not display voxel particles: {detail}"
     particle_test_invalid_json: "§cThe book JSON is invalid: {detail}"
+    particle_test_cached: "§aValidated the book JSON and cached the particle settings."
+    particle_test_not_cached: "§cThis book is not cached. Open it and close the editor first."

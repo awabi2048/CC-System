@@ -32,9 +32,10 @@ management:
     changed: "§aDisplayパーティクル制限 {type} を{limit}に変更しました。"
   debug:
     usage: "§e使用法: /cc debug toggle_test（プレイヤーのみ）"
-    particle_test_enabled: "§a本と羽ペンによるボクセルパーティクルテストを有効にしました。JSONを記述した本をメインハンドに持って左クリックしてください。"
+    particle_test_enabled: "§a本と羽ペンによるボクセルパーティクルテストを有効にしました。項目ごとにページを分け、編集画面を閉じてから左クリックしてください。"
     particle_test_disabled: "§e本と羽ペンによるボクセルパーティクルテストを無効にしました。"
     particle_test_empty_book: "§c本と羽ペンにJSONを記述してください。"
-    particle_test_started: "§a本のJSONからボクセルパーティクルを表示しました。"
     particle_test_rejected: "§cボクセルパーティクルを表示できませんでした: {detail}"
     particle_test_invalid_json: "§c本のJSONが不正です: {detail}"
+    particle_test_cached: "§a本のJSONを検証し、パーティクル設定をキャッシュしました。"
+    particle_test_not_cached: "§cこの本の設定はキャッシュされていません。本を開き、編集画面を閉じてください。"
