@@ -20,6 +20,11 @@ management:
     failed: "§cCould not open {menu} for {player}."
   particle:
     usage: "§eUsage: /cc particle limit [global|owner|per-tick|emission] [set <value>]"
+    type:
+      global: "server-wide active count"
+      owner: "active count per owning plugin"
+      per-tick: "spawn count per owning plugin per tick"
+      emission: "count per emission"
     status_header: "§eDisplay particle limits ({used} currently active)"
     status_line: "§7- {type}: §f{limit} §8(range: {minimum}–{maximum})"
     invalid_limit: "§cSpecify {type} as an integer from {minimum} to {maximum}."

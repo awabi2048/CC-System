@@ -20,6 +20,11 @@ management:
     failed: "§c{player}へ{menu}を開けませんでした。"
   particle:
     usage: "§e使用法: /cc particle limit [global|owner|per-tick|emission] [set <値>]"
+    type:
+      global: "サーバー全体の同時存在数"
+      owner: "所有プラグインごとの同時存在数"
+      per-tick: "所有プラグインごとの1 tick生成数"
+      emission: "1回の放出数"
     status_header: "§eDisplayパーティクル制限（現在使用中: {used}）"
     status_line: "§7- {type}: §f{limit} §8（設定範囲: {minimum}～{maximum}）"
     invalid_limit: "§c{type}は{minimum}～{maximum}の整数で指定してください。"

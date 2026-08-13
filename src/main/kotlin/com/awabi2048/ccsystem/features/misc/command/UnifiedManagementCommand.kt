@@ -68,25 +68,25 @@ class UnifiedManagementCommand(
         }
         val limit = args[3].toIntOrNull()
         if (limit == null || limit !in type.allowedRange) {
-            sender.sendMessage(message(sender, "management.particle.invalid_limit", limitPlaceholders(type)))
+            sender.sendMessage(message(sender, "management.particle.invalid_limit", limitPlaceholders(sender, type)))
             return true
         }
         if (!ConfigManager.setDisplayParticleLimit(type, limit)) {
             sender.sendMessage(message(sender, "management.particle.save_failed"))
             return true
         }
-        sender.sendMessage(message(sender, "management.particle.changed", limitPlaceholders(type) + ("limit" to limit)))
+        sender.sendMessage(message(sender, "management.particle.changed", limitPlaceholders(sender, type) + ("limit" to limit)))
         return true
     }
 
     private fun limitStatus(sender: CommandSender, type: DisplayParticleLimitType): String = message(
         sender,
         "management.particle.status_line",
-        limitPlaceholders(type) + ("limit" to ConfigManager.getDisplayParticleLimit(type))
+        limitPlaceholders(sender, type) + ("limit" to ConfigManager.getDisplayParticleLimit(type))
     )
 
-    private fun limitPlaceholders(type: DisplayParticleLimitType): Map<String, Any> = mapOf(
-        "type" to type.commandName,
+    private fun limitPlaceholders(sender: CommandSender, type: DisplayParticleLimitType): Map<String, Any> = mapOf(
+        "type" to message(sender, "management.particle.type.${type.commandName}"),
         "minimum" to type.allowedRange.first,
         "maximum" to type.allowedRange.last
     )
