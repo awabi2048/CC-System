@@ -89,6 +89,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     fun spawnCatcher(player: Player, sessionId: UUID, revision: Long, location: Location): CatcherHandle {
         val entity = player.world.spawn(location, Interaction::class.java) {
             it.isPersistent = false
+            // 後から参加したプレイヤーにも送信されないよう、生成時点から個人表示に固定します。
+            it.isVisibleByDefault = false
             it.interactionWidth = 0.18f
             it.interactionHeight = 0.18f
             it.isResponsive = false
@@ -96,7 +98,6 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.persistentDataContainer.set(actorKey, PersistentDataType.STRING, player.uniqueId.toString())
         }
         // Interactionは操作者固有です。他者の照準や操作を横取りさせません。
-        Bukkit.getOnlinePlayers().forEach { viewer -> viewer.hideEntity(plugin, entity) }
         player.showEntity(plugin, entity)
         return CatcherHandle(player.uniqueId, entity)
     }

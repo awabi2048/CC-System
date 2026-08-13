@@ -213,19 +213,33 @@ class GestureGuiServiceImpl(
                 screen.pose = pose
                 renderer.updatePose(screen.render, pose, screen.view)
             }
-            session.actors.values.toList().forEach { actor ->
-                val player = Bukkit.getPlayer(actor.playerId)
-                if (player == null || !player.isOnline || player.world.uid != owner.world.uid) {
-                    removeActor(session, actor.playerId)
-                } else if (actor.playerId != session.ownerId) {
-                    // 第三者の入力占有は、公開画面を実際に注視している間だけ維持します。
-                    val actorHit = accessibleHit(session, player)
-                    if (actorHit == null) removeActor(session, actor.playerId)
-                    else renderer.moveCatcher(actor.catcher, catcherLocation(player, actorHit.distance))
-                } else {
-                    renderer.moveCatcher(actor.catcher, catcherLocation(player))
-                }
+            session.actors[session.ownerId]?.let { renderer.moveCatcher(it.catcher, catcherLocation(owner)) }
+        }
+        reconcileExternalActors()
+    }
+
+    /**
+     * PUBLIC/ALLOWLIST画面は最初のクリックより前にInteractionを用意します。
+     * 複数画面が重なる場合も、一人の入力は最寄りの一セッションだけが所有します。
+     */
+    private fun reconcileExternalActors() {
+        val activeSessions = sessions.values.filter { it.state == GestureGuiSessionState.ACTIVE }
+        Bukkit.getOnlinePlayers().forEach { player ->
+            if (player.uniqueId in sessions) return@forEach
+            val desired = activeSessions.mapNotNull { session ->
+                accessibleHit(session, player)?.let { session to it }
+            }.minByOrNull { (_, hit) -> hit.distance }
+            activeSessions.forEach { session ->
+                if (session !== desired?.first && player.uniqueId in session.actors) removeActor(session, player.uniqueId)
             }
+            val (session, hit) = desired ?: return@forEach
+            val actor = session.actors[player.uniqueId] ?: runCatching { createActor(session, player) }.getOrNull() ?: return@forEach
+            renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.distance))
+        }
+        activeSessions.forEach { session ->
+            session.actors.keys.filter { actorId ->
+                actorId != session.ownerId && Bukkit.getPlayer(actorId)?.isOnline != true
+            }.forEach { removeActor(session, it) }
         }
     }
 
