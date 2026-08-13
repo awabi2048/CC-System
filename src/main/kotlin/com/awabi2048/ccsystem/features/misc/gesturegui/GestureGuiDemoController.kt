@@ -1,0 +1,93 @@
+package com.awabi2048.ccsystem.features.misc.gesturegui
+
+import com.awabi2048.ccsystem.api.CCSystemAPI
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiElement
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+import com.awabi2048.ccsystem.api.localization.generated.GestureGuiKeys
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+
+/** 汎用APIの全描画・入力経路を実サーバーで確認するための管理者向け画面です。 */
+class GestureGuiDemoController(private val api: CCSystemAPI) {
+    fun open(player: Player, screenCount: Int) {
+        api.getGestureGuiService().open(player, (0 until screenCount).map { screenIndex -> view(player, screenIndex) })
+    }
+
+    fun close(player: Player): Boolean = api.getGestureGuiService().close(player.uniqueId)
+
+    private fun view(owner: Player, index: Int): GestureGuiView {
+        val gestures = GestureGuiGesture.entries
+        val elementWidth = 0.24
+        val startX = -0.60
+        val elements = gestures.mapIndexed { column, gesture ->
+            val centerX = startX + column * 0.30
+            GestureGuiElement(
+                elementId = gesture.name.lowercase(),
+                bounds = GestureGuiBounds(centerX - elementWidth / 2, -0.27, centerX + elementWidth / 2, 0.02),
+                acceptedGestures = setOf(gesture),
+            )
+        }
+        val visuals = buildList {
+            add(
+                GestureGuiVisual.Block(
+                    "background", 0.0, 0.0, 1.5, 0.75,
+                    Bukkit.createBlockData(Material.BLACK_CONCRETE), background = true,
+                )
+            )
+            add(GestureGuiVisual.Text("title", 0.0, 0.27, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_TITLE), scale = 0.010))
+            add(GestureGuiVisual.Text("description", 0.0, 0.15, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_DESCRIPTION), scale = 0.0065))
+            gestures.forEachIndexed { column, gesture ->
+                val centerX = startX + column * 0.30
+                add(
+                    GestureGuiVisual.Block(
+                        "button-${gesture.name}", centerX, -0.12, elementWidth, 0.29,
+                        Bukkit.createBlockData(if (column % 2 == 0) Material.LIGHT_BLUE_CONCRETE else Material.CYAN_CONCRETE),
+                        layer = 4,
+                    )
+                )
+                add(GestureGuiVisual.Item("icon-${gesture.name}", centerX, -0.09, ItemStack(icon(gesture)), scale = 0.14))
+                add(GestureGuiVisual.Text("label-${gesture.name}", centerX, -0.23, label(owner, gesture), scale = 0.0045, lineWidth = 70))
+            }
+            add(GestureGuiVisual.Text("exit", 0.0, -0.33, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), scale = 0.005))
+        }
+        return GestureGuiView(
+            GestureGuiScreenDefinition("demo-$index", elements, access = GestureGuiAccess.PUBLIC),
+            visuals,
+        ) { context ->
+            Bukkit.getPlayer(context.actorId)?.sendMessage(
+                api.getLocalized(
+                    Bukkit.getPlayer(context.actorId),
+                    GestureGuiKeys.GESTURE_GUI_DEMO_ACTION,
+                    mapOf("gesture" to context.gesture.name),
+                )
+            )
+        }
+    }
+
+    private fun label(player: Player, gesture: GestureGuiGesture): Component = when (gesture) {
+        GestureGuiGesture.PRIMARY -> text(player, GestureGuiKeys.GESTURE_GUI_DEMO_PRIMARY)
+        GestureGuiGesture.SECONDARY -> text(player, GestureGuiKeys.GESTURE_GUI_DEMO_SECONDARY)
+        GestureGuiGesture.SHIFT_PRIMARY -> text(player, GestureGuiKeys.GESTURE_GUI_DEMO_SHIFT_PRIMARY)
+        GestureGuiGesture.SHIFT_SECONDARY -> text(player, GestureGuiKeys.GESTURE_GUI_DEMO_SHIFT_SECONDARY)
+        GestureGuiGesture.SWAP_HAND -> text(player, GestureGuiKeys.GESTURE_GUI_DEMO_SWAP_HAND)
+    }
+
+    private fun icon(gesture: GestureGuiGesture): Material = when (gesture) {
+        GestureGuiGesture.PRIMARY -> Material.IRON_SWORD
+        GestureGuiGesture.SECONDARY -> Material.LEVER
+        GestureGuiGesture.SHIFT_PRIMARY -> Material.DIAMOND_PICKAXE
+        GestureGuiGesture.SHIFT_SECONDARY -> Material.REPEATER
+        GestureGuiGesture.SWAP_HAND -> Material.SHIELD
+    }
+
+    private fun text(player: Player, key: com.awabi2048.ccsystem.api.localization.LocalizationKey<String>): Component =
+        Component.text(api.getLocalized(player, key))
+}

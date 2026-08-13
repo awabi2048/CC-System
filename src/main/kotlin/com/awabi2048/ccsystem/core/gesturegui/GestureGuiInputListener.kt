@@ -43,28 +43,31 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
         val catcher = service.ownsCatcher(event.rightClicked)
-        if (catcher || dispatch(event.player, secondary(event.player))) event.isCancelled = true
+        // catcherは背後のブロックを遮る入口であり、正規の要素判定は同じ視線rayで行います。
+        val handled = dispatch(event.player, secondary(event.player))
+        if (catcher || handled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteractAt(event: PlayerInteractAtEntityEvent) {
         val catcher = service.ownsCatcher(event.rightClicked)
-        if (catcher || dispatch(event.player, secondary(event.player))) event.isCancelled = true
+        val handled = dispatch(event.player, secondary(event.player))
+        if (catcher || handled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityAttack(event: EntityDamageByEntityEvent) {
         val player = event.damager as? Player ?: return
         val catcher = service.ownsCatcher(event.entity)
-        if (catcher || dispatch(player, primary(player))) event.isCancelled = true
+        val handled = dispatch(player, primary(player))
+        if (catcher || handled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onSwapHand(event: PlayerSwapHandItemsEvent) {
-        if (!service.isParticipating(event.player.uniqueId)) return
-        // 画面外でもclaim中のFを持ち替えへ漏らさず、画面内の場合だけActionへ渡します。
-        dispatch(event.player, GestureGuiGesture.SWAP_HAND)
-        event.isCancelled = true
+        // PUBLIC画面ではFが第三者の最初の操作にもなり得ます。Action解決中にclaimを取得するため、
+        // 後続のFreecam listenerは同じイベントをジェスチャーGUI所有として認識できます。
+        if (dispatch(event.player, GestureGuiGesture.SWAP_HAND)) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

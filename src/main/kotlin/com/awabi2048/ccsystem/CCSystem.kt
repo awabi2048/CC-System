@@ -23,6 +23,7 @@ import com.awabi2048.ccsystem.features.misc.command.DelayCommand
 import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
 import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
+import com.awabi2048.ccsystem.features.misc.gesturegui.GestureGuiDemoController
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
 import com.awabi2048.ccsystem.core.item.SystemItemGrantProvider
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
@@ -457,7 +458,8 @@ class CCSystem : JavaPlugin() {
         server.pluginManager.registerEvents(displayParticleBookTestController, this)
         val unifiedManagementCommand = UnifiedManagementCommand(
             { _api.getDisplayParticleCount() },
-            displayParticleBookTestController
+            displayParticleBookTestController,
+            GestureGuiDemoController(_api),
         )
         getCommand("cc")?.setExecutor(unifiedManagementCommand)
         getCommand("cc")?.tabCompleter = unifiedManagementCommand

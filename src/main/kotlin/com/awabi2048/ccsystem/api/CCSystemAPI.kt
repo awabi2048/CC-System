@@ -14,6 +14,7 @@ import com.awabi2048.ccsystem.api.gui.MenuDialogService
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
@@ -40,7 +41,7 @@ interface CCSystemAPI {
 
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
-        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 8
+        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 9
     }
     /**
      * プレイヤーの言語設定を取得します
@@ -106,6 +107,9 @@ interface CCSystemAPI {
     fun getMenuFormService(): MenuFormService
 
     fun getPlayerInteractionClaimService(): PlayerInteractionClaimService
+
+    /** Display Entityと視線ジェスチャーで操作する共有画面サービスです。 */
+    fun getGestureGuiService(): GestureGuiService
 
     fun getConfigSchemaService(): ConfigSchemaService
 

@@ -14,6 +14,7 @@ import com.awabi2048.ccsystem.api.gui.MenuDialogService
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
@@ -40,6 +41,9 @@ import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuConfirmationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuFormServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiInputListener
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiLifecycleListener
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
 import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
@@ -109,6 +113,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         menuPresentationTracker,
     )
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
+    private val gestureGuiService = GestureGuiServiceImpl(plugin, playerInteractionClaimService).also {
+        // 入力とライフサイクルを同じサービスへ接続し、Entity UUIDを外部へ公開しません。
+        plugin.server.pluginManager.registerEvents(GestureGuiInputListener(it), plugin)
+        plugin.server.pluginManager.registerEvents(GestureGuiLifecycleListener(it), plugin)
+    }
     private val configSchemaService = ConfigSchemaServiceImpl()
     private val itemGrantService = ItemGrantServiceImpl()
     private val worldIdentityService = WorldIdentityServiceImpl()
@@ -256,6 +265,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         return playerInteractionClaimService
     }
 
+    override fun getGestureGuiService(): GestureGuiService = gestureGuiService
+
     override fun getConfigSchemaService(): ConfigSchemaService = configSchemaService
 
     override fun getItemGrantService(): ItemGrantService = itemGrantService
@@ -283,6 +294,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     internal fun getDisplayParticleCount(): Int = displayEffectService.currentDisplayParticleCount()
 
     internal fun shutdown() {
+        gestureGuiService.shutdown()
         displayEffectService.shutdown()
         cosmeticPlatform.shutdown()
     }
