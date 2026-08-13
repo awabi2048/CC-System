@@ -102,10 +102,9 @@ management:
         emission_count: "§7一度に生成するボクセル数です。1～32で指定します。"
         emission_visibility: "§7表示対象の扱いです。無効値では候補一覧が表示されます。"
     particle_test_fix:
-      added: "§a不足していた設定項目を自動で追加しました: {fields}"
-      requires_removal: "§e削除を伴う修正が必要です: {fields}"
+      confirm_required: "§e本の内容を変更する修正案があります。確認後に適用してください: {fields}"
       apply: "§8[§6本を自動修正§8]"
-      apply_hover: "§7クリックすると、現在持っている本から不要部分を削除して正規化します。"
+      apply_hover: "§7クリックすると、現在持っている本へ追加・削除を含む修正案を適用します。"
       applied: "§a本を自動修正し、パーティクル設定をキャッシュしました。"
       expired: "§c修正対象の本が異なるか、修正リンクの有効期限が切れています。"
     particle_sample_item:

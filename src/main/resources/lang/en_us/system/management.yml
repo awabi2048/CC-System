@@ -102,10 +102,9 @@ management:
         emission_count: "§7Number of voxels spawned at once, from 1 to 32."
         emission_visibility: "§7Visibility behavior. Invalid input displays available values."
     particle_test_fix:
-      added: "§aAutomatically added missing settings: {fields}"
-      requires_removal: "§eA correction that removes content is required: {fields}"
+      confirm_required: "§eA correction will change the book. Confirm before applying it: {fields}"
       apply: "§8[§6Automatically fix book§8]"
-      apply_hover: "§7Click to remove unsupported content from the held book and normalize it."
+      apply_hover: "§7Click to apply the proposed additions and removals to the held book."
       applied: "§aAutomatically fixed the book and cached the particle settings."
       expired: "§cThe held book differs from the target, or the correction link has expired."
     particle_sample_item:

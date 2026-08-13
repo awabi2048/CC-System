@@ -38,7 +38,6 @@ internal class DisplayParticleBookTestController(
     private val cachedBooks = mutableMapOf<UUID, CachedBook>()
     private val pendingFixes = mutableMapOf<UUID, PendingFix>()
     private val cacheIdKey = NamespacedKey(plugin, "display-particle-book-cache")
-    private val fixTokenKey = NamespacedKey(plugin, "display-particle-book-fix")
     // Material Registryの準備後に生成し、各編集イベントで全ブロックを列挙し直さないよう保持します。
     private val blockChoices by lazy(DisplayParticleBookJsonParser::availableBlockChoices)
 
@@ -64,13 +63,11 @@ internal class DisplayParticleBookTestController(
         val editedMeta = event.newBookMeta
         // 新しい編集結果を受け取った時点で、過去の修正案は再利用できないよう失効させます。
         pendingFixes.remove(player.uniqueId)
-        editedMeta.persistentDataContainer.remove(fixTokenKey)
         // 署名すると本と羽ペンではなくなるため、テスト用キャッシュとしては扱いません。
         if (event.isSigning) {
             cachedBooks.remove(player.uniqueId)
             pendingFixes.remove(player.uniqueId)
             editedMeta.persistentDataContainer.remove(cacheIdKey)
-            editedMeta.persistentDataContainer.remove(fixTokenKey)
             event.newBookMeta = editedMeta
             return
         }
@@ -79,32 +76,23 @@ internal class DisplayParticleBookTestController(
         val pages = editedMeta.pages().map(serializer::serialize)
         runCatching { DisplayParticleBookJsonParser.preparePages(pages, blockChoices) }
             .onSuccess { prepared ->
-                if (prepared.removedPaths.isNotEmpty()) {
+                if (prepared.pages != pages) {
                     val token = UUID.randomUUID().toString()
                     editedMeta.persistentDataContainer.remove(cacheIdKey)
-                    editedMeta.persistentDataContainer.set(fixTokenKey, PersistentDataType.STRING, token)
                     event.newBookMeta = editedMeta
                     cachedBooks.remove(player.uniqueId)
-                    pendingFixes[player.uniqueId] = PendingFix(token, prepared)
-                    sendDestructiveFixOffer(player, prepared, token)
+                    pendingFixes[player.uniqueId] = PendingFix(token, pages, prepared)
+                    sendFixOffer(player, prepared, token)
                     return@onSuccess
                 }
 
-                // 不足項目の追加だけで済む場合は、その場で本を正規化してからキャッシュします。
-                editedMeta.pages(prepared.pages.map(Component::text))
-                editedMeta.persistentDataContainer.remove(fixTokenKey)
+                // ページ内容に変更がない場合だけ、確認を挟まず実行用キャッシュを作成します。
                 cachePreparedBook(player, editedMeta, prepared) { event.newBookMeta = editedMeta }
-                if (prepared.addedPaths.isNotEmpty()) {
-                    player.sendMessage(message(player, "management.debug.particle_test_fix.added", mapOf(
-                        "fields" to prepared.addedPaths.joinToString()
-                    )))
-                }
             }
             .onFailure { failure ->
                 cachedBooks.remove(player.uniqueId)
                 pendingFixes.remove(player.uniqueId)
                 editedMeta.persistentDataContainer.remove(cacheIdKey)
-                editedMeta.persistentDataContainer.remove(fixTokenKey)
                 event.newBookMeta = editedMeta
                 sendValidationFailure(player, failure)
             }
@@ -140,13 +128,12 @@ internal class DisplayParticleBookTestController(
             return
         }
         val meta = item.itemMeta as? BookMeta
-        val itemToken = meta?.persistentDataContainer?.get(fixTokenKey, PersistentDataType.STRING)
-        if (pending == null || meta == null || pending.token != token || itemToken != token) {
+        val currentPages = meta?.pages()?.map(PlainTextComponentSerializer.plainText()::serialize)
+        if (pending == null || meta == null || pending.token != token || currentPages != pending.originalPages) {
             player.sendMessage(message(player, "management.debug.particle_test_fix.expired"))
             return
         }
         meta.pages(pending.prepared.pages.map(Component::text))
-        meta.persistentDataContainer.remove(fixTokenKey)
         cachePreparedBook(player, meta, pending.prepared) { item.itemMeta = meta }
         pendingFixes.remove(player.uniqueId)
         player.sendMessage(message(player, "management.debug.particle_test_fix.applied"))
@@ -241,7 +228,11 @@ internal class DisplayParticleBookTestController(
         val parsed: ParsedDisplayParticleBook
     )
 
-    private data class PendingFix(val token: String, val prepared: PreparedDisplayParticleBook)
+    private data class PendingFix(
+        val token: String,
+        val originalPages: List<String>,
+        val prepared: PreparedDisplayParticleBook
+    )
 
     private fun cachePreparedBook(
         player: Player,
@@ -265,9 +256,10 @@ internal class DisplayParticleBookTestController(
         )
     }
 
-    private fun sendDestructiveFixOffer(player: Player, prepared: PreparedDisplayParticleBook, token: String) {
-        player.sendMessage(message(player, "management.debug.particle_test_fix.requires_removal", mapOf(
-            "fields" to prepared.removedPaths.joinToString()
+    private fun sendFixOffer(player: Player, prepared: PreparedDisplayParticleBook, token: String) {
+        val changes = (prepared.addedPaths.map { "+$it" } + prepared.removedPaths.map { "-$it" }).joinToString()
+        player.sendMessage(message(player, "management.debug.particle_test_fix.confirm_required", mapOf(
+            "fields" to changes
         )))
         player.sendMessage(
             LanguageManager.deserializeLegacy(message(player, "management.debug.particle_test_fix.apply"))
