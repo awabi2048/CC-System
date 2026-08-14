@@ -12,10 +12,10 @@ class LocalizationKey<T> private constructor(
     enum class ValueType { TEXT, TEXT_LIST }
 
     companion object {
-        fun text(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<String> =
+        internal fun text(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<String> =
             LocalizationKey(id, ValueType.TEXT, placeholders)
 
-        fun textList(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<List<String>> =
+        internal fun textList(id: String, placeholders: Set<String> = emptySet()): LocalizationKey<List<String>> =
             LocalizationKey(id, ValueType.TEXT_LIST, placeholders)
     }
 }
