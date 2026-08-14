@@ -13,6 +13,17 @@ internal object JaJpContentResourceCollectionCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "resource_collection.use.cooking", value = EmbeddedLocalizedValue.Text("料理"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.use.brewery", value = EmbeddedLocalizedValue.Text("醸造"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.cold_field", value = EmbeddedLocalizedValue.Text("寒冷地の畑"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.dry_field", value = EmbeddedLocalizedValue.Text("乾燥地の畑"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.flower_field", value = EmbeddedLocalizedValue.Text("花畑"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.forest", value = EmbeddedLocalizedValue.Text("森林"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.jungle", value = EmbeddedLocalizedValue.Text("ジャングル"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.taiga", value = EmbeddedLocalizedValue.Text("タイガ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.temperate_field", value = EmbeddedLocalizedValue.Text("温帯の畑"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.warm_field", value = EmbeddedLocalizedValue.Text("温暖地の畑"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.wetland", value = EmbeddedLocalizedValue.Text("湿地"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.mineral", value = EmbeddedLocalizedValue.Text("鉱脈の鑑定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.forest", value = EmbeddedLocalizedValue.Text("林産物の調査"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.vegetation", value = EmbeddedLocalizedValue.Text("植生の調査"), domain = DOMAIN),

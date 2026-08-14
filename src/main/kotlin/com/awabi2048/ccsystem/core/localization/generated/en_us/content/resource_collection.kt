@@ -13,6 +13,17 @@ internal object EnUsContentResourceCollectionCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "resource_collection.use.cooking", value = EmbeddedLocalizedValue.Text("Cooking"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.use.brewery", value = EmbeddedLocalizedValue.Text("Brewing"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.cold_field", value = EmbeddedLocalizedValue.Text("Cold field"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.dry_field", value = EmbeddedLocalizedValue.Text("Dry field"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.flower_field", value = EmbeddedLocalizedValue.Text("Flower field"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.forest", value = EmbeddedLocalizedValue.Text("Forest"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.jungle", value = EmbeddedLocalizedValue.Text("Jungle"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.taiga", value = EmbeddedLocalizedValue.Text("Taiga"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.temperate_field", value = EmbeddedLocalizedValue.Text("Temperate field"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.warm_field", value = EmbeddedLocalizedValue.Text("Warm field"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "resource_collection.group.wetland", value = EmbeddedLocalizedValue.Text("Wetland"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.mineral", value = EmbeddedLocalizedValue.Text("Vein appraisal"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.forest", value = EmbeddedLocalizedValue.Text("Forest product survey"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "resource_collection.display.heading.vegetation", value = EmbeddedLocalizedValue.Text("Vegetation survey"), domain = DOMAIN),

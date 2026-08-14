@@ -4,6 +4,17 @@ import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
 /** コンパイル時に値型を保証する、領域別の生成済みローカライズキーです。 */
 object ContentResourceCollectionKeys {
+    @JvmField val RESOURCE_COLLECTION_USE_COOKING: LocalizationKey<String> = LocalizationKey.text("resource_collection.use.cooking", setOf())
+    @JvmField val RESOURCE_COLLECTION_USE_BREWERY: LocalizationKey<String> = LocalizationKey.text("resource_collection.use.brewery", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_COLD_FIELD: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.cold_field", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_DRY_FIELD: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.dry_field", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_FLOWER_FIELD: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.flower_field", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_FOREST: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.forest", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_JUNGLE: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.jungle", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_TAIGA: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.taiga", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_TEMPERATE_FIELD: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.temperate_field", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_WARM_FIELD: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.warm_field", setOf())
+    @JvmField val RESOURCE_COLLECTION_GROUP_WETLAND: LocalizationKey<String> = LocalizationKey.text("resource_collection.group.wetland", setOf())
     @JvmField val RESOURCE_COLLECTION_DISPLAY_HEADING_MINERAL: LocalizationKey<String> = LocalizationKey.text("resource_collection.display.heading.mineral", setOf())
     @JvmField val RESOURCE_COLLECTION_DISPLAY_HEADING_FOREST: LocalizationKey<String> = LocalizationKey.text("resource_collection.display.heading.forest", setOf())
     @JvmField val RESOURCE_COLLECTION_DISPLAY_HEADING_VEGETATION: LocalizationKey<String> = LocalizationKey.text("resource_collection.display.heading.vegetation", setOf())
@@ -56,6 +67,17 @@ object ContentResourceCollectionKeys {
     @JvmField val RESOURCE_COLLECTION_CULTIVATION_TILLED: LocalizationKey<String> = LocalizationKey.text("resource_collection.cultivation.tilled", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        RESOURCE_COLLECTION_USE_COOKING,
+        RESOURCE_COLLECTION_USE_BREWERY,
+        RESOURCE_COLLECTION_GROUP_COLD_FIELD,
+        RESOURCE_COLLECTION_GROUP_DRY_FIELD,
+        RESOURCE_COLLECTION_GROUP_FLOWER_FIELD,
+        RESOURCE_COLLECTION_GROUP_FOREST,
+        RESOURCE_COLLECTION_GROUP_JUNGLE,
+        RESOURCE_COLLECTION_GROUP_TAIGA,
+        RESOURCE_COLLECTION_GROUP_TEMPERATE_FIELD,
+        RESOURCE_COLLECTION_GROUP_WARM_FIELD,
+        RESOURCE_COLLECTION_GROUP_WETLAND,
         RESOURCE_COLLECTION_DISPLAY_HEADING_MINERAL,
         RESOURCE_COLLECTION_DISPLAY_HEADING_FOREST,
         RESOURCE_COLLECTION_DISPLAY_HEADING_VEGETATION,
