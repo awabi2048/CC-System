@@ -4,8 +4,8 @@ import com.awabi2048.ccsystem.api.localization.generated.GeneratedLocalizationKe
 import java.security.MessageDigest
 
 /**
- * 他モジュールのビルド時参照検査へ、埋込カタログのキーと値型だけを公開します。
- * 翻訳本文や内部カタログ実装を公開APIへ漏らさないための境界です。
+ * 埋め込みカタログの公開契約です。
+ * 翻訳本文は公開せず、子システムがビルド時・設定読込時に必要とするキー情報だけを提供します。
  */
 object LocalizationCatalogContract {
     private val keysById = GeneratedLocalizationKeyIndex.all().associateBy(LocalizationKey<*>::id)
@@ -18,9 +18,28 @@ object LocalizationCatalogContract {
 
     fun keys(): Set<String> = keysById.keys
 
+    /** 外部設定のTextキー参照を、検証済みの型付きキーへ変換します。 */
+    @JvmStatic
+    fun resolveText(key: String): LocalizationKey<String> =
+        requireTypedKey(key, LocalizationKey.ValueType.TEXT)
+
+    /** 外部設定のTextListキー参照を、検証済みの型付きキーへ変換します。 */
+    @JvmStatic
+    fun resolveTextList(key: String): LocalizationKey<List<String>> =
+        requireTypedKey(key, LocalizationKey.ValueType.TEXT_LIST)
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> requireTypedKey(key: String, expected: LocalizationKey.ValueType): LocalizationKey<T> {
+        require(key.isNotBlank()) { "localization key must not be blank" }
+        val resolved = requireNotNull(keysById[key]) { "unknown localization key: $key" }
+        require(resolved.valueType == expected) {
+            "localization key type mismatch: key=$key expected=$expected actual=${resolved.valueType}"
+        }
+        return resolved as LocalizationKey<T>
+    }
+
     /**
-     * 指定prefix以下のキーID・値型・placeholder集合から、配備世代を照合する安定fingerprintを生成します。
-     * 子プラグインはこの値を起動時にも確認し、互換性のないカタログでは機能登録前に停止できます。
+     * 指定prefix配下のキーID・値型・placeholder集合から互換性fingerprintを生成します。
      */
     fun fingerprint(prefix: String): String {
         require(prefix.isNotBlank()) { "localization contract prefix must not be blank" }
