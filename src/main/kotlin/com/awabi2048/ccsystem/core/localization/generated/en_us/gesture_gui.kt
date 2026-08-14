@@ -21,6 +21,17 @@ internal object EnUsGestureGuiCatalog {
         entry("gesture_gui.demo.action", "§bGesture accepted: {gesture}"),
         entry("gesture_gui.demo.usage", "§eUsage: /cc gesture-gui demo [1|2|3|close]"),
         entry("gesture_gui.demo.dialog_close", "Close"),
+        entry("gesture_gui.demo.status.title", "Status Layout"),
+        entry("gesture_gui.demo.status.description", "An example that separates the icon from status rows."),
+        entry("gesture_gui.demo.status.health", "Health: Good"),
+        entry("gesture_gui.demo.status.energy", "Energy: Charged"),
+        entry("gesture_gui.demo.status.ready", "Readiness: Complete"),
+        entry("gesture_gui.demo.choice.title", "Choice Card Layout"),
+        entry("gesture_gui.demo.choice.description", "Look at a role and left click to select it."),
+        entry("gesture_gui.demo.choice.builder", "Builder"),
+        entry("gesture_gui.demo.choice.explorer", "Explorer"),
+        entry("gesture_gui.demo.choice.trader", "Trader"),
+        entry("gesture_gui.demo.choice.guardian", "Guardian"),
         entry("gesture_gui.exit_guidance", "Shift + jump to close"),
     )
 

@@ -21,6 +21,17 @@ internal object JaJpGestureGuiCatalog {
         entry("gesture_gui.demo.action", "§bジェスチャーを受け付けました: {gesture}"),
         entry("gesture_gui.demo.usage", "§e使用法: /cc gesture-gui demo [1|2|3|close]"),
         entry("gesture_gui.demo.dialog_close", "閉じる"),
+        entry("gesture_gui.demo.status.title", "ステータスレイアウト"),
+        entry("gesture_gui.demo.status.description", "アイコンと情報行を分離した状態表示の例です。"),
+        entry("gesture_gui.demo.status.health", "体力: 良好"),
+        entry("gesture_gui.demo.status.energy", "エネルギー: 充填済み"),
+        entry("gesture_gui.demo.status.ready", "準備状態: 完了"),
+        entry("gesture_gui.demo.choice.title", "選択カードレイアウト"),
+        entry("gesture_gui.demo.choice.description", "視線を合わせて左クリックで役割を選択します。"),
+        entry("gesture_gui.demo.choice.builder", "建築家"),
+        entry("gesture_gui.demo.choice.explorer", "探検家"),
+        entry("gesture_gui.demo.choice.trader", "商人"),
+        entry("gesture_gui.demo.choice.guardian", "守護者"),
         entry("gesture_gui.exit_guidance", "Shift＋ジャンプで終了"),
     )
 

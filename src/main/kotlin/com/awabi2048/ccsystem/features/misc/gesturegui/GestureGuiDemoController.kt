@@ -26,7 +26,14 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
 
     fun close(player: Player): Boolean = api.getGestureGuiService().close(player.uniqueId)
 
-    private fun view(owner: Player, index: Int): GestureGuiView {
+    /** 複数画面指定時に同じ見本を複製せず、用途の異なるレイアウトを並べます。 */
+    private fun view(owner: Player, index: Int): GestureGuiView = when (index) {
+        0 -> controlsView(owner)
+        1 -> statusView(owner)
+        else -> choiceView(owner)
+    }
+
+    private fun controlsView(owner: Player): GestureGuiView {
         val gestures = GestureGuiGesture.entries
         val elementWidth = 0.24
         val startX = -0.60
@@ -75,17 +82,10 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
             add(GestureGuiVisual.Text("exit", 0.0, -0.33, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), size = 0.005))
         }
         return GestureGuiView(
-            GestureGuiScreenDefinition("demo-$index", elements, access = GestureGuiAccess.PUBLIC),
+            GestureGuiScreenDefinition("demo-controls", elements, access = GestureGuiAccess.PUBLIC),
             visuals,
         ) { context ->
-            val actor = Bukkit.getPlayer(context.actorId)
-            actor?.sendMessage(
-                api.getLocalized(
-                    actor,
-                    GestureGuiKeys.GESTURE_GUI_DEMO_ACTION,
-                    mapOf("gesture" to context.gesture.name),
-                )
-            )
+            notifyAction(context.actorId, context.gesture)
             if (context.elementId == "title-text" && context.gesture == GestureGuiGesture.PRIMARY) {
                 api.getGestureGuiService().openChild(
                     context.ownerId,
@@ -94,6 +94,85 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
                 )
             }
         }
+    }
+
+    private fun statusView(owner: Player): GestureGuiView {
+        val rows = listOf(
+            StatusRow("health", 0.16, Material.RED_CONCRETE, GestureGuiKeys.GESTURE_GUI_DEMO_STATUS_HEALTH),
+            StatusRow("energy", 0.00, Material.LIME_CONCRETE, GestureGuiKeys.GESTURE_GUI_DEMO_STATUS_ENERGY),
+            StatusRow("ready", -0.16, Material.LIGHT_BLUE_CONCRETE, GestureGuiKeys.GESTURE_GUI_DEMO_STATUS_READY),
+        )
+        val elements = rows.map { row ->
+            GestureGuiElement(
+                elementId = "status-${row.id}",
+                bounds = GestureGuiBounds(0.00, row.y - 0.06, 0.82, row.y + 0.06),
+                acceptedGestures = setOf(GestureGuiGesture.PRIMARY),
+                hoverText = GestureGuiHoverText(text(owner, row.label), 0.41, row.y + 0.10, size = 0.005),
+                targetVisualId = "status-label-${row.id}",
+            )
+        }
+        val visuals = buildList {
+            add(GestureGuiVisual.Text("status-title", 0.0, 0.37, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_STATUS_TITLE), size = 0.009))
+            add(GestureGuiVisual.Text("status-description", 0.0, 0.27, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_STATUS_DESCRIPTION), size = 0.0055))
+            add(
+                GestureGuiVisual.Block(
+                    "status-portrait-background", -0.51, -0.02, 0.58, 0.48,
+                    Bukkit.createBlockData(Material.BLUE_TERRACOTTA), layer = 4,
+                )
+            )
+            add(GestureGuiVisual.Item("status-portrait", -0.51, 0.02, ItemStack(Material.TOTEM_OF_UNDYING), scale = 0.25))
+            rows.forEach { row ->
+                add(
+                    GestureGuiVisual.Block(
+                        "status-row-${row.id}", 0.41, row.y, 0.82, 0.12,
+                        Bukkit.createBlockData(row.material), layer = 4,
+                    )
+                )
+                add(GestureGuiVisual.Text("status-label-${row.id}", 0.41, row.y - 0.02, text(owner, row.label), size = 0.0055))
+            }
+            add(GestureGuiVisual.Text("status-exit", 0.0, -0.39, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), size = 0.005))
+        }
+        return GestureGuiView(
+            GestureGuiScreenDefinition("demo-status", elements, access = GestureGuiAccess.PUBLIC),
+            visuals,
+        ) { context -> notifyAction(context.actorId, context.gesture) }
+    }
+
+    private fun choiceView(owner: Player): GestureGuiView {
+        val choices = listOf(
+            ChoiceCard("builder", -0.45, 0.10, Material.BRICKS, Material.ORANGE_TERRACOTTA, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_BUILDER),
+            ChoiceCard("explorer", 0.45, 0.10, Material.COMPASS, Material.GREEN_TERRACOTTA, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_EXPLORER),
+            ChoiceCard("trader", -0.45, -0.20, Material.EMERALD, Material.LIME_TERRACOTTA, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_TRADER),
+            ChoiceCard("guardian", 0.45, -0.20, Material.SHIELD, Material.BLUE_TERRACOTTA, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_GUARDIAN),
+        )
+        val elements = choices.map { choice ->
+            GestureGuiElement(
+                elementId = "choice-${choice.id}",
+                bounds = GestureGuiBounds(choice.x - 0.36, choice.y - 0.12, choice.x + 0.36, choice.y + 0.12),
+                acceptedGestures = setOf(GestureGuiGesture.PRIMARY),
+                hoverText = GestureGuiHoverText(text(owner, choice.label), choice.x, choice.y + 0.17, size = 0.005),
+                targetVisualId = "choice-icon-${choice.id}",
+            )
+        }
+        val visuals = buildList {
+            add(GestureGuiVisual.Text("choice-title", 0.0, 0.40, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_TITLE), size = 0.009))
+            add(GestureGuiVisual.Text("choice-description", 0.0, 0.31, text(owner, GestureGuiKeys.GESTURE_GUI_DEMO_CHOICE_DESCRIPTION), size = 0.0055))
+            choices.forEach { choice ->
+                add(
+                    GestureGuiVisual.Block(
+                        "choice-card-${choice.id}", choice.x, choice.y, 0.72, 0.24,
+                        Bukkit.createBlockData(choice.background), layer = 4,
+                    )
+                )
+                add(GestureGuiVisual.Item("choice-icon-${choice.id}", choice.x - 0.20, choice.y + 0.01, ItemStack(choice.icon), scale = 0.13))
+                add(GestureGuiVisual.Text("choice-label-${choice.id}", choice.x + 0.10, choice.y - 0.02, text(owner, choice.label), size = 0.0055, lineWidth = 80))
+            }
+            add(GestureGuiVisual.Text("choice-exit", 0.0, -0.42, text(owner, GestureGuiKeys.GESTURE_GUI_EXIT_GUIDANCE), size = 0.005))
+        }
+        return GestureGuiView(
+            GestureGuiScreenDefinition("demo-choice", elements, access = GestureGuiAccess.PUBLIC),
+            visuals,
+        ) { context -> notifyAction(context.actorId, context.gesture) }
     }
 
     private fun dialog(owner: Player): GestureGuiView = GestureGuiView(
@@ -139,6 +218,33 @@ class GestureGuiDemoController(private val api: CCSystemAPI) {
         GestureGuiGesture.SHIFT_SECONDARY -> Material.REPEATER
         GestureGuiGesture.SWAP_HAND -> Material.SHIELD
     }
+
+    private fun notifyAction(actorId: java.util.UUID, gesture: GestureGuiGesture) {
+        val actor = Bukkit.getPlayer(actorId) ?: return
+        actor.sendMessage(
+            api.getLocalized(
+                actor,
+                GestureGuiKeys.GESTURE_GUI_DEMO_ACTION,
+                mapOf("gesture" to gesture.name),
+            )
+        )
+    }
+
+    private data class StatusRow(
+        val id: String,
+        val y: Double,
+        val material: Material,
+        val label: com.awabi2048.ccsystem.api.localization.LocalizationKey<String>,
+    )
+
+    private data class ChoiceCard(
+        val id: String,
+        val x: Double,
+        val y: Double,
+        val icon: Material,
+        val background: Material,
+        val label: com.awabi2048.ccsystem.api.localization.LocalizationKey<String>,
+    )
 
     private fun text(player: Player, key: com.awabi2048.ccsystem.api.localization.LocalizationKey<String>): Component =
         Component.text(api.getLocalized(player, key))

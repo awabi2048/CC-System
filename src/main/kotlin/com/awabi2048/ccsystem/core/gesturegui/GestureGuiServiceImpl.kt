@@ -167,7 +167,6 @@ class GestureGuiServiceImpl(
         }
         val child = ChildRuntime(view, options, pose, render, overlay, GestureGuiSessionState.OPENING)
         session.children += child
-        playTransitionSound(owner, opening = true)
         animateChildOpen(session, child)
         return true
     }
