@@ -1,11 +1,12 @@
 package com.awabi2048.ccsystem.core.gui
 
 import com.awabi2048.ccsystem.api.gui.*
+import com.awabi2048.ccsystem.api.localization.LocalizationKey
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 internal class MenuPresentationSemanticsFactory(
-    private val i18n: ((Player?, String, Map<String, Any>) -> String)?,
+    private val i18n: ((Player?, LocalizationKey<String>, Map<String, Any>) -> String)?,
 ) {
     fun create(
         name: GuiNameSpec,

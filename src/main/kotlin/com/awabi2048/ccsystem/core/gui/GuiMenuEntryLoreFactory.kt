@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gui.GuiInputGesture
 import com.awabi2048.ccsystem.api.gui.GuiInteractionGuidance
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntryAction
 import com.awabi2048.ccsystem.api.gui.GuiMenuEntrySpec
+import com.awabi2048.ccsystem.api.localization.generated.CommonKeys
 
 internal object GuiMenuEntryLoreFactory {
     fun build(
@@ -57,7 +58,7 @@ internal object GuiMenuEntryLoreFactory {
             val operationLabelKey = if (
                 interactionGuidance == GuiInteractionGuidance.SINGLE_ACTION_CLICK && actions.size == 1
             ) {
-                "lore.click.any"
+                CommonKeys.LORE_CLICK_ANY
             } else {
                 null
             }

@@ -204,7 +204,7 @@ class GuiMenuEntryLoreFactoryTest {
             .single()
 
         assertEquals(MenuAcceptedClicks.LEFT_RIGHT, (interaction.gesture as GuiInputGesture.MenuClicks).acceptedClicks)
-        assertEquals("lore.click.any", interaction.operationLabelKey)
+        assertEquals("lore.click.any", interaction.operationLabelKey?.id)
     }
 
     @Test
@@ -238,7 +238,7 @@ class GuiMenuEntryLoreFactoryTest {
         )
         val lore = GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null)
         val rendered = LoreServiceImpl { _, key, _ ->
-            assertEquals("lore.click.any", key)
+            assertEquals("lore.click.any", key.id)
             "クリック"
         }.render(lore)
 

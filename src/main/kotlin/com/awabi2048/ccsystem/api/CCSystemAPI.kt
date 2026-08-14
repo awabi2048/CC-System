@@ -69,29 +69,11 @@ interface CCSystemAPI {
     /** localeを明示する型付き取得です。 */
     fun <T> getLocalized(locale: String, key: LocalizationKey<T>, placeholders: Map<String, Any> = emptyMap()): T
 
-    fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): String
-
-    fun getI18nString(locale: String, key: String, placeholders: Map<String, Any> = emptyMap()): String
-
-    fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<String>
-
-    fun getI18nStringList(locale: String, key: String, placeholders: Map<String, Any> = emptyMap()): List<String>
-
-    fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): Component
-
-    fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<Component>
-
     /** Text型が保証された生成キーからComponentを取得します。 */
     fun getI18nComponent(player: Player?, key: LocalizationKey<String>, placeholders: Map<String, Any> = emptyMap()): Component
 
     /** TextList型が保証された生成キーからComponent一覧を取得します。 */
     fun getI18nComponentList(player: Player?, key: LocalizationKey<List<String>>, placeholders: Map<String, Any> = emptyMap()): List<Component>
-
-    fun hasI18nKey(key: String): Boolean
-
-    fun isI18nKeyMatch(title: String, key: String): Boolean
-
-    fun isI18nKeyStartWith(title: String, key: String): Boolean
 
     fun getGuiElementService(): GuiElementService
 

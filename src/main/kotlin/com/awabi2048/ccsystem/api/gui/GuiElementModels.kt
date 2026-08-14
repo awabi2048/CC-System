@@ -1,5 +1,7 @@
 package com.awabi2048.ccsystem.api.gui
 
+import com.awabi2048.ccsystem.api.localization.LocalizationKey
+
 import java.util.UUID
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -77,8 +79,8 @@ sealed interface GuiLoreLine {
         val viewer: org.bukkit.entity.Player?,
         val gesture: GuiInputGesture,
         val label: String,
-        /** クリック受付を変えずに、操作案内だけを上書きする言語キーです。 */
-        val operationLabelKey: String? = null,
+        /** クリック受付を変えずに、操作案内だけを上書きする生成済み言語キーです。 */
+        val operationLabelKey: LocalizationKey<String>? = null,
     ) : GuiLoreLine {
         constructor(
             viewer: org.bukkit.entity.Player?,

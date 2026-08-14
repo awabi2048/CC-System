@@ -22,9 +22,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 class LoreServiceTest {
     private static LoreServiceImpl interactionLoreService() {
-        return new LoreServiceImpl((player, key, arguments) -> switch (key) {
+        return new LoreServiceImpl((player, key, arguments) -> switch (key.getId()) {
             case "lore.click.left" -> "左クリック";
-            default -> throw new IllegalArgumentException(key);
+            default -> throw new IllegalArgumentException(key.getId());
         });
     }
 

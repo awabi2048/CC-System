@@ -79,11 +79,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
-    private val guiElementService = GuiElementServiceImpl(::getI18nString)
+    private val guiElementService = GuiElementServiceImpl(::resolveLocalizedText)
     private val menuCapabilityService = MenuCapabilityServiceImpl()
     private val menuReversibleStateProviderRegistry = MenuReversibleStateProviderRegistryImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
-    private val loreService = LoreServiceImpl(::getI18nString)
+    private val loreService = LoreServiceImpl(::resolveLocalizedText)
     private val menuSoundService = MenuSoundServiceImpl()
     private val menuPresentationTracker = com.awabi2048.ccsystem.core.gui.MenuPresentationTracker()
     private val menuRuntimeService = MenuRuntimeServiceImpl(
@@ -169,44 +169,51 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     @Suppress("UNCHECKED_CAST")
     override fun <T> getLocalized(locale: String, key: LocalizationKey<T>, placeholders: Map<String, Any>): T {
         val value: Any = when (key.valueType) {
-            LocalizationKey.ValueType.TEXT -> getI18nString(locale, key.id, placeholders)
-            LocalizationKey.ValueType.TEXT_LIST -> getI18nStringList(locale, key.id, placeholders)
+            LocalizationKey.ValueType.TEXT -> resolveLocalizedText(
+                locale,
+                key as LocalizationKey<String>,
+                placeholders,
+            )
+            LocalizationKey.ValueType.TEXT_LIST -> resolveLocalizedTextList(
+                locale,
+                key as LocalizationKey<List<String>>,
+                placeholders,
+            )
         }
         return value as T
     }
 
-    override fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any>): String {
-        return LanguageManager.getUnified().getString(player, key, placeholders)
-    }
+    /** GUI基盤内でも生成済みキーだけを受け取り、文字列キーの再流入を防ぎます。 */
+    private fun resolveLocalizedText(
+        player: Player?,
+        key: LocalizationKey<String>,
+        placeholders: Map<String, Any>,
+    ): String = LanguageManager.getUnified().getString(player, key.id, placeholders)
 
-    override fun getI18nString(locale: String, key: String, placeholders: Map<String, Any>): String {
-        val raw = LanguageManager.getUnified().getRawString(locale, key)
-            ?: throw IllegalStateException("言語キーが見つかりません: locale=$locale key=$key")
+    private fun resolveLocalizedText(
+        locale: String,
+        key: LocalizationKey<String>,
+        placeholders: Map<String, Any>,
+    ): String {
+        val raw = LanguageManager.getUnified().getRawString(locale, key.id)
+            ?: throw IllegalStateException("言語キーが見つかりません: locale=$locale key=${key.id}")
         return placeholders.entries.fold(raw) { acc, (placeholderKey, value) ->
             acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
         }
     }
 
-    override fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any>): List<String> {
-        return LanguageManager.getUnified().getStringList(player, key, placeholders)
-    }
-
-    override fun getI18nStringList(locale: String, key: String, placeholders: Map<String, Any>): List<String> {
-        val raw = LanguageManager.getUnified().getRawStringList(locale, key)
-            ?: throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=$key expected=List")
+    private fun resolveLocalizedTextList(
+        locale: String,
+        key: LocalizationKey<List<String>>,
+        placeholders: Map<String, Any>,
+    ): List<String> {
+        val raw = LanguageManager.getUnified().getRawStringList(locale, key.id)
+            ?: throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=${key.id} expected=List")
         return raw.map { line ->
             placeholders.entries.fold(line) { acc, (placeholderKey, value) ->
                 acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
             }
         }
-    }
-
-    override fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any>): Component {
-        return LanguageManager.getUnified().getComponent(player, key, placeholders)
-    }
-
-    override fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any>): List<Component> {
-        return LanguageManager.getUnified().getComponentList(player, key, placeholders)
     }
 
     override fun getI18nComponent(player: Player?, key: LocalizationKey<String>, placeholders: Map<String, Any>): Component =
@@ -217,18 +224,6 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         key: LocalizationKey<List<String>>,
         placeholders: Map<String, Any>,
     ): List<Component> = LanguageManager.getUnified().getComponentList(player, key.id, placeholders)
-
-    override fun hasI18nKey(key: String): Boolean {
-        return getSupportedLanguages().any { LanguageManager.getUnified().hasKey(it, key) }
-    }
-
-    override fun isI18nKeyMatch(title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyMatch(title, key)
-    }
-
-    override fun isI18nKeyStartWith(title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyStartWith(title, key)
-    }
 
     override fun getGuiElementService(): GuiElementService {
         return guiElementService
