@@ -200,10 +200,13 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_EXECUTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.exclude_executor", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_ACTIVATOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.exclude_activator", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_COMMANDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.commands", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_PROFILE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.profile", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_OWNER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.owner", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.trigger", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_edit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_place", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_PROFILE_SIMPLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.profile.simple", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_PROFILE_STANDARD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.profile.standard", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ACTIVATION_NEEDS_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.activation.needs_redstone", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ACTIVATION_ALWAYS_ACTIVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.activation.always_active", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
@@ -440,10 +443,13 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_EXECUTOR,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_ACTIVATOR,
         KANTAN_COMMANDER_CLEAN_ITEM_COMMANDS,
+        KANTAN_COMMANDER_CLEAN_ITEM_PROFILE,
         KANTAN_COMMANDER_CLEAN_ITEM_OWNER,
         KANTAN_COMMANDER_CLEAN_ITEM_TRIGGER,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_PLACE,
+        KANTAN_COMMANDER_CLEAN_PROFILE_SIMPLE,
+        KANTAN_COMMANDER_CLEAN_PROFILE_STANDARD,
         KANTAN_COMMANDER_CLEAN_ACTIVATION_NEEDS_REDSTONE,
         KANTAN_COMMANDER_CLEAN_ACTIVATION_ALWAYS_ACTIVE,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,
