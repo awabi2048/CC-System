@@ -209,6 +209,15 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         return LanguageManager.getUnified().getComponentList(player, key, placeholders)
     }
 
+    override fun getI18nComponent(player: Player?, key: LocalizationKey<String>, placeholders: Map<String, Any>): Component =
+        LanguageManager.getUnified().getComponent(player, key.id, placeholders)
+
+    override fun getI18nComponentList(
+        player: Player?,
+        key: LocalizationKey<List<String>>,
+        placeholders: Map<String, Any>,
+    ): List<Component> = LanguageManager.getUnified().getComponentList(player, key.id, placeholders)
+
     override fun hasI18nKey(key: String): Boolean {
         return getSupportedLanguages().any { LanguageManager.getUnified().hasKey(it, key) }
     }

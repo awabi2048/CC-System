@@ -81,6 +81,12 @@ interface CCSystemAPI {
 
     fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any> = emptyMap()): List<Component>
 
+    /** Text型が保証された生成キーからComponentを取得します。 */
+    fun getI18nComponent(player: Player?, key: LocalizationKey<String>, placeholders: Map<String, Any> = emptyMap()): Component
+
+    /** TextList型が保証された生成キーからComponent一覧を取得します。 */
+    fun getI18nComponentList(player: Player?, key: LocalizationKey<List<String>>, placeholders: Map<String, Any> = emptyMap()): List<Component>
+
     fun hasI18nKey(key: String): Boolean
 
     fun isI18nKeyMatch(title: String, key: String): Boolean
