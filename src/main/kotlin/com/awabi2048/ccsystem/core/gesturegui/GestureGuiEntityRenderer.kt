@@ -57,6 +57,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val frameData = Bukkit.createBlockData(panel.frameMaterial)
         val background = spawnPanelBlock(
             world, pose, backgroundData, 0.0, 0.0, panel.width, panel.height, PANEL_BACKGROUND_LAYER,
+            initiallyScaleZero = true,
         )
         mark(background, sessionId, revision)
         backgrounds += background
@@ -86,7 +87,6 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         }
         // 内容は背景の展開完了まで送信せず、文字・アイコンが潰れる演出を避けます。
         contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
-        setBackgroundScaleZero(backgrounds, 0)
         return ScreenHandle(backgrounds, contents, entities)
     }
 
@@ -221,10 +221,15 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         width: Double,
         height: Double,
         layer: Int,
+        initiallyScaleZero: Boolean = false,
     ): BlockDisplay = world.spawn(visualLocation(world, pose, x, y, layer), BlockDisplay::class.java) {
         prepareDisplay(it, pose)
         it.block = blockData
-        it.setTransformation(blockTransform(width.toFloat(), height.toFloat()))
+        // 背景の開幕Transformはspawn packetへ最大サイズを一度も載せないよう、生成Consumer内で確定します。
+        // 生成後にscale 0へ戻す方式では、クライアントが初期Transformだけを1 frame描画する競合が起きます。
+        it.setTransformation(
+            if (initiallyScaleZero) scaleZeroTransform() else blockTransform(width.toFloat(), height.toFloat()),
+        )
     }
 
     private fun spawnItem(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Item): ItemDisplay =
@@ -281,11 +286,16 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         backgrounds.forEach {
             it.interpolationDuration = interpolationTicks
             it.interpolationDelay = 0
-            it.setTransformation(
-                Transformation(Vector3f(), AxisAngle4f(), Vector3f(), AxisAngle4f())
-            )
+            it.setTransformation(scaleZeroTransform())
         }
     }
+
+    private fun scaleZeroTransform() = Transformation(
+        Vector3f(),
+        AxisAngle4f(),
+        Vector3f(),
+        AxisAngle4f(),
+    )
 
     private fun blockTransform(width: Float, height: Float) = Transformation(
         Vector3f(-width / 2f, -height / 2f, 0f),
@@ -335,7 +345,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         // パネルの画面法線方向の厚みは従来値の約2倍です。
         const val BLOCK_NORMAL_DEPTH = 0.025f
         const val PANEL_BACKGROUND_LAYER = 0
-        const val PANEL_FRAME_LAYER = 2
+        // 背景と枠は同じ厚みを持つため、中心間距離を背景厚より大きくして立体領域の交差を防ぎます。
+        // 6 layer × 0.005 = 0.030 blockで、厚み0.025 blockに安全余白を確保します。
+        const val PANEL_FRAME_LAYER = 6
         // 0.24 block手前に置き、0.25 block手前から始まる子画面の直後へ重ねます。
         const val MODAL_OVERLAY_LAYER = 48
     }
