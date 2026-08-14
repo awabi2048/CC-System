@@ -24,7 +24,9 @@ object MyworldBiomesKeys {
     @JvmField val BIOMES_BEACH: LocalizationKey<String> = LocalizationKey.text("biomes.beach", setOf())
     @JvmField val BIOMES_SNOWY_BEACH: LocalizationKey<String> = LocalizationKey.text("biomes.snowy_beach", setOf())
     @JvmField val BIOMES_STONY_SHORE: LocalizationKey<String> = LocalizationKey.text("biomes.stony_shore", setOf())
-    @JvmField val BIOMES_MOUNTAINS: LocalizationKey<String> = LocalizationKey.text("biomes.mountains", setOf())
+    @JvmField val BIOMES_WINDSWEPT_HILLS: LocalizationKey<String> = LocalizationKey.text("biomes.windswept_hills", setOf())
+    @JvmField val BIOMES_WINDSWEPT_GRAVELLY_HILLS: LocalizationKey<String> = LocalizationKey.text("biomes.windswept_gravelly_hills", setOf())
+    @JvmField val BIOMES_WINDSWEPT_FOREST: LocalizationKey<String> = LocalizationKey.text("biomes.windswept_forest", setOf())
     @JvmField val BIOMES_STONY_PEAKS: LocalizationKey<String> = LocalizationKey.text("biomes.stony_peaks", setOf())
     @JvmField val BIOMES_JAGGED_PEAKS: LocalizationKey<String> = LocalizationKey.text("biomes.jagged_peaks", setOf())
     @JvmField val BIOMES_FROZEN_PEAKS: LocalizationKey<String> = LocalizationKey.text("biomes.frozen_peaks", setOf())
@@ -43,12 +45,16 @@ object MyworldBiomesKeys {
     @JvmField val BIOMES_WOODED_BADLANDS: LocalizationKey<String> = LocalizationKey.text("biomes.wooded_badlands", setOf())
     @JvmField val BIOMES_ERODED_BADLANDS: LocalizationKey<String> = LocalizationKey.text("biomes.eroded_badlands", setOf())
     @JvmField val BIOMES_DEEP_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.deep_ocean", setOf())
+    @JvmField val BIOMES_DEEP_LUKEWARM_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.deep_lukewarm_ocean", setOf())
+    @JvmField val BIOMES_DEEP_COLD_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.deep_cold_ocean", setOf())
+    @JvmField val BIOMES_DEEP_FROZEN_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.deep_frozen_ocean", setOf())
     @JvmField val BIOMES_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.ocean", setOf())
     @JvmField val BIOMES_WARM_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.warm_ocean", setOf())
     @JvmField val BIOMES_LUKEWARM_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.lukewarm_ocean", setOf())
     @JvmField val BIOMES_COLD_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.cold_ocean", setOf())
     @JvmField val BIOMES_FROZEN_OCEAN: LocalizationKey<String> = LocalizationKey.text("biomes.frozen_ocean", setOf())
     @JvmField val BIOMES_MUSHROOM_FIELDS: LocalizationKey<String> = LocalizationKey.text("biomes.mushroom_fields", setOf())
+    @JvmField val BIOMES_PALE_GARDEN: LocalizationKey<String> = LocalizationKey.text("biomes.pale_garden", setOf())
     @JvmField val BIOMES_DRIPSTONE_CAVES: LocalizationKey<String> = LocalizationKey.text("biomes.dripstone_caves", setOf())
     @JvmField val BIOMES_LUSH_CAVES: LocalizationKey<String> = LocalizationKey.text("biomes.lush_caves", setOf())
     @JvmField val BIOMES_DEEP_DARK: LocalizationKey<String> = LocalizationKey.text("biomes.deep_dark", setOf())
@@ -62,6 +68,7 @@ object MyworldBiomesKeys {
     @JvmField val BIOMES_END_MIDLANDS: LocalizationKey<String> = LocalizationKey.text("biomes.end_midlands", setOf())
     @JvmField val BIOMES_END_HIGHLANDS: LocalizationKey<String> = LocalizationKey.text("biomes.end_highlands", setOf())
     @JvmField val BIOMES_END_BARRENS: LocalizationKey<String> = LocalizationKey.text("biomes.end_barrens", setOf())
+    @JvmField val BIOMES_THE_VOID: LocalizationKey<String> = LocalizationKey.text("biomes.the_void", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         BIOMES_PLAINS,
@@ -84,7 +91,9 @@ object MyworldBiomesKeys {
         BIOMES_BEACH,
         BIOMES_SNOWY_BEACH,
         BIOMES_STONY_SHORE,
-        BIOMES_MOUNTAINS,
+        BIOMES_WINDSWEPT_HILLS,
+        BIOMES_WINDSWEPT_GRAVELLY_HILLS,
+        BIOMES_WINDSWEPT_FOREST,
         BIOMES_STONY_PEAKS,
         BIOMES_JAGGED_PEAKS,
         BIOMES_FROZEN_PEAKS,
@@ -103,12 +112,16 @@ object MyworldBiomesKeys {
         BIOMES_WOODED_BADLANDS,
         BIOMES_ERODED_BADLANDS,
         BIOMES_DEEP_OCEAN,
+        BIOMES_DEEP_LUKEWARM_OCEAN,
+        BIOMES_DEEP_COLD_OCEAN,
+        BIOMES_DEEP_FROZEN_OCEAN,
         BIOMES_OCEAN,
         BIOMES_WARM_OCEAN,
         BIOMES_LUKEWARM_OCEAN,
         BIOMES_COLD_OCEAN,
         BIOMES_FROZEN_OCEAN,
         BIOMES_MUSHROOM_FIELDS,
+        BIOMES_PALE_GARDEN,
         BIOMES_DRIPSTONE_CAVES,
         BIOMES_LUSH_CAVES,
         BIOMES_DEEP_DARK,
@@ -122,5 +135,6 @@ object MyworldBiomesKeys {
         BIOMES_END_MIDLANDS,
         BIOMES_END_HIGHLANDS,
         BIOMES_END_BARRENS,
+        BIOMES_THE_VOID,
     )
 }

@@ -1,10 +1,28 @@
 package com.awabi2048.ccsystem.core.localization
 
+import com.awabi2048.ccsystem.api.localization.generated.MyworldBiomesKeys
+import java.lang.reflect.Modifier
+import org.bukkit.block.Biome
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class EmbeddedLocalizationCatalogTest {
+    @Test
+    fun `Paperの全biome IDが生成済みカタログと一致する`() {
+        // 実サーバーで新biomeに初めて触れた時ではなく、Paper API更新時のビルドで差分を検出します。
+        val registryIds = Biome::class.java.fields
+            .filter { Modifier.isStatic(it.modifiers) && it.type == Biome::class.java && it.name != "CUSTOM" }
+            .map { it.name.lowercase() }
+            .toSet()
+        val catalogIds = MyworldBiomesKeys.all()
+            .map { it.id.removePrefix("biomes.") }
+            .toSet()
+
+        assertEquals(registryIds, catalogIds)
+    }
+
     @Test
     fun `全localeのキー・型・プレースホルダー契約が一致する`() {
         val result = EmbeddedLocalizationCatalog.validate()
