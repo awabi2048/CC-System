@@ -49,6 +49,7 @@ class GestureGuiServiceImpl(
         var pose: GestureGuiScreenPose,
         val render: GestureGuiEntityRenderer.ScreenHandle,
         val overlay: org.bukkit.entity.BlockDisplay?,
+        var state: GestureGuiSessionState,
     )
 
     private data class TargetHit(
@@ -164,9 +165,10 @@ class GestureGuiServiceImpl(
             overlay?.remove()
             throw failure
         }
-        renderer.setBackgroundSize(render, view.panel.width.toFloat(), view.panel.height.toFloat(), 0)
-        renderer.showContents(render)
-        session.children += ChildRuntime(view, options, pose, render, overlay)
+        val child = ChildRuntime(view, options, pose, render, overlay, GestureGuiSessionState.OPENING)
+        session.children += child
+        playTransitionSound(owner, opening = true)
+        animateChildOpen(session, child)
         return true
     }
 
@@ -175,9 +177,11 @@ class GestureGuiServiceImpl(
         val index = session.children.indexOfLast { it.view.definition.screenId == screenId }
         if (index < 0) return false
         // 子の上へ積まれたダイアログも同時に閉じ、親子関係のない孤立画面を残しません。
-        session.children.subList(index, session.children.size).toList().forEach(::destroyChild)
-        session.children.subList(index, session.children.size).clear()
+        val targets = session.children.subList(index, session.children.size).toList()
+        if (targets.all { it.state == GestureGuiSessionState.CLOSING }) return true
         session.revision = nextRevision++
+        Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
+        targets.forEach { animateChildClose(session, it) }
         return true
     }
 
@@ -192,19 +196,33 @@ class GestureGuiServiceImpl(
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
         Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
-        session.children.toList().forEach(::destroyChild)
-        session.children.clear()
+        session.children.toList().forEach { animateChildClose(session, it) }
         session.screens.forEach { renderer.hideContents(it.render) }
         val expected = session.revision
-        later(ANIMATION_INITIAL_DELAY, session, expected) {
+        session.screens.forEach { screen ->
+            renderer.setBackgroundSize(
+                screen.render,
+                screen.view.panel.width.toFloat(),
+                0.1f,
+                GestureGuiAnimationTimeline.TRANSITION_TICKS,
+            )
+        }
+        later(GestureGuiAnimationTimeline.CLOSE_TO_POINT_DELAY, session, expected) {
             it.screens.forEach { screen ->
-                renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), 0.1f, ANIMATION_STAGE_TICKS)
+                renderer.setBackgroundSize(
+                    screen.render,
+                    0.1f,
+                    0.1f,
+                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
+                )
             }
         }
-        later(ANIMATION_SECOND_STAGE_DELAY, session, expected) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, 0.1f, 0.1f, ANIMATION_STAGE_TICKS) }
+        later(GestureGuiAnimationTimeline.CLOSE_TO_ZERO_DELAY, session, expected) {
+            it.screens.forEach { screen ->
+                renderer.setBackgroundScaleZero(screen.render, GestureGuiAnimationTimeline.TRANSITION_TICKS)
+            }
         }
-        later(ANIMATION_COMPLETION_DELAY, session, expected) {
+        later(GestureGuiAnimationTimeline.CLOSE_COMPLETE_DELAY, session, expected) {
             sessions.remove(it.ownerId)
             destroy(it)
         }
@@ -265,22 +283,110 @@ class GestureGuiServiceImpl(
 
     private fun animateOpen(session: Session) {
         val revision = session.revision
-        // 初期scaleを最低1 tickクライアントへ送った後、各補間の完了した次tickに次段階へ進みます。
-        later(ANIMATION_INITIAL_DELAY, session, revision) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), 0.1f, ANIMATION_STAGE_TICKS) }
+        // scale 0をクライアントへ送ってから点へ展開し、点を3 tick保持した後に横・縦の順で広げます。
+        later(GestureGuiAnimationTimeline.OPEN_TO_POINT_DELAY, session, revision) {
+            it.screens.forEach { screen ->
+                renderer.setBackgroundSize(
+                    screen.render,
+                    0.1f,
+                    0.1f,
+                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
+                )
+            }
         }
-        later(ANIMATION_SECOND_STAGE_DELAY, session, revision) {
-            it.screens.forEach { screen -> renderer.setBackgroundSize(screen.render, screen.view.panel.width.toFloat(), screen.view.panel.height.toFloat(), ANIMATION_STAGE_TICKS) }
+        later(GestureGuiAnimationTimeline.OPEN_TO_LINE_DELAY, session, revision) {
+            it.screens.forEach { screen ->
+                renderer.setBackgroundSize(
+                    screen.render,
+                    screen.view.panel.width.toFloat(),
+                    0.1f,
+                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
+                )
+            }
         }
-        later(ANIMATION_COMPLETION_DELAY, session, revision) {
+        later(GestureGuiAnimationTimeline.OPEN_TO_FULL_DELAY, session, revision) {
+            it.screens.forEach { screen ->
+                renderer.setBackgroundSize(
+                    screen.render,
+                    screen.view.panel.width.toFloat(),
+                    screen.view.panel.height.toFloat(),
+                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
+                )
+            }
+        }
+        later(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, revision) {
             it.screens.forEach { screen -> renderer.showContents(screen.render) }
             it.state = GestureGuiSessionState.ACTIVE
+        }
+    }
+
+    private fun animateChildOpen(session: Session, child: ChildRuntime) {
+        laterChild(GestureGuiAnimationTimeline.OPEN_TO_POINT_DELAY, session, child, GestureGuiSessionState.OPENING) {
+            renderer.setBackgroundSize(it.render, 0.1f, 0.1f, GestureGuiAnimationTimeline.TRANSITION_TICKS)
+        }
+        laterChild(GestureGuiAnimationTimeline.OPEN_TO_LINE_DELAY, session, child, GestureGuiSessionState.OPENING) {
+            renderer.setBackgroundSize(
+                it.render,
+                it.view.panel.width.toFloat(),
+                0.1f,
+                GestureGuiAnimationTimeline.TRANSITION_TICKS,
+            )
+        }
+        laterChild(GestureGuiAnimationTimeline.OPEN_TO_FULL_DELAY, session, child, GestureGuiSessionState.OPENING) {
+            renderer.setBackgroundSize(
+                it.render,
+                it.view.panel.width.toFloat(),
+                it.view.panel.height.toFloat(),
+                GestureGuiAnimationTimeline.TRANSITION_TICKS,
+            )
+        }
+        laterChild(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, child, GestureGuiSessionState.OPENING) {
+            renderer.showContents(it.render)
+            it.state = GestureGuiSessionState.ACTIVE
+        }
+    }
+
+    private fun animateChildClose(session: Session, child: ChildRuntime) {
+        if (child.state == GestureGuiSessionState.CLOSING) return
+        child.state = GestureGuiSessionState.CLOSING
+        renderer.hideContents(child.render)
+        renderer.setBackgroundSize(
+            child.render,
+            child.view.panel.width.toFloat(),
+            0.1f,
+            GestureGuiAnimationTimeline.TRANSITION_TICKS,
+        )
+        laterChild(GestureGuiAnimationTimeline.CLOSE_TO_POINT_DELAY, session, child, GestureGuiSessionState.CLOSING) {
+            renderer.setBackgroundSize(it.render, 0.1f, 0.1f, GestureGuiAnimationTimeline.TRANSITION_TICKS)
+        }
+        laterChild(GestureGuiAnimationTimeline.CLOSE_TO_ZERO_DELAY, session, child, GestureGuiSessionState.CLOSING) {
+            renderer.setBackgroundScaleZero(it.render, GestureGuiAnimationTimeline.TRANSITION_TICKS)
+        }
+        laterChild(GestureGuiAnimationTimeline.CLOSE_COMPLETE_DELAY, session, child, GestureGuiSessionState.CLOSING) {
+            session.children.remove(it)
+            destroyChild(it)
         }
     }
 
     private fun later(delay: Long, session: Session, revision: Long, action: (Session) -> Unit) {
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             if (sessions[session.ownerId] === session && session.revision == revision) action(session)
+        }, delay)
+    }
+
+    private fun laterChild(
+        delay: Long,
+        session: Session,
+        child: ChildRuntime,
+        expectedState: GestureGuiSessionState,
+        action: (ChildRuntime) -> Unit,
+    ) {
+        Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+            if (
+                sessions[session.ownerId] === session &&
+                child in session.children &&
+                child.state == expectedState
+            ) action(child)
         }, delay)
     }
 
@@ -442,10 +548,12 @@ class GestureGuiServiceImpl(
 
     private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
         val ray = ray(player)
-        fun childHit(child: ChildRuntime): TargetHit? = GestureGuiGeometry.hitTest(
+        fun childHit(child: ChildRuntime): TargetHit? = child.takeIf {
+            it.state == GestureGuiSessionState.ACTIVE
+        }?.let { activeChild -> GestureGuiGeometry.hitTest(
             ray,
-            listOf(child.pose.copy(width = child.pose.width + margin * 2, height = child.pose.height + margin * 2) to child.view.definition),
-        )?.let { TargetHit(null, child, it) }
+            listOf(activeChild.pose.copy(width = activeChild.pose.width + margin * 2, height = activeChild.pose.height + margin * 2) to activeChild.view.definition),
+        )?.let { TargetHit(null, activeChild, it) } }
         fun parentHit(): TargetHit? = session.screens.mapNotNull { screen ->
             GestureGuiGeometry.hitTest(
                 ray,
@@ -559,10 +667,6 @@ class GestureGuiServiceImpl(
     )
 
     private companion object {
-        const val ANIMATION_STAGE_TICKS = 3
-        const val ANIMATION_INITIAL_DELAY = 1L
-        const val ANIMATION_SECOND_STAGE_DELAY = ANIMATION_INITIAL_DELAY + ANIMATION_STAGE_TICKS + 1L
-        const val ANIMATION_COMPLETION_DELAY = ANIMATION_SECOND_STAGE_DELAY + ANIMATION_STAGE_TICKS + 1L
         const val MAX_YAW_STEP = 8.0f
         const val YAW_TARGET_EPSILON = 0.05f
         const val CHILD_SCREEN_DEPTH = 0.25

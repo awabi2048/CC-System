@@ -86,7 +86,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         }
         // 内容は背景の展開完了まで送信せず、文字・アイコンが潰れる演出を避けます。
         contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
-        setBackgroundSize(backgrounds, 0.1f, 0.1f, 0)
+        setBackgroundScaleZero(backgrounds, 0)
         return ScreenHandle(backgrounds, contents, entities)
     }
 
@@ -118,6 +118,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) =
         setBackgroundSize(handle.background, width, height, interpolationTicks)
+
+    fun setBackgroundScaleZero(handle: ScreenHandle, interpolationTicks: Int) =
+        setBackgroundScaleZero(handle.background, interpolationTicks)
 
     fun showContents(handle: ScreenHandle) {
         handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
@@ -250,6 +253,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         display.teleportDuration = 1
         display.interpolationDelay = 0
         display.interpolationDuration = 3
+        // 周囲のblock/sky lightに左右されずGUIの可読性を保ちます。
+        display.brightness = Display.Brightness(15, 15)
         display.setRotation(GestureGuiGeometry.displayYaw(pose), GestureGuiGeometry.displayPitch(pose))
     }
 
@@ -269,6 +274,16 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.interpolationDuration = interpolationTicks
             it.interpolationDelay = 0
             it.setTransformation(blockTransform(width, height))
+        }
+    }
+
+    private fun setBackgroundScaleZero(backgrounds: List<BlockDisplay>, interpolationTicks: Int) {
+        backgrounds.forEach {
+            it.interpolationDuration = interpolationTicks
+            it.interpolationDelay = 0
+            it.setTransformation(
+                Transformation(Vector3f(), AxisAngle4f(), Vector3f(), AxisAngle4f())
+            )
         }
     }
 
