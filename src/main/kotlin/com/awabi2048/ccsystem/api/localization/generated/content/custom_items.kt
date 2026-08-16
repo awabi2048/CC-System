@@ -273,6 +273,8 @@ object ContentCustomItemsKeys {
     @JvmField val CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_SPIRIT: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mob_token.token_names.spirit", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_FROG: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mob_token.token_names.frog", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_BOOMERANG: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mob_token.token_names.boomerang", setOf())
+    @JvmField val CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_PIGLIN: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mob_token.token_names.piglin", setOf())
+    @JvmField val CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_ENDER_DRAGON: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mob_token.token_names.ender_dragon", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_THEME_RUINS_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.theme.ruins.name", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_THEME_DESERT_TEMPLE_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.theme.desert_temple.name", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_THEME_OCEAN_MONUMENT_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.theme.ocean_monument.name", setOf())
@@ -829,6 +831,8 @@ object ContentCustomItemsKeys {
         CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_SPIRIT,
         CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_FROG,
         CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_BOOMERANG,
+        CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_PIGLIN,
+        CUSTOM_ITEMS_ARENA_MOB_TOKEN_TOKEN_NAMES_ENDER_DRAGON,
         CUSTOM_ITEMS_ARENA_THEME_RUINS_NAME,
         CUSTOM_ITEMS_ARENA_THEME_DESERT_TEMPLE_NAME,
         CUSTOM_ITEMS_ARENA_THEME_OCEAN_MONUMENT_NAME,
