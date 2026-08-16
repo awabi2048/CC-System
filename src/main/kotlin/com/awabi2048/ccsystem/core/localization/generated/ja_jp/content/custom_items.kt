@@ -292,6 +292,8 @@ internal object JaJpContentCustomItemsCatalog {
         EmbeddedLocalizationEntry(key = "custom_items.arena.mob_token.token_names.spirit", value = EmbeddedLocalizedValue.Text("精霊の涙"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "custom_items.arena.mob_token.token_names.frog", value = EmbeddedLocalizedValue.Text("大カエルの肝"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "custom_items.arena.mob_token.token_names.boomerang", value = EmbeddedLocalizedValue.Text("ブーメラン"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "custom_items.arena.mob_token.token_names.piglin", value = EmbeddedLocalizedValue.Text("ピグリンの頭"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "custom_items.arena.mob_token.token_names.ender_dragon", value = EmbeddedLocalizedValue.Text("エンダードラゴンの頭"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "custom_items.arena.theme.ruins.name", value = EmbeddedLocalizedValue.Text("遺跡"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "custom_items.arena.theme.desert_temple.name", value = EmbeddedLocalizedValue.Text("砂漠の寺院"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "custom_items.arena.theme.ocean_monument.name", value = EmbeddedLocalizedValue.Text("海底神殿"), domain = DOMAIN),
