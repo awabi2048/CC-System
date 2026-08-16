@@ -23,6 +23,8 @@ import com.awabi2048.ccsystem.api.gui.MenuCapabilityPresentation
 import com.awabi2048.ccsystem.api.gui.ResolvedMenuCapability
 import com.awabi2048.ccsystem.api.gui.GuiNameStyle
 import com.awabi2048.ccsystem.api.gui.GuiNameSpec
+import com.awabi2048.ccsystem.api.localization.LocalizationKey
+import com.awabi2048.ccsystem.api.localization.generated.CommonKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -38,7 +40,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 
 class GuiElementServiceImpl(
-    private val i18n: ((Player?, String, Map<String, Any>) -> String)? = null,
+    private val i18n: ((Player?, LocalizationKey<String>, Map<String, Any>) -> String)? = null,
 ) : GuiElementService {
     private val loreService = LoreServiceImpl(i18n)
     private val semanticsFactory = MenuPresentationSemanticsFactory(i18n)
@@ -459,7 +461,7 @@ class GuiElementServiceImpl(
     }
 
     override fun backEntry(player: Player?, slot: Int, material: Material): MenuElement {
-        val label = requireI18n(player, "gui.common.return", emptyMap())
+        val label = requireI18n(player, CommonKeys.GUI_COMMON_RETURN, emptyMap())
         return menuEntry(
             player,
             GuiMenuEntrySpec(
@@ -544,7 +546,7 @@ class GuiElementServiceImpl(
 
     private fun requireI18n(
         player: Player?,
-        key: String,
+        key: LocalizationKey<String>,
         arguments: Map<String, Any>,
     ): String = requireNotNull(i18n) {
         "GuiElementService instance does not support translated menu entries"

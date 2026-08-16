@@ -1,9 +1,0 @@
-chanpon:
-  discovery:
-    title: World Discovery
-    info:
-      name: World Discovery
-      lore:
-      - A list of worlds you have not visited yet.
-      - Worlds are ordered by earliest completion.
-    no_result: There are no worlds you have not visited yet.

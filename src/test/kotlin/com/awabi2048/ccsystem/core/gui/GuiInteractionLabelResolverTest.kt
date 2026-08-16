@@ -15,7 +15,7 @@ class GuiInteractionLabelResolverTest {
         )
         assertEquals(
             "lore.click.shift_any",
-            GuiInteractionLabelResolver.languageKey(MenuAcceptedClicks.SHIFT_LEFT_RIGHT),
+            GuiInteractionLabelResolver.languageKey(MenuAcceptedClicks.SHIFT_LEFT_RIGHT).id,
         )
     }
 

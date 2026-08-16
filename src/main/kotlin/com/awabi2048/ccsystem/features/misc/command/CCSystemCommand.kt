@@ -502,7 +502,7 @@ class CCSystemCommand : CommandExecutor, TabCompleter {
     private fun performReload(player: Player?, sender: CommandSender) {
         CCSystem.instance.ensureDefaultFiles()
         ConfigManager.reload()
-        LanguageManager.load()
+        // 言語カタログはコンパイル済みの不変データなので、設定reload時に再構築しません。
         MessageManager.load()
         PlacedBlockLedgerManager.load()
         AnnouncementManager.load()

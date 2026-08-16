@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
 import com.awabi2048.ccsystem.api.gui.GuiStatusTone
 import com.awabi2048.ccsystem.api.gui.GuiInputGesture
 import com.awabi2048.ccsystem.api.gui.LoreService
+import com.awabi2048.ccsystem.api.localization.LocalizationKey
 import com.awabi2048.ccsystem.core.config.LanguageManager
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -14,7 +15,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
 class LoreServiceImpl(
-    private val i18n: ((org.bukkit.entity.Player?, String, Map<String, Any>) -> String)? = null,
+    private val i18n: ((org.bukkit.entity.Player?, LocalizationKey<String>, Map<String, Any>) -> String)? = null,
 ) : LoreService {
     private data class RenderedLine(
         val component: Component,

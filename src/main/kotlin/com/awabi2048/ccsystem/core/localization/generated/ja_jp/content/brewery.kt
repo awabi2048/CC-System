@@ -1,0 +1,96 @@
+package com.awabi2048.ccsystem.core.localization.generated
+
+import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
+import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
+
+/** YAML資産から機械変換した不変カタログです。実行時に外部ファイルを参照しません。 */
+internal object JaJpContentBreweryCatalog {
+    const val LOCALE: String = "ja_jp"
+    const val DOMAIN: String = "content/brewery"
+
+    fun entries(): List<EmbeddedLocalizationEntry> = buildList {
+        addAll(chunk1())
+    }
+
+    private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "brewery.item.name.wort", value = EmbeddedLocalizedValue.Text("§b{recipe}の醸造原液"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.muddy", value = EmbeddedLocalizedValue.Text("§7泥状の{recipe}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.fermented", value = EmbeddedLocalizedValue.Text("§b{product}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.distilled", value = EmbeddedLocalizedValue.Text("§e{product}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.distilled_degraded", value = EmbeddedLocalizedValue.Text("§e{product}（蒸留失敗）"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.name.aged", value = EmbeddedLocalizedValue.Text("§6{product} {stars}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.recipe", value = EmbeddedLocalizedValue.Text("レシピ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.stage", value = EmbeddedLocalizedValue.Text("段階"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.quality", value = EmbeddedLocalizedValue.Text("品質"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.final_quality", value = EmbeddedLocalizedValue.Text("最終品質"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.distill_count", value = EmbeddedLocalizedValue.Text("蒸留回数"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.alcohol", value = EmbeddedLocalizedValue.Text("アルコール"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.rating", value = EmbeddedLocalizedValue.Text("評価"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.data.next_stage", value = EmbeddedLocalizedValue.Text("次工程"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.wort", value = EmbeddedLocalizedValue.Text("仕込み済み"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.fermented", value = EmbeddedLocalizedValue.Text("発酵済み"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.distilled", value = EmbeddedLocalizedValue.Text("蒸留済み"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.aged", value = EmbeddedLocalizedValue.Text("熟成済み"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.stage.failed", value = EmbeddedLocalizedValue.Text("失敗"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.fermentation", value = EmbeddedLocalizedValue.Text("看板付きバニラ樽で発酵"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.distillation", value = EmbeddedLocalizedValue.Text("醸造台で蒸留"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.aging", value = EmbeddedLocalizedValue.Text("マルチブロック樽で熟成"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.completed", value = EmbeddedLocalizedValue.Text("完成"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.next_stage.none", value = EmbeddedLocalizedValue.Text("なし"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.filter.name", value = EmbeddedLocalizedValue.Text("蒸留フィルター（試作品）"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.item.filter.description", value = EmbeddedLocalizedValue.TextList(listOf("蒸留時間 -15%", "蒸留ごとに耐久値を1消費")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.drink.completed", value = EmbeddedLocalizedValue.Text("&a{recipe}を飲みました。&7酔い: &e{alcohol}%"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.catalog.title", value = EmbeddedLocalizedValue.Text("醸造図鑑 {page}/{pages}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.catalog.discovered", value = EmbeddedLocalizedValue.Text("&6醸造図鑑に新しく発見しました: &f{recipe}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.preparation_started", value = EmbeddedLocalizedValue.Text("&a{recipe}の原液を仕込み始めました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.fermentation_started", value = EmbeddedLocalizedValue.Text("&a発酵を開始しました。&7（レシピ: {recipe}）"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.distillation_started", value = EmbeddedLocalizedValue.Text("&a蒸留を開始しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.distillation_stopped", value = EmbeddedLocalizedValue.Text("&e蒸留を停止しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.bottled", value = EmbeddedLocalizedValue.Text("&a瓶詰めが完了しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.aged", value = EmbeddedLocalizedValue.Text("&a熟成が完了しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.barrel_registered", value = EmbeddedLocalizedValue.Text("&a{wood}材の{size}樽を登録しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.process.fermentation_barrel_registered", value = EmbeddedLocalizedValue.Text("&a発酵樽を登録しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_yeast", value = EmbeddedLocalizedValue.Text("&c培養済み酵母を投入してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.already_fermenting", value = EmbeddedLocalizedValue.Text("&eこの樽では発酵が進行中です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.fermentation_not_ready", value = EmbeddedLocalizedValue.Text("&e発酵はまだ完了していません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.aging_not_ready", value = EmbeddedLocalizedValue.Text("&e熟成はまだ完了していません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.fermentation_barrel_required", value = EmbeddedLocalizedValue.Text("&c指定の看板はバニラ樽の側面に取り付けてください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_ingredients", value = EmbeddedLocalizedValue.Text("&c材料スロットにアイテムを入れてください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.recipe_not_found", value = EmbeddedLocalizedValue.Text("&c一致するレシピが見つかりません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.invalid_input", value = EmbeddedLocalizedValue.Text("&cこの工程に投入できる醸造物ではありません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.no_material", value = EmbeddedLocalizedValue.Text("&c醸造素材がないため開始できません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.skill_required", value = EmbeddedLocalizedValue.Text("&cこのレシピを実行するには職業レベルまたはスキルが不足しています。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_size", value = EmbeddedLocalizedValue.Text("&c樽サイズが一致しません。再設置してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.machine_locked", value = EmbeddedLocalizedValue.Text("&cこの設備は他のプレイヤーが使用中です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.level_required", value = EmbeddedLocalizedValue.Text("&c必要職業レベル不足: Lv{level} が必要です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.skills_required", value = EmbeddedLocalizedValue.Text("&c必要スキル不足: {skills}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.not_started", value = EmbeddedLocalizedValue.Text("&c発酵が開始されていません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.batch_limit", value = EmbeddedLocalizedValue.Text("&eこのバッチは最大{capacity}本までです。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.single_item", value = EmbeddedLocalizedValue.Text("&cスタックできません。1個ずつ入れてください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_type", value = EmbeddedLocalizedValue.Text("&cこのレシピは{types}の看板樽のみ対応です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.invalid_slot", value = EmbeddedLocalizedValue.Text("&cこのスロットには入れられません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_structure", value = EmbeddedLocalizedValue.Text("&c樽構造が不完全です。位置: {location} / 必要: {expected} / 現在: {actual}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.error.barrel_overlap", value = EmbeddedLocalizedValue.Text("&c既存の樽と構造範囲が重なっています。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.fermentation", value = EmbeddedLocalizedValue.Text("§8発酵"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.distillation", value = EmbeddedLocalizedValue.Text("§8蒸留"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.aging_big", value = EmbeddedLocalizedValue.Text("§8熟成（大樽）"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.title.aging_small", value = EmbeddedLocalizedValue.Text("§8熟成（小樽）"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.fermentation_start", value = EmbeddedLocalizedValue.Text("発酵開始"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.fermentation_running", value = EmbeddedLocalizedValue.Text("発酵中"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.distillation_start", value = EmbeddedLocalizedValue.Text("蒸留開始"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.distillation_stop", value = EmbeddedLocalizedValue.Text("蒸留停止"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.start", value = EmbeddedLocalizedValue.Text("開始"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.action.stop", value = EmbeddedLocalizedValue.Text("停止"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.current", value = EmbeddedLocalizedValue.Text("現在の醸造物"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.none", value = EmbeddedLocalizedValue.Text("なし"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.step_elapsed", value = EmbeddedLocalizedValue.Text("工程経過"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.session_runs", value = EmbeddedLocalizedValue.Text("今回の蒸留回数"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.duration", value = EmbeddedLocalizedValue.Text("1回の蒸留時間"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.data.items", value = EmbeddedLocalizedValue.Text("投入数"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.barrel.big", value = EmbeddedLocalizedValue.Text("大樽"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.barrel.small", value = EmbeddedLocalizedValue.Text("小樽"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.ui.aging_core", value = EmbeddedLocalizedValue.Text("熟成工程"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "brewery.intoxication.status", value = EmbeddedLocalizedValue.Text("&7現在の酔い: &e{alcohol}%"), domain = DOMAIN),
+    )
+
+}

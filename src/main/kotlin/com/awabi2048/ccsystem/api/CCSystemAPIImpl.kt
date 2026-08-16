@@ -14,6 +14,7 @@ import com.awabi2048.ccsystem.api.gui.MenuDialogService
 import com.awabi2048.ccsystem.api.gui.MenuConfirmationService
 import com.awabi2048.ccsystem.api.gui.MenuFormService
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
@@ -40,6 +41,9 @@ import com.awabi2048.ccsystem.core.gui.MenuDialogServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuConfirmationServiceImpl
 import com.awabi2048.ccsystem.core.gui.MenuFormServiceImpl
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiInputListener
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiLifecycleListener
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiServiceImpl
 import com.awabi2048.ccsystem.core.item.ItemGrantServiceImpl
 import com.awabi2048.ccsystem.core.sound.SoundResolutionServiceImpl
 import com.awabi2048.ccsystem.core.action.ContentActionDispatcherImpl
@@ -56,6 +60,7 @@ import com.awabi2048.ccsystem.core.queue.model.ContentType
 import com.awabi2048.ccsystem.core.queue.model.TaskState
 import java.io.File
 import net.kyori.adventure.text.Component
+import com.awabi2048.ccsystem.api.localization.LocalizationKey
 import org.bukkit.World
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -74,11 +79,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     }
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
-    private val guiElementService = GuiElementServiceImpl(::getI18nString)
+    private val guiElementService = GuiElementServiceImpl(::resolveLocalizedText)
     private val menuCapabilityService = MenuCapabilityServiceImpl()
     private val menuReversibleStateProviderRegistry = MenuReversibleStateProviderRegistryImpl()
     private val guiLayoutService = GuiLayoutServiceImpl(guiElementService)
-    private val loreService = LoreServiceImpl(::getI18nString)
+    private val loreService = LoreServiceImpl(::resolveLocalizedText)
     private val menuSoundService = MenuSoundServiceImpl()
     private val menuPresentationTracker = com.awabi2048.ccsystem.core.gui.MenuPresentationTracker()
     private val menuRuntimeService = MenuRuntimeServiceImpl(
@@ -108,6 +113,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         menuPresentationTracker,
     )
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
+    private val gestureGuiService = GestureGuiServiceImpl(plugin, playerInteractionClaimService).also {
+        // 入力とライフサイクルを同じサービスへ接続し、Entity UUIDを外部へ公開しません。
+        plugin.server.pluginManager.registerEvents(GestureGuiInputListener(it), plugin)
+        plugin.server.pluginManager.registerEvents(GestureGuiLifecycleListener(it), plugin)
+    }
     private val configSchemaService = ConfigSchemaServiceImpl()
     private val itemGrantService = ItemGrantServiceImpl()
     private val worldIdentityService = WorldIdentityServiceImpl()
@@ -149,41 +159,56 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         return LanguageManager.getSupportedLanguages()
     }
 
-    override fun getI18nString(player: Player?, key: String, placeholders: Map<String, Any>): String {
-        return LanguageManager.getUnified().getString(player, key, placeholders)
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> getLocalized(player: Player?, key: LocalizationKey<T>, placeholders: Map<String, Any>): T =
+        when (key.valueType) {
+            LocalizationKey.ValueType.TEXT -> LanguageManager.getUnified().getString(player, key.id, placeholders)
+            LocalizationKey.ValueType.TEXT_LIST -> LanguageManager.getUnified().getStringList(player, key.id, placeholders)
+        } as T
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> getLocalized(locale: String, key: LocalizationKey<T>, placeholders: Map<String, Any>): T {
+        val value: Any = when (key.valueType) {
+            LocalizationKey.ValueType.TEXT -> resolveLocalizedText(
+                locale,
+                key as LocalizationKey<String>,
+                placeholders,
+            )
+            LocalizationKey.ValueType.TEXT_LIST -> resolveLocalizedTextList(
+                locale,
+                key as LocalizationKey<List<String>>,
+                placeholders,
+            )
+        }
+        return value as T
     }
 
-    override fun getI18nString(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any>): String {
-        return LanguageManager.getUnified().getString(sourceId, player, key, placeholders)
-    }
+    /** GUI基盤内でも生成済みキーだけを受け取り、文字列キーの再流入を防ぎます。 */
+    private fun resolveLocalizedText(
+        player: Player?,
+        key: LocalizationKey<String>,
+        placeholders: Map<String, Any>,
+    ): String = LanguageManager.getUnified().getString(player, key.id, placeholders)
 
-    override fun getI18nString(locale: String, key: String, placeholders: Map<String, Any>): String {
-        val raw = LanguageManager.getUnified().getRawString(locale, key)
-            ?: throw IllegalStateException("言語キーが見つかりません: locale=$locale key=$key")
+    private fun resolveLocalizedText(
+        locale: String,
+        key: LocalizationKey<String>,
+        placeholders: Map<String, Any>,
+    ): String {
+        val raw = LanguageManager.getUnified().getRawString(locale, key.id)
+            ?: throw IllegalStateException("言語キーが見つかりません: locale=$locale key=${key.id}")
         return placeholders.entries.fold(raw) { acc, (placeholderKey, value) ->
             acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
         }
     }
 
-    override fun getI18nString(sourceId: String, locale: String, key: String, placeholders: Map<String, Any>): String {
-        val raw = LanguageManager.getUnified().getRawString(sourceId, locale, key)
-            ?: throw IllegalStateException("言語キーが見つかりません: source=$sourceId locale=$locale key=$key")
-        return placeholders.entries.fold(raw) { acc, (placeholderKey, value) ->
-            acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
-        }
-    }
-
-    override fun getI18nStringList(player: Player?, key: String, placeholders: Map<String, Any>): List<String> {
-        return LanguageManager.getUnified().getStringList(player, key, placeholders)
-    }
-
-    override fun getI18nStringList(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any>): List<String> {
-        return LanguageManager.getUnified().getStringList(sourceId, player, key, placeholders)
-    }
-
-    override fun getI18nStringList(locale: String, key: String, placeholders: Map<String, Any>): List<String> {
-        val raw = LanguageManager.getUnified().getRawStringList(locale, key)
-            ?: throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=$key expected=List")
+    private fun resolveLocalizedTextList(
+        locale: String,
+        key: LocalizationKey<List<String>>,
+        placeholders: Map<String, Any>,
+    ): List<String> {
+        val raw = LanguageManager.getUnified().getRawStringList(locale, key.id)
+            ?: throw IllegalStateException("言語キーが見つからないか型が不正です: locale=$locale key=${key.id} expected=List")
         return raw.map { line ->
             placeholders.entries.fold(line) { acc, (placeholderKey, value) ->
                 acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
@@ -191,68 +216,14 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         }
     }
 
-    override fun getI18nStringList(sourceId: String, locale: String, key: String, placeholders: Map<String, Any>): List<String> {
-        val raw = LanguageManager.getUnified().getRawStringList(sourceId, locale, key)
-            ?: throw IllegalStateException("言語キーが見つからないか型が不正です: source=$sourceId locale=$locale key=$key expected=List")
-        return raw.map { line ->
-            placeholders.entries.fold(line) { acc, (placeholderKey, value) ->
-                acc.replace("{$placeholderKey}", value.toString()).replace("%$placeholderKey%", value.toString())
-            }
-        }
-    }
+    override fun getI18nComponent(player: Player?, key: LocalizationKey<String>, placeholders: Map<String, Any>): Component =
+        LanguageManager.getUnified().getComponent(player, key.id, placeholders)
 
-    override fun getI18nComponent(player: Player?, key: String, placeholders: Map<String, Any>): Component {
-        return LanguageManager.getUnified().getComponent(player, key, placeholders)
-    }
-
-    override fun getI18nComponent(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any>): Component {
-        return LanguageManager.getUnified().getComponent(sourceId, player, key, placeholders)
-    }
-
-    override fun getI18nComponentList(player: Player?, key: String, placeholders: Map<String, Any>): List<Component> {
-        return LanguageManager.getUnified().getComponentList(player, key, placeholders)
-    }
-
-    override fun getI18nComponentList(sourceId: String, player: Player?, key: String, placeholders: Map<String, Any>): List<Component> {
-        return LanguageManager.getUnified().getComponentList(sourceId, player, key, placeholders)
-    }
-
-    override fun hasI18nKey(key: String): Boolean {
-        return getSupportedLanguages().any { LanguageManager.getUnified().hasKey(it, key) }
-    }
-
-    override fun hasI18nKey(sourceId: String, key: String): Boolean {
-        return getSupportedLanguages().any { LanguageManager.getUnified().hasKey(sourceId, it, key) }
-    }
-
-    override fun isI18nKeyMatch(title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyMatch(title, key)
-    }
-
-    override fun isI18nKeyMatch(sourceId: String, title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyMatch(sourceId, title, key)
-    }
-
-    override fun isI18nKeyStartWith(title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyStartWith(title, key)
-    }
-
-    override fun isI18nKeyStartWith(sourceId: String, title: String, key: String): Boolean {
-        return LanguageManager.getUnified().isKeyStartWith(sourceId, title, key)
-    }
-
-    override fun validateI18nSource(sourcePlugin: JavaPlugin, featureByFile: Map<String, String>): I18nValidationResult {
-        val result = LanguageManager.getUnified().validateSource(sourcePlugin, featureByFile)
-        return I18nValidationResult(result.errors, result.errorsByFeature)
-    }
-
-    override fun registerI18nSource(sourceId: String, sourcePlugin: JavaPlugin, fileNames: Set<String>) {
-        LanguageManager.getUnified().registerSource(sourceId, sourcePlugin, fileNames)
-    }
-
-    override fun unregisterI18nSource(sourceId: String) {
-        LanguageManager.getUnified().unregisterSource(sourceId)
-    }
+    override fun getI18nComponentList(
+        player: Player?,
+        key: LocalizationKey<List<String>>,
+        placeholders: Map<String, Any>,
+    ): List<Component> = LanguageManager.getUnified().getComponentList(player, key.id, placeholders)
 
     override fun getGuiElementService(): GuiElementService {
         return guiElementService
@@ -298,6 +269,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         return playerInteractionClaimService
     }
 
+    override fun getGestureGuiService(): GestureGuiService = gestureGuiService
+
     override fun getConfigSchemaService(): ConfigSchemaService = configSchemaService
 
     override fun getItemGrantService(): ItemGrantService = itemGrantService
@@ -325,6 +298,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     internal fun getDisplayParticleCount(): Int = displayEffectService.currentDisplayParticleCount()
 
     internal fun shutdown() {
+        gestureGuiService.shutdown()
         displayEffectService.shutdown()
         cosmeticPlatform.shutdown()
     }

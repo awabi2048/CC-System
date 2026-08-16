@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem;
 
+import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel;
 import com.awabi2048.ccsystem.core.input.PlayerInteractionClaimServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -9,18 +10,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerInteractionClaimServiceTest {
     @Test
-    void onlyOneOwnerCanClaimPlayerInputUntilReleased() {
+    void onlyOneOwnerCanClaimInputChannelUntilReleased() {
         var service = new PlayerInteractionClaimServiceImpl();
         var player = UUID.randomUUID();
 
-        assertTrue(service.tryClaim(player, "party"));
-        assertTrue(service.tryClaim(player, "party"));
-        assertFalse(service.tryClaim(player, "macro"));
-        assertEquals("party", service.ownerOf(player));
-        assertFalse(service.release(player, "macro"));
-        assertTrue(service.release(player, "party"));
-        assertTrue(service.tryClaim(player, "macro"));
+        var party = service.claim(player, PlayerInteractionChannel.SWAP_HAND, "party");
+        assertNotNull(party);
+        assertNull(service.claim(player, PlayerInteractionChannel.SWAP_HAND, "macro"));
+        assertEquals("party", service.ownerOf(player, PlayerInteractionChannel.SWAP_HAND));
+        assertFalse(service.release(player, PlayerInteractionChannel.SWAP_HAND, "macro"));
+        assertTrue(service.release(player, PlayerInteractionChannel.SWAP_HAND, "party"));
+        assertNotNull(service.claim(player, PlayerInteractionChannel.SWAP_HAND, "macro"));
         service.releaseAll(player);
-        assertNull(service.ownerOf(player));
+        assertNull(service.ownerOf(player, PlayerInteractionChannel.SWAP_HAND));
     }
 }
