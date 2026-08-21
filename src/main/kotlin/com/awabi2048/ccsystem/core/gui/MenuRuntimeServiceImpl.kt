@@ -957,12 +957,21 @@ internal class MenuRuntimeServiceImpl(
             } catch (failure: Throwable) {
                 failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                 actionFailure = failure
-                plugin.logger.log(
-                    Level.SEVERE,
-                    "プレイヤーインベントリActionの実行に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
-                    failure,
-                )
-                MenuActionResult.Rejected()
+                if (isMigrationRequiredFailure(failure)) {
+                    plugin.logger.log(
+                        Level.WARNING,
+                        "プレイヤーインベントリActionは移行待ちのため拒否されました: route=${definition.routeId} player=${player.uniqueId} ${failure.message}",
+                        failure,
+                    )
+                    MenuActionResult.Rejected(migrationRejectedComponent(player, failure))
+                } else {
+                    plugin.logger.log(
+                        Level.SEVERE,
+                        "プレイヤーインベントリActionの実行に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
+                        failure,
+                    )
+                    MenuActionResult.Rejected()
+                }
             } finally {
                 executing.remove(player.uniqueId)
             }
@@ -1200,12 +1209,21 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             actionFailure = failure
-            plugin.logger.log(
-                Level.SEVERE,
-                "メニュー操作の実行に失敗しました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId}",
-                failure,
-            )
-            MenuActionResult.Rejected()
+            if (isMigrationRequiredFailure(failure)) {
+                plugin.logger.log(
+                    Level.WARNING,
+                    "メニュー操作は移行待ちのため拒否されました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId} ${failure.message}",
+                    failure,
+                )
+                MenuActionResult.Rejected(migrationRejectedComponent(player, failure))
+            } else {
+                plugin.logger.log(
+                    Level.SEVERE,
+                    "メニュー操作の実行に失敗しました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId}",
+                    failure,
+                )
+                MenuActionResult.Rejected()
+            }
         } finally {
             executing.remove(player.uniqueId)
         }
@@ -1772,6 +1790,30 @@ internal class MenuRuntimeServiceImpl(
         GuiElementRole.CANCEL, GuiElementRole.BACK -> MenuClickType.CANCEL
         GuiElementRole.NAVIGATION -> MenuClickType.NAVIGATION
         else -> MenuClickType.DEFAULT
+    }
+
+    private fun isMigrationRequiredFailure(failure: Throwable): Boolean {
+        val message = failure.message ?: return false
+        return message.contains("requires /mwm migration") || message.contains("requires migration")
+    }
+
+    private fun migrationRejectedComponent(player: Player, failure: Throwable): net.kyori.adventure.text.Component {
+        val isWorld = failure.message?.let { msg ->
+            msg.contains("World data") || msg.contains("world directory") || msg.contains("world_data")
+        } == true
+        val key = if (isWorld) {
+            com.awabi2048.ccsystem.api.localization.generated.MyworldMessagesKeys.MESSAGES_MIGRATION_WORLD_REQUIRED
+        } else {
+            com.awabi2048.ccsystem.api.localization.generated.MyworldMessagesKeys.MESSAGES_MIGRATION_OPERATION_REQUIRED
+        }
+        return try {
+            com.awabi2048.ccsystem.CCSystem.getAPI().getI18nComponent(player, key)
+        } catch (_: Exception) {
+            net.kyori.adventure.text.Component.text(
+                if (isWorld) "§cこのワールドはデータ移行が完了するまで利用できません。"
+                else "§cこの操作はデータ移行が完了するまで利用できません。",
+            )
+        }
     }
 
     private fun resolveTransition(

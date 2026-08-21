@@ -286,6 +286,9 @@ object MyworldMessagesKeys {
     @JvmField val MESSAGES_WORLD_OPERATION_LOCKED: LocalizationKey<String> = LocalizationKey.text("messages.world_operation_locked", setOf())
     @JvmField val MESSAGES_MIGRATION_PENDING: LocalizationKey<String> = LocalizationKey.text("messages.migration.pending", setOf("uuid", "world"))
     @JvmField val MESSAGES_MIGRATION_REQUIRED: LocalizationKey<String> = LocalizationKey.text("messages.migration.required", setOf())
+    @JvmField val MESSAGES_MIGRATION_ADMIN_NOTICE: LocalizationKey<String> = LocalizationKey.text("messages.migration.admin_notice", setOf())
+    @JvmField val MESSAGES_MIGRATION_WORLD_REQUIRED: LocalizationKey<String> = LocalizationKey.text("messages.migration.world_required", setOf())
+    @JvmField val MESSAGES_MIGRATION_OPERATION_REQUIRED: LocalizationKey<String> = LocalizationKey.text("messages.migration.operation_required", setOf())
     @JvmField val MESSAGES_MIGRATION_NONE_PENDING: LocalizationKey<String> = LocalizationKey.text("messages.migration.none_pending", setOf())
     @JvmField val MESSAGES_MIGRATION_CONFLICT: LocalizationKey<String> = LocalizationKey.text("messages.migration.conflict", setOf("world"))
     @JvmField val MESSAGES_MIGRATION_USAGE: LocalizationKey<String> = LocalizationKey.text("messages.migration.usage", setOf())
@@ -638,6 +641,9 @@ object MyworldMessagesKeys {
         MESSAGES_WORLD_OPERATION_LOCKED,
         MESSAGES_MIGRATION_PENDING,
         MESSAGES_MIGRATION_REQUIRED,
+        MESSAGES_MIGRATION_ADMIN_NOTICE,
+        MESSAGES_MIGRATION_WORLD_REQUIRED,
+        MESSAGES_MIGRATION_OPERATION_REQUIRED,
         MESSAGES_MIGRATION_NONE_PENDING,
         MESSAGES_MIGRATION_CONFLICT,
         MESSAGES_MIGRATION_USAGE,
