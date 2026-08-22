@@ -221,6 +221,7 @@ object MyworldGuiSettingsKeys {
     @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_INPUT: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_input", setOf())
     @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_CONFIRM: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_confirm", setOf())
     @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ALREADY_PENDING: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.already_pending", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_OPEN_ACTION: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.open_action", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.title", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_NO_VISITORS: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.no_visitors", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.kick_confirm.title", setOf())
@@ -470,6 +471,7 @@ object MyworldGuiSettingsKeys {
         GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_INPUT,
         GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_CONFIRM,
         GUI_MEMBER_MANAGEMENT_ADD_MENU_ALREADY_PENDING,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_OPEN_ACTION,
         GUI_SETTINGS_TAGS_EDITOR_TITLE,
         GUI_SETTINGS_TAGS_EDITOR_ACTIVE,
         GUI_SETTINGS_TAGS_EDITOR_INACTIVE,
