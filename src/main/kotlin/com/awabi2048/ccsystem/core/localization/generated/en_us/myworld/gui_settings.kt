@@ -176,7 +176,7 @@ internal object EnUsMyworldGuiSettingsCatalog {
         EmbeddedLocalizationEntry(key = "gui.member_management.invite.action.normal", value = EmbeddedLocalizedValue.Text("Invite member"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.invite.action.force", value = EmbeddedLocalizedValue.Text("Force add member"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.title", value = EmbeddedLocalizedValue.Text("Add Member"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.empty", value = EmbeddedLocalizedValue.Text("§7No online players are currently available to invite"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.empty", value = EmbeddedLocalizedValue.Text("§7There are no players currently available to invite."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.id_input_name", value = EmbeddedLocalizedValue.Text("§aEnter Player ID"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.id_input_desc", value = EmbeddedLocalizedValue.TextList(listOf("§7Players not listed can be", "§7invited by entering their ID.")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.item.invite", value = EmbeddedLocalizedValue.Text("Invite"), domain = DOMAIN),

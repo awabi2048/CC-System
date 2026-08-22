@@ -176,7 +176,7 @@ internal object JaJpMyworldGuiSettingsCatalog {
         EmbeddedLocalizationEntry(key = "gui.member_management.invite.action.normal", value = EmbeddedLocalizedValue.Text("招待"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.invite.action.force", value = EmbeddedLocalizedValue.Text("強制追加"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.title", value = EmbeddedLocalizedValue.Text("メンバーを追加"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.empty", value = EmbeddedLocalizedValue.Text("§7現在、招待できるオンラインプレイヤーがいません"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.empty", value = EmbeddedLocalizedValue.Text("§7現在、招待可能なプレイヤーはいません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.id_input_name", value = EmbeddedLocalizedValue.Text("§aプレイヤーIDを入力"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.id_input_desc", value = EmbeddedLocalizedValue.TextList(listOf("§7一覧にないプレイヤーは", "§7ID入力で招待します。")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.member_management.add_menu.item.invite", value = EmbeddedLocalizedValue.Text("招待する"), domain = DOMAIN),
