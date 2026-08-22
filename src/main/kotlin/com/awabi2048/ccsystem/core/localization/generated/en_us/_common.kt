@@ -211,6 +211,7 @@ internal object EnUsCommonCatalog {
         EmbeddedLocalizationEntry(key = "error.world_migration_required", value = EmbeddedLocalizedValue.Text("§eThis world uses the legacy format and is unavailable until an administrator migrates it."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.world_teleport_failed", value = EmbeddedLocalizedValue.Text("§cThe world teleport could not be completed."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.spawn_set_blocked", value = EmbeddedLocalizedValue.Text("§cYou cannot set spawn there. Choose a location where both feet and head blocks are air or water."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "error.spawn_block_placement_blocked", value = EmbeddedLocalizedValue.Text("§cYou cannot place a block here because it is the spawn location."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.world_not_public", value = EmbeddedLocalizedValue.Text("§cThis world is not currently public."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.like_sign.my_world_only", value = EmbeddedLocalizedValue.Text("§cLike signboards can only be placed in My World."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.like_sign.no_permission", value = EmbeddedLocalizedValue.Text("§c You do not have the authority to place Like signs in this world."), domain = DOMAIN),
