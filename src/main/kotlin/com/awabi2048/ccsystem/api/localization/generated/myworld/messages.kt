@@ -305,6 +305,12 @@ object MyworldMessagesKeys {
     @JvmField val MESSAGES_MIGRATION_METADATA_FAILED: LocalizationKey<String> = LocalizationKey.text("messages.migration.metadata_failed", setOf("reason", "target"))
     @JvmField val MESSAGES_MIGRATION_METADATA_REMAINING: LocalizationKey<String> = LocalizationKey.text("messages.migration.metadata_remaining", setOf())
     @JvmField val MESSAGES_MIGRATION_INCOMPLETE: LocalizationKey<String> = LocalizationKey.text("messages.migration.incomplete", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_WAITING: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.waiting", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_RUNNING: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.running", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_RETRY: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.retry", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_COMPLETED: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.completed", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_FAILED: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.failed", setOf())
+    @JvmField val MESSAGES_MIGRATION_STATUS_SHORT_QUARANTINED: LocalizationKey<String> = LocalizationKey.text("messages.migration.status_short.quarantined", setOf())
     @JvmField val MESSAGES_SEED_SPAWN_CORRECTED: LocalizationKey<String> = LocalizationKey.text("messages.seed_spawn.corrected", setOf("x", "y", "z"))
     @JvmField val MESSAGES_SEED_SPAWN_SAFE_LOCATION_NOT_FOUND: LocalizationKey<String> = LocalizationKey.text("messages.seed_spawn.safe_location_not_found", setOf())
     @JvmField val MESSAGES_MYWORLD_COMMAND_USAGE: LocalizationKey<String> = LocalizationKey.text("messages.myworld_command_usage", setOf())
@@ -660,6 +666,12 @@ object MyworldMessagesKeys {
         MESSAGES_MIGRATION_METADATA_FAILED,
         MESSAGES_MIGRATION_METADATA_REMAINING,
         MESSAGES_MIGRATION_INCOMPLETE,
+        MESSAGES_MIGRATION_STATUS_SHORT_WAITING,
+        MESSAGES_MIGRATION_STATUS_SHORT_RUNNING,
+        MESSAGES_MIGRATION_STATUS_SHORT_RETRY,
+        MESSAGES_MIGRATION_STATUS_SHORT_COMPLETED,
+        MESSAGES_MIGRATION_STATUS_SHORT_FAILED,
+        MESSAGES_MIGRATION_STATUS_SHORT_QUARANTINED,
         MESSAGES_SEED_SPAWN_CORRECTED,
         MESSAGES_SEED_SPAWN_SAFE_LOCATION_NOT_FOUND,
         MESSAGES_MYWORLD_COMMAND_USAGE,

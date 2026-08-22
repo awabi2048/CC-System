@@ -85,7 +85,10 @@ object MyworldGuiBedrockKeys {
     @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_MOVE_TO_TOP: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.move_to_top", setOf())
     @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRED: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.expired", setOf())
     @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_AT: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.expires_at", setOf())
-    @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.expires_value", setOf("date", "days"))
+    // 有効期限は「残日あり」「期限切れ」で文言を分岐する。旧 expires_value は「{date} にアーカイブ」という
+    // アーカイブ済み向けの誤った文言だったため、状態別キーへ置換して廃止する。
+    @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE_REMAINING: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.expires_value_remaining", setOf("date", "days"))
+    @JvmField val GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE_OVERDUE: LocalizationKey<String> = LocalizationKey.text("gui.player_world.world_item.expires_value_overdue", setOf("date", "days"))
     @JvmField val GUI_PLAYER_WORLD_CREATION_BUTTON_DISPLAY: LocalizationKey<String> = LocalizationKey.text("gui.player_world.creation_button.display", setOf())
     @JvmField val GUI_PLAYER_WORLD_CREATION_BUTTON_ACTION: LocalizationKey<String> = LocalizationKey.text("gui.player_world.creation_button.action", setOf())
     @JvmField val GUI_PLAYER_WORLD_CREATION_BUTTON_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("gui.player_world.creation_button.description", setOf())
@@ -192,7 +195,8 @@ object MyworldGuiBedrockKeys {
         GUI_PLAYER_WORLD_WORLD_ITEM_MOVE_TO_TOP,
         GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRED,
         GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_AT,
-        GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE,
+        GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE_REMAINING,
+        GUI_PLAYER_WORLD_WORLD_ITEM_EXPIRES_VALUE_OVERDUE,
         GUI_PLAYER_WORLD_CREATION_BUTTON_DISPLAY,
         GUI_PLAYER_WORLD_CREATION_BUTTON_ACTION,
         GUI_PLAYER_WORLD_CREATION_BUTTON_DESCRIPTION,

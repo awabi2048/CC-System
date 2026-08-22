@@ -71,8 +71,16 @@ object MyworldGuiSettingsKeys {
     @JvmField val GUI_SETTINGS_MAIN_INFO_OWNER_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.owner_label", setOf())
     @JvmField val GUI_SETTINGS_MAIN_INFO_EXPANSION_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.expansion_label", setOf())
     @JvmField val GUI_SETTINGS_MAIN_INFO_CREATED_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.created_label", setOf())
+    // 作成日の経過表現。管理者向けキー(gui.admin.world_item.created_info_*)をプレイヤー画面へ流用しないための専用キー。
+    @JvmField val GUI_SETTINGS_MAIN_INFO_CREATED_VALUE_TODAY: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.created_value_today", setOf())
+    @JvmField val GUI_SETTINGS_MAIN_INFO_CREATED_VALUE_DAYS: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.created_value_days", setOf("days"))
+    // 自動アーカイブ期限は「未アーカイブ+残日あり」「未アーカイブ+期限切れ」「アーカイブ済み」の3状態で文言を分岐する。
+    // 負の日数をそのまま埋め込むと「-3日」のような表示になるため、状態別キーを必須とする。
     @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_label", setOf())
-    @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_value", setOf("date", "days"))
+    @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_LABEL_ARCHIVED: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_label_archived", setOf())
+    @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_REMAINING: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_value_remaining", setOf("date", "days"))
+    @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_OVERDUE: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_value_overdue", setOf("date", "days"))
+    @JvmField val GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_ARCHIVED: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.archive_value_archived", setOf("date"))
     @JvmField val GUI_SETTINGS_MAIN_INFO_MEMBERS_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.members_label", setOf())
     @JvmField val GUI_SETTINGS_MAIN_INFO_MEMBERS_VALUE: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.members_value", setOf("members", "online"))
     @JvmField val GUI_SETTINGS_MAIN_INFO_PUBLISH_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.main_info.publish_label", setOf())
@@ -275,8 +283,13 @@ object MyworldGuiSettingsKeys {
         GUI_SETTINGS_MAIN_INFO_OWNER_LABEL,
         GUI_SETTINGS_MAIN_INFO_EXPANSION_LABEL,
         GUI_SETTINGS_MAIN_INFO_CREATED_LABEL,
+        GUI_SETTINGS_MAIN_INFO_CREATED_VALUE_TODAY,
+        GUI_SETTINGS_MAIN_INFO_CREATED_VALUE_DAYS,
         GUI_SETTINGS_MAIN_INFO_ARCHIVE_LABEL,
-        GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE,
+        GUI_SETTINGS_MAIN_INFO_ARCHIVE_LABEL_ARCHIVED,
+        GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_REMAINING,
+        GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_OVERDUE,
+        GUI_SETTINGS_MAIN_INFO_ARCHIVE_VALUE_ARCHIVED,
         GUI_SETTINGS_MAIN_INFO_MEMBERS_LABEL,
         GUI_SETTINGS_MAIN_INFO_MEMBERS_VALUE,
         GUI_SETTINGS_MAIN_INFO_PUBLISH_LABEL,
