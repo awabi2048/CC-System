@@ -75,6 +75,13 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.owner_only.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.members.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password.display", setOf())
+    // メンバー管理メニューへ移動した建築許可パスワード設定用の表示キー。
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.display", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.member_management.password.lore", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.current_label", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_set", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_not_set", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.action_change", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.public.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.title", setOf())
@@ -158,6 +165,12 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE,
         CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY,
         CHANPON_ENVIRONMENT_SCALE_DESCRIPTION,
         CHANPON_ENVIRONMENT_SCALE_TITLE,

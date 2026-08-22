@@ -32,6 +32,11 @@ object MyworldGuiSettingsKeys {
     @JvmField val GUI_SETTINGS_TAGS_BLOCKS_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("gui.settings.tags.blocks.description", setOf())
     @JvmField val GUI_SETTINGS_TAGS_BLOCKS_CURRENT_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.blocks.current_label", setOf())
     @JvmField val GUI_SETTINGS_TAGS_ACTION_EDIT: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.action.edit", setOf())
+    @JvmField val GUI_SETTINGS_TAGS_EDITOR_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.editor.title", setOf())
+    @JvmField val GUI_SETTINGS_TAGS_EDITOR_ACTIVE: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.editor.active", setOf())
+    @JvmField val GUI_SETTINGS_TAGS_EDITOR_INACTIVE: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.editor.inactive", setOf())
+    @JvmField val GUI_SETTINGS_TAGS_EDITOR_OVER_LIMIT: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.editor.over_limit", setOf("count"))
+    @JvmField val GUI_SETTINGS_TAGS_EDITOR_ACTION_TOGGLE: LocalizationKey<String> = LocalizationKey.text("gui.settings.tags.editor.action_toggle", setOf())
     @JvmField val GUI_SETTINGS_EXPAND_DISPLAY: LocalizationKey<String> = LocalizationKey.text("gui.settings.expand.display", setOf())
     @JvmField val GUI_SETTINGS_EXPAND_BLOCKS_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("gui.settings.expand.blocks.description", setOf())
     @JvmField val GUI_SETTINGS_EXPAND_BLOCKS_CURRENT_LEVEL: LocalizationKey<String> = LocalizationKey.text("gui.settings.expand.blocks.current_level", setOf())
@@ -204,6 +209,18 @@ object MyworldGuiSettingsKeys {
     @JvmField val GUI_MEMBER_MANAGEMENT_TRANSFER_CONFIRM_CANCEL_DESC: LocalizationKey<String> = LocalizationKey.text("gui.member_management.transfer_confirm.cancel_desc", setOf())
     @JvmField val GUI_MEMBER_MANAGEMENT_TRANSFER_CONFIRM_CONFIRM: LocalizationKey<String> = LocalizationKey.text("gui.member_management.transfer_confirm.confirm", setOf())
     @JvmField val GUI_MEMBER_MANAGEMENT_TRANSFER_CONFIRM_CONFIRM_DESC: LocalizationKey<String> = LocalizationKey.text("gui.member_management.transfer_confirm.confirm_desc", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.title", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_EMPTY: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.empty", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ID_INPUT_NAME: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.id_input_name", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ID_INPUT_DESC: LocalizationKey<List<String>> = LocalizationKey.textList("gui.member_management.add_menu.id_input_desc", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ITEM_INVITE: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.item.invite", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ITEM_FORCE: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.item.force", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_FORCE_HINT: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.force_hint", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_title", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_BODY: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_body", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_INPUT: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_input", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_CONFIRM: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.dialog_confirm", setOf())
+    @JvmField val GUI_MEMBER_MANAGEMENT_ADD_MENU_ALREADY_PENDING: LocalizationKey<String> = LocalizationKey.text("gui.member_management.add_menu.already_pending", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.title", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_NO_VISITORS: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.no_visitors", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.kick_confirm.title", setOf())
@@ -214,6 +231,15 @@ object MyworldGuiSettingsKeys {
     @JvmField val GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_CONFIRM: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.kick_confirm.confirm", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_CONFIRM_DESC: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.kick_confirm.confirm_desc", setOf())
     @JvmField val GUI_VISITOR_MANAGEMENT_ITEM_KICK: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.item.kick", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_ITEM_INVITE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.item.invite", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.title", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_QUESTION: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.question", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_PLAYER_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.player_label", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.cancel", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CANCEL_DESC: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.cancel_desc", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CONFIRM: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.confirm", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CONFIRM_DESC: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.invite_confirm.confirm_desc", setOf())
+    @JvmField val GUI_VISITOR_MANAGEMENT_ALREADY_PENDING: LocalizationKey<String> = LocalizationKey.text("gui.visitor_management.already_pending", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         GUI_SETTINGS_TITLE,
@@ -423,5 +449,31 @@ object MyworldGuiSettingsKeys {
         GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_CONFIRM,
         GUI_VISITOR_MANAGEMENT_KICK_CONFIRM_CONFIRM_DESC,
         GUI_VISITOR_MANAGEMENT_ITEM_KICK,
+        GUI_VISITOR_MANAGEMENT_ITEM_INVITE,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_TITLE,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_QUESTION,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_PLAYER_LABEL,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CANCEL,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CANCEL_DESC,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CONFIRM,
+        GUI_VISITOR_MANAGEMENT_INVITE_CONFIRM_CONFIRM_DESC,
+        GUI_VISITOR_MANAGEMENT_ALREADY_PENDING,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_TITLE,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_EMPTY,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_ID_INPUT_NAME,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_ID_INPUT_DESC,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_ITEM_INVITE,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_ITEM_FORCE,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_FORCE_HINT,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_TITLE,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_BODY,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_INPUT,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_DIALOG_CONFIRM,
+        GUI_MEMBER_MANAGEMENT_ADD_MENU_ALREADY_PENDING,
+        GUI_SETTINGS_TAGS_EDITOR_TITLE,
+        GUI_SETTINGS_TAGS_EDITOR_ACTIVE,
+        GUI_SETTINGS_TAGS_EDITOR_INACTIVE,
+        GUI_SETTINGS_TAGS_EDITOR_OVER_LIMIT,
+        GUI_SETTINGS_TAGS_EDITOR_ACTION_TOGGLE,
     )
 }

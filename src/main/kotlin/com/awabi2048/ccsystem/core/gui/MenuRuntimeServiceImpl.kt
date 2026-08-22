@@ -115,6 +115,9 @@ internal class MenuRuntimeServiceImpl(
     private val suppressOpenSound = ConcurrentHashMap.newKeySet<UUID>()
     private val clickTraces = MenuRuntimeClickTraceStore()
     private val reversibleTokens = MenuReversibleStateTokenStore()
+    /** 定期再描画対象プレイヤーの直近更新時刻。スキャン間隔の判定に使用する。 */
+    private val lastAutoRefresh = ConcurrentHashMap<UUID, Long>()
+    @Volatile private var autoRefreshTask: org.bukkit.scheduler.BukkitTask? = null
     private val reversibleProviderInvalidation = reversibleProviders.addInvalidationListener { registration ->
         reversibleTokens.clearProviderGeneration(registration.generation)
     }
@@ -1327,10 +1330,46 @@ internal class MenuRuntimeServiceImpl(
         clickTraces.clear(event.player.uniqueId)
         externalFinishResults.clear(event.player.uniqueId)
         reversibleTokens.clear(event.player.uniqueId)
+        lastAutoRefresh.remove(event.player.uniqueId)
         clearConfirmationReturn(event.player)
         // 外部画面（Dialog等）を開いたまま退出した場合も、サスペンド状態と表示状態を解放する。
         completeExternal(event.player)
         presentations.markClosed(event.player)
+    }
+
+    /**
+     * 定期再描画スキャンを開始する。プラグイン有効化時に一度だけ呼ぶ。
+     * 対象画面（autoRefresh付き定義）を開いており、かつインベントリを表示中のプレイヤーだけに、
+     * 画面ごとの間隔で refresh を適用する。
+     */
+    fun startAutoRefreshScheduler() {
+        if (autoRefreshTask != null) return
+        autoRefreshTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable { scanAutoRefresh() }, 20L, 5L)
+    }
+
+    /** 定期再描画スキャンを停止する。プラグイン無効化時に呼ぶ。 */
+    fun stopAutoRefreshScheduler() {
+        autoRefreshTask?.cancel()
+        autoRefreshTask = null
+        lastAutoRefresh.clear()
+    }
+
+    private fun scanAutoRefresh() {
+        val now = System.currentTimeMillis()
+        for (player in Bukkit.getOnlinePlayers()) {
+            val session = sessions[player.uniqueId] ?: continue
+            // Dialog・外部入力中はインベントリが閉じているため、ここで除外しないと
+            // refresh が画面を勝手に開き直してしまう。表示中かどうかを holder で判定する。
+            val holder = player.openInventory.topInventory.holder as? MenuRuntimeHolder ?: continue
+            if (holder.route != session.route) continue
+            val definition = definitions[RouteKey(session.route.owner, session.route.id)] ?: continue
+            val policy = definition.autoRefresh ?: continue
+            val last = lastAutoRefresh[player.uniqueId] ?: 0L
+            if (now - last < policy.intervalTicks * 50L) continue
+            lastAutoRefresh[player.uniqueId] = now
+            // 失敗（直前に閉じられた等）は次のスキャンで自然に解消するため無視する。
+            refresh(player)
+        }
     }
 
     private fun openDirectResult(

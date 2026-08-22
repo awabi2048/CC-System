@@ -37,6 +37,7 @@ internal object EnUsMyworldGuiFavoriteCatalog {
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_remove", value = EmbeddedLocalizedValue.Text("§7Remove this world from your favorites."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_owner", value = EmbeddedLocalizedValue.Text("§cYou cannot favorite your own world."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_not_managed", value = EmbeddedLocalizedValue.Text("§cThis location cannot be favorited."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_member", value = EmbeddedLocalizedValue.Text("§cYou cannot favorite a world you are a member of."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.action", value = EmbeddedLocalizedValue.Text("Toggle favorite"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.remove_confirm.title", value = EmbeddedLocalizedValue.Text("Confirmation of cancellation of favorites"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.remove_confirm.lore", value = EmbeddedLocalizedValue.TextList(listOf("§fWorld \"§a{world}§f\"", "§cRemove from favorites§f?", "If you cancel §7, it will be removed from your favorites list.")), domain = DOMAIN),

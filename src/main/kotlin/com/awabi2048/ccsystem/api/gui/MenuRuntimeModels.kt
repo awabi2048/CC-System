@@ -722,8 +722,13 @@ data class InventoryMenuDefinition(
     val actionContracts: Map<String, MenuActionContract> = emptyMap(),
     /** 画面を表示するときの音。通常の戻る・遷移では既定音を抑制します。 */
     val openSound: MenuSoundPolicy = MenuSoundPolicy.Default,
-    /** 1つのroute定義内で画面状態ごとに表示音を切り替える場合に使用します。 */
+/** 1つのroute定義内で画面状態ごとに表示音を切り替える場合に使用します。 */
     val openSoundResolver: ((MenuRoute) -> MenuSoundPolicy)? = null,
+    /**
+     * 画面を開いている間の定期再描画設定。null（既定）は定期更新しない。
+     * ワールド共有状態（メンバー・環境設定など）を表示する画面にだけ明示的に付与する。
+     */
+    val autoRefresh: MenuAutoRefreshPolicy? = null,
 ) {
     @Suppress("UNUSED_PARAMETER")
     constructor(

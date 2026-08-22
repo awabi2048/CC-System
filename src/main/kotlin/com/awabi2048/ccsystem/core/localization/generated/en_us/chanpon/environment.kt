@@ -94,6 +94,12 @@ internal object EnUsChanponEnvironmentCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.environment.protection.members.display", value = EmbeddedLocalizedValue.Text("Members only"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.protection.password.display", value = EmbeddedLocalizedValue.Text("Password"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.protection.public.display", value = EmbeddedLocalizedValue.Text("Everyone"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.display", value = EmbeddedLocalizedValue.Text("§eBuild Permission Password"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.lore", value = EmbeddedLocalizedValue.TextList(listOf("§7Players who enter the password", "§7are automatically added as members.")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.current_label", value = EmbeddedLocalizedValue.Text("Current password"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.value_set", value = EmbeddedLocalizedValue.Text("Set"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.value_not_set", value = EmbeddedLocalizedValue.Text("Not set"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_management.password.action_change", value = EmbeddedLocalizedValue.Text("Set / change password"), domain = DOMAIN),
     )
 
 }
