@@ -59,7 +59,6 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_change_action", setOf())
-    @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_MISSING_WARNING: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_missing_warning", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_set_title", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_BODY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_set_body", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_title", setOf())
@@ -74,8 +73,7 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_success", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.owner_only.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.members.display", setOf())
-    @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password.display", setOf())
-    // メンバー管理メニューへ移動した建築許可パスワード設定用の表示キー。
+    // メンバー管理メニューへ移動したパスワード設定用の表示キー。
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.display", setOf())
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.member_management.password.lore", setOf())
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.current_label", setOf())
@@ -149,7 +147,6 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_PROTECTION_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION,
-        CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_MISSING_WARNING,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_TITLE,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_BODY,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_TITLE,
@@ -164,7 +161,6 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SUCCESS,
         CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY,
-        CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY,
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY,
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE,
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL,
