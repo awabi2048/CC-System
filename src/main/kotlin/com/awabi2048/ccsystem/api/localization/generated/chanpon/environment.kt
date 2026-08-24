@@ -80,6 +80,12 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_set", setOf())
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_not_set", setOf())
     @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.action_change", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_REMOVE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.action_remove", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVED: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.removed", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.title", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_BODY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.body", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CONFIRM: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.confirm", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.cancel", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.public.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.title", setOf())
@@ -167,6 +173,12 @@ object ChanponEnvironmentKeys {
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET,
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET,
         CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_REMOVE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVED,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_TITLE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_BODY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CONFIRM,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CANCEL,
         CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY,
         CHANPON_ENVIRONMENT_SCALE_DESCRIPTION,
         CHANPON_ENVIRONMENT_SCALE_TITLE,
