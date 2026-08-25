@@ -59,7 +59,6 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_change_action", setOf())
-    @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_MISSING_WARNING: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_missing_warning", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_set_title", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_BODY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_set_body", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_title", setOf())
@@ -74,7 +73,19 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_success", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.owner_only.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.members.display", setOf())
-    @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password.display", setOf())
+    // メンバー管理メニューへ移動したパスワード設定用の表示キー。
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.display", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.member_management.password.lore", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.current_label", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_set", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.value_not_set", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.action_change", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_REMOVE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.action_remove", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVED: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.removed", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.title", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_BODY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.body", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CONFIRM: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.confirm", setOf())
+    @JvmField val CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("chanpon.member_management.password.remove_confirm.cancel", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.public.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_SCALE_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.title", setOf())
@@ -142,7 +153,6 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_PROTECTION_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION,
-        CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_MISSING_WARNING,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_TITLE,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SET_BODY,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_TITLE,
@@ -157,7 +167,18 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_SUCCESS,
         CHANPON_ENVIRONMENT_PROTECTION_OWNER_ONLY_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_MEMBERS_DISPLAY,
-        CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_DISPLAY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_DISPLAY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_LORE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_CURRENT_LABEL,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_SET,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_VALUE_NOT_SET,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_CHANGE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_ACTION_REMOVE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVED,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_TITLE,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_BODY,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CONFIRM,
+        CHANPON_MEMBER_MANAGEMENT_PASSWORD_REMOVE_CONFIRM_CANCEL,
         CHANPON_ENVIRONMENT_PROTECTION_PUBLIC_DISPLAY,
         CHANPON_ENVIRONMENT_SCALE_DESCRIPTION,
         CHANPON_ENVIRONMENT_SCALE_TITLE,

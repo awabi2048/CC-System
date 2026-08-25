@@ -409,6 +409,9 @@ class CCSystem : JavaPlugin() {
         
         // API初期化
         _api = CCSystemAPIImpl(this, dataFolder)
+        // 開いている画面を定期的に再描画する共通機構（対象画面は定義側の opt-in で決まる）
+        (_api.getMenuRuntimeService() as com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl)
+            .startAutoRefreshScheduler()
         _api.getMenuNavigationService().registerMenuMatcher("cc-system") { inventory ->
             inventory.holder?.javaClass?.name?.startsWith("com.awabi2048.ccsystem") == true
         }
@@ -477,6 +480,8 @@ class CCSystem : JavaPlugin() {
     override fun onDisable() {
         // 再起動前に現在画面をUUID単位で保存し、次回ログインの一回だけ復元できる状態にする。
         _api.getMenuNavigationService().closeAllMenus(server.onlinePlayers)
+        (_api.getMenuRuntimeService() as com.awabi2048.ccsystem.core.gui.MenuRuntimeServiceImpl)
+            .stopAutoRefreshScheduler()
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()
         shutdownFeatureRuntime()

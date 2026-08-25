@@ -37,6 +37,7 @@ internal object JaJpMyworldGuiFavoriteCatalog {
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_remove", value = EmbeddedLocalizedValue.Text("§7このワールドをお気に入りリストから削除します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_owner", value = EmbeddedLocalizedValue.Text("§c自分のワールドはお気に入り登録できません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_not_managed", value = EmbeddedLocalizedValue.Text("§cこの場所はお気に入り登録できません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.lore_restricted_member", value = EmbeddedLocalizedValue.Text("§cメンバーとして参加中のワールドはお気に入り登録できません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.favorite_menu.toggle.action", value = EmbeddedLocalizedValue.Text("お気に入りを切り替え"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.remove_confirm.title", value = EmbeddedLocalizedValue.Text("お気に入り解除の確認"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "gui.favorite.remove_confirm.lore", value = EmbeddedLocalizedValue.TextList(listOf("§fワールド「§a{world}§f」を", "§cお気に入りから解除§fしますか？", "§7解除すると、お気に入りリストから削除されます。")), domain = DOMAIN),

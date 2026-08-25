@@ -198,6 +198,7 @@ object CommonKeys {
     @JvmField val ERROR_WORLD_MIGRATION_REQUIRED: LocalizationKey<String> = LocalizationKey.text("error.world_migration_required", setOf())
     @JvmField val ERROR_WORLD_TELEPORT_FAILED: LocalizationKey<String> = LocalizationKey.text("error.world_teleport_failed", setOf())
     @JvmField val ERROR_SPAWN_SET_BLOCKED: LocalizationKey<String> = LocalizationKey.text("error.spawn_set_blocked", setOf())
+    @JvmField val ERROR_SPAWN_BLOCK_PLACEMENT_BLOCKED: LocalizationKey<String> = LocalizationKey.text("error.spawn_block_placement_blocked", setOf())
     @JvmField val ERROR_WORLD_NOT_PUBLIC: LocalizationKey<String> = LocalizationKey.text("error.world_not_public", setOf())
     @JvmField val ERROR_LIKE_SIGN_MY_WORLD_ONLY: LocalizationKey<String> = LocalizationKey.text("error.like_sign.my_world_only", setOf())
     @JvmField val ERROR_LIKE_SIGN_NO_PERMISSION: LocalizationKey<String> = LocalizationKey.text("error.like_sign.no_permission", setOf())
@@ -408,6 +409,7 @@ object CommonKeys {
         ERROR_WORLD_MIGRATION_REQUIRED,
         ERROR_WORLD_TELEPORT_FAILED,
         ERROR_SPAWN_SET_BLOCKED,
+        ERROR_SPAWN_BLOCK_PLACEMENT_BLOCKED,
         ERROR_WORLD_NOT_PUBLIC,
         ERROR_LIKE_SIGN_MY_WORLD_ONLY,
         ERROR_LIKE_SIGN_NO_PERMISSION,

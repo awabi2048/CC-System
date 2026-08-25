@@ -28,6 +28,7 @@ object MyworldGuiFavoriteKeys {
     @JvmField val GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_REMOVE: LocalizationKey<String> = LocalizationKey.text("gui.favorite.favorite_menu.toggle.lore_remove", setOf())
     @JvmField val GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_OWNER: LocalizationKey<String> = LocalizationKey.text("gui.favorite.favorite_menu.toggle.lore_restricted_owner", setOf())
     @JvmField val GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_NOT_MANAGED: LocalizationKey<String> = LocalizationKey.text("gui.favorite.favorite_menu.toggle.lore_restricted_not_managed", setOf())
+    @JvmField val GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_MEMBER: LocalizationKey<String> = LocalizationKey.text("gui.favorite.favorite_menu.toggle.lore_restricted_member", setOf())
     @JvmField val GUI_FAVORITE_FAVORITE_MENU_TOGGLE_ACTION: LocalizationKey<String> = LocalizationKey.text("gui.favorite.favorite_menu.toggle.action", setOf())
     @JvmField val GUI_FAVORITE_REMOVE_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("gui.favorite.remove_confirm.title", setOf())
     @JvmField val GUI_FAVORITE_REMOVE_CONFIRM_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("gui.favorite.remove_confirm.lore", setOf("world"))
@@ -70,6 +71,7 @@ object MyworldGuiFavoriteKeys {
         GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_REMOVE,
         GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_OWNER,
         GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_NOT_MANAGED,
+        GUI_FAVORITE_FAVORITE_MENU_TOGGLE_LORE_RESTRICTED_MEMBER,
         GUI_FAVORITE_FAVORITE_MENU_TOGGLE_ACTION,
         GUI_FAVORITE_REMOVE_CONFIRM_TITLE,
         GUI_FAVORITE_REMOVE_CONFIRM_LORE,

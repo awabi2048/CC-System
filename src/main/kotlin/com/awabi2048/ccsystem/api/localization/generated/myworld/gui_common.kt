@@ -101,9 +101,12 @@ object MyworldGuiCommonKeys {
     @JvmField val GUI_PENDING_LIST_TYPE_MEET_REQUEST: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.type.meet_request", setOf())
     @JvmField val GUI_PENDING_LIST_TYPE_VISIT_REQUEST: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.type.visit_request", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_NAME: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.name", setOf("player", "type"))
+    // メンバー管理の招待中エントリなど、種別が文脈で自明な一覧で使うプレイヤー名のみの表示です。
+    @JvmField val GUI_PENDING_LIST_ITEM_NAME_SIMPLE: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.name_simple", setOf("player"))
     @JvmField val GUI_PENDING_LIST_ITEM_TYPE_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.type_label", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_WORLD_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.world_label", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_STATUS_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.status_label", setOf())
+    @JvmField val GUI_PENDING_LIST_ITEM_LAST_SEEN_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.last_seen_label", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_RECEIVED_LABEL: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.received_label", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_STATUS_ONLINE: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.status_online", setOf())
     @JvmField val GUI_PENDING_LIST_ITEM_STATUS_OFFLINE: LocalizationKey<String> = LocalizationKey.text("gui.pending_list.item.status_offline", setOf())
@@ -323,9 +326,11 @@ object MyworldGuiCommonKeys {
         GUI_PENDING_LIST_TYPE_MEET_REQUEST,
         GUI_PENDING_LIST_TYPE_VISIT_REQUEST,
         GUI_PENDING_LIST_ITEM_NAME,
+        GUI_PENDING_LIST_ITEM_NAME_SIMPLE,
         GUI_PENDING_LIST_ITEM_TYPE_LABEL,
         GUI_PENDING_LIST_ITEM_WORLD_LABEL,
         GUI_PENDING_LIST_ITEM_STATUS_LABEL,
+        GUI_PENDING_LIST_ITEM_LAST_SEEN_LABEL,
         GUI_PENDING_LIST_ITEM_RECEIVED_LABEL,
         GUI_PENDING_LIST_ITEM_STATUS_ONLINE,
         GUI_PENDING_LIST_ITEM_STATUS_OFFLINE,

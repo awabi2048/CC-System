@@ -211,6 +211,7 @@ internal object JaJpCommonCatalog {
         EmbeddedLocalizationEntry(key = "error.world_migration_required", value = EmbeddedLocalizedValue.Text("§eこのワールドは旧形式です。管理者による移行が完了するまで利用できません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.world_teleport_failed", value = EmbeddedLocalizedValue.Text("§cワールドへの移動を完了できませんでした。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.spawn_set_blocked", value = EmbeddedLocalizedValue.Text("§cその場所にはスポーンを設定できません。占有ブロック（足元/頭上）が空気または水の場所を選んでください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "error.spawn_block_placement_blocked", value = EmbeddedLocalizedValue.Text("§cスポーン位置のため、ここにブロックを置けません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.world_not_public", value = EmbeddedLocalizedValue.Text("§cこのワールドは現在公開されていません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.like_sign.my_world_only", value = EmbeddedLocalizedValue.Text("§cLike看板はマイワールド内でのみ設置できます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "error.like_sign.no_permission", value = EmbeddedLocalizedValue.Text("§cこのワールドにLike看板を設置する権限がありません。"), domain = DOMAIN),
