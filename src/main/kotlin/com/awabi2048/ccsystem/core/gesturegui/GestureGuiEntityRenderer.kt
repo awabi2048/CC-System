@@ -32,9 +32,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     private val revisionKey = NamespacedKey(plugin, "gesture_gui_revision")
 
     internal class ScreenHandle(
-        val background: List<BlockDisplay>,
-        val contents: List<Entity>,
-        val visualEntities: Map<String, Entity>,
+        val background: MutableList<BlockDisplay>,
+        val contents: MutableList<Entity>,
+        val visualEntities: MutableMap<String, Entity>,
     ) {
         val all: List<Entity> get() = background + contents
     }
@@ -125,6 +125,66 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     fun showContents(handle: ScreenHandle) {
         handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
+    }
+
+    /** 同一visualIdの実体を再利用し、追加・変更・削除だけを反映します。 */
+    fun updateScreenDiff(
+        handle: ScreenHandle,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        oldView: GestureGuiView,
+        newView: GestureGuiView,
+    ) {
+        val newIds = newView.visuals.mapTo(HashSet(), GestureGuiVisual::visualId)
+        oldView.visuals.forEach { visual ->
+            if (visual.visualId !in newIds) handle.visualEntities.remove(visual.visualId)?.let { entity ->
+                handle.contents.remove(entity)
+                entity.remove()
+            }
+        }
+        newView.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
+            val current = handle.visualEntities[visual.visualId]
+            val compatible = when (visual) {
+                is GestureGuiVisual.Block -> current is BlockDisplay
+                is GestureGuiVisual.Item -> current is ItemDisplay
+                is GestureGuiVisual.Text -> current is TextDisplay
+            }
+            val entity = if (compatible) current!! else {
+                current?.let { handle.contents.remove(it); it.remove() }
+                val created = when (visual) {
+                    is GestureGuiVisual.Block -> spawnBlock(handle.background.first().world, pose, visual)
+                    is GestureGuiVisual.Item -> spawnItem(handle.background.first().world, pose, visual)
+                    is GestureGuiVisual.Text -> spawnText(handle.background.first().world, pose, visual)
+                }
+                handle.contents += created
+                created
+            }
+            mark(entity, sessionId, revision)
+            applyVisual(entity, pose, visual)
+            handle.visualEntities[visual.visualId] = entity
+        }
+    }
+
+    private fun applyVisual(entity: Entity, pose: GestureGuiScreenPose, visual: GestureGuiVisual) {
+        entity.teleport(if (visual is GestureGuiVisual.Text) textLocation(entity.world, pose, visual.x, visual.y, visual.layer)
+        else visualLocation(entity.world, pose, visual.x, visual.y, visual.layer))
+        when {
+            entity is BlockDisplay && visual is GestureGuiVisual.Block -> {
+                entity.block = visual.blockData
+                entity.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
+                applyGlow(entity, visual.glowColor)
+            }
+            entity is ItemDisplay && visual is GestureGuiVisual.Item -> {
+                entity.setItemStack(visual.item.clone())
+                entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(visual.scale.toFloat()), AxisAngle4f()))
+                applyGlow(entity, visual.glowColor)
+            }
+            entity is TextDisplay && visual is GestureGuiVisual.Text -> {
+                entity.text(visual.text)
+                entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(GestureGuiTextMetrics.toDisplayScale(visual.size)), AxisAngle4f()))
+            }
+        }
     }
 
     /**

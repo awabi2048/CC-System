@@ -144,24 +144,20 @@ class GestureGuiServiceImpl(
         if (targetScreen != null) {
             session.revision = nextRevision++
             val pose = targetScreen.pose
-            renderer.remove(targetScreen.render)
-            val world = targetScreen.render.background.firstOrNull()?.world ?: return false
-            val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
-            renderer.showImmediately(render, view.panel)
+            renderer.updateScreenDiff(targetScreen.render, session.id, session.revision, pose, targetScreen.view, view)
+            renderer.showImmediately(targetScreen.render, view.panel)
             val idx = session.screens.indexOf(targetScreen)
-            session.screens = session.screens.toMutableList().also { it[idx] = targetScreen.copy(view = view, render = render) }
+            session.screens = session.screens.toMutableList().also { it[idx] = targetScreen.copy(view = view) }
             return true
         }
         val targetChild = session.children.firstOrNull { it.view.definition.screenId == view.definition.screenId }
         if (targetChild != null) {
             session.revision = nextRevision++
             val pose = targetChild.pose
-            renderer.remove(targetChild.render)
-            val world = targetChild.overlay?.world ?: return false
-            val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
-            renderer.showImmediately(render, view.panel)
+            renderer.updateScreenDiff(targetChild.render, session.id, session.revision, pose, targetChild.view, view)
+            renderer.showImmediately(targetChild.render, view.panel)
             val idx = session.children.indexOf(targetChild)
-            session.children[idx] = targetChild.copy(view = view, render = render)
+            session.children[idx] = targetChild.copy(view = view)
             return true
         }
         return false
@@ -310,7 +306,10 @@ class GestureGuiServiceImpl(
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
-        actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
+        // 余白は選択解除用の透過的な入力面であり、ボタン操作音を鳴らしません。
+        if (element.elementId != "viewport-empty") {
+            actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
+        }
         view.onAction(
             GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
