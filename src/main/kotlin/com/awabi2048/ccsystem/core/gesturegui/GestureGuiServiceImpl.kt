@@ -489,9 +489,12 @@ class GestureGuiServiceImpl(
             }
             }
             session.actors[session.ownerId]?.let { actor ->
-                renderer.moveCatcher(actor.catcher, catcherLocation(owner))
+                // 画面外ではInteractionを視線上に置かない。これにより、パネル外の攻撃が
+                // ジェスチャー入力として先取りされることを防ぎます。
+                val ownerHit = if (session.state == GestureGuiSessionState.ACTIVE) targetHit(session, owner) else null
+                renderer.moveCatcher(actor.catcher, catcherLocation(owner, ownerHit?.hit?.distance ?: 100.0))
                 // 開閉アニメーション中は内容より先にホバーだけが現れないよう、操作可能になってから表示します。
-                val hoverHit = if (session.state == GestureGuiSessionState.ACTIVE) targetHit(session, owner) else null
+                val hoverHit = ownerHit
                 updateHover(session, actor, owner, hoverHit)
             }
         }

@@ -357,7 +357,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         x: Double,
         y: Double,
         layer: Int,
-    ): Location = visualLocation(world, pose, x, y, layer).apply {
+    ): Location = visualLocation(world, pose, x, y - TEXT_BASELINE_OFFSET, layer).apply {
         yaw = GestureGuiGeometry.textDisplayYaw(pose)
         pitch = GestureGuiGeometry.textDisplayPitch(pose)
     }
@@ -371,6 +371,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         // 背景と枠は同じ厚みを持つため、中心間距離を背景厚より大きくして立体領域の交差を防ぎます。
         // 6 layer × 0.005 = 0.030 blockで、厚み0.025 blockに安全余白を確保します。
         const val PANEL_FRAME_LAYER = 6
+        /** TextDisplayのフォント上方向ベースライン分を中心座標から補正します。 */
+        const val TEXT_BASELINE_OFFSET = 0.018
         // 0.24 block手前に置き、0.25 block手前から始まる子画面の直後へ重ねます。
         const val MODAL_OVERLAY_LAYER = 48
     }
