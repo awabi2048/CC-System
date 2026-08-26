@@ -127,6 +127,17 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
     }
 
+    /**
+     * 開閉アニメーションを伴わない部分更新用に、背景を実寸へ確定して画面全体を表示します。
+     * spawnScreen() は初回オープン演出のため背景をゼロスケールで生成するので、更新経路では
+     * showEntity() だけでなく、必ず実寸の復元までを一まとまりで行います。
+     */
+    fun showImmediately(handle: ScreenHandle, panel: com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel) {
+        setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        handle.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
+        showContents(handle)
+    }
+
     fun hideContents(handle: ScreenHandle) {
         handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
     }
