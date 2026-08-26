@@ -147,6 +147,8 @@ class GestureGuiServiceImpl(
             renderer.remove(targetScreen.render)
             val world = targetScreen.render.background.firstOrNull()?.world ?: return false
             val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
+            // 背景も表示（showContentsはcontentsのみのため、backgroundを別途表示）
+            render.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
             renderer.showContents(render)
             val idx = session.screens.indexOf(targetScreen)
             session.screens = session.screens.toMutableList().also { it[idx] = targetScreen.copy(view = view, render = render) }
@@ -159,6 +161,7 @@ class GestureGuiServiceImpl(
             renderer.remove(targetChild.render)
             val world = targetChild.overlay?.world ?: return false
             val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
+            render.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
             renderer.showContents(render)
             val idx = session.children.indexOf(targetChild)
             session.children[idx] = targetChild.copy(view = view, render = render)
