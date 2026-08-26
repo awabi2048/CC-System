@@ -673,25 +673,30 @@ class GestureGuiServiceImpl(
     private fun fixedPoses(anchor: Location, eye: Location, views: List<GestureGuiView>): List<GestureGuiScreenPose> {
         val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
         val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
+        // eye -> anchor 方向が画面法線（eyeから見て正面）。以前は逆向き(toPlayer)だったため裏面表示になっていました。
         val toPlayer = (eyeVec - anchorVec).normalized()
-        val normal = toPlayer
+        val normal = (anchorVec - eyeVec).normalized()
         val worldUp = GestureGuiVector3(0.0, 1.0, 0.0)
         val right = run {
             val raw = normal.cross(worldUp)
             if (raw.length() < 1.0e-6) GestureGuiVector3(1.0, 0.0, 0.0) else raw.normalized()
         }
         val up = right.cross(normal).normalized()
-        val center = anchorVec + normal * FIXED_SCREEN_DISTANCE + up * FIXED_SCREEN_LIFT
-        val yaw = Math.toDegrees(atan2(-normal.x, normal.z)).toFloat()
-        val pitch = Math.toDegrees(-asin(normal.y.coerceIn(-1.0, 1.0))).toFloat()
+        // 画面群の基準中心: アンカーからプレイヤー側へFIXED_SCREEN_DISTANCE、手前に持ち上げる
+        val baseCenter = anchorVec + toPlayer * FIXED_SCREEN_DISTANCE + up * FIXED_SCREEN_LIFT
+        // 方式A: 上下2枚の分離は通常追従と同じ角度差(centerPitches)をワールド距離に換算して再現
+        val pitches = GestureGuiGeometry.centerPitches(views.map { it.panel.width to it.panel.height })
         return views.mapIndexed { index, view ->
-            val viewUp = if (index == 0) up else up
+            val pitch = pitches[index]
+            // -d * sin(pitch) で上下へ分離: pitch -20(上) -> +0.41, +20(下) -> -0.41
+            val verticalOffset = -FIXED_SCREEN_DISTANCE * kotlin.math.sin(Math.toRadians(pitch))
+            val center = baseCenter + up * verticalOffset
             GestureGuiScreenPose(
                 screenIndex = index,
-                centerPitchDegrees = Math.toDegrees(-asin(normal.y.coerceIn(-1.0, 1.0))),
+                centerPitchDegrees = pitch,
                 center = center,
                 right = right,
-                up = viewUp,
+                up = up,
                 normal = normal,
                 width = view.panel.width,
                 height = view.panel.height,
