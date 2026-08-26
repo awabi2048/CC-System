@@ -464,6 +464,14 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.no_placement_access", value = EmbeddedLocalizedValue.Text("You do not have permission to manage this extended command block."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_output", value = EmbeddedLocalizedValue.Text("Output a command disk."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("Written into the extended command block."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.back_to_start", value = EmbeddedLocalizedValue.Text("Back to start"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.back_to_start_description", value = EmbeddedLocalizedValue.TextList(listOf("Moves the viewport to the first add point")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.chat_prompt", value = EmbeddedLocalizedValue.TextList(listOf("Enter the value in chat", "Type \"cancel\" to abort")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_title", value = EmbeddedLocalizedValue.TextList(listOf("Delete this node?", "This cannot be undone")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_execute", value = EmbeddedLocalizedValue.Text("Delete"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_cancel", value = EmbeddedLocalizedValue.Text("Cancel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.node_selected", value = EmbeddedLocalizedValue.Text("Selected node: {node}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.current_value", value = EmbeddedLocalizedValue.Text("Current value"), domain = DOMAIN),
     )
 
 }

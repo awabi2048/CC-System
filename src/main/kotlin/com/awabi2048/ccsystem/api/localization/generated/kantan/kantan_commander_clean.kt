@@ -443,12 +443,21 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PLACEMENT_ACCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.no_placement_access", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_OUTPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_output", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.back_to_start", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.back_to_start_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHAT_PROMPT: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.chat_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_TITLE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.delete_confirm_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_execute", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_cancel", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NODE_SELECTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.node_selected", setOf("node"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CURRENT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.current_value", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
         addAll(keyChunk2())
         addAll(keyChunk3())
         addAll(keyChunk4())
+        addAll(keyChunk5())
     }
 
     private fun keyChunk1(): List<LocalizationKey<*>> = listOf(
@@ -899,6 +908,17 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_MAX_COMMANDS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PLACEMENT_ACCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_OUTPUT,
-        
+        KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN,
+    )
+
+    private fun keyChunk5(): List<LocalizationKey<*>> = listOf(
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHAT_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_CANCEL,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NODE_SELECTED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CURRENT_VALUE,
     )
 }

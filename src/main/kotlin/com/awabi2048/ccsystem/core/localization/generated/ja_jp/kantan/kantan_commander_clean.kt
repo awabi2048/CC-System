@@ -464,6 +464,14 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.no_placement_access", value = EmbeddedLocalizedValue.Text("この拡張コマンドブロックを操作する権限がありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_output", value = EmbeddedLocalizedValue.Text("コマンドディスクを出力しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("拡張コマンドブロックへ書き込みました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.back_to_start", value = EmbeddedLocalizedValue.Text("先頭へ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.back_to_start_description", value = EmbeddedLocalizedValue.TextList(listOf("ビューポートを最も先頭の追加ポイントへ移動します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.chat_prompt", value = EmbeddedLocalizedValue.TextList(listOf("チャットで値を入力してください", "「キャンセル」と入力すると中止します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_title", value = EmbeddedLocalizedValue.TextList(listOf("このノードを削除しますか？", "元に戻せません")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_execute", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_cancel", value = EmbeddedLocalizedValue.Text("キャンセル"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.node_selected", value = EmbeddedLocalizedValue.Text("ノードを選択しました: {node}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.current_value", value = EmbeddedLocalizedValue.Text("現在値"), domain = DOMAIN),
     )
 
 }
