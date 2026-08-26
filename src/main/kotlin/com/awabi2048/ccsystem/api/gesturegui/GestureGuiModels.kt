@@ -36,6 +36,8 @@ data class GestureGuiChildOptions(
     val offsetX: Double = 0.0,
     val offsetY: Double = 0.0,
     val allowParentInteraction: Boolean = false,
+    /** 子画面の出現・消滅アニメーションを使うか。短時間の確認画面では無効化できます。 */
+    val animated: Boolean = true,
     /** 子画面背景のオーバーレイ素材。nullならデフォルト(灰色)。確認子画面など赤ガスに変えたい場合に指定 */
     val overlayMaterial: Material? = null,
 ) {

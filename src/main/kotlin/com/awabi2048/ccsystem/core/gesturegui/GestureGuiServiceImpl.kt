@@ -210,9 +210,17 @@ class GestureGuiServiceImpl(
             overlay?.remove()
             throw failure
         }
-        val child = ChildRuntime(view, options, pose, render, overlay, GestureGuiSessionState.OPENING)
+        val child = ChildRuntime(
+            view, options, pose, render, overlay,
+            if (options.animated) GestureGuiSessionState.OPENING else GestureGuiSessionState.ACTIVE,
+        )
         session.children += child
-        animateChildOpen(session, child)
+        if (options.animated) {
+            animateChildOpen(session, child)
+        } else {
+            renderer.setBackgroundSize(render, view.panel.width.toFloat(), view.panel.height.toFloat(), 0)
+            renderer.showContents(render)
+        }
         return true
     }
 
@@ -225,7 +233,13 @@ class GestureGuiServiceImpl(
         if (targets.all { it.state == GestureGuiSessionState.CLOSING }) return true
         session.revision = nextRevision++
         Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
-        targets.forEach { animateChildClose(session, it) }
+        targets.forEach { child ->
+            if (child.options.animated) animateChildClose(session, child)
+            else {
+                session.children.remove(child)
+                destroyChild(child)
+            }
+        }
         return true
     }
 
@@ -290,6 +304,7 @@ class GestureGuiServiceImpl(
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
+        actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
         view.onAction(
             GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
