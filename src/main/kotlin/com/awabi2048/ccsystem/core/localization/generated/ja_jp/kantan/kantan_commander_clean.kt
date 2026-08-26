@@ -71,6 +71,10 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output", value = EmbeddedLocalizedValue.Text("出力する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy", value = EmbeddedLocalizedValue.Text("コマンドディスクを出力する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_description", value = EmbeddedLocalizedValue.TextList(listOf("拡張コマンドブロックの内容を独立したコマンドディスクへ複製します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_title", value = EmbeddedLocalizedValue.Text("拡張コマンドブロックへ書き込む"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_description", value = EmbeddedLocalizedValue.TextList(listOf("コマンドディスクの内容で、空の拡張コマンドブロックを上書きします")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_confirm", value = EmbeddedLocalizedValue.Text("上書きする"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_cancel", value = EmbeddedLocalizedValue.Text("書き込みを中止"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.target_title", value = EmbeddedLocalizedValue.Text("対象を設定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.position_destination_title", value = EmbeddedLocalizedValue.Text("移動先の設定方法"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.position_context_title", value = EmbeddedLocalizedValue.Text("実行位置を設定"), domain = DOMAIN),
@@ -400,7 +404,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.owner", value = EmbeddedLocalizedValue.Text("所有者"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.trigger", value = EmbeddedLocalizedValue.Text("起動条件"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.action_edit", value = EmbeddedLocalizedValue.Text("編集する"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.action_place", value = EmbeddedLocalizedValue.Text("Shift+右クリックで設置する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.action_write", value = EmbeddedLocalizedValue.Text("空の拡張コマンドブロックへ書き込む"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.activation.needs_redstone", value = EmbeddedLocalizedValue.Text("レッドストーン信号で実行"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.activation.always_active", value = EmbeddedLocalizedValue.Text("常時実行"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.teleport", value = EmbeddedLocalizedValue.Text("テレポート"), domain = DOMAIN),
@@ -458,6 +462,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.max_commands", value = EmbeddedLocalizedValue.Text("コマンド数の上限です。最大: {max}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.no_placement_access", value = EmbeddedLocalizedValue.Text("この拡張コマンドブロックを操作する権限がありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_output", value = EmbeddedLocalizedValue.Text("コマンドディスクを出力しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("拡張コマンドブロックへ書き込みました。"), domain = DOMAIN),
     )
 
 }
