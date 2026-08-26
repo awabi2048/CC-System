@@ -669,39 +669,25 @@ class GestureGuiServiceImpl(
         views.map { it.panel.width to it.panel.height },
     )
 
-    /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。画面はアンカー手前に配置され、プレイヤーを正面とします。 */
+    /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。CC-System APIのみで配置します。 */
     private fun fixedPoses(anchor: Location, eye: Location, views: List<GestureGuiView>): List<GestureGuiScreenPose> {
         val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
         val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
-        // eye -> anchor 方向が画面法線（eyeから見て正面）。以前は逆向き(toPlayer)だったため裏面表示になっていました。
-        val toPlayer = (eyeVec - anchorVec).normalized()
+        // eye -> anchor を画面法線とします（eyeから見て正面）。不足機能は迂回せずAPI側で修正する方針のため、
+        // 手組みのワールド距離換算は行わず合成eyeをAPIへ委譲して上下分離を再現します。
         val normal = (anchorVec - eyeVec).normalized()
-        val worldUp = GestureGuiVector3(0.0, 1.0, 0.0)
-        val right = run {
-            val raw = normal.cross(worldUp)
-            if (raw.length() < 1.0e-6) GestureGuiVector3(1.0, 0.0, 0.0) else raw.normalized()
-        }
-        val up = right.cross(normal).normalized()
-        // 画面群の基準中心: アンカーからプレイヤー側へFIXED_SCREEN_DISTANCE、手前に持ち上げる
-        val baseCenter = anchorVec + toPlayer * FIXED_SCREEN_DISTANCE + up * FIXED_SCREEN_LIFT
-        // 方式A: 上下2枚の分離は通常追従と同じ角度差(centerPitches)をワールド距離に換算して再現
-        val pitches = GestureGuiGeometry.centerPitches(views.map { it.panel.width to it.panel.height })
-        return views.mapIndexed { index, view ->
-            val pitch = pitches[index]
-            // -d * sin(pitch) で上下へ分離: pitch -20(上) -> +0.41, +20(下) -> -0.41
-            val verticalOffset = -FIXED_SCREEN_DISTANCE * kotlin.math.sin(Math.toRadians(pitch))
-            val center = baseCenter + up * verticalOffset
-            GestureGuiScreenPose(
-                screenIndex = index,
-                centerPitchDegrees = pitch,
-                center = center,
-                right = right,
-                up = up,
-                normal = normal,
-                width = view.panel.width,
-                height = view.panel.height,
-            )
-        }
+        val yaw = Math.toDegrees(atan2(-normal.x, normal.z))
+        val syntheticEye = anchorVec - normal * FIXED_SCREEN_DISTANCE
+        val poses = GestureGuiGeometry.poses(
+            syntheticEye,
+            yaw,
+            views.size,
+            views.map { it.panel.width to it.panel.height },
+        )
+        // ブロックの少し上に浮かせる（全画面共通）
+        if (FIXED_SCREEN_LIFT == 0.0) return poses
+        val liftUp = poses.firstOrNull()?.up ?: GestureGuiVector3(0.0, 1.0, 0.0)
+        return poses.map { it.copy(center = it.center + liftUp * FIXED_SCREEN_LIFT) }
     }
 
     private fun childPose(
