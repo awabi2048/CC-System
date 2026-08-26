@@ -254,7 +254,13 @@ class GestureGuiServiceImpl(
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
         Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
-        session.children.toList().forEach { animateChildClose(session, it) }
+        session.children.toList().forEach { child ->
+            if (child.options.animated) animateChildClose(session, child)
+            else {
+                session.children.remove(child)
+                destroyChild(child)
+            }
+        }
         session.screens.forEach { renderer.hideContents(it.render) }
         val expected = session.revision
         session.screens.forEach { screen ->
