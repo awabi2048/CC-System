@@ -340,10 +340,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     /** 選択ハイライト等に用いるDisplayのglowを設定します。colorがnullならglowなし。 */
     private fun applyGlow(display: Display, glowColor: Int?) {
-        if (glowColor != null) {
-            display.isGlowing = true
-            display.setGlowColorOverride(Color.fromARGB(glowColor))
-        }
+        display.isGlowing = glowColor != null
+        display.setGlowColorOverride(glowColor?.let(Color::fromARGB))
     }
 
     private fun prepareTextDisplay(display: TextDisplay, pose: GestureGuiScreenPose) {
