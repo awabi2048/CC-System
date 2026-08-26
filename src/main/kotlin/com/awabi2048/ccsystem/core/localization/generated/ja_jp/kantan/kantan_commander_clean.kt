@@ -456,6 +456,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_reload", value = EmbeddedLocalizedValue.Text("/kankoma reload - 設定を再読み込みします"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placements_header", value = EmbeddedLocalizedValue.Text("設置済み拡張コマンドブロック: {count}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placements_entry", value = EmbeddedLocalizedValue.Text("- {world} {x},{y},{z} -> {script}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placements_page", value = EmbeddedLocalizedValue.Text("ページ {page}/{pages}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.saved", value = EmbeddedLocalizedValue.Text("保存しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.reloaded", value = EmbeddedLocalizedValue.Text("設定を再読み込みしました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.reload_failed", value = EmbeddedLocalizedValue.Text("設定が不正なため、再読み込みできませんでした。"), domain = DOMAIN),
