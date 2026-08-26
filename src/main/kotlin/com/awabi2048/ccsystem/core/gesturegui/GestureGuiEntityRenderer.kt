@@ -12,6 +12,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.BlockDisplay
+import org.bukkit.Color
 import org.bukkit.entity.Display
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Interaction
@@ -137,8 +138,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         sessionId: UUID,
         revision: Long,
         pose: GestureGuiScreenPose,
+        material: Material = Material.GRAY_STAINED_GLASS,
     ): BlockDisplay = spawnPanelBlock(
-        world, pose, Bukkit.createBlockData(Material.GRAY_STAINED_GLASS),
+        world, pose, Bukkit.createBlockData(material),
         0.0, 0.0, pose.width, pose.height, MODAL_OVERLAY_LAYER,
     ).also { mark(it, sessionId, revision) }
 
@@ -210,6 +212,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             prepareDisplay(it, pose)
             it.block = visual.blockData
             it.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
+            applyGlow(it, visual.glowColor)
         }
 
     private fun spawnPanelBlock(
@@ -239,6 +242,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.GUI
             val scale = visual.scale.toFloat()
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
+            applyGlow(it, visual.glowColor)
         }
 
     private fun spawnText(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Text): TextDisplay =
@@ -261,6 +265,14 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         // 周囲のblock/sky lightに左右されずGUIの可読性を保ちます。
         display.brightness = Display.Brightness(15, 15)
         display.setRotation(GestureGuiGeometry.displayYaw(pose), GestureGuiGeometry.displayPitch(pose))
+    }
+
+    /** 選択ハイライト等に用いるDisplayのglowを設定します。colorがnullならglowなし。 */
+    private fun applyGlow(display: Display, glowColor: Int?) {
+        if (glowColor != null) {
+            display.isGlowing = true
+            display.setGlowColorOverride(Color.fromARGB(glowColor))
+        }
     }
 
     private fun prepareTextDisplay(display: TextDisplay, pose: GestureGuiScreenPose) {

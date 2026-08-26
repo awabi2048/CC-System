@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.api.gesturegui
 import java.util.UUID
 import kotlin.math.sqrt
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.Material
 
 /** 画面の実寸と共通外観です。寸法・枠幅はブロック単位です。 */
@@ -35,10 +36,24 @@ data class GestureGuiChildOptions(
     val offsetX: Double = 0.0,
     val offsetY: Double = 0.0,
     val allowParentInteraction: Boolean = false,
+    /** 子画面背景のオーバーレイ素材。nullならデフォルト(灰色)。確認子画面など赤ガスに変えたい場合に指定 */
+    val overlayMaterial: Material? = null,
 ) {
     init {
         require(parentScreenId.isNotBlank()) { "gesture GUI child parentScreenId must not be blank" }
         require(offsetX.isFinite() && offsetY.isFinite()) { "gesture GUI child offset must be finite" }
+    }
+}
+
+/** 固定位置モードの画面配置を指定します。open時に指定すると画面をワールド固定し、プレイヤー追従しなくなります。 */
+data class GestureGuiOpenOptions(
+    /** 画面を固定するワールド位置。nullならプレイヤー追従モード */
+    val anchor: Location? = null,
+) {
+    init {
+        require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {
+            "gesture GUI open anchor must be finite"
+        }
     }
 }
 

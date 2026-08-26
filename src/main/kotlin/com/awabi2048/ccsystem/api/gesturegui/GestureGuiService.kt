@@ -2,6 +2,8 @@ package com.awabi2048.ccsystem.api.gesturegui
 
 import java.util.UUID
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -21,6 +23,8 @@ sealed interface GestureGuiVisual {
         val height: Double,
         val blockData: BlockData,
         override val layer: Int = 4,
+        /** 選択ハイライト等に用いるglowの色(ARGB)。nullならglowなし。Geyser非対応時の背景色変更と併用 */
+        val glowColor: Int? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
@@ -57,6 +61,8 @@ sealed interface GestureGuiVisual {
         val item: ItemStack,
         val scale: Double = 0.22,
         override val layer: Int = 10,
+        /** 選択ハイライト等に用いるglowの色(ARGB)。nullならglowなし。Geyser非対応時の背景色変更と併用 */
+        val glowColor: Int? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
@@ -114,7 +120,11 @@ interface GestureGuiService {
     fun registerOwner(ownerId: UUID)
     fun unregisterOwner(ownerId: UUID)
     fun open(owner: Player, views: List<GestureGuiView>): GestureGuiSessionSnapshot
+    /** 固定位置モードで開きます。anchorを指定すると画面をワールド固定し、プレイヤー追従しなくなります。 */
+    fun open(owner: Player, views: List<GestureGuiView>, options: GestureGuiOpenOptions): GestureGuiSessionSnapshot
     fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean
+    /** 指定した画面のみを即座に差し替えます(アニメーションなし)。下部パネル切替や選択反映に用います。 */
+    fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean
     fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean
     fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean

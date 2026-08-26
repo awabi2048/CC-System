@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.core.gesturegui
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseMode
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiChildOptions
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiOpenOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
@@ -17,6 +18,7 @@ import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
 import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
+import org.bukkit.Material
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
@@ -24,6 +26,8 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.atan2
 
 class GestureGuiServiceImpl(
     private val plugin: Plugin,
@@ -75,6 +79,8 @@ class GestureGuiServiceImpl(
         var screens: List<ScreenRuntime>,
         val children: MutableList<ChildRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
+        /** 固定位置モードのアンカー。nullならプレイヤー追従 */
+        val fixedAnchor: Location? = null,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin)
@@ -92,7 +98,10 @@ class GestureGuiServiceImpl(
         close(ownerId, GestureGuiCloseMode.IMMEDIATE)
     }
 
-    override fun open(owner: Player, views: List<GestureGuiView>): GestureGuiSessionSnapshot {
+    override fun open(owner: Player, views: List<GestureGuiView>): GestureGuiSessionSnapshot =
+        open(owner, views, GestureGuiOpenOptions())
+
+    override fun open(owner: Player, views: List<GestureGuiView>, options: GestureGuiOpenOptions): GestureGuiSessionSnapshot {
         require(views.size in 1..3) { "gesture GUI requires one to three screens" }
         require(views.map { it.definition.screenId }.distinct().size == views.size) {
             "gesture GUI screenId must be unique within a session"
@@ -103,13 +112,19 @@ class GestureGuiServiceImpl(
 
         val revision = nextRevision++
         val id = UUID.randomUUID()
-        val poses = poses(owner, owner.location.yaw, views)
+        val anchor = options.anchor
+        val poses = if (anchor != null) {
+            fixedPoses(anchor, owner.eyeLocation, views)
+        } else {
+            poses(owner, owner.location.yaw, views)
+        }
         val screens = views.zip(poses).map { (view, pose) ->
             ScreenRuntime(view, pose, renderer.spawnScreen(owner.world, id, revision, pose, view))
         }
         val session = Session(
             id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
             owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableListOf(), mutableMapOf(),
+            anchor,
         )
         try {
             session.actors[owner.uniqueId] = createActor(session, owner)
@@ -121,6 +136,35 @@ class GestureGuiServiceImpl(
         playTransitionSound(owner, opening = true)
         animateOpen(session)
         return snapshot(session)
+    }
+
+    override fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean {
+        val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
+        val targetScreen = session.screens.firstOrNull { it.view.definition.screenId == view.definition.screenId }
+        if (targetScreen != null) {
+            session.revision = nextRevision++
+            val pose = targetScreen.pose
+            renderer.remove(targetScreen.render)
+            val world = targetScreen.render.background.firstOrNull()?.world ?: return false
+            val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
+            renderer.showContents(render)
+            val idx = session.screens.indexOf(targetScreen)
+            session.screens = session.screens.toMutableList().also { it[idx] = targetScreen.copy(view = view, render = render) }
+            return true
+        }
+        val targetChild = session.children.firstOrNull { it.view.definition.screenId == view.definition.screenId }
+        if (targetChild != null) {
+            session.revision = nextRevision++
+            val pose = targetChild.pose
+            renderer.remove(targetChild.render)
+            val world = targetChild.overlay?.world ?: return false
+            val render = renderer.spawnScreen(world, session.id, session.revision, pose, view)
+            renderer.showContents(render)
+            val idx = session.children.indexOf(targetChild)
+            session.children[idx] = targetChild.copy(view = view, render = render)
+            return true
+        }
+        return false
     }
 
     override fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean {
@@ -158,6 +202,7 @@ class GestureGuiServiceImpl(
                     session.id,
                     session.revision,
                     modalOverlayPose(parent.pose, childIndex),
+                    options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
                 )
             }
             renderer.spawnScreen(owner.world, session.id, session.revision, pose, view)
@@ -396,6 +441,8 @@ class GestureGuiServiceImpl(
                 close(session.ownerId, GestureGuiCloseMode.IMMEDIATE)
                 return@forEach
             }
+            // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
+            if (session.fixedAnchor == null) {
             val insideScreenArea = if (session.screens.size == 1) {
                 hit(session, owner, margin = 0.06) != null
             } else {
@@ -439,6 +486,7 @@ class GestureGuiServiceImpl(
                 session.anchorX = eye.x
                 session.anchorZ = eye.z
                 session.appliedYaw = session.retainedYaw
+            }
             }
             session.actors[session.ownerId]?.let { actor ->
                 renderer.moveCatcher(actor.catcher, catcherLocation(owner))
@@ -621,6 +669,36 @@ class GestureGuiServiceImpl(
         views.map { it.panel.width to it.panel.height },
     )
 
+    /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。画面はアンカー手前に配置され、プレイヤーを正面とします。 */
+    private fun fixedPoses(anchor: Location, eye: Location, views: List<GestureGuiView>): List<GestureGuiScreenPose> {
+        val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
+        val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
+        val toPlayer = (eyeVec - anchorVec).normalized()
+        val normal = toPlayer
+        val worldUp = GestureGuiVector3(0.0, 1.0, 0.0)
+        val right = run {
+            val raw = normal.cross(worldUp)
+            if (raw.length() < 1.0e-6) GestureGuiVector3(1.0, 0.0, 0.0) else raw.normalized()
+        }
+        val up = right.cross(normal).normalized()
+        val center = anchorVec + normal * FIXED_SCREEN_DISTANCE + up * FIXED_SCREEN_LIFT
+        val yaw = Math.toDegrees(atan2(-normal.x, normal.z)).toFloat()
+        val pitch = Math.toDegrees(-asin(normal.y.coerceIn(-1.0, 1.0))).toFloat()
+        return views.mapIndexed { index, view ->
+            val viewUp = if (index == 0) up else up
+            GestureGuiScreenPose(
+                screenIndex = index,
+                centerPitchDegrees = Math.toDegrees(-asin(normal.y.coerceIn(-1.0, 1.0))),
+                center = center,
+                right = right,
+                up = viewUp,
+                normal = normal,
+                width = view.panel.width,
+                height = view.panel.height,
+            )
+        }
+    }
+
     private fun childPose(
         parent: GestureGuiScreenPose,
         view: GestureGuiView,
@@ -672,5 +750,9 @@ class GestureGuiServiceImpl(
         // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
         const val CHILD_STACK_DEPTH = 0.25
         const val MAX_CHILD_DEPTH = 3
+        /** 固定位置モードで、アンカーから画面中心までの距離 */
+        const val FIXED_SCREEN_DISTANCE: Double = 1.2
+        /** 固定位置モードで、画面をアンカーからどれだけ持ち上げるか */
+        const val FIXED_SCREEN_LIFT: Double = 0.4
     }
 }
