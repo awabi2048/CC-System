@@ -435,6 +435,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_RELOAD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.help_reload", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_HEADER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.placements_header", setOf("count"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_ENTRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.placements_entry", setOf("script", "world", "x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_PAGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.placements_page", setOf("page", "pages"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_SAVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.saved", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_RELOADED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.reloaded", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_RELOAD_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.reload_failed", setOf())
@@ -891,6 +892,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_RELOAD,
         KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_HEADER,
         KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_ENTRY,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENTS_PAGE,
         KANTAN_COMMANDER_CLEAN_MESSAGE_SAVED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_RELOADED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_RELOAD_FAILED,
