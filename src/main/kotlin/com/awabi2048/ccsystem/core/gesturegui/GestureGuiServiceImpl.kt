@@ -345,6 +345,21 @@ class GestureGuiServiceImpl(
     internal fun isParticipating(playerId: UUID): Boolean =
         playerId in sessions || sessions.values.any { playerId in it.actors }
 
+    /**
+     * Fキーを画面操作として消費できる状態かを、現在の視線で判定します。
+     *
+     * セッションの存在や入力claimだけでは判定せず、当該プレイヤーのrayが
+     * 操作可能な親／子画面へ実際に交差し、到達距離も満たす場合に限定します。
+     * これにより、画面を見ていない間は通常のオフハンド切替を妨げません。
+     */
+    internal fun isLookingAtScreen(player: Player): Boolean =
+        sessions.values.asSequence()
+            .filter { session ->
+                session.state == GestureGuiSessionState.ACTIVE &&
+                    player.world.uid == Bukkit.getPlayer(session.ownerId)?.world?.uid
+            }
+            .any { session -> accessibleTarget(session, player) != null }
+
     private fun animateOpen(session: Session) {
         val revision = session.revision
         // scale 0をクライアントへ送ってから点へ展開し、点を3 tick保持した後に横・縦の順で広げます。

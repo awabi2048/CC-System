@@ -65,8 +65,11 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onSwapHand(event: PlayerSwapHandItemsEvent) {
-        // PUBLIC画面ではFが第三者の最初の操作にもなり得ます。Action解決中にclaimを取得するため、
-        // 後続のFreecam listenerは同じイベントをジェスチャーGUI所有として認識できます。
+        // FキーはGUIを開いているだけでは奪いません。視線が操作可能な画面へ
+        // 実際に向いている場合だけAction解決とイベント消費を行います。
+        // PUBLIC画面ではFが第三者の最初の操作にもなり得るため、Action解決中に
+        // claimを取得し、後続のFreecam listenerは同じイベントを所有として認識できます。
+        if (!service.isLookingAtScreen(event.player)) return
         if (dispatch(event.player, GestureGuiGesture.SWAP_HAND)) event.isCancelled = true
     }
 
