@@ -118,46 +118,66 @@ class GestureGuiServiceImpl(
         } else {
             poses(owner, owner.location.yaw, views)
         }
-        val screens = views.zip(poses).map { (view, pose) ->
-            ScreenRuntime(view, pose, renderer.spawnScreen(owner.world, id, revision, pose, view))
-        }
-        val session = Session(
-            id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
-            owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens, mutableListOf(), mutableMapOf(),
-            anchor,
-        )
+        val screens = mutableListOf<ScreenRuntime>()
+        var session: Session? = null
         try {
+            views.zip(poses).forEach { (view, pose) ->
+                // 画面Entityは一つでも生成に失敗すると操作不能になります。生成途中の
+                // 実体を必ず同じtry境界で管理し、背景だけ残る部分生成を防ぎます。
+                screens += ScreenRuntime(view, pose, renderer.spawnScreen(owner, id, revision, pose, view))
+            }
+            session = Session(
+                id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
+                owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens.toList(), mutableListOf(), mutableMapOf(),
+                anchor,
+            )
             session.actors[owner.uniqueId] = createActor(session, owner)
+            sessions[owner.uniqueId] = session
         } catch (failure: Throwable) {
-            screens.forEach { renderer.remove(it.render) }
+            session?.let(::destroy) ?: screens.forEach { renderer.remove(it.render) }
             throw failure
         }
-        sessions[owner.uniqueId] = session
+        val openedSession = requireNotNull(session)
         playTransitionSound(owner, opening = true)
-        animateOpen(session)
-        return snapshot(session)
+        animateOpen(openedSession)
+        return snapshot(openedSession)
     }
 
     override fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean {
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
-        val targetScreen = session.screens.firstOrNull { it.view.definition.screenId == view.definition.screenId }
-        if (targetScreen != null) {
+        val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        val targetIndex = session.screens.indexOfFirst { it.view.definition.screenId == view.definition.screenId }
+        if (targetIndex >= 0) {
+            val oldScreens = session.screens
+            val newViews = oldScreens.mapIndexed { index, screen -> if (index == targetIndex) view else screen.view }
+            val newPoses = parentPoses(session, owner, newViews)
             session.revision = nextRevision++
-            val pose = targetScreen.pose
-            renderer.updateScreenDiff(targetScreen.render, session.id, session.revision, pose, targetScreen.view, view)
-            renderer.showImmediately(targetScreen.render, view.panel)
-            val idx = session.screens.indexOf(targetScreen)
-            session.screens = session.screens.toMutableList().also { it[idx] = targetScreen.copy(view = view) }
+            session.screens = oldScreens.mapIndexed { index, screen ->
+                val newView = newViews[index]
+                val newPose = newPoses[index]
+                renderer.updatePose(screen.render, newPose, newView)
+                renderer.updateScreenDiff(screen.render, session.id, session.revision, newPose, screen.view, newView)
+                renderer.updateAccess(screen.render, newView)
+                renderer.showImmediately(screen.render, newView.panel)
+                screen.copy(view = newView, pose = newPose)
+            }
+            repositionChildren(session)
             return true
         }
         val targetChild = session.children.firstOrNull { it.view.definition.screenId == view.definition.screenId }
         if (targetChild != null) {
             session.revision = nextRevision++
-            val pose = targetChild.pose
+            val pose = targetChild.pose.copy(width = view.panel.width, height = view.panel.height)
+            renderer.updatePose(targetChild.render, pose, view)
             renderer.updateScreenDiff(targetChild.render, session.id, session.revision, pose, targetChild.view, view)
+            renderer.updateAccess(targetChild.render, view)
             renderer.showImmediately(targetChild.render, view.panel)
             val idx = session.children.indexOf(targetChild)
-            session.children[idx] = targetChild.copy(view = view)
+            session.children[idx] = targetChild.copy(view = view, pose = pose)
+            // 子画面自身の寸法が変わると、その前面に積まれた確認子画面や
+            // モーダルオーバーレイの基準位置も変わります。親画面更新時と同じ
+            // 再配置経路を通し、孫画面まで古いposeを残さないようにします。
+            repositionChildren(session)
             return true
         }
         return false
@@ -182,7 +202,7 @@ class GestureGuiServiceImpl(
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
         if (session.children.size >= MAX_CHILD_DEPTH) return false
-        val parent = session.screens.firstOrNull { it.view.definition.screenId == options.parentScreenId } ?: return false
+        val parent = parentRuntime(session, options.parentScreenId) ?: return false
         require(session.screens.none { it.view.definition.screenId == view.definition.screenId } &&
             session.children.none { it.view.definition.screenId == view.definition.screenId }) {
             "gesture GUI screenId must be unique within a session"
@@ -194,14 +214,14 @@ class GestureGuiServiceImpl(
         val render = try {
             if (!options.allowParentInteraction) {
                 overlay = renderer.spawnModalOverlay(
-                    owner.world,
+                    owner,
                     session.id,
                     session.revision,
                     modalOverlayPose(parent.pose, childIndex),
                     options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
                 )
             }
-            renderer.spawnScreen(owner.world, session.id, session.revision, pose, view)
+            renderer.spawnScreen(owner, session.id, session.revision, pose, view)
         } catch (failure: Throwable) {
             overlay?.remove()
             throw failure
@@ -249,6 +269,10 @@ class GestureGuiServiceImpl(
         if (session.state == GestureGuiSessionState.CLOSING) return true
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
+        // 見た目の閉じるアニメーション中も入力claimを保持すると、Fキー・
+        // チャット等の外部入力が終了済み画面へ届きます。Entityは残しても、
+        // 操作主体だけは直ちに無効化します。
+        session.actors.keys.toList().forEach { removeActor(session, it) }
         Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
         session.children.toList().forEach { child ->
             if (child.options.animated) animateChildClose(session, child)
@@ -307,7 +331,7 @@ class GestureGuiServiceImpl(
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
         // 余白は選択解除用の透過的な入力面であり、ボタン操作音を鳴らしません。
-        if (element.elementId != "viewport-empty") {
+        if (element.elementId !in setOf("viewport-empty", "setting-child-empty")) {
             actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
         }
         view.onAction(
@@ -507,17 +531,12 @@ class GestureGuiServiceImpl(
             val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
             // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
             if (horizontalMoved || yawMoved) {
-                val newPoses = poses(owner, session.retainedYaw, session.screens.map(ScreenRuntime::view))
+                val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
                 session.screens.zip(newPoses).forEach { (screen, pose) ->
                     screen.pose = pose
                     renderer.updatePose(screen.render, pose, screen.view)
                 }
-                session.children.forEachIndexed { index, child ->
-                    val parent = session.screens.first { it.view.definition.screenId == child.options.parentScreenId }
-                    child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
-                    renderer.updatePose(child.render, child.pose, child.view)
-                    child.overlay?.let { renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index)) }
-                }
+                repositionChildren(session)
                 session.anchorX = eye.x
                 session.anchorZ = eye.z
                 session.appliedYaw = session.retainedYaw
@@ -544,6 +563,19 @@ class GestureGuiServiceImpl(
         val activeSessions = sessions.values.filter { it.state == GestureGuiSessionState.ACTIVE }
         Bukkit.getOnlinePlayers().forEach { player ->
             if (player.uniqueId in sessions) return@forEach
+            // 描画の可視性は入力対象の有無から独立させます。従来は視線が画面に
+            // 当たったときだけshowToしていたため、PUBLIC画面でも視界へ戻った際に
+            // 内容が欠けたり、アクセス変更後の可視状態がtrackingに戻されました。
+            // 毎tickのshowToはPaper側で既表示Entityを再送せず、参加・再追跡時だけを
+            // 補完するための冪等操作です。
+            activeSessions.forEach { session ->
+                session.screens
+                    .filter { it.view.definition.canOperate(session.ownerId, player.uniqueId) }
+                    .forEach { renderer.showTo(it.render, player) }
+                session.children
+                    .filter { it.view.definition.canOperate(session.ownerId, player.uniqueId) }
+                    .forEach { renderer.showTo(it.render, player) }
+            }
             val desired = activeSessions.mapNotNull { session ->
                 accessibleTarget(session, player)?.let { session to it }
             }.minByOrNull { (_, hit) -> hit.hit.distance }
@@ -552,6 +584,12 @@ class GestureGuiServiceImpl(
             }
             val (session, hit) = desired ?: return@forEach
             val actor = session.actors[player.uniqueId] ?: runCatching { createActor(session, player) }.getOrNull() ?: return@forEach
+            session.screens.filter {
+                it.view.definition.canOperate(session.ownerId, player.uniqueId)
+            }.forEach { renderer.showTo(it.render, player) }
+            session.children.filter {
+                it.view.definition.canOperate(session.ownerId, player.uniqueId)
+            }.forEach { renderer.showTo(it.render, player) }
             renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.hit.distance))
             updateHover(session, actor, player, hit)
         }
@@ -667,9 +705,8 @@ class GestureGuiServiceImpl(
         } else if (!targetAllowed) {
             val child = target.child ?: return null
             if (child.options.allowParentInteraction) return null
-            val parentAllowed = session.screens.firstOrNull {
-                it.view.definition.screenId == child.options.parentScreenId
-            }?.view?.definition?.canOperate(session.ownerId, player.uniqueId) == true
+            val parentAllowed = parentRuntime(session, child.options.parentScreenId)
+                ?.view?.definition?.canOperate(session.ownerId, player.uniqueId) == true
             if (!parentAllowed) return null
             return validateReach(session, player, target.copy(blocked = true))
         }
@@ -706,6 +743,42 @@ class GestureGuiServiceImpl(
         views.size,
         views.map { it.panel.width to it.panel.height },
     )
+
+    /** 子画面を含む親解決結果です。親は必ず直近の同一IDを一つだけ返します。 */
+    private data class ParentRuntime(
+        val view: GestureGuiView,
+        val pose: GestureGuiScreenPose,
+    )
+
+    private fun parentRuntime(session: Session, screenId: String): ParentRuntime? =
+        session.children.asReversed().firstOrNull { it.view.definition.screenId == screenId }?.let {
+            ParentRuntime(it.view, it.pose)
+        } ?: session.screens.firstOrNull { it.view.definition.screenId == screenId }?.let {
+            ParentRuntime(it.view, it.pose)
+        }
+
+    /** 親画面の寸法変更時に、動的画面は全体の上下配置も再計算します。 */
+    private fun parentPoses(
+        session: Session,
+        owner: Player,
+        views: List<GestureGuiView>,
+    ): List<GestureGuiScreenPose> = if (session.fixedAnchor == null) {
+        poses(owner, session.retainedYaw, views)
+    } else {
+        // 固定位置画面はワールド上の向き・中心を維持し、パネル寸法だけを更新します。
+        session.screens.mapIndexed { index, screen ->
+            screen.pose.copy(width = views[index].panel.width, height = views[index].panel.height)
+        }
+    }
+
+    private fun repositionChildren(session: Session) {
+        session.children.forEachIndexed { index, child ->
+            val parent = parentRuntime(session, child.options.parentScreenId) ?: return@forEachIndexed
+            child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
+            renderer.updatePose(child.render, child.pose, child.view)
+            child.overlay?.let { renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index)) }
+        }
+    }
 
     /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。CC-System APIのみで配置します。 */
     private fun fixedPoses(anchor: Location, eye: Location, views: List<GestureGuiView>): List<GestureGuiScreenPose> {

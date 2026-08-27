@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
@@ -35,6 +36,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val background: MutableList<BlockDisplay>,
         val contents: MutableList<Entity>,
         val visualEntities: MutableMap<String, Entity>,
+        val ownerId: UUID,
+        var access: GestureGuiAccess,
+        var allowlist: Set<UUID>,
     ) {
         val all: List<Entity> get() = background + contents
     }
@@ -43,57 +47,87 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     internal data class HoverHandle(val actorId: UUID, val entity: TextDisplay)
 
     fun spawnScreen(
-        world: World,
+        owner: Player,
         sessionId: UUID,
         revision: Long,
         pose: GestureGuiScreenPose,
         view: GestureGuiView,
     ): ScreenHandle {
+        val world = owner.world
+        // 可視性はPaperのtracking既定値へ任せず、必ずこのハンドルのアクセス定義から
+        // 明示的に配布します。PUBLICを既定可視にすると、後からOWNER_ONLYへ変更した
+        // ときにtracking再開で非許可者へ再表示され、逆方向では新規参加者へ届きません。
+        // 常にfalseで生成し、showBackground/showContents/showToを唯一の配布経路にします。
+        val visibleByDefault = false
         val backgrounds = mutableListOf<BlockDisplay>()
         val contents = mutableListOf<Entity>()
         val entities = linkedMapOf<String, Entity>()
         val panel = view.panel
-        // 全素材を先に解決し、枠素材の不正で背景だけが残る部分生成を防ぎます。
-        val backgroundData = Bukkit.createBlockData(panel.backgroundMaterial)
-        val frameData = Bukkit.createBlockData(panel.frameMaterial)
-        val background = spawnPanelBlock(
-            world, pose, backgroundData, 0.0, 0.0, panel.width, panel.height, PANEL_BACKGROUND_LAYER,
-            initiallyScaleZero = true,
-        )
-        mark(background, sessionId, revision)
-        backgrounds += background
-        val innerHeight = panel.height - panel.frameWidth * 2.0
-        listOf(
-            PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
-            PanelPart(0.0, -(panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
-            PanelPart((panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
-            PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
-        ).forEachIndexed { index, part ->
-            val frame = spawnPanelBlock(
-                world, pose, frameData, part.x, part.y, part.width, part.height, PANEL_FRAME_LAYER,
+        try {
+            // 全素材を先に解決し、枠素材の不正で背景だけが残る部分生成を防ぎます。
+            val backgroundData = Bukkit.createBlockData(panel.backgroundMaterial)
+            val frameData = Bukkit.createBlockData(panel.frameMaterial)
+            val background = spawnPanelBlock(
+                world, pose, backgroundData, 0.0, 0.0, panel.width, panel.height, PANEL_BACKGROUND_LAYER,
+                initiallyScaleZero = true,
+                visibleByDefault = visibleByDefault,
             )
-            mark(frame, sessionId, revision)
-            entities["__panel_frame_$index"] = frame
-            contents += frame
-        }
-        view.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
-            val entity = when (visual) {
-                is GestureGuiVisual.Block -> spawnBlock(world, pose, visual)
-                is GestureGuiVisual.Item -> spawnItem(world, pose, visual)
-                is GestureGuiVisual.Text -> spawnText(world, pose, visual)
+            backgrounds += background
+            mark(background, sessionId, revision)
+            val innerHeight = panel.height - panel.frameWidth * 2.0
+            listOf(
+                PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+                PanelPart(0.0, -(panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
+                PanelPart((panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+                PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
+            ).forEachIndexed { index, part ->
+                val frame = spawnPanelBlock(
+                    world, pose, frameData, part.x, part.y, part.width, part.height, PANEL_FRAME_LAYER,
+                    visibleByDefault = visibleByDefault,
+                )
+                entities["__panel_frame_$index"] = frame
+                contents += frame
+                mark(frame, sessionId, revision)
             }
-            mark(entity, sessionId, revision)
-            entities[visual.visualId] = entity
-            contents += entity
+            view.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
+                val entity = when (visual) {
+                    is GestureGuiVisual.Block -> spawnBlock(world, pose, visual, visibleByDefault)
+                    is GestureGuiVisual.Item -> spawnItem(world, pose, visual, visibleByDefault)
+                    is GestureGuiVisual.Text -> spawnText(world, pose, visual, visibleByDefault)
+                }
+                entities[visual.visualId] = entity
+                contents += entity
+                mark(entity, sessionId, revision)
+            }
+            val handle = ScreenHandle(
+                backgrounds,
+                contents,
+                entities,
+                owner.uniqueId,
+                view.definition.access,
+                view.definition.allowlist,
+            )
+            // PUBLICを含め、初期表示対象をアクセス定義に基づいて明示します。
+            // 後から参加したプレイヤーはGestureGuiServiceImplのreconcileExternalActors
+            // からshowToされるため、可視性の経路が常に一つになります。
+            showBackground(handle)
+            showContents(handle)
+            return handle
+        } catch (failure: Throwable) {
+            // open/openChild側では失敗したScreenHandleを受け取れないため、
+            // 生成途中のEntityはこのメソッド自身で必ず回収します。
+            backgrounds.forEach(Entity::remove)
+            contents.forEach(Entity::remove)
+            throw failure
         }
-        // 内容は背景の展開完了まで送信せず、文字・アイコンが潰れる演出を避けます。
-        contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
-        return ScreenHandle(backgrounds, contents, entities)
     }
 
     fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
-        handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
         val panel = view.panel
+        // パネル寸法の変更を座標移動だけで済ませると、旧サイズの背景が残り、
+        // 子画面やズーム更新時に入力面と見た目がずれます。毎回同じ実寸へ確定します。
+        setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
         val innerHeight = panel.height - panel.frameWidth * 2.0
         val frameParts = listOf(
             PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
@@ -124,7 +158,57 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         setBackgroundScaleZero(handle.background, interpolationTicks)
 
     fun showContents(handle: ScreenHandle) {
-        handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
+        val viewers = viewers(handle).toList()
+        handle.contents.forEach { entity -> viewers.forEach { it.showEntity(plugin, entity) } }
+    }
+
+    fun updateAccess(handle: ScreenHandle, view: GestureGuiView) {
+        val nextAccess = view.definition.access
+        val nextAllowlist = view.definition.allowlist
+        if (handle.access != nextAccess || handle.allowlist != nextAllowlist) {
+            // 公開→非公開、またはallowlist変更時に既存クライアントへ残った
+            // Entityを明示的に隠し、アクセス定義と可視状態を同一tickで揃えます。
+            handle.all.forEach { entity ->
+                Bukkit.getOnlinePlayers()
+                    .filterNot { player ->
+                        when (nextAccess) {
+                            GestureGuiAccess.PUBLIC -> true
+                            GestureGuiAccess.OWNER_ONLY -> player.uniqueId == handle.ownerId
+                            GestureGuiAccess.ALLOWLIST ->
+                                player.uniqueId == handle.ownerId || player.uniqueId in nextAllowlist
+                        }
+                    }
+                    .forEach { player -> player.hideEntity(plugin, entity) }
+            }
+        }
+        handle.access = nextAccess
+        handle.allowlist = nextAllowlist
+    }
+
+    private fun showBackground(handle: ScreenHandle) {
+        val viewers = viewers(handle).toList()
+        handle.background.forEach { entity -> viewers.forEach { it.showEntity(plugin, entity) } }
+    }
+
+    /** 新しい外部参加者へ、その画面の可視コンテンツだけを送信します。 */
+    fun showTo(handle: ScreenHandle, player: Player) {
+        if (isViewer(handle, player.uniqueId)) {
+            handle.background.forEach { player.showEntity(plugin, it) }
+            handle.contents.forEach { player.showEntity(plugin, it) }
+        }
+    }
+
+    private fun viewers(handle: ScreenHandle): Sequence<Player> = when (handle.access) {
+        GestureGuiAccess.PUBLIC -> Bukkit.getOnlinePlayers().asSequence()
+        GestureGuiAccess.OWNER_ONLY -> listOfNotNull(Bukkit.getPlayer(handle.ownerId)).asSequence()
+        GestureGuiAccess.ALLOWLIST -> listOfNotNull(Bukkit.getPlayer(handle.ownerId)).asSequence() +
+            handle.allowlist.asSequence().mapNotNull(Bukkit::getPlayer)
+    }.filter(Player::isOnline)
+
+    private fun isViewer(handle: ScreenHandle, playerId: UUID): Boolean = when (handle.access) {
+        GestureGuiAccess.PUBLIC -> true
+        GestureGuiAccess.OWNER_ONLY -> playerId == handle.ownerId
+        GestureGuiAccess.ALLOWLIST -> playerId == handle.ownerId || playerId in handle.allowlist
     }
 
     /** 同一visualIdの実体を再利用し、追加・変更・削除だけを反映します。 */
@@ -146,17 +230,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         newView.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
             val current = handle.visualEntities[visual.visualId]
             val compatible = when (visual) {
-                is GestureGuiVisual.Block -> current is BlockDisplay
-                is GestureGuiVisual.Item -> current is ItemDisplay
-                is GestureGuiVisual.Text -> current is TextDisplay
+                is GestureGuiVisual.Block -> current is BlockDisplay && current.isValid
+                is GestureGuiVisual.Item -> current is ItemDisplay && current.isValid
+                is GestureGuiVisual.Text -> current is TextDisplay && current.isValid
             }
             val entity = if (compatible) current!! else {
-                current?.let { handle.contents.remove(it); it.remove() }
                 val created = when (visual) {
-                    is GestureGuiVisual.Block -> spawnBlock(handle.background.first().world, pose, visual)
-                    is GestureGuiVisual.Item -> spawnItem(handle.background.first().world, pose, visual)
-                    is GestureGuiVisual.Text -> spawnText(handle.background.first().world, pose, visual)
+                    // 差分で新規生成した実体は、公開画面であっても送信先を
+                    // showImmediatelyへ統一するため、デフォルト可視を切ります。
+                    is GestureGuiVisual.Block -> spawnBlock(handle.background.first().world, pose, visual, false)
+                    is GestureGuiVisual.Item -> spawnItem(handle.background.first().world, pose, visual, false)
+                    is GestureGuiVisual.Text -> spawnText(handle.background.first().world, pose, visual, false)
                 }
+                // 先に新しい実体を生成します。生成に失敗しても旧実体を残し、
+                // 画面が一時的に空白になることを防ぎます。
+                current?.let { old -> handle.contents.remove(old); old.remove() }
                 handle.contents += created
                 created
             }
@@ -182,6 +270,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             }
             entity is TextDisplay && visual is GestureGuiVisual.Text -> {
                 entity.text(visual.text)
+                entity.lineWidth = visual.lineWidth
+                entity.isSeeThrough = visual.seeThrough
+                entity.alignment = TextDisplay.TextAlignment.CENTER
                 entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(GestureGuiTextMetrics.toDisplayScale(visual.size)), AxisAngle4f()))
             }
         }
@@ -194,26 +285,32 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
      */
     fun showImmediately(handle: ScreenHandle, panel: com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel) {
         setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
-        handle.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.showEntity(plugin, entity) } }
+        showBackground(handle)
         showContents(handle)
     }
 
     fun hideContents(handle: ScreenHandle) {
+        // 終了時はアクセス権を失った参加者も含め、全オンラインへ非表示を送ります。
         handle.contents.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
+        handle.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
     }
 
     fun remove(handle: ScreenHandle) = handle.all.forEach(Entity::remove)
 
     fun spawnModalOverlay(
-        world: World,
+        owner: Player,
         sessionId: UUID,
         revision: Long,
         pose: GestureGuiScreenPose,
         material: Material = Material.GRAY_STAINED_GLASS,
     ): BlockDisplay = spawnPanelBlock(
-        world, pose, Bukkit.createBlockData(material),
+        owner.world, pose, Bukkit.createBlockData(material),
         0.0, 0.0, pose.width, pose.height, MODAL_OVERLAY_LAYER,
-    ).also { mark(it, sessionId, revision) }
+        visibleByDefault = false,
+    ).also {
+        mark(it, sessionId, revision)
+        owner.showEntity(plugin, it)
+    }
 
     fun updateModalOverlay(overlay: BlockDisplay, pose: GestureGuiScreenPose) {
         overlay.teleport(visualLocation(overlay.world, pose, 0.0, 0.0, MODAL_OVERLAY_LAYER))
@@ -278,9 +375,15 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     fun ownsCatcher(entity: Entity): Boolean = entity.persistentDataContainer.has(actorKey, PersistentDataType.STRING)
 
-    private fun spawnBlock(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Block): BlockDisplay =
+    private fun spawnBlock(
+        world: World,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Block,
+        visibleByDefault: Boolean = true,
+    ): BlockDisplay =
         world.spawn(visualLocation(world, pose, visual.x, visual.y, visual.layer), BlockDisplay::class.java) {
             prepareDisplay(it, pose)
+            it.isVisibleByDefault = visibleByDefault
             it.block = visual.blockData
             it.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
             applyGlow(it, visual.glowColor)
@@ -296,8 +399,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         height: Double,
         layer: Int,
         initiallyScaleZero: Boolean = false,
+        visibleByDefault: Boolean = true,
     ): BlockDisplay = world.spawn(visualLocation(world, pose, x, y, layer), BlockDisplay::class.java) {
         prepareDisplay(it, pose)
+        it.isVisibleByDefault = visibleByDefault
         it.block = blockData
         // 背景の開幕Transformはspawn packetへ最大サイズを一度も載せないよう、生成Consumer内で確定します。
         // 生成後にscale 0へ戻す方式では、クライアントが初期Transformだけを1 frame描画する競合が起きます。
@@ -306,9 +411,15 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         )
     }
 
-    private fun spawnItem(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Item): ItemDisplay =
+    private fun spawnItem(
+        world: World,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Item,
+        visibleByDefault: Boolean = true,
+    ): ItemDisplay =
         world.spawn(visualLocation(world, pose, visual.x, visual.y, visual.layer), ItemDisplay::class.java) {
             prepareDisplay(it, pose)
+            it.isVisibleByDefault = visibleByDefault
             it.setItemStack(visual.item.clone())
             it.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.GUI
             val scale = visual.scale.toFloat()
@@ -316,9 +427,15 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             applyGlow(it, visual.glowColor)
         }
 
-    private fun spawnText(world: World, pose: GestureGuiScreenPose, visual: GestureGuiVisual.Text): TextDisplay =
+    private fun spawnText(
+        world: World,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Text,
+        visibleByDefault: Boolean = true,
+    ): TextDisplay =
         world.spawn(textLocation(world, pose, visual.x, visual.y, visual.layer), TextDisplay::class.java) {
             prepareTextDisplay(it, pose)
+            it.isVisibleByDefault = visibleByDefault
             it.text(visual.text)
             it.lineWidth = visual.lineWidth
             it.isSeeThrough = visual.seeThrough
