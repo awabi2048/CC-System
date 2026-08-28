@@ -33,7 +33,12 @@ internal class MenuDialogServiceImpl(
         showAfterInventoryClose(player, request)
     }
 
-    override fun closeIfCurrent(player: Player, owner: String, id: String): Boolean {
+    /**
+     * Gesture GUIなど、外部画面の所有者が明確な機能だけが利用する内部経路です。
+     * MenuDialogServiceの公開ABIへ追加せず、GUIランタイム契約を不要に更新しないため、
+     * CC-System内部のGestureGuiServiceからだけ参照します。
+     */
+    internal fun closeIfCurrent(player: Player, owner: String, id: String): Boolean {
         val current = presentations.current(player) ?: return false
         if (
             current.surface != com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG ||

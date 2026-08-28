@@ -89,12 +89,4 @@ data class MenuDialogRequest(
 
 interface MenuDialogService {
     fun show(player: Player, request: MenuDialogRequest)
-
-    /**
-     * 指定した所有者・IDのDialogが現在表示中の場合だけ閉じます。
-     *
-     * 外部画面を扱う利用側がPlayer.closeDialog()を直接呼ぶと、別機能のDialogを
-     * 誤って閉じる可能性があるため、表示所有権を照合する共通経路を提供します。
-     */
-    fun closeIfCurrent(player: Player, owner: String, id: String): Boolean
 }

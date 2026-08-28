@@ -34,6 +34,7 @@ import kotlin.math.atan2
 class GestureGuiServiceImpl(
     private val plugin: Plugin,
     private val claimService: PlayerInteractionClaimService,
+    private val closeExternalDialog: (Player, String, String) -> Boolean,
 ) : GestureGuiService {
     private data class ActorRuntime(
         val playerId: UUID,
@@ -211,8 +212,8 @@ class GestureGuiServiceImpl(
             anchor = old.fixedAnchor,
             sessionListener = old.sessionListener,
         )
-        sessions.remove(ownerId)
         notifyClosed(old)
+        if (sessions[ownerId] === old) sessions.remove(ownerId)
         destroy(old)
         val opened = open(owner, views, options)
         val current = sessions[ownerId] ?: return false
@@ -286,8 +287,8 @@ class GestureGuiServiceImpl(
     override fun close(ownerId: UUID, mode: GestureGuiCloseMode): Boolean {
         val session = sessions[ownerId] ?: return false
         if (mode == GestureGuiCloseMode.IMMEDIATE) {
-            sessions.remove(ownerId)
             notifyClosed(session)
+            if (sessions[ownerId] === session) sessions.remove(ownerId)
             destroy(session)
             return true
         }
@@ -343,6 +344,18 @@ class GestureGuiServiceImpl(
         return true
     }
 
+    override fun closeExternalDialogIfCurrent(
+        ownerId: UUID,
+        sessionId: UUID,
+        player: Player,
+        dialogOwner: String,
+        dialogId: String,
+    ): Boolean {
+        val session = sessions[ownerId] ?: return false
+        if (session.id != sessionId || player.uniqueId != ownerId) return false
+        return closeExternalDialog(player, dialogOwner, dialogId)
+    }
+
     override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean {
         val candidate = sessions.values.asSequence()
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
@@ -380,8 +393,8 @@ class GestureGuiServiceImpl(
         tickTask?.cancel()
         tickTask = null
         sessions.values.toList().forEach { session ->
-            if (sessions[session.ownerId] === session) sessions.remove(session.ownerId)
             notifyClosed(session)
+            if (sessions[session.ownerId] === session) sessions.remove(session.ownerId)
             destroy(session)
         }
         sessions.clear()

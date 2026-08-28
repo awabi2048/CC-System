@@ -113,7 +113,11 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         menuPresentationTracker,
     )
     private val playerInteractionClaimService = PlayerInteractionClaimServiceImpl()
-    private val gestureGuiService = GestureGuiServiceImpl(plugin, playerInteractionClaimService).also {
+    private val gestureGuiService = GestureGuiServiceImpl(
+        plugin,
+        playerInteractionClaimService,
+        menuDialogService::closeIfCurrent,
+    ).also {
         // 入力とライフサイクルを同じサービスへ接続し、Entity UUIDを外部へ公開しません。
         plugin.server.pluginManager.registerEvents(GestureGuiInputListener(it), plugin)
         plugin.server.pluginManager.registerEvents(GestureGuiLifecycleListener(it), plugin)

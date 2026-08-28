@@ -45,7 +45,7 @@ interface CCSystemAPI {
 
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
-        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
+        const val GUI_RUNTIME_CONTRACT_VERSION: Int = 9
         const val GESTURE_GUI_CONTRACT_VERSION: Int = 7
     }
     /**

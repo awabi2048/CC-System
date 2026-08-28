@@ -128,6 +128,17 @@ interface GestureGuiService {
     fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean
     fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean
+    /**
+     * 現在のGesture GUIセッションに属する、所有者・ID一致の外部Dialogだけを閉じます。
+     * セッションIDも照合するため、古いエディターの終了処理が別機能のDialogを閉じません。
+     */
+    fun closeExternalDialogIfCurrent(
+        ownerId: UUID,
+        sessionId: UUID,
+        player: Player,
+        dialogOwner: String,
+        dialogId: String,
+    ): Boolean
     fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean
     fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot?
     fun shutdown()
