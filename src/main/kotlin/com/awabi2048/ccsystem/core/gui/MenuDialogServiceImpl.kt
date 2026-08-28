@@ -33,6 +33,43 @@ internal class MenuDialogServiceImpl(
         showAfterInventoryClose(player, request)
     }
 
+    override fun closeIfCurrent(player: Player, owner: String, id: String): Boolean {
+        val current = presentations.current(player) ?: return false
+        if (
+            current.surface != com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG ||
+            current.owner != owner ||
+            current.id != id
+        ) {
+            return false
+        }
+        var closeSucceeded = false
+        try {
+            player.closeDialog()
+            closeSucceeded = true
+        } catch (failure: Throwable) {
+            // 所有権が一致したDialogの表示終了に失敗しても、Trackerと外部サスペンドを
+            // 残すと呼び出し側のセッション終了後まで入力状態が漏れるため、下のfinallyで
+            // 共通状態を解放します。呼び出し元には物理終了の成否をfalseで返します。
+            plugin.logger.log(
+                Level.WARNING,
+                "Dialogの所有者一致終了に失敗しました: owner=$owner id=$id player=${player.uniqueId}",
+                failure,
+            )
+        } finally {
+            runCatching {
+                presentations.markClosed(player)
+                runtime.resumeFromExternal(player)
+            }.onFailure { failure ->
+                plugin.logger.log(
+                    Level.WARNING,
+                    "Dialog終了後の外部入力復帰に失敗しました: owner=$owner id=$id player=${player.uniqueId}",
+                    failure,
+                )
+            }
+        }
+        return closeSucceeded
+    }
+
     private fun showAfterInventoryClose(
         player: Player,
         request: MenuDialogRequest,

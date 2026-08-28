@@ -10,6 +10,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionSnapshot
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionState
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionListener
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
@@ -25,6 +26,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
+import java.util.logging.Level
 import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.atan2
@@ -81,6 +83,10 @@ class GestureGuiServiceImpl(
         val actors: MutableMap<UUID, ActorRuntime>,
         /** 固定位置モードのアンカー。nullならプレイヤー追従 */
         val fixedAnchor: Location? = null,
+        /** 利用側のローカル状態を終了通知へ接続するリスナー */
+        val sessionListener: GestureGuiSessionListener? = null,
+        /** close通知を一度だけ送るための状態 */
+        var closeNotified: Boolean = false,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin)
@@ -130,16 +136,29 @@ class GestureGuiServiceImpl(
                 id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
                 owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens.toList(), mutableListOf(), mutableMapOf(),
                 anchor,
+                options.sessionListener,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
+            playTransitionSound(owner, opening = true)
+            animateOpen(session)
         } catch (failure: Throwable) {
-            session?.let(::destroy) ?: screens.forEach { renderer.remove(it.render) }
+            session?.let { failedSession ->
+                // Session登録後の効果音・アニメーション失敗も含め、同一実体だけを
+                // 条件付きでMapから除去します。ownerIdだけで削除すると、失敗経路へ
+                // 再入して作られた別セッションを巻き込む可能性があります。
+                if (sessions[owner.uniqueId] === failedSession) {
+                    sessions.remove(owner.uniqueId)
+                }
+                // open()が呼び出し元へ戻る前の失敗でも、登録済みリスナーには
+                // セッション終了を一度だけ通知します。通常はFacade未登録ですが、
+                // 再入や将来の利用側変更で通知先が存在しても状態を取りこぼしません。
+                notifyClosed(failedSession)
+                destroy(failedSession)
+            } ?: screens.forEach { renderer.remove(it.render) }
             throw failure
         }
         val openedSession = requireNotNull(session)
-        playTransitionSound(owner, opening = true)
-        animateOpen(openedSession)
         return snapshot(openedSession)
     }
 
@@ -188,9 +207,14 @@ class GestureGuiServiceImpl(
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
         require(views.size in 1..3) { "gesture GUI requires one to three screens" }
         val actors = old.actors.keys.toList()
-        destroy(old)
+        val options = GestureGuiOpenOptions(
+            anchor = old.fixedAnchor,
+            sessionListener = old.sessionListener,
+        )
         sessions.remove(ownerId)
-        val opened = open(owner, views)
+        notifyClosed(old)
+        destroy(old)
+        val opened = open(owner, views, options)
         val current = sessions[ownerId] ?: return false
         actors.asSequence().filter { it != ownerId }.mapNotNull(Bukkit::getPlayer).filter(Player::isOnline).forEach {
             runCatching { current.actors[it.uniqueId] = createActor(current, it) }
@@ -263,12 +287,16 @@ class GestureGuiServiceImpl(
         val session = sessions[ownerId] ?: return false
         if (mode == GestureGuiCloseMode.IMMEDIATE) {
             sessions.remove(ownerId)
+            notifyClosed(session)
             destroy(session)
             return true
         }
         if (session.state == GestureGuiSessionState.CLOSING) return true
         session.state = GestureGuiSessionState.CLOSING
         session.revision = nextRevision++
+        // 見た目のアニメーション完了ではなく、入力受付を止めた時点で利用側へ通知します。
+        // 通知先が同じセッションを閉じ直しても、状態がCLOSINGなので再入しません。
+        notifyClosed(session)
         // 見た目の閉じるアニメーション中も入力claimを保持すると、Fキー・
         // チャット等の外部入力が終了済み画面へ届きます。Entityは残しても、
         // 操作主体だけは直ちに無効化します。
@@ -307,7 +335,9 @@ class GestureGuiServiceImpl(
             }
         }
         later(GestureGuiAnimationTimeline.CLOSE_COMPLETE_DELAY, session, expected) {
-            sessions.remove(it.ownerId)
+            // 閉じる処理の途中で同じ所有者が再オープンされても、旧セッションの
+            // 遅延処理が新セッションを削除しないよう、実体を照合してから除去します。
+            if (sessions[it.ownerId] === it) sessions.remove(it.ownerId)
             destroy(it)
         }
         return true
@@ -326,7 +356,11 @@ class GestureGuiServiceImpl(
         // 画面内の未割当操作も吸収しますが、Actionは実行しません。
         if (element == null || gesture !in element.acceptedGestures) return true
         if (actor.uniqueId !in session.actors) {
-            session.actors[actor.uniqueId] = runCatching { createActor(session, actor) }.getOrNull() ?: return true
+            // claim取得に失敗した場合は、このGUIが入力を所有していません。
+            // trueを返すとListenerが元イベントをキャンセルし、claimを所有する
+            // 別機能へ入力が届かなくなるため、失敗時は未処理として返します。
+            val actorRuntime = runCatching { createActor(session, actor) }.getOrNull() ?: return false
+            session.actors[actor.uniqueId] = actorRuntime
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
@@ -345,7 +379,11 @@ class GestureGuiServiceImpl(
     override fun shutdown() {
         tickTask?.cancel()
         tickTask = null
-        sessions.values.toList().forEach(::destroy)
+        sessions.values.toList().forEach { session ->
+            if (sessions[session.ownerId] === session) sessions.remove(session.ownerId)
+            notifyClosed(session)
+            destroy(session)
+        }
         sessions.clear()
         registeredOwners.clear()
     }
@@ -659,6 +697,25 @@ class GestureGuiServiceImpl(
         session.actors.keys.toList().forEach { removeActor(session, it) }
         session.screens.forEach { renderer.remove(it.render) }
         session.children.forEach(::destroyChild)
+    }
+
+    /**
+     * 利用側の状態をCC-Systemのセッション終了へ接続します。
+     * コールバックの例外でEntity・claimの解放を中断しないよう、ここで隔離します。
+     */
+    private fun notifyClosed(session: Session) {
+        if (session.closeNotified) return
+        session.closeNotified = true
+        session.sessionListener?.let { listener ->
+            runCatching { listener.onClosed(session.ownerId, session.id) }
+                .onFailure { failure ->
+                    plugin.logger.log(
+                        Level.WARNING,
+                        "Gesture GUI終了通知に失敗しました: owner=${session.ownerId} session=${session.id}",
+                        failure,
+                    )
+                }
+        }
     }
 
     private fun destroyChild(child: ChildRuntime) {

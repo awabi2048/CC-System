@@ -47,10 +47,24 @@ data class GestureGuiChildOptions(
     }
 }
 
+/**
+ * Gesture GUIセッションが入力受付を終了した時に呼び出される通知です。
+ *
+ * 通知は終了アニメーションの完了を待たず、セッションが論理的に閉じられた時点で
+ * サーバーのメインスレッドから一度だけ行われます。通知を受けた利用側は、保持している
+ * Dialogや入力トークンなどの所有状態を解放できます。通知内で同じセッションを閉じ直す
+ * 必要はありません。
+ */
+fun interface GestureGuiSessionListener {
+    fun onClosed(ownerId: UUID, sessionId: UUID)
+}
+
 /** 固定位置モードの画面配置を指定します。open時に指定すると画面をワールド固定し、プレイヤー追従しなくなります。 */
 data class GestureGuiOpenOptions(
     /** 画面を固定するワールド位置。nullならプレイヤー追従モード */
     val anchor: Location? = null,
+    /** セッション終了時に呼び出す利用側のライフサイクル通知 */
+    val sessionListener: GestureGuiSessionListener? = null,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {
