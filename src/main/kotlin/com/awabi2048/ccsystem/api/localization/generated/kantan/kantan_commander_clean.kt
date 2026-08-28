@@ -90,8 +90,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SHOW_CATEGORY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.show_category", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CHOICE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.choice_description", setOf("value"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECT_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.select_action", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EXECUTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.executor", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ACTIVATOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.activator", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_INHERITED_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.inherited_target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_PLAYER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearest_player", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_PLAYERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearby_players", setOf())
@@ -232,6 +230,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONDITION_VALUE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.condition_value_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONDITION_POSITION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.condition_position_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FILTER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.filter_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MINIMUM_DISTANCE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.minimum_distance_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MAXIMUM_DISTANCE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.maximum_distance_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.destination", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_CONTEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.context", setOf())
@@ -279,8 +279,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.game_mode", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAG: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.tag", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.name", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_EXECUTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.exclude_executor", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_ACTIVATOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.exclude_activator", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.tags", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sound", setOf())
@@ -547,8 +545,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SHOW_CATEGORY,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CHOICE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECT_ACTION,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_EXECUTOR,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_ACTIVATOR,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_INHERITED_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_PLAYER,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_PLAYERS,
@@ -692,6 +688,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONDITION_VALUE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONDITION_POSITION_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FILTER_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MINIMUM_DISTANCE_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MAXIMUM_DISTANCE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_CONTEXT,
@@ -742,8 +740,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAG,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_NAME,
-        KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_EXECUTOR,
-        KANTAN_COMMANDER_CLEAN_GUI_FIELD_EXCLUDE_ACTIVATOR,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAGS,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND,
