@@ -438,7 +438,8 @@ class GestureGuiServiceImpl(
             return GestureGuiDispatchResult.CONSUMED
         }
         // 余白は選択解除用の透過的な入力面であり、ボタン操作音を鳴らしません。
-        if (element.elementId !in setOf("viewport-empty", "setting-child-empty")) {
+        // 子画面の余白には入力面を置かず、明示的な戻るボタンだけをActionにします。
+        if (element.elementId != "viewport-empty") {
             actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
         }
         view.onAction(

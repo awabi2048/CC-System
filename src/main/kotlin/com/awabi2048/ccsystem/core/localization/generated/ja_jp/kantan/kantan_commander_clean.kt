@@ -477,7 +477,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete", value = EmbeddedLocalizedValue.Text("削除"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.open_filters", value = EmbeddedLocalizedValue.Text("詳細条件を編集"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.partial_override", value = EmbeddedLocalizedValue.Text("一部を上書き"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_open_filters", value = EmbeddedLocalizedValue.Text("距離・種類・件数などの対象オプションを設定します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_open_filters", value = EmbeddedLocalizedValue.Text("選択中の項目をもう一度クリックすると、距離・種類・件数などの詳細設定を開きます"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_target", value = EmbeddedLocalizedValue.Text("このコマンドの対象種別を設定します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_filter_entity_type", value = EmbeddedLocalizedValue.Text("対象に含めるエンティティ種別を minecraft:zombie の形式で指定します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_filter_limit", value = EmbeddedLocalizedValue.Text("最寄り系の対象種別（NEAREST_*）では未指定時に1件です。候補から選ぶ最大件数を指定します。1以上の整数を入力します"), domain = DOMAIN),
