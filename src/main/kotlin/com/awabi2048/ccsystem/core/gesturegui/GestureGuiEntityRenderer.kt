@@ -41,6 +41,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         var allowlist: Set<UUID>,
     ) {
         val all: List<Entity> get() = background + contents
+
+        /** ホバー説明で一時的に隠している通常visualを操作者単位で保持します。 */
+        val hiddenVisualIds: MutableMap<UUID, MutableSet<String>> = mutableMapOf()
     }
 
     internal data class CatcherHandle(val actorId: UUID, val entity: Interaction)
@@ -161,7 +164,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     fun showContents(handle: ScreenHandle) {
         val viewers = viewers(handle).toList()
-        handle.contents.forEach { entity -> viewers.forEach { it.showEntity(plugin, entity) } }
+        handle.contents.forEach { entity ->
+            viewers.filter { isVisualVisible(handle, entity, it.uniqueId) }
+                .forEach { it.showEntity(plugin, entity) }
+        }
     }
 
     fun updateAccess(handle: ScreenHandle, view: GestureGuiView) {
@@ -196,8 +202,31 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     fun showTo(handle: ScreenHandle, player: Player) {
         if (isViewer(handle, player.uniqueId)) {
             handle.background.forEach { player.showEntity(plugin, it) }
-            handle.contents.forEach { player.showEntity(plugin, it) }
+            handle.contents.filter { isVisualVisible(handle, it, player.uniqueId) }
+                .forEach { player.showEntity(plugin, it) }
         }
+    }
+
+    /**
+     * 通常visualの表示状態を操作者単位で切り替えます。
+     *
+     * PaperのEntity可視性はプレイヤーごとに管理できるため、PUBLIC画面でも
+     * ホバーしている操作者だけへ既定説明の非表示を適用できます。画面更新時に
+     * showContents/showToが呼ばれても同じ状態を維持できるよう、表示抑制をハンドル
+     * 内へ記録します。
+     */
+    fun setVisualVisible(handle: ScreenHandle, visualId: String, player: Player, visible: Boolean): Boolean {
+        val entity = handle.visualEntities[visualId] ?: return false
+        val hidden = handle.hiddenVisualIds.getOrPut(player.uniqueId) { mutableSetOf() }
+        if (visible) {
+            hidden.remove(visualId)
+            if (hidden.isEmpty()) handle.hiddenVisualIds.remove(player.uniqueId)
+            player.showEntity(plugin, entity)
+        } else {
+            hidden += visualId
+            player.hideEntity(plugin, entity)
+        }
+        return true
     }
 
     private fun viewers(handle: ScreenHandle): Sequence<Player> = when (handle.access) {
@@ -228,7 +257,11 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 handle.contents.remove(entity)
                 entity.remove()
             }
+            if (visual.visualId !in newIds) {
+                handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visual.visualId) }
+            }
         }
+        handle.hiddenVisualIds.entries.removeIf { it.value.isEmpty() }
         newView.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
             val current = handle.visualEntities[visual.visualId]
             val compatible = when (visual) {
@@ -278,6 +311,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(GestureGuiTextMetrics.toDisplayScale(visual.size)), AxisAngle4f()))
             }
         }
+    }
+
+    private fun applyHover(entity: TextDisplay, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
+        entity.teleport(textLocation(entity.world, pose, hover.x, hover.y, hover.layer))
+        entity.text(hover.text)
+        entity.lineWidth = hover.lineWidth
+        entity.isSeeThrough = false
+        entity.alignment = TextDisplay.TextAlignment.CENTER
+        val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
+        entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
+    }
+
+    private fun isVisualVisible(handle: ScreenHandle, entity: Entity, playerId: UUID): Boolean {
+        val visualId = handle.visualEntities.entries.firstOrNull { it.value === entity }?.key ?: return true
+        return visualId !in (handle.hiddenVisualIds[playerId] ?: emptySet())
     }
 
     /**
@@ -353,12 +401,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         ) {
             prepareTextDisplay(it, pose)
             it.isVisibleByDefault = false
-            it.text(hover.text)
-            it.lineWidth = hover.lineWidth
-            it.isSeeThrough = false
-            it.alignment = TextDisplay.TextAlignment.CENTER
-            val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
-            it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
+            applyHover(it, pose, hover)
             mark(it, sessionId, revision)
         }
         // isVisibleByDefault=falseの実体はtracking開始後に個別表示します。同一tickのshowは
@@ -370,7 +413,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     fun updateHover(handle: HoverHandle, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
-        handle.entity.teleport(textLocation(handle.entity.world, pose, hover.x, hover.y, hover.layer))
+        // 同じ要素IDのまま画面が更新される場合も、位置だけでなく文面・幅・縮尺を
+        // 更新します。設定変更後に古いホバー説明が残る問題を防ぎます。
+        applyHover(handle.entity, pose, hover)
     }
 
     fun removeHover(handle: HoverHandle) = handle.entity.remove()

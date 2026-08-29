@@ -173,12 +173,23 @@ data class GestureGuiHoverText(
     val size: Double = 0.006,
     val lineWidth: Int = 160,
     val layer: Int = 30,
+    /**
+     * ホバー中だけ一時的に置き換える通常表示のvisualIdです。
+     *
+     * 既定説明とホバー説明を同じ意味スロットへ表示する画面では、ホバー用の
+     * TextDisplayを既定文の上へ重ねると二重表示になります。このIDを指定した
+     * 場合、CC-Systemは操作者に対して既定表示を隠し、ホバー終了時に復元します。
+     */
+    val replacesVisualId: String? = null,
 ) {
     init {
         require(x.isFinite() && y.isFinite()) { "gesture GUI hover position must be finite" }
         require(size > 0.0) { "gesture GUI hover size must be positive" }
         require(lineWidth > 0) { "gesture GUI hover lineWidth must be positive" }
         require(layer in 1..40) { "gesture GUI hover layer must be between 1 and 40" }
+        require(replacesVisualId == null || replacesVisualId.isNotBlank()) {
+            "gesture GUI hover replacesVisualId must not be blank"
+        }
     }
 }
 

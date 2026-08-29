@@ -83,8 +83,18 @@ class GestureGuiModelsTest {
 
     @Test
     fun `hover text accepts arbitrary finite screen coordinates`() {
-        val hover = GestureGuiHoverText(Component.text("hover"), 0.61, -0.31, layer = 38)
+        val hover = GestureGuiHoverText(
+            Component.text("hover"),
+            0.61,
+            -0.31,
+            layer = 38,
+            replacesVisualId = "description",
+        )
         assertTrue(hover.x == 0.61 && hover.y == -0.31 && hover.layer == 38)
+        assertEquals("description", hover.replacesVisualId)
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiHoverText(Component.text("hover"), 0.0, 0.0, replacesVisualId = " ")
+        }
     }
 
     @Test
@@ -111,6 +121,23 @@ class GestureGuiModelsTest {
             "missing",
             GestureGuiBounds(-0.1, -0.1, 0.1, 0.1),
             targetVisualId = "unknown",
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiView(GestureGuiScreenDefinition("screen", listOf(element)), emptyList()) {}
+        }
+    }
+
+    @Test
+    fun `hover cannot replace a missing visual`() {
+        val element = GestureGuiElement(
+            "hover-missing",
+            GestureGuiBounds(-0.1, -0.1, 0.1, 0.1),
+            hoverText = GestureGuiHoverText(
+                Component.text("hover"),
+                0.0,
+                0.0,
+                replacesVisualId = "unknown",
+            ),
         )
         assertThrows(IllegalArgumentException::class.java) {
             GestureGuiView(GestureGuiScreenDefinition("screen", listOf(element)), emptyList()) {}

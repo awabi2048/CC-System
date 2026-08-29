@@ -50,12 +50,18 @@ class GestureGuiServiceImpl(
     private val claimService: PlayerInteractionClaimService,
     private val closeExternalDialog: (Player, String, String) -> Boolean,
 ) : GestureGuiService {
+    private data class HoverReplacement(
+        val render: GestureGuiEntityRenderer.ScreenHandle,
+        val visualId: String,
+    )
+
     private data class ActorRuntime(
         val playerId: UUID,
         val claims: List<PlayerInteractionClaim>,
         val catcher: GestureGuiEntityRenderer.CatcherHandle,
         var hover: GestureGuiEntityRenderer.HoverHandle? = null,
         var hoverIdentity: String? = null,
+        var hoverReplacement: HoverReplacement? = null,
     )
 
     private data class ScreenRuntime(
@@ -737,6 +743,11 @@ class GestureGuiServiceImpl(
     private fun removeActor(session: Session, actorId: UUID) {
         val actor = session.actors.remove(actorId) ?: return
         actor.claims.forEach(PlayerInteractionClaim::close)
+        actor.hoverReplacement?.let { replacement ->
+            Bukkit.getPlayer(actorId)?.let { player ->
+                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+            }
+        }
         actor.hover?.let(renderer::removeHover)
         renderer.removeCatcher(actor.catcher)
     }
@@ -755,10 +766,29 @@ class GestureGuiServiceImpl(
             "${view.definition.screenId}:${element.elementId}"
         } else null
         if (identity == null) {
+            actor.hoverReplacement?.let { replacement ->
+                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+            }
+            actor.hoverReplacement = null
             actor.hover?.let(renderer::removeHover)
             actor.hover = null
             actor.hoverIdentity = null
             return
+        }
+        val render = target?.child?.render ?: target?.screen?.render
+        val desiredReplacement = hoverText?.replacesVisualId?.let { visualId ->
+            render?.let { HoverReplacement(it, visualId) }
+        }
+        if (actor.hoverReplacement != desiredReplacement) {
+            actor.hoverReplacement?.let { replacement ->
+                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+            }
+            actor.hoverReplacement = null
+            desiredReplacement?.let { replacement ->
+                if (renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = false)) {
+                    actor.hoverReplacement = replacement
+                }
+            }
         }
         if (actor.hoverIdentity != identity || actor.hover == null) {
             actor.hover?.let(renderer::removeHover)

@@ -97,6 +97,9 @@ data class GestureGuiView(
         require(definition.elements.mapNotNull { it.targetVisualId }.all { it in visualIds }) {
             "gesture GUI element targetVisualId must reference a visual in the same screen"
         }
+        require(definition.elements.mapNotNull { it.hoverText?.replacesVisualId }.all { it in visualIds }) {
+            "gesture GUI hover replacesVisualId must reference a visual in the same screen"
+        }
     }
 }
 
