@@ -107,11 +107,13 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 view.definition.access,
                 view.definition.allowlist,
             )
-            // PUBLICを含め、初期表示対象をアクセス定義に基づいて明示します。
+            // PUBLICを含め、初期表示対象をアクセス定義に基づいて背景だけ明示します。
+            // contentsの表示は呼び出し側（アニメーション完了時／非アニメーション経路の
+            // 翌tick表示）へ委ねます。spawnと同tickにcontentsを表示すると、アニメーション
+            // 完了前に中身が露出し、tracking未了時は逆に表示が失われるためです。
             // 後から参加したプレイヤーはGestureGuiServiceImplのreconcileExternalActors
             // からshowToされるため、可視性の経路が常に一つになります。
             showBackground(handle)
-            showContents(handle)
             return handle
         } catch (failure: Throwable) {
             // open/openChild側では失敗したScreenHandleを受け取れないため、

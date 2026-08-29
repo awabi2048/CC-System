@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiOpenOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionSnapshot
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionState
@@ -88,6 +89,8 @@ class GestureGuiServiceImpl(
         val sessionListener: GestureGuiSessionListener? = null,
         /** close通知を一度だけ送るための状態 */
         var closeNotified: Boolean = false,
+        /** 主要画面の並び方向。pose再計算（updateScreen等）でも同じ配置を維持します */
+        val layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin)
@@ -121,9 +124,9 @@ class GestureGuiServiceImpl(
         val id = UUID.randomUUID()
         val anchor = options.anchor
         val poses = if (anchor != null) {
-            fixedPoses(anchor, owner.eyeLocation, views)
+            fixedPoses(anchor, owner.eyeLocation, views, options.layout)
         } else {
-            poses(owner, owner.location.yaw, views)
+            poses(owner, owner.location.yaw, views, options.layout)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -138,6 +141,7 @@ class GestureGuiServiceImpl(
                 owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens.toList(), mutableListOf(), mutableMapOf(),
                 anchor,
                 options.sessionListener,
+                layout = options.layout,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -263,12 +267,10 @@ class GestureGuiServiceImpl(
             renderer.showContents(render)
             // spawnと同tickのshowEntityはクライアントのentity tracking登録前に
             // 落ちて内容だけ表示されないことがあるため、翌tickに再送します。
-            val expectedRevision = session.revision
+            // revision条件を付けないのは、openChild直後のupdateScreen等でrevisionが
+            // 進んでも再送が欠けると表示が確定しないためです。
             Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-                if (sessions[session.ownerId] === session &&
-                    session.children.contains(child) &&
-                    session.revision == expectedRevision
-                ) {
+                if (sessions[session.ownerId] === session && session.children.contains(child)) {
                     renderer.showContents(render)
                 }
             }, 1L)
@@ -572,6 +574,7 @@ class GestureGuiServiceImpl(
                     session.retainedYaw.toDouble(),
                     session.screens.size,
                     session.screens.map { it.view.panel.width to it.view.panel.height },
+                    session.layout,
                 )
             }
             if (!insideScreenArea && session.targetYaw == null) {
@@ -818,11 +821,17 @@ class GestureGuiServiceImpl(
         )
     }
 
-    private fun poses(player: Player, yaw: Float, views: List<GestureGuiView>) = GestureGuiGeometry.poses(
+    private fun poses(
+        player: Player,
+        yaw: Float,
+        views: List<GestureGuiView>,
+        layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+    ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
         views.size,
         views.map { it.panel.width to it.panel.height },
+        layout,
     )
 
     /** 子画面を含む親解決結果です。親は必ず直近の同一IDを一つだけ返します。 */
@@ -844,9 +853,9 @@ class GestureGuiServiceImpl(
         owner: Player,
         views: List<GestureGuiView>,
     ): List<GestureGuiScreenPose> = if (session.fixedAnchor == null) {
-        poses(owner, session.retainedYaw, views)
+        poses(owner, session.retainedYaw, views, session.layout)
     } else {
-        // 固定位置画面はワールド上の向き・中心を維持し、パネル寸法だけを更新します。
+        // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。
         session.screens.mapIndexed { index, screen ->
             screen.pose.copy(width = views[index].panel.width, height = views[index].panel.height)
         }
@@ -862,11 +871,16 @@ class GestureGuiServiceImpl(
     }
 
     /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。CC-System APIのみで配置します。 */
-    private fun fixedPoses(anchor: Location, eye: Location, views: List<GestureGuiView>): List<GestureGuiScreenPose> {
+    private fun fixedPoses(
+        anchor: Location,
+        eye: Location,
+        views: List<GestureGuiView>,
+        layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+    ): List<GestureGuiScreenPose> {
         val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
         val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
-        // eye -> anchor を画面法線とします（eyeから見て正面）。不足機能は迂回せずAPI側で修正する方針のため、
-        // 手組みのワールド距離換算は行わず合成eyeをAPIへ委譲して上下分離を再現します。
+        // eye -> anchor 逆向き法線とします（eyeから見て正面）。
+        // 水平法線はI選び直しAPI側で固定されるため、姿勢はこのワールドyawから算出して上下に積みます。
         val normal = (anchorVec - eyeVec).normalized()
         val yaw = Math.toDegrees(atan2(-normal.x, normal.z))
         val syntheticEye = anchorVec - normal * FIXED_SCREEN_DISTANCE
@@ -875,8 +889,9 @@ class GestureGuiServiceImpl(
             yaw,
             views.size,
             views.map { it.panel.width to it.panel.height },
+            layout,
         )
-        // ブロックの少し上に浮かせる（全画面共通）
+        // ブロックの上方へ持ち上げる（全画面共通）
         if (FIXED_SCREEN_LIFT == 0.0) return poses
         val liftUp = poses.firstOrNull()?.up ?: GestureGuiVector3(0.0, 1.0, 0.0)
         return poses.map { it.copy(center = it.center + liftUp * FIXED_SCREEN_LIFT) }

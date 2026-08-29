@@ -43,17 +43,32 @@ object GestureGuiGeometry {
         retainedYawDegrees: Double,
         screenCount: Int,
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
+        layout: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout =
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
         val direction = rayDirection.normalized()
         val rayYaw = Math.toDegrees(atan2(-direction.x, direction.z))
         val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
-        val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
-        val pitches = centerPitches(sizes)
-        val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
-        val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
-        return angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
+        return when (layout) {
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL -> {
+                val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
+                val pitches = centerPitches(sizes)
+                val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
+                val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
+                angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
+            }
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.HORIZONTAL -> {
+                // 横並びでは画面幅に応じて水平視野が広がり、縦方向は最も高い画面で決まります。
+                val yaws = centerYaws(sizes)
+                val left = yaws.indices.minOf { yaws[it] - Math.toDegrees(atan((sizes[it].first / 2.0) / SCREEN_DISTANCE)) }
+                val right = yaws.indices.maxOf { yaws[it] + Math.toDegrees(atan((sizes[it].first / 2.0) / SCREEN_DISTANCE)) }
+                val verticalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.second / 2.0) / SCREEN_DISTANCE)) }
+                val relativeYaw = (rayYaw - retainedYawDegrees + 540.0) % 360.0 - 180.0
+                relativeYaw in left..right && rayPitch in -verticalHalfAngle..verticalHalfAngle
+            }
+        }
     }
 
     private fun angularDistance(first: Double, second: Double): Double =
@@ -80,12 +95,27 @@ object GestureGuiGeometry {
         return centers.map { it - midpoint }
     }
 
+    /** 可変画面の左右角に約2度の余白を加え、中央yawオフセットを動的に配置します。左が負です。 */
+    fun centerYaws(sizes: List<Pair<Double, Double>>): List<Double> {
+        require(sizes.size in 1..3) { "gesture GUI requires one to three screens" }
+        if (sizes.size == 1) return listOf(0.0)
+        val halfAngles = sizes.map { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
+        val centers = MutableList(sizes.size) { 0.0 }
+        for (index in 1 until centers.size) {
+            centers[index] = centers[index - 1] + halfAngles[index - 1] + halfAngles[index] + SCREEN_VERTICAL_GAP_DEGREES
+        }
+        val midpoint = (centers.first() + centers.last()) / 2.0
+        return centers.map { it - midpoint }
+    }
+
     /** 画面中心への視線を法線とし、描画と当たり判定で共有する直交基底を作ります。 */
     fun poses(
         eye: GestureGuiVector3,
         yawDegrees: Double,
         screenCount: Int,
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
+        layout: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout =
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
     ): List<GestureGuiScreenPose> {
         require(yawDegrees.isFinite()) { "gesture GUI yaw must be finite" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
@@ -93,27 +123,51 @@ object GestureGuiGeometry {
         val forward = GestureGuiVector3(-sin(yaw), 0.0, cos(yaw))
         val right = GestureGuiVector3(-cos(yaw), 0.0, -sin(yaw))
 
-        return centerPitches(sizes).mapIndexed { index, pitchDegrees ->
-            val pitch = Math.toRadians(pitchDegrees)
-            val direction = GestureGuiVector3(
-                forward.x * cos(pitch),
-                -sin(pitch),
-                forward.z * cos(pitch),
-            )
-            // Displayのローカル+Zに合わせ、normalは開設者の目から画面中心へ向けます。
-            // right×normalから、各画面のpitchに沿って傾いた上方向を導出します。
-            val normal = direction
-            val up = right.cross(normal).normalized()
-            GestureGuiScreenPose(
-                screenIndex = index,
-                centerPitchDegrees = pitchDegrees,
-                center = eye + direction * SCREEN_DISTANCE,
-                right = right,
-                up = up,
-                normal = normal,
-                width = sizes[index].first,
-                height = sizes[index].second,
-            )
+        return when (layout) {
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL ->
+                centerPitches(sizes).mapIndexed { index, pitchDegrees ->
+                    val pitch = Math.toRadians(pitchDegrees)
+                    val direction = GestureGuiVector3(
+                        forward.x * cos(pitch),
+                        -sin(pitch),
+                        forward.z * cos(pitch),
+                    )
+                    // Displayのローカル+Zに合わせ、normalは開設者の目から画面中心へ向けます。
+                    // right×normalから、各画面のpitchに沿って傾いた上方向を導出します。
+                    val normal = direction
+                    val up = right.cross(normal).normalized()
+                    GestureGuiScreenPose(
+                        screenIndex = index,
+                        centerPitchDegrees = pitchDegrees,
+                        center = eye + direction * SCREEN_DISTANCE,
+                        right = right,
+                        up = up,
+                        normal = normal,
+                        width = sizes[index].first,
+                        height = sizes[index].second,
+                    )
+                }
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.HORIZONTAL ->
+                // 左右並びは各画面の中心方向へnormalを振り、首を振って正面から
+                // 参照できるようにします。最初の画面が左、後続が右へ配置されます。
+                centerYaws(sizes).mapIndexed { index, yawOffsetDegrees ->
+                    val screenYaw = yawDegrees + yawOffsetDegrees
+                    val screenYawRad = Math.toRadians(screenYaw)
+                    val direction = GestureGuiVector3(-sin(screenYawRad), 0.0, cos(screenYawRad))
+                    val normal = direction
+                    val screenRight = GestureGuiVector3(-cos(screenYawRad), 0.0, -sin(screenYawRad))
+                    val up = screenRight.cross(normal).normalized()
+                    GestureGuiScreenPose(
+                        screenIndex = index,
+                        centerPitchDegrees = 0.0,
+                        center = eye + direction * SCREEN_DISTANCE,
+                        right = screenRight,
+                        up = up,
+                        normal = normal,
+                        width = sizes[index].first,
+                        height = sizes[index].second,
+                    )
+                }
         }
     }
 

@@ -31,8 +31,7 @@ data class GestureGuiPanel(
 }
 
 /** 親画面上へ重ねる子画面の配置と入力方針です。 */
-data class GestureGuiChildOptions(
-    val parentScreenId: String,
+data class GestureGuiChildOptions(    val parentScreenId: String,
     val offsetX: Double = 0.0,
     val offsetY: Double = 0.0,
     val allowParentInteraction: Boolean = false,
@@ -65,12 +64,27 @@ data class GestureGuiOpenOptions(
     val anchor: Location? = null,
     /** セッション終了時に呼び出す利用側のライフサイクル通知 */
     val sessionListener: GestureGuiSessionListener? = null,
+    /** 主要画面の並び方向。既定は従来の縦配置 */
+    val layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {
             "gesture GUI open anchor must be finite"
         }
     }
+}
+
+/**
+ * セッション内の主要画面（親画面群）の並び方向です。
+ *
+ * VERTICAL は従来どおり画面を縦（pitch方向）へ積み、HORIZONTAL は画面を
+ * 左右（yaw方向）へ並べます。HORIZONTALでは各画面がその画面の中心方向へ
+ * 正対します。画面の並び順は呼び出しが渡すviewsの順序そのものであり、
+ * 例えば2画面をHORIZONTALで開くと1つ目が左、2つ目が右へ配置されます。
+ */
+enum class GestureGuiScreenLayout {
+    VERTICAL,
+    HORIZONTAL,
 }
 
 /** ジェスチャーGUIで画面ごとに割り当てられる入力です。 */
