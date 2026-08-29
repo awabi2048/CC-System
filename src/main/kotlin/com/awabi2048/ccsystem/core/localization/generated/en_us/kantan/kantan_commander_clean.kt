@@ -537,6 +537,9 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.item_selection_cancelled", value = EmbeddedLocalizedValue.Text("Item selection cancelled"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.mainhand_save_get_hover", value = EmbeddedLocalizedValue.Text("Saves and retrieves the main hand item info"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.settings_field_fallback", value = EmbeddedLocalizedValue.Text("Setting"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_entity_type_format", value = EmbeddedLocalizedValue.Text("Enter the entity type in the minecraft:zombie form."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_tag_format", value = EmbeddedLocalizedValue.Text("Enter the tag using letters, digits and . _ : + - (1-64 chars)."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_name_length", value = EmbeddedLocalizedValue.Text("The name must be 256 characters or fewer."), domain = DOMAIN),
     )
 
 }
