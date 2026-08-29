@@ -441,14 +441,79 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PLACEMENT_ACCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.no_placement_access", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_OUTPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_output", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.back_to_start", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.back_to_start_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHAT_PROMPT: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.chat_prompt", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_TITLE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.delete_confirm_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_execute", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_cancel", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NODE_SELECTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.node_selected", setOf("node"))
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CURRENT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.current_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SELECT_NODE_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.select_node_hint", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NO_FIELDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.no_fields", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_FROM_MAINHAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.edit_from_mainhand", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.edit_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.mainhand_save_hover", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_hover", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item_hover", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONTEXT_OVERRIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.context_override", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONTEXT_OVERRIDE_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.context_override_hover", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.open_filters", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.partial_override", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_open_filters", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_ENTITY_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_entity_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_LIMIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_limit", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_SORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_sort", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_GAME_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_game_mode", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_TAG: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_tag", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_DEFAULT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_default", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FACING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_facing", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_CONTEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_context", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_CONDITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_condition", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_DISPLAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_display", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_action", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_SCOPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_scope", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_source", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_INCLUSIVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_inclusive", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_DEFAULT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_default", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_invert_on", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_invert_off", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INCLUSIVE_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_inclusive_on", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INCLUSIVE_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_inclusive_off", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_item_overwrite_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_delete_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_WARN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_item_overwrite_warn", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_WARN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_delete_warn", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_overwrite_yes", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_label", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CURRENT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_current_value", setOf("value"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CANCEL_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_cancel_failed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_current", setOf("x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_current", setOf("yaw", "pitch"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_value_input_suffix", setOf("label"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_position_variable_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_variable_value_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_save_failed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_input_format", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_variable_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_set", setOf("item"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_overwritten", setOf("item"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_ITEM_SAVE_RETRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_item_save_retry", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_TAKEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_taken", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_INCOMPLETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_context_incomplete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_context_status", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_upper_render", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_reopen_hint", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_add", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_insert", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_ITEM_SELECTION_CANCELLED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.item_selection_cancelled", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
@@ -908,13 +973,78 @@ object KantanKantanCommanderCleanKeys {
     )
 
     private fun keyChunk5(): List<LocalizationKey<*>> = listOf(
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BACK_TO_START_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHAT_PROMPT,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_CANCEL,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NODE_SELECTED,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CURRENT_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SELECT_NODE_HINT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_NO_FIELDS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_FROM_MAINHAND,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_HOVER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_HOVER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONTEXT_OVERRIDE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONTEXT_OVERRIDE_HOVER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_ENTITY_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_LIMIT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_SORT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_GAME_MODE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_TAG,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_DEFAULT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FACING,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_CONTEXT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_CONDITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_DISPLAY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_ACTION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_SCOPE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPERATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_SOURCE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_INCLUSIVE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_DEFAULT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_ON,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_OFF,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INCLUSIVE_ON,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INCLUSIVE_OFF,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_WARN,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_WARN,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_LABEL,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CURRENT_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CANCEL_FAILED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_CURRENT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_CURRENT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_ITEM_SAVE_RETRY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_TAKEN,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_INCOMPLETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_STATUS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_ITEM_SELECTION_CANCELLED,
     )
 }
