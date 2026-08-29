@@ -540,6 +540,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_entity_type_format", value = EmbeddedLocalizedValue.Text("Enter the entity type in the minecraft:zombie form."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_tag_format", value = EmbeddedLocalizedValue.Text("Enter the tag using letters, digits and . _ : + - (1-64 chars)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_name_length", value = EmbeddedLocalizedValue.Text("The name must be 256 characters or fewer."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_minimum_above_maximum", value = EmbeddedLocalizedValue.Text("The minimum distance must be no greater than the maximum."), domain = DOMAIN),
     )
 
 }

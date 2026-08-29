@@ -540,6 +540,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_entity_type_format", value = EmbeddedLocalizedValue.Text("エンティティ種別は minecraft:zombie の形式で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_tag_format", value = EmbeddedLocalizedValue.Text("タグは英数字と . _ : + - の1〜64文字で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_name_length", value = EmbeddedLocalizedValue.Text("名前は256文字以内で入力してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_minimum_above_maximum", value = EmbeddedLocalizedValue.Text("最小距離は最大距離以下にしてください。"), domain = DOMAIN),
     )
 
 }
