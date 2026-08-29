@@ -535,6 +535,8 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.action_click_add", value = EmbeddedLocalizedValue.Text("Click to add"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.action_click_insert", value = EmbeddedLocalizedValue.Text("Click to insert"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.item_selection_cancelled", value = EmbeddedLocalizedValue.Text("Item selection cancelled"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.mainhand_save_get_hover", value = EmbeddedLocalizedValue.Text("Saves and retrieves the main hand item info"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.settings_field_fallback", value = EmbeddedLocalizedValue.Text("Setting"), domain = DOMAIN),
     )
 
 }

@@ -535,6 +535,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.action_click_add", value = EmbeddedLocalizedValue.Text("クリックで追加"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.action_click_insert", value = EmbeddedLocalizedValue.Text("クリックで挿入"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.item_selection_cancelled", value = EmbeddedLocalizedValue.Text("アイテム選択をキャンセルしました"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.mainhand_save_get_hover", value = EmbeddedLocalizedValue.Text("メインハンドのアイテム情報を保存・取得します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.settings_field_fallback", value = EmbeddedLocalizedValue.Text("設定項目"), domain = DOMAIN),
     )
 
 }
