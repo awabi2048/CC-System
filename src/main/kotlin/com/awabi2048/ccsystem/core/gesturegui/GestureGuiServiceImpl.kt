@@ -261,6 +261,17 @@ class GestureGuiServiceImpl(
         } else {
             renderer.setBackgroundSize(render, view.panel.width.toFloat(), view.panel.height.toFloat(), 0)
             renderer.showContents(render)
+            // spawnと同tickのshowEntityはクライアントのentity tracking登録前に
+            // 落ちて内容だけ表示されないことがあるため、翌tickに再送します。
+            val expectedRevision = session.revision
+            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                if (sessions[session.ownerId] === session &&
+                    session.children.contains(child) &&
+                    session.revision == expectedRevision
+                ) {
+                    renderer.showContents(render)
+                }
+            }, 1L)
         }
         return true
     }

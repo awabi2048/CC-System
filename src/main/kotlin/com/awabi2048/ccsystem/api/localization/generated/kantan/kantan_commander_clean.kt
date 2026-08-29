@@ -519,6 +519,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_TAG_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_tag_format", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_NAME_LENGTH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_name_length", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_MINIMUM_ABOVE_MAXIMUM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_minimum_above_maximum", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_NO_ENTITY_IN_SIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_no_entity_in_sight", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_ITEM_SELECTION_CANCELLED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.item_selection_cancelled", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
@@ -1057,6 +1058,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_TAG_FORMAT,
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_NAME_LENGTH,
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_MINIMUM_ABOVE_MAXIMUM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_NO_ENTITY_IN_SIGHT,
         KANTAN_COMMANDER_CLEAN_MESSAGE_ITEM_SELECTION_CANCELLED,
     )
 }
