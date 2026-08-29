@@ -515,6 +515,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_insert", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.mainhand_save_get_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SETTINGS_FIELD_FALLBACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.settings_field_fallback", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_TARGET_ACTION_FALLBACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.target_action_fallback", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_ENTITY_TYPE_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_entity_type_format", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_TAG_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_tag_format", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_ERROR_NAME_LENGTH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.error_name_length", setOf())
@@ -1054,6 +1055,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SETTINGS_FIELD_FALLBACK,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_TARGET_ACTION_FALLBACK,
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_ENTITY_TYPE_FORMAT,
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_TAG_FORMAT,
         KANTAN_COMMANDER_CLEAN_GUI_ERROR_NAME_LENGTH,

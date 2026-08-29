@@ -66,10 +66,26 @@ data class GestureGuiOpenOptions(
     val sessionListener: GestureGuiSessionListener? = null,
     /** 主要画面の並び方向。既定は従来の縦配置 */
     val layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+    /**
+     * 縦配置で各viewを置くスロット。nullなら従来どおりview数に応じて連続配置します。
+     * 例えばTOPとMIDDLEだけを指定すると、下スロットを画面で埋めずに上・中へ配置できます。
+     */
+    val verticalSlots: List<GestureGuiVerticalSlot>? = null,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {
             "gesture GUI open anchor must be finite"
+        }
+        verticalSlots?.let { slots ->
+            require(layout == GestureGuiScreenLayout.VERTICAL) {
+                "gesture GUI vertical slots require vertical layout"
+            }
+            require(slots.size in 1..3) {
+                "gesture GUI vertical slots must contain one to three slots"
+            }
+            require(slots.distinct().size == slots.size) {
+                "gesture GUI vertical slots must be unique"
+            }
         }
     }
 }
@@ -85,6 +101,13 @@ data class GestureGuiOpenOptions(
 enum class GestureGuiScreenLayout {
     VERTICAL,
     HORIZONTAL,
+}
+
+/** 縦配置で使用する上・中・下の画面スロットです。 */
+enum class GestureGuiVerticalSlot {
+    TOP,
+    MIDDLE,
+    BOTTOM,
 }
 
 /** ジェスチャーGUIで画面ごとに割り当てられる入力です。 */

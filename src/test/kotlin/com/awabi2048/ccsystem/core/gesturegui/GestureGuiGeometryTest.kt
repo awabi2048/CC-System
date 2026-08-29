@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiElement
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVerticalSlot
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -22,6 +23,51 @@ class GestureGuiGeometryTest {
         val dynamic = GestureGuiGeometry.centerPitches(expanded)
         assertEquals(0.0, dynamic[1], 1.0e-9)
         assertTrue(dynamic[2] > 30.0)
+    }
+
+    @Test
+    fun `vertical slots place two views in the top and middle of a three-slot layout`() {
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        val poses = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            screenCount = 2,
+            verticalSlots = slots,
+        )
+
+        assertEquals(2, poses.size)
+        assertTrue(poses[0].centerPitchDegrees < -30.0)
+        assertEquals(0.0, poses[1].centerPitchDegrees, 1.0e-9)
+        assertEquals(0, poses[0].screenIndex)
+        assertEquals(1, poses[1].screenIndex)
+    }
+
+    @Test
+    fun `vertical screen envelope excludes the missing bottom slot`() {
+        fun direction(pitch: Double): GestureGuiVector3 {
+            val pitchRadians = Math.toRadians(pitch)
+            return GestureGuiVector3(0.0, -kotlin.math.sin(pitchRadians), kotlin.math.cos(pitchRadians))
+        }
+
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        assertTrue(
+            GestureGuiGeometry.containsScreenEnvelope(
+                direction(-35.0), 0.0, 2,
+                verticalSlots = slots,
+            )
+        )
+        assertTrue(
+            GestureGuiGeometry.containsScreenEnvelope(
+                direction(15.0), 0.0, 2,
+                verticalSlots = slots,
+            )
+        )
+        assertFalse(
+            GestureGuiGeometry.containsScreenEnvelope(
+                direction(35.0), 0.0, 2,
+                verticalSlots = slots,
+            )
+        )
     }
 
     @Test

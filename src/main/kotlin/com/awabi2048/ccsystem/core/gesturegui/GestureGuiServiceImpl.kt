@@ -14,6 +14,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionState
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionListener
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVerticalSlot
 import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaim
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
@@ -31,6 +32,18 @@ import java.util.logging.Level
 import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.atan2
+
+/** Listenerが同一tickの後続イベントを抑制するかまで含めた入力処理結果です。 */
+internal enum class GestureGuiDispatchResult(
+    val consumed: Boolean,
+    val deduplicate: Boolean,
+) {
+    UNHANDLED(consumed = false, deduplicate = false),
+    CONSUMED(consumed = true, deduplicate = true),
+    /** 視線はGUI領域内だが要素が未確定なため、同一tickに再判定できます。 */
+    RETRYABLE_CONSUMED(consumed = true, deduplicate = false),
+    ACTION_HANDLED(consumed = true, deduplicate = true),
+}
 
 class GestureGuiServiceImpl(
     private val plugin: Plugin,
@@ -91,6 +104,8 @@ class GestureGuiServiceImpl(
         var closeNotified: Boolean = false,
         /** 主要画面の並び方向。pose再計算（updateScreen等）でも同じ配置を維持します */
         val layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+        /** 縦配置で使用する実体スロット。欠けたスロットは生成しません。 */
+        val verticalSlots: List<GestureGuiVerticalSlot>? = null,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin)
@@ -116,6 +131,9 @@ class GestureGuiServiceImpl(
         require(views.map { it.definition.screenId }.distinct().size == views.size) {
             "gesture GUI screenId must be unique within a session"
         }
+        require(options.verticalSlots == null || options.verticalSlots.size == views.size) {
+            "gesture GUI vertical slot count must match screen count"
+        }
         check(owner.isOnline) { "gesture GUI owner must be online" }
         close(owner.uniqueId, GestureGuiCloseMode.IMMEDIATE)
         registeredOwners += owner.uniqueId
@@ -124,9 +142,9 @@ class GestureGuiServiceImpl(
         val id = UUID.randomUUID()
         val anchor = options.anchor
         val poses = if (anchor != null) {
-            fixedPoses(anchor, owner.eyeLocation, views, options.layout)
+            fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout)
+            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -137,11 +155,22 @@ class GestureGuiServiceImpl(
                 screens += ScreenRuntime(view, pose, renderer.spawnScreen(owner, id, revision, pose, view))
             }
             session = Session(
-                id, owner.uniqueId, revision, GestureGuiSessionState.OPENING, owner.location.yaw, null,
-                owner.eyeLocation.x, owner.eyeLocation.z, owner.location.yaw, screens.toList(), mutableListOf(), mutableMapOf(),
-                anchor,
-                options.sessionListener,
+                id = id,
+                ownerId = owner.uniqueId,
+                revision = revision,
+                state = GestureGuiSessionState.OPENING,
+                retainedYaw = owner.location.yaw,
+                targetYaw = null,
+                anchorX = owner.eyeLocation.x,
+                anchorZ = owner.eyeLocation.z,
+                appliedYaw = owner.location.yaw,
+                screens = screens.toList(),
+                children = mutableListOf(),
+                actors = mutableMapOf(),
+                fixedAnchor = anchor,
+                sessionListener = options.sessionListener,
                 layout = options.layout,
+                verticalSlots = options.verticalSlots,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -215,6 +244,8 @@ class GestureGuiServiceImpl(
         val options = GestureGuiOpenOptions(
             anchor = old.fixedAnchor,
             sessionListener = old.sessionListener,
+            layout = old.layout,
+            verticalSlots = old.verticalSlots,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -369,27 +400,43 @@ class GestureGuiServiceImpl(
         return closeExternalDialog(player, dialogOwner, dialogId)
     }
 
-    override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean {
+    override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean =
+        dispatchGesture(actor, gesture).consumed
+
+    /**
+     * 入力イベントの消費とAction実行済みを分離します。
+     * ARM_SWINGの時点で視線rayが画面内へ入っていても、表示Entityの更新前などで
+     * elementIdが未解決になることがあります。そのイベントは通常操作へ漏らさず、
+     * 同じtickのPlayerInteractで再判定できる状態として返します。
+     */
+    internal fun dispatchGesture(actor: Player, gesture: GestureGuiGesture): GestureGuiDispatchResult {
         val candidate = sessions.values.asSequence()
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
             .mapNotNull { session -> accessibleTarget(session, actor)?.let { session to it } }
             .minByOrNull { (_, target) -> target.hit.distance }
-            ?: return false
+            ?: return GestureGuiDispatchResult.UNHANDLED
         val (session, target) = candidate
-        if (target.blocked) return true
-        val view = target.view ?: return true
+        if (target.blocked) return GestureGuiDispatchResult.CONSUMED
+        val view = target.view ?: return GestureGuiDispatchResult.CONSUMED
         val element = view.definition.elements.firstOrNull { it.elementId == target.hit.elementId }
         // 画面内の未割当操作も吸収しますが、Actionは実行しません。
-        if (element == null || gesture !in element.acceptedGestures) return true
+        // ただし同一パケットの後続InteractでEntity位置が確定する可能性があるため、
+        // この分岐だけは入力重複抑止の対象にしません。
+        if (element == null || gesture !in element.acceptedGestures) {
+            return GestureGuiDispatchResult.RETRYABLE_CONSUMED
+        }
         if (actor.uniqueId !in session.actors) {
             // claim取得に失敗した場合は、このGUIが入力を所有していません。
             // trueを返すとListenerが元イベントをキャンセルし、claimを所有する
             // 別機能へ入力が届かなくなるため、失敗時は未処理として返します。
-            val actorRuntime = runCatching { createActor(session, actor) }.getOrNull() ?: return false
+            val actorRuntime = runCatching { createActor(session, actor) }.getOrNull()
+                ?: return GestureGuiDispatchResult.UNHANDLED
             session.actors[actor.uniqueId] = actorRuntime
         }
         val revision = session.revision
-        if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) return true
+        if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) {
+            return GestureGuiDispatchResult.CONSUMED
+        }
         // 余白は選択解除用の透過的な入力面であり、ボタン操作音を鳴らしません。
         if (element.elementId !in setOf("viewport-empty", "setting-child-empty")) {
             actor.playSound(actor.location, Sound.UI_BUTTON_CLICK, 0.7f, 2.0f)
@@ -397,7 +444,7 @@ class GestureGuiServiceImpl(
         view.onAction(
             GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
-        return true
+        return GestureGuiDispatchResult.ACTION_HANDLED
     }
 
     override fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot? = sessions[ownerId]?.let(::snapshot)
@@ -575,6 +622,7 @@ class GestureGuiServiceImpl(
                     session.screens.size,
                     session.screens.map { it.view.panel.width to it.view.panel.height },
                     session.layout,
+                    session.verticalSlots,
                 )
             }
             if (!insideScreenArea && session.targetYaw == null) {
@@ -826,12 +874,14 @@ class GestureGuiServiceImpl(
         yaw: Float,
         views: List<GestureGuiView>,
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+        verticalSlots: List<GestureGuiVerticalSlot>? = null,
     ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
         views.size,
         views.map { it.panel.width to it.panel.height },
         layout,
+        verticalSlots,
     )
 
     /** 子画面を含む親解決結果です。親は必ず直近の同一IDを一つだけ返します。 */
@@ -853,7 +903,7 @@ class GestureGuiServiceImpl(
         owner: Player,
         views: List<GestureGuiView>,
     ): List<GestureGuiScreenPose> = if (session.fixedAnchor == null) {
-        poses(owner, session.retainedYaw, views, session.layout)
+        poses(owner, session.retainedYaw, views, session.layout, session.verticalSlots)
     } else {
         // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。
         session.screens.mapIndexed { index, screen ->
@@ -876,6 +926,7 @@ class GestureGuiServiceImpl(
         eye: Location,
         views: List<GestureGuiView>,
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+        verticalSlots: List<GestureGuiVerticalSlot>? = null,
     ): List<GestureGuiScreenPose> {
         val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
         val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
@@ -890,6 +941,7 @@ class GestureGuiServiceImpl(
             views.size,
             views.map { it.panel.width to it.panel.height },
             layout,
+            verticalSlots,
         )
         // ブロックの上方へ持ち上げる（全画面共通）
         if (FIXED_SCREEN_LIFT == 0.0) return poses
@@ -939,6 +991,7 @@ class GestureGuiServiceImpl(
         session.retainedYaw,
         session.actors.keys.toSet(),
         session.children.map { it.view.definition.screenId },
+        session.verticalSlots,
     )
 
     private companion object {

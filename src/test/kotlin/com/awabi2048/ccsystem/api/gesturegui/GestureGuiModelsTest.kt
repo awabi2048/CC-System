@@ -30,6 +30,29 @@ class GestureGuiModelsTest {
         assertEquals(0.8, view.panel.width)
         assertFalse(options.allowParentInteraction)
     }
+
+    @Test
+    fun `open options can select non-contiguous vertical slots`() {
+        val options = GestureGuiOpenOptions(
+            verticalSlots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE),
+        )
+
+        assertEquals(
+            listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE),
+            options.verticalSlots,
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiOpenOptions(
+                layout = GestureGuiScreenLayout.HORIZONTAL,
+                verticalSlots = listOf(GestureGuiVerticalSlot.TOP),
+            )
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiOpenOptions(
+                verticalSlots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.TOP),
+            )
+        }
+    }
     @Test
     fun `access policy separates owner allowlist and public operation`() {
         val owner = UUID.randomUUID()

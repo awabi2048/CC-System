@@ -113,6 +113,7 @@ data class GestureGuiSessionSnapshot(
     val retainedYaw: Float,
     val actorIds: Set<UUID>,
     val childScreenIds: List<String>,
+    val verticalSlots: List<GestureGuiVerticalSlot>? = null,
 )
 
 /** Display Entityの詳細を外部へ漏らさず、セッション単位で操作する公開サービスです。 */

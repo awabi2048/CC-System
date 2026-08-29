@@ -21,8 +21,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
  * 同じパケット由来のInteract/InteractAt等はtick単位で一度だけActionへ渡します。
  */
 class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : Listener {
-    private data class InputKey(val playerId: UUID, val gesture: GestureGuiGesture)
-    private val handledTick = mutableMapOf<InputKey, Int>()
+    private val inputDeduplicator = GestureGuiInputDeduplicator()
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onAnimation(event: PlayerAnimationEvent) {
@@ -86,11 +85,33 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
         if (player.isSneaking) GestureGuiGesture.SHIFT_SECONDARY else GestureGuiGesture.SECONDARY
 
     private fun dispatch(player: Player, gesture: GestureGuiGesture): Boolean {
-        val key = InputKey(player.uniqueId, gesture)
+        val key = GestureGuiInputKey(player.uniqueId, gesture)
         val tick = Bukkit.getCurrentTick()
-        if (handledTick[key] == tick) return service.isParticipating(player.uniqueId)
+        if (inputDeduplicator.isHandled(key, tick)) return service.isParticipating(player.uniqueId)
+        // ARM_SWINGが先に届いても、まだrayが画面要素へ交差していない場合があります。
+        // イベントを消費しただけの再試行可能な結果まで重複済みとして記録すると、
+        // 同じtickのInteractイベントが再判定できず、クリック音もActionも消えます。
+        val result = service.dispatchGesture(player, gesture)
+        inputDeduplicator.record(key, tick, result.deduplicate)
+        return result.consumed
+    }
+
+}
+
+internal data class GestureGuiInputKey(val playerId: UUID, val gesture: GestureGuiGesture)
+
+/**
+ * ARM_SWINGとInteractが同じtickに届く入力を、処理成功時だけ一度にまとめます。
+ * 未処理の最初のイベントを記録しないことが、後続イベントの再試行を許可する契約です。
+ */
+internal class GestureGuiInputDeduplicator {
+    private val handledTick = mutableMapOf<GestureGuiInputKey, Int>()
+
+    fun isHandled(key: GestureGuiInputKey, tick: Int): Boolean = handledTick[key] == tick
+
+    fun record(key: GestureGuiInputKey, tick: Int, deduplicate: Boolean) {
+        if (!deduplicate) return
         handledTick[key] = tick
         if (handledTick.size > 256) handledTick.entries.removeIf { it.value < tick - 1 }
-        return service.handleGesture(player, gesture)
     }
 }

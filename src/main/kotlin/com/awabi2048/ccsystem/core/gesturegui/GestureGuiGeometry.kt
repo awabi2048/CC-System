@@ -3,8 +3,10 @@ package com.awabi2048.ccsystem.core.gesturegui
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHit
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiRay
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVerticalSlot
 import kotlin.math.cos
 import kotlin.math.asin
 import kotlin.math.atan2
@@ -43,23 +45,24 @@ object GestureGuiGeometry {
         retainedYawDegrees: Double,
         screenCount: Int,
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
-        layout: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout =
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+        layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+        verticalSlots: List<GestureGuiVerticalSlot>? = null,
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
+        validateVerticalSlots(layout, sizes, verticalSlots)
         val direction = rayDirection.normalized()
         val rayYaw = Math.toDegrees(atan2(-direction.x, direction.z))
         val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
         return when (layout) {
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL -> {
+            GestureGuiScreenLayout.VERTICAL -> {
                 val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
-                val pitches = centerPitches(sizes)
+                val pitches = verticalCenters(sizes, verticalSlots)
                 val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
             }
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.HORIZONTAL -> {
+            GestureGuiScreenLayout.HORIZONTAL -> {
                 // 横並びでは画面幅に応じて水平視野が広がり、縦方向は最も高い画面で決まります。
                 val yaws = centerYaws(sizes)
                 val left = yaws.indices.minOf { yaws[it] - Math.toDegrees(atan((sizes[it].first / 2.0) / SCREEN_DISTANCE)) }
@@ -114,18 +117,19 @@ object GestureGuiGeometry {
         yawDegrees: Double,
         screenCount: Int,
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
-        layout: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout =
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+        layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
+        verticalSlots: List<GestureGuiVerticalSlot>? = null,
     ): List<GestureGuiScreenPose> {
         require(yawDegrees.isFinite()) { "gesture GUI yaw must be finite" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
+        validateVerticalSlots(layout, sizes, verticalSlots)
         val yaw = Math.toRadians(yawDegrees)
         val forward = GestureGuiVector3(-sin(yaw), 0.0, cos(yaw))
         val right = GestureGuiVector3(-cos(yaw), 0.0, -sin(yaw))
 
         return when (layout) {
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL ->
-                centerPitches(sizes).mapIndexed { index, pitchDegrees ->
+            GestureGuiScreenLayout.VERTICAL ->
+                verticalCenters(sizes, verticalSlots).mapIndexed { index, pitchDegrees ->
                     val pitch = Math.toRadians(pitchDegrees)
                     val direction = GestureGuiVector3(
                         forward.x * cos(pitch),
@@ -147,7 +151,7 @@ object GestureGuiGeometry {
                         height = sizes[index].second,
                     )
                 }
-            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.HORIZONTAL ->
+            GestureGuiScreenLayout.HORIZONTAL ->
                 // 左右並びは各画面の中心方向へnormalを振り、首を振って正面から
                 // 参照できるようにします。最初の画面が左、後続が右へ配置されます。
                 centerYaws(sizes).mapIndexed { index, yawOffsetDegrees ->
@@ -172,6 +176,41 @@ object GestureGuiGeometry {
     }
 
     private const val SCREEN_VERTICAL_GAP_DEGREES = 2.0
+
+    /**
+     * 指定スロットを3画面ぶんの縦配置へ投影します。欠けたスロットは最大寸法で予約し、
+     * 実体を生成せずに上・中・下の視野関係だけを維持します。
+     */
+    private fun verticalCenters(
+        sizes: List<Pair<Double, Double>>,
+        verticalSlots: List<GestureGuiVerticalSlot>?,
+    ): List<Double> {
+        if (verticalSlots == null) return centerPitches(sizes)
+        val fallback = sizes.maxBy { it.first * it.second }
+        val slotSizes = List(3) { slotIndex ->
+            val viewIndex = verticalSlots.indexOfFirst { it.ordinal == slotIndex }
+            if (viewIndex >= 0) sizes[viewIndex] else fallback
+        }
+        val allCenters = centerPitches(slotSizes)
+        return verticalSlots.map { allCenters[it.ordinal] }
+    }
+
+    private fun validateVerticalSlots(
+        layout: GestureGuiScreenLayout,
+        sizes: List<Pair<Double, Double>>,
+        verticalSlots: List<GestureGuiVerticalSlot>?,
+    ) {
+        if (verticalSlots == null) return
+        require(layout == GestureGuiScreenLayout.VERTICAL) {
+            "gesture GUI vertical slots require vertical layout"
+        }
+        require(verticalSlots.size == sizes.size) {
+            "gesture GUI vertical slot count must match screen count"
+        }
+        require(verticalSlots.distinct().size == verticalSlots.size) {
+            "gesture GUI vertical slots must be unique"
+        }
+    }
 
     /** 正面から画面矩形に入った交点のうち、視点に最も近いものを返します。 */
     fun hitTest(

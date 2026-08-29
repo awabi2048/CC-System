@@ -537,6 +537,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.item_selection_cancelled", value = EmbeddedLocalizedValue.Text("アイテム選択をキャンセルしました"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.mainhand_save_get_hover", value = EmbeddedLocalizedValue.Text("メインハンドのアイテム情報を保存・取得します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.settings_field_fallback", value = EmbeddedLocalizedValue.Text("設定項目"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.target_action_fallback", value = EmbeddedLocalizedValue.Text("コマンドの対象を設定します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_entity_type_format", value = EmbeddedLocalizedValue.Text("エンティティ種別は minecraft:zombie の形式で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_tag_format", value = EmbeddedLocalizedValue.Text("タグは英数字と . _ : + - の1〜64文字で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.error_name_length", value = EmbeddedLocalizedValue.Text("名前は256文字以内で入力してください。"), domain = DOMAIN),
