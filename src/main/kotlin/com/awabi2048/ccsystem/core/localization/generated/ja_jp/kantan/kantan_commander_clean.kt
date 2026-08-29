@@ -65,7 +65,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.settings_summary_label", value = EmbeddedLocalizedValue.Text("設定内容"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.edit_action", value = EmbeddedLocalizedValue.Text("設定を開く"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.delete_action", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_units", value = EmbeddedLocalizedValue.Text("{value}秒"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_seconds", value = EmbeddedLocalizedValue.Text("{value}秒"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.disabled", value = EmbeddedLocalizedValue.Text("オフ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.enabled", value = EmbeddedLocalizedValue.Text("オン"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output", value = EmbeddedLocalizedValue.Text("出力する"), domain = DOMAIN),

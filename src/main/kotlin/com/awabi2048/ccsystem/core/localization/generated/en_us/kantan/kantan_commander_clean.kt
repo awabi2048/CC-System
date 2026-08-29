@@ -65,7 +65,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.settings_summary_label", value = EmbeddedLocalizedValue.Text("Configuration"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.edit_action", value = EmbeddedLocalizedValue.Text("Open settings"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.delete_action", value = EmbeddedLocalizedValue.Text("Delete"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_units", value = EmbeddedLocalizedValue.Text("{value} seconds"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_seconds", value = EmbeddedLocalizedValue.Text("{value} seconds"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.disabled", value = EmbeddedLocalizedValue.Text("Off"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.enabled", value = EmbeddedLocalizedValue.Text("On"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output", value = EmbeddedLocalizedValue.Text("Output"), domain = DOMAIN),
