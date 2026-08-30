@@ -373,7 +373,11 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.isVisibleByDefault = false
             it.interactionWidth = 0.18f
             it.interactionHeight = 0.18f
-            it.isResponsive = false
+            // 右クリックをPlayerInteractEntityEventへ届けるため応答を有効化します。
+            // このInteraction自体に操作処理は持たせず、GestureGuiInputListenerが
+            // 同じ視線rayで画面要素を再判定します。falseのままだとSECONDARY入力が
+            // 発生せず、右クリック時に効果音もActionもない無反応になります。
+            it.isResponsive = true
             mark(it, sessionId, revision)
             it.persistentDataContainer.set(actorKey, PersistentDataType.STRING, player.uniqueId.toString())
         }
