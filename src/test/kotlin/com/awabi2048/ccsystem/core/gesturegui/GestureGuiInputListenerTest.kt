@@ -5,6 +5,7 @@ import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.bukkit.inventory.EquipmentSlot
 
 class GestureGuiInputListenerTest {
     @Test
@@ -28,6 +29,13 @@ class GestureGuiInputListenerTest {
         gate.record(key, 42, deduplicate = true)
         assertTrue(gate.isHandled(key, 42))
         assertFalse(gate.isHandled(key, 43))
+    }
+
+    @Test
+    fun `right click accepts only the main hand`() {
+        assertTrue(GestureGuiRightClickHandPolicy.accepts(EquipmentSlot.HAND))
+        assertFalse(GestureGuiRightClickHandPolicy.accepts(EquipmentSlot.OFF_HAND))
+        assertFalse(GestureGuiRightClickHandPolicy.accepts(null))
     }
 
 }

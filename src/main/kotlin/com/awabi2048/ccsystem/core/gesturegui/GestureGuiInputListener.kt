@@ -39,12 +39,24 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onWorldInteract(event: PlayerInteractEvent) {
+        if (event.action.isRightClick && !GestureGuiRightClickHandPolicy.accepts(event.hand)) {
+            // PlayerInteractEventはメイン／オフハンドごとに発火します。右クリックを
+            // 両方Actionへ渡すと、同じ入力が二重実行されるため、Gesture GUIの正規入口は
+            // メインハンドだけに限定します。Kantanの完全遮断中だけは、無視したオフハンド
+            // からブロック・アイテム使用が漏れないようイベント自体を拒否します。
+            if (
+                service.isWorldClickSuppressed(event.player.uniqueId) ||
+                service.isSecondaryInputDisabled(event.player.uniqueId)
+            ) {
+                suppressWorldRightClick(event)
+            }
+            return
+        }
         if (service.isWorldClickSuppressed(event.player.uniqueId)) {
             if (event.action.isRightClick) {
                 // KantanのGesture GUIでは、画面外も含めて右クリックを通常ワールドへ
                 // 到達させません。Inventory GUIの右クリックとは別イベント経路です。
-                event.setUseInteractedBlock(Event.Result.DENY)
-                event.setUseItemInHand(Event.Result.DENY)
+                suppressWorldRightClick(event)
             } else if (event.action.isLeftClick) {
                 // 画面内であれば通常どおりActionを解決し、未割当領域でも外部ブロックへ
                 // は漏らさないため、結果に関係なくイベントを吸収します。
@@ -58,9 +70,7 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
             event.action.isRightClick -> {
                 if (service.isSecondaryInputDisabled(event.player.uniqueId)) {
                     // Inventory GUIとは別に、Gesture GUI操作中のワールド右クリックだけを拒否します。
-                    event.setUseInteractedBlock(Event.Result.DENY)
-                    event.setUseItemInHand(Event.Result.DENY)
-                    event.isCancelled = true
+                    suppressWorldRightClick(event)
                     return
                 }
                 secondary(event.player)
@@ -73,6 +83,15 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
         val catcher = service.ownsCatcher(event.rightClicked, event.player.uniqueId)
+        if (!GestureGuiRightClickHandPolicy.accepts(event.hand)) {
+            // Interactionへのオフハンド右クリックは、正規の右クリック判定へ渡しません。
+            // 所有catcher／完全遮断セッションだけは、背後のエンティティ操作を防ぐため
+            // イベントをキャンセルします。
+            if (catcher || service.isWorldClickSuppressed(event.player.uniqueId)) {
+                event.isCancelled = true
+            }
+            return
+        }
         if (service.isWorldClickSuppressed(event.player.uniqueId)) {
             // 右クリックActionは原則廃止し、Interaction以外のエンティティも含めて
             // 外部プラグインへ入力を渡さない完全吸収とします。
@@ -140,6 +159,12 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     private fun secondary(player: Player) =
         if (player.isSneaking) GestureGuiGesture.SHIFT_SECONDARY else GestureGuiGesture.SECONDARY
 
+    private fun suppressWorldRightClick(event: PlayerInteractEvent) {
+        event.setUseInteractedBlock(Event.Result.DENY)
+        event.setUseItemInHand(Event.Result.DENY)
+        event.isCancelled = true
+    }
+
     private fun dispatch(player: Player, gesture: GestureGuiGesture): Boolean {
         val key = GestureGuiInputKey(player.uniqueId, gesture)
         val tick = Bukkit.getCurrentTick()
@@ -158,6 +183,11 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 }
 
 internal data class GestureGuiInputKey(val playerId: UUID, val gesture: GestureGuiGesture)
+
+/** 右クリックの正規入力として受理する手を明示します。nullもメインハンド扱いしません。 */
+internal object GestureGuiRightClickHandPolicy {
+    fun accepts(hand: EquipmentSlot?): Boolean = hand == EquipmentSlot.HAND
+}
 
 /**
  * ARM_SWINGとInteractが同じtickに届く入力を、処理成功時だけ一度にまとめます。
