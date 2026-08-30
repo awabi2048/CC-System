@@ -504,7 +504,7 @@ class GestureGuiServiceImpl(
     internal fun isSecondaryInputDisabled(playerId: UUID): Boolean =
         sessions.values.any { session ->
             session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
-                playerId in session.actors &&
+                (playerId == session.ownerId || playerId in session.actors) &&
                 !session.secondaryInputEnabled
         }
 
@@ -515,7 +515,7 @@ class GestureGuiServiceImpl(
     internal fun isWorldClickSuppressed(playerId: UUID): Boolean =
         sessions.values.any { session ->
             session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
-                playerId in session.actors &&
+                (playerId == session.ownerId || playerId in session.actors) &&
                 session.suppressWorldClicks
         }
 
@@ -697,14 +697,27 @@ class GestureGuiServiceImpl(
                 session.appliedYaw = session.retainedYaw
             }
             }
-            session.actors[session.ownerId]?.let { actor ->
-                // Catcherは画面までの距離ではなく、仕様上のプレイヤー目位置へ常に置きます。
-                // 画面外で遠方へ退避させると、視線変更時の一瞬の入力漏れが発生するためです。
-                val ownerHit = if (session.state == GestureGuiSessionState.ACTIVE) targetHit(session, owner) else null
-                renderer.moveCatcher(actor.catcher, catcherLocation(owner))
-                // 開閉アニメーション中は内容より先にホバーだけが現れないよう、操作可能になってから表示します。
-                val hoverHit = ownerHit
-                updateHover(session, actor, owner, hoverHit)
+            if (session.state == GestureGuiSessionState.ACTIVE) {
+                // 視線が画面外にある間はInteraction自体を削除します。残したまま視点だけを
+                // 追従させると、画面を見ていないクリックまでEntity操作として扱われ、
+                // 外部エンティティの操作経路と競合します。視線が戻ったtickで再生成します。
+                val ownerHit = targetHit(session, owner)
+                if (ownerHit == null) {
+                    removeActor(session, session.ownerId)
+                } else {
+                    val actor = session.actors[session.ownerId]
+                        ?: runCatching { createActor(session, owner) }.getOrNull()
+                    actor?.let {
+                        renderer.moveCatcher(it.catcher, catcherLocation(owner))
+                        updateHover(session, it, owner, ownerHit)
+                    }
+                }
+            } else {
+                // 開閉アニメーション中は入口を維持し、ワールド操作が漏れないようにします。
+                session.actors[session.ownerId]?.let { actor ->
+                    renderer.moveCatcher(actor.catcher, catcherLocation(owner))
+                    updateHover(session, actor, owner, null)
+                }
             }
         }
         reconcileExternalActors()
@@ -996,7 +1009,14 @@ class GestureGuiServiceImpl(
         }
     }
 
-    /** 固定アンカーからプレイヤー目線方向を向く画面poseを生成します。CC-System APIのみで配置します。 */
+    /**
+     * 固定アンカーから画面poseを生成します。
+     *
+     * 固定配置の画面は、開いた瞬間のブロック基準高さを維持する必要があります。
+     * そのため、プレイヤーの目とアンカーのY差を画面法線へ含めず、XZ平面の方向だけで
+     * 向きを決めます。上下方向の視線に依存すると、同じブロックを別の高さから開いた
+     * ときに画面全体が上下へ移動し、表示高さの契約が崩れます。
+     */
     private fun fixedPoses(
         anchor: Location,
         eye: Location,
@@ -1006,9 +1026,15 @@ class GestureGuiServiceImpl(
     ): List<GestureGuiScreenPose> {
         val anchorVec = GestureGuiVector3(anchor.x, anchor.y, anchor.z)
         val eyeVec = GestureGuiVector3(eye.x, eye.y, eye.z)
-        // eye -> anchor 逆向き法線とします（eyeから見て正面）。
-        // 水平法線はI選び直しAPI側で固定されるため、姿勢はこのワールドyawから算出して上下に積みます。
-        val normal = (anchorVec - eyeVec).normalized()
+        val horizontal = GestureGuiVector3(anchorVec.x - eyeVec.x, 0.0, anchorVec.z - eyeVec.z)
+        val normal = if (horizontal.length() > 1.0e-9) {
+            horizontal.normalized()
+        } else {
+            // 真上／真下から開いた場合はXZ方向が定まらないため、開いた時の
+            // プレイヤーyawをフォールバックとして使い、姿勢の不定性をなくします。
+            val yaw = Math.toRadians(eye.yaw.toDouble())
+            GestureGuiVector3(-kotlin.math.sin(yaw), 0.0, kotlin.math.cos(yaw))
+        }
         val yaw = Math.toDegrees(atan2(-normal.x, normal.z))
         val syntheticEye = anchorVec - normal * FIXED_SCREEN_DISTANCE
         val poses = GestureGuiGeometry.poses(
@@ -1043,7 +1069,9 @@ class GestureGuiServiceImpl(
         center = parent.center - parent.normal * (childIndex * CHILD_STACK_DEPTH),
     )
 
-    private fun catcherLocation(player: Player): Location = player.eyeLocation.clone()
+    /** InteractionのLocationは底面基準なので、ヒットボックス中央が目位置へ来るよう補正します。 */
+    private fun catcherLocation(player: Player): Location =
+        player.eyeLocation.clone().subtract(0.0, GESTURE_CATCHER_SIZE / 2.0, 0.0)
 
     private fun shortestYawDelta(from: Float, to: Float): Float = ((to - from + 540f) % 360f) - 180f
 

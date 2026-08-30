@@ -163,6 +163,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_FEET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.equipment_feet", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONFIRM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.confirm", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.back", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_CANDIDATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.show_candidates", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.interval", setOf())
@@ -743,6 +744,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_FEET,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONFIRM,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_CANDIDATES,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL,

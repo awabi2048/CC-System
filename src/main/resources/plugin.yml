@@ -106,7 +106,7 @@ permissions:
     description: MyWorld登録アイテム付与権限
     default: op
   cc.item.give.kantan:
-    description: Kantan Commanderディスク付与権限
+    description: Kantan Commanderプログラムディスク付与権限
     default: op
   cc-system.*:
     description: CC-Systemの全権限

@@ -381,8 +381,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.isPersistent = false
             // 後から参加したプレイヤーにも送信されないよう、生成時点から個人表示に固定します。
             it.isVisibleByDefault = false
-            it.interactionWidth = 0.18f
-            it.interactionHeight = 0.18f
+            // InteractionのLocationは底面基準です。サービス側で目位置から
+            // 半分だけ下げて配置することで、ヒットボックスの中央を視点へ一致させます。
+            it.interactionWidth = GESTURE_CATCHER_SIZE
+            it.interactionHeight = GESTURE_CATCHER_SIZE
             // Interactionの応答設定は腕振り等のクライアント応答を制御します。
             // 実際の操作可否はGestureGuiService/Listenerで別途判定します。
             it.isResponsive = responsive
@@ -641,3 +643,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     private data class PanelPart(val x: Double, val y: Double, val width: Double, val height: Double)
 }
+
+/**
+ * プレイヤー入力を吸収するInteractionの一辺です。
+ * 生成側と配置側で別のリテラルを持つと、中央合わせがずれるため共有します。
+ */
+internal const val GESTURE_CATCHER_SIZE: Float = 0.18f
