@@ -428,7 +428,7 @@ class GestureGuiServiceImpl(
         // 画面内の未割当操作も吸収しますが、Actionは実行しません。
         // ただし同一パケットの後続InteractでEntity位置が確定する可能性があるため、
         // この分岐だけは入力重複抑止の対象にしません。
-        if (element == null || gesture !in element.acceptedGestures) {
+        if (element == null || !element.acceptsGesture(actor, gesture)) {
             return GestureGuiDispatchResult.RETRYABLE_CONSUMED
         }
         if (actor.uniqueId !in session.actors) {

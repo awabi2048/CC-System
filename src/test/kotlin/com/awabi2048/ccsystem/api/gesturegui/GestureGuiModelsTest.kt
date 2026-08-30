@@ -1,8 +1,10 @@
 package com.awabi2048.ccsystem.api.gesturegui
 
 import java.util.UUID
+import java.lang.reflect.Proxy
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -113,6 +115,25 @@ class GestureGuiModelsTest {
         ) {}
 
         assertTrue(view.definition.elements.single().targetVisualId == textVisual.visualId)
+    }
+
+    @Test
+    fun `element guard is evaluated again for the same rendered element`() {
+        var enabled = false
+        val element = GestureGuiElement(
+            elementId = "dynamic-action",
+            bounds = GestureGuiBounds(-0.1, -0.1, 0.1, 0.1),
+            acceptedGestures = setOf(GestureGuiGesture.PRIMARY),
+            gestureGuard = { _, _ -> enabled },
+        )
+        val player = Proxy.newProxyInstance(
+            Player::class.java.classLoader,
+            arrayOf(Player::class.java),
+        ) { _, _, _ -> null } as Player
+
+        assertFalse(element.acceptsGesture(player, GestureGuiGesture.PRIMARY))
+        enabled = true
+        assertTrue(element.acceptsGesture(player, GestureGuiGesture.PRIMARY))
     }
 
     @Test

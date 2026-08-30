@@ -5,6 +5,7 @@ import kotlin.math.sqrt
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.entity.Player
 
 /** 画面の実寸と共通外観です。寸法・枠幅はブロック単位です。 */
 data class GestureGuiPanel(
@@ -155,6 +156,16 @@ data class GestureGuiElement(
     val hoverText: GestureGuiHoverText? = null,
     /** Text・Item・Blockのどの表示物に対する操作領域かを明示します。 */
     val targetVisualId: String? = null,
+    /**
+     * プレイヤーの現在状態に依存する入力可否を、入力時点で再評価します。
+     *
+     * acceptedGesturesだけで状態依存の入力を無効化すると、view生成後の持ち替えや
+     * 外部変更が反映されるまで、表示上は同じボタンなのにクリック音もActionも発生
+     * しない状態になります。動的な条件はこのガードへ渡し、画面を再構築せずに
+     * 最新状態を判定できるようにします。falseの場合は通常の未対応入力と同じく、
+     * イベントをGUI側で消費しますが、効果音とActionは発生させません。
+     */
+    val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
 ) {
     init {
         require(elementId.isNotBlank()) { "gesture GUI elementId must not be blank" }
@@ -162,6 +173,10 @@ data class GestureGuiElement(
             "gesture GUI targetVisualId must not be blank"
         }
     }
+
+    /** 静的な入力種別と、必要なら入力時点の動的条件を合わせて判定します。 */
+    fun acceptsGesture(player: Player, gesture: GestureGuiGesture): Boolean =
+        gesture in acceptedGestures && (gestureGuard?.invoke(player, gesture) ?: true)
 }
 
 /** 操作者だけへ表示するホバーテキストです。位置は画面中央基準で自由に指定できます。 */
@@ -191,6 +206,7 @@ data class GestureGuiHoverText(
             "gesture GUI hover replacesVisualId must not be blank"
         }
     }
+
 }
 
 /**
