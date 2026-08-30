@@ -712,8 +712,7 @@ class GestureGuiServiceImpl(
                 if (ownerHit == null) {
                     removeActor(session, session.ownerId)
                 } else {
-                    val actor = session.actors[session.ownerId]
-                        ?: runCatching { createActor(session, owner) }.getOrNull()
+                    val actor = getOrCreateActor(session, owner)
                     actor?.let {
                         renderer.moveCatcher(it.catcher, catcherLocation(owner))
                         updateHover(session, it, owner, ownerHit)
@@ -758,7 +757,7 @@ class GestureGuiServiceImpl(
                 if (session !== desired?.first && player.uniqueId in session.actors) removeActor(session, player.uniqueId)
             }
             val (session, hit) = desired ?: return@forEach
-            val actor = session.actors[player.uniqueId] ?: runCatching { createActor(session, player) }.getOrNull() ?: return@forEach
+            val actor = getOrCreateActor(session, player) ?: return@forEach
             session.screens.filter {
                 it.view.definition.canOperate(session.ownerId, player.uniqueId)
             }.forEach { renderer.showTo(it.render, player) }
@@ -806,6 +805,20 @@ class GestureGuiServiceImpl(
             claims.forEach(PlayerInteractionClaim::close)
             throw failure
         }
+    }
+
+    /**
+     * Actorを生成したら必ずセッションへ登録します。
+     *
+     * 公開画面の第三者と、所有者が視線を画面外から戻した場合は毎tickこの経路を
+     * 通ります。登録を呼び出し側へ委ねると、生成済みのclaim・catcher・hoverが
+     * Session.actorsから漏れ、次tickに重複生成されて終了時にも回収できません。
+     */
+    private fun getOrCreateActor(session: Session, player: Player): ActorRuntime? {
+        session.actors[player.uniqueId]?.let { return it }
+        val created = runCatching { createActor(session, player) }.getOrNull() ?: return null
+        session.actors[player.uniqueId] = created
+        return created
     }
 
     /**
@@ -900,6 +913,8 @@ class GestureGuiServiceImpl(
         session.actors.keys.toList().forEach { removeActor(session, it) }
         session.screens.forEach { renderer.remove(it.render) }
         session.children.forEach(::destroyChild)
+        // Actor登録漏れや旧版から残ったホバーを含め、セッションID単位で最後に掃除します。
+        renderer.removeSessionEntities(session.id)
     }
 
     /**

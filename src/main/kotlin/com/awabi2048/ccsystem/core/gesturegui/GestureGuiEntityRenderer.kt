@@ -364,7 +364,39 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.background.forEach { entity -> Bukkit.getOnlinePlayers().forEach { it.hideEntity(plugin, entity) } }
     }
 
-    fun remove(handle: ScreenHandle) = handle.all.forEach(Entity::remove)
+    /**
+     * ScreenHandleが保持する実体を破棄し、ハンドルも空に戻します。
+     *
+     * 表示更新・終了処理の遅延Runnableが古いハンドルを参照しても、破棄済み
+     * Entityを再表示できないように、Entityのremoveだけでなく管理コレクションも
+     * 同時に無効化します。
+     */
+    fun remove(handle: ScreenHandle) {
+        handle.all.toSet().forEach(Entity::remove)
+        handle.background.clear()
+        handle.contents.clear()
+        handle.visualEntities.clear()
+        handle.hiddenVisualIds.clear()
+    }
+
+    /**
+     * セッションタグを正本として、ハンドルから漏れた表示Entityも回収します。
+     *
+     * ホバーTextDisplayや操作者ごとのInteractionはScreenHandleの外で管理されるため、
+     * Actorの登録漏れなどが起きても終了時に残らないよう、ロード済み全ワールドを
+     * セッションIDで走査します。タグは本プラグインが生成したEntityにだけ付くため、
+     * 通常のDisplayやプレイヤーを巻き込みません。
+     */
+    fun removeSessionEntities(sessionId: UUID) {
+        val expected = sessionId.toString()
+        Bukkit.getWorlds().forEach { world ->
+            world.entities.toList()
+                .filter { entity ->
+                    entity.persistentDataContainer.get(sessionKey, PersistentDataType.STRING) == expected
+                }
+                .forEach(Entity::remove)
+        }
+    }
 
     fun spawnModalOverlay(
         owner: Player,
