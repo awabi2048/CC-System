@@ -112,6 +112,10 @@ class GestureGuiServiceImpl(
         val layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         /** 縦配置で使用する実体スロット。欠けたスロットは生成しません。 */
         val verticalSlots: List<GestureGuiVerticalSlot>? = null,
+        /** Inventory GUIとは独立したInteraction入力の右クリック許可設定です。 */
+        val secondaryInputEnabled: Boolean = true,
+        /** 画面外を含むワールド左右クリックの外部操作を吸収する設定です。 */
+        val suppressWorldClicks: Boolean = false,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin)
@@ -177,6 +181,8 @@ class GestureGuiServiceImpl(
                 sessionListener = options.sessionListener,
                 layout = options.layout,
                 verticalSlots = options.verticalSlots,
+                secondaryInputEnabled = options.secondaryInputEnabled,
+                suppressWorldClicks = options.suppressWorldClicks,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -252,6 +258,8 @@ class GestureGuiServiceImpl(
             sessionListener = old.sessionListener,
             layout = old.layout,
             verticalSlots = old.verticalSlots,
+            secondaryInputEnabled = old.secondaryInputEnabled,
+            suppressWorldClicks = old.suppressWorldClicks,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -422,6 +430,13 @@ class GestureGuiServiceImpl(
             .minByOrNull { (_, target) -> target.hit.distance }
             ?: return GestureGuiDispatchResult.UNHANDLED
         val (session, target) = candidate
+        if (!session.secondaryInputEnabled &&
+            gesture in setOf(GestureGuiGesture.SECONDARY, GestureGuiGesture.SHIFT_SECONDARY)
+        ) {
+            // 右クリックは入力として吸収しますが、Inventory GUIのクリック仕様とは無関係に
+            // Interaction由来のActionだけを無効化します。
+            return GestureGuiDispatchResult.CONSUMED
+        }
         if (target.blocked) return GestureGuiDispatchResult.CONSUMED
         val view = target.view ?: return GestureGuiDispatchResult.CONSUMED
         val element = view.definition.elements.firstOrNull { it.elementId == target.hit.elementId }
@@ -482,7 +497,27 @@ class GestureGuiServiceImpl(
         return true
     }
 
-    internal fun ownsCatcher(entity: org.bukkit.entity.Entity): Boolean = renderer.ownsCatcher(entity)
+    internal fun ownsCatcher(entity: org.bukkit.entity.Entity, playerId: UUID? = null): Boolean =
+        renderer.ownsCatcher(entity, playerId)
+
+    /** KantanCommander等がInteractionの右クリックを無効化するためのセッション単位判定です。 */
+    internal fun isSecondaryInputDisabled(playerId: UUID): Boolean =
+        sessions.values.any { session ->
+            session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
+                playerId in session.actors &&
+                !session.secondaryInputEnabled
+        }
+
+    /**
+     * 外部ブロック／エンティティ操作を漏らさないためのセッション単位の入力遮断です。
+     * 開幕アニメーション中もcatcherを生成済みなので、ACTIVE待ちの1 tickを無防備にしません。
+     */
+    internal fun isWorldClickSuppressed(playerId: UUID): Boolean =
+        sessions.values.any { session ->
+            session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
+                playerId in session.actors &&
+                session.suppressWorldClicks
+        }
 
     internal fun isParticipating(playerId: UUID): Boolean =
         playerId in sessions || sessions.values.any { playerId in it.actors }
@@ -663,10 +698,10 @@ class GestureGuiServiceImpl(
             }
             }
             session.actors[session.ownerId]?.let { actor ->
-                // 画面外ではInteractionを視線上に置かない。これにより、パネル外の攻撃が
-                // ジェスチャー入力として先取りされることを防ぎます。
+                // Catcherは画面までの距離ではなく、仕様上のプレイヤー目位置へ常に置きます。
+                // 画面外で遠方へ退避させると、視線変更時の一瞬の入力漏れが発生するためです。
                 val ownerHit = if (session.state == GestureGuiSessionState.ACTIVE) targetHit(session, owner) else null
-                renderer.moveCatcher(actor.catcher, catcherLocation(owner, ownerHit?.hit?.distance ?: 100.0))
+                renderer.moveCatcher(actor.catcher, catcherLocation(owner))
                 // 開閉アニメーション中は内容より先にホバーだけが現れないよう、操作可能になってから表示します。
                 val hoverHit = ownerHit
                 updateHover(session, actor, owner, hoverHit)
@@ -710,7 +745,7 @@ class GestureGuiServiceImpl(
             session.children.filter {
                 it.view.definition.canOperate(session.ownerId, player.uniqueId)
             }.forEach { renderer.showTo(it.render, player) }
-            renderer.moveCatcher(actor.catcher, catcherLocation(player, hit.hit.distance))
+            renderer.moveCatcher(actor.catcher, catcherLocation(player))
             updateHover(session, actor, player, hit)
         }
         activeSessions.forEach { session ->
@@ -733,7 +768,17 @@ class GestureGuiServiceImpl(
             throw failure
         }
         return try {
-            ActorRuntime(player.uniqueId, claims, renderer.spawnCatcher(player, session.id, session.revision, catcherLocation(player)))
+            ActorRuntime(
+                player.uniqueId,
+                claims,
+                renderer.spawnCatcher(
+                    player,
+                    session.id,
+                    session.revision,
+                    catcherLocation(player),
+                    responsive = session.secondaryInputEnabled,
+                ),
+            )
         } catch (failure: Throwable) {
             claims.forEach(PlayerInteractionClaim::close)
             throw failure
@@ -998,8 +1043,7 @@ class GestureGuiServiceImpl(
         center = parent.center - parent.normal * (childIndex * CHILD_STACK_DEPTH),
     )
 
-    private fun catcherLocation(player: Player, hitDistance: Double = 1.25): Location =
-        player.eyeLocation.clone().add(player.eyeLocation.direction.multiply((hitDistance - 0.05).coerceAtLeast(0.1)))
+    private fun catcherLocation(player: Player): Location = player.eyeLocation.clone()
 
     private fun shortestYawDelta(from: Float, to: Float): Float = ((to - from + 540f) % 360f) - 180f
 

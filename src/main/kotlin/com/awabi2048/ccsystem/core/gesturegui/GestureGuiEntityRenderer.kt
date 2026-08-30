@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+import com.moulberry.axiom.paperapi.AxiomEntityAPI
 import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -31,6 +32,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     private val sessionKey = NamespacedKey(plugin, "gesture_gui_session")
     private val actorKey = NamespacedKey(plugin, "gesture_gui_actor")
     private val revisionKey = NamespacedKey(plugin, "gesture_gui_revision")
+    private val axiomEnabled = plugin.server.pluginManager.isPluginEnabled("AxiomPaper")
+    private var axiomWarningLogged = false
 
     internal class ScreenHandle(
         val background: MutableList<BlockDisplay>,
@@ -359,6 +362,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         visibleByDefault = false,
     ).also {
         mark(it, sessionId, revision)
+        hideAxiomDisplayGizmo(it)
         owner.showEntity(plugin, it)
     }
 
@@ -366,18 +370,22 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         overlay.teleport(visualLocation(overlay.world, pose, 0.0, 0.0, MODAL_OVERLAY_LAYER))
     }
 
-    fun spawnCatcher(player: Player, sessionId: UUID, revision: Long, location: Location): CatcherHandle {
+    fun spawnCatcher(
+        player: Player,
+        sessionId: UUID,
+        revision: Long,
+        location: Location,
+        responsive: Boolean,
+    ): CatcherHandle {
         val entity = player.world.spawn(location, Interaction::class.java) {
             it.isPersistent = false
             // 後から参加したプレイヤーにも送信されないよう、生成時点から個人表示に固定します。
             it.isVisibleByDefault = false
             it.interactionWidth = 0.18f
             it.interactionHeight = 0.18f
-            // 右クリックをPlayerInteractEntityEventへ届けるため応答を有効化します。
-            // このInteraction自体に操作処理は持たせず、GestureGuiInputListenerが
-            // 同じ視線rayで画面要素を再判定します。falseのままだとSECONDARY入力が
-            // 発生せず、右クリック時に効果音もActionもない無反応になります。
-            it.isResponsive = true
+            // Interactionの応答設定は腕振り等のクライアント応答を制御します。
+            // 実際の操作可否はGestureGuiService/Listenerで別途判定します。
+            it.isResponsive = responsive
             mark(it, sessionId, revision)
             it.persistentDataContainer.set(actorKey, PersistentDataType.STRING, player.uniqueId.toString())
         }
@@ -407,6 +415,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.isVisibleByDefault = false
             applyHover(it, pose, hover)
             mark(it, sessionId, revision)
+            hideAxiomDisplayGizmo(it)
         }
         // isVisibleByDefault=falseの実体はtracking開始後に個別表示します。同一tickのshowは
         // クライアントへspawn packetが送られる前に消費される実装差があるため、次tickへ分離します。
@@ -424,7 +433,12 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
     fun removeHover(handle: HoverHandle) = handle.entity.remove()
 
-    fun ownsCatcher(entity: Entity): Boolean = entity.persistentDataContainer.has(actorKey, PersistentDataType.STRING)
+    fun ownsCatcher(entity: Entity, playerId: UUID? = null): Boolean {
+        val owner = entity.persistentDataContainer.get(actorKey, PersistentDataType.STRING)
+            ?.let { runCatching { UUID.fromString(it) }.getOrNull() }
+            ?: return false
+        return playerId == null || owner == playerId
+    }
 
     private fun spawnBlock(
         world: World,
@@ -438,6 +452,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.block = visual.blockData
             it.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
             applyGlow(it, visual.glowColor)
+            hideAxiomDisplayGizmo(it)
         }
 
     private fun spawnPanelBlock(
@@ -460,6 +475,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         it.setTransformation(
             if (initiallyScaleZero) scaleZeroTransform() else blockTransform(width.toFloat(), height.toFloat()),
         )
+        hideAxiomDisplayGizmo(it)
     }
 
     private fun spawnItem(
@@ -476,6 +492,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             val scale = visual.scale.toFloat()
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
             applyGlow(it, visual.glowColor)
+            hideAxiomDisplayGizmo(it)
         }
 
     private fun spawnText(
@@ -493,7 +510,26 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             it.alignment = TextDisplay.TextAlignment.CENTER
             val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
+            hideAxiomDisplayGizmo(it)
         }
+
+    /**
+     * Axiom Paper Pluginの公開APIで、Kantanの表示エンティティごとのGizmoを
+     * 操作対象から除外します。Axiomがないサーバーでは呼び出さず、任意連携を
+     * 失敗させません。API世代差は一つの警告へ閉じ込め、表示生成自体は継続します。
+     */
+    private fun hideAxiomDisplayGizmo(display: Display) {
+        if (!axiomEnabled) return
+        runCatching { AxiomEntityAPI.getAPI().hideDisplayGizmo(display) }
+            .onFailure { failure ->
+                if (!axiomWarningLogged) {
+                    axiomWarningLogged = true
+                    plugin.logger.warning(
+                        "AxiomのDisplay Gizmo抑制に失敗しました。表示は継続します: ${failure.message}",
+                    )
+                }
+            }
+    }
 
     private fun prepareDisplay(display: Display, pose: GestureGuiScreenPose) {
         display.isPersistent = false

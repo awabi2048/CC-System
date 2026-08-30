@@ -72,6 +72,17 @@ data class GestureGuiOpenOptions(
      * 例えばTOPとMIDDLEだけを指定すると、下スロットを画面で埋めずに上・中へ配置できます。
      */
     val verticalSlots: List<GestureGuiVerticalSlot>? = null,
+    /**
+     * SECONDARY/SHIFT_SECONDARYをGesture GUIのActionへ変換するか。
+     * Inventory GUIの右クリック仕様とは独立した、Interaction入力だけの設定です。
+     * 既定値は既存利用者との互換性を保つためtrueです。
+     */
+    val secondaryInputEnabled: Boolean = true,
+    /**
+     * このセッションの参加者がワールドへ送る左右クリックを、画面外も含めて吸収するか。
+     * Inventory GUIのクリックイベントや、secondaryInputEnabledのAction解決には影響しません。
+     */
+    val suppressWorldClicks: Boolean = false,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {

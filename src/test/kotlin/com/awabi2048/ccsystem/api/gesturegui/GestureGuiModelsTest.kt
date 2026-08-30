@@ -43,6 +43,8 @@ class GestureGuiModelsTest {
             listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE),
             options.verticalSlots,
         )
+        assertTrue(options.secondaryInputEnabled)
+        assertFalse(options.suppressWorldClicks)
         assertThrows(IllegalArgumentException::class.java) {
             GestureGuiOpenOptions(
                 layout = GestureGuiScreenLayout.HORIZONTAL,

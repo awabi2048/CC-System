@@ -2,38 +2,69 @@ package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import io.papermc.paper.event.player.PlayerArmSwingEvent
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
 import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.player.PlayerAnimationEvent
-import org.bukkit.event.player.PlayerAnimationType
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import org.bukkit.inventory.EquipmentSlot
 
 /**
  * Bukkitの複数イベントをジェスチャーへ正規化します。
- * 同じパケット由来のInteract/InteractAt等はtick単位で一度だけActionへ渡します。
+ * 同じパケット由来の入力はtick単位で一度だけActionへ渡します。
  */
 class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : Listener {
     private val inputDeduplicator = GestureGuiInputDeduplicator()
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    fun onAnimation(event: PlayerAnimationEvent) {
-        if (event.animationType != PlayerAnimationType.ARM_SWING) return
+    fun onAnimation(event: PlayerArmSwingEvent) {
+        // 攻撃の正規入口はメインハンドだけです。オフハンドの腕振り（アイテム使用など）を
+        // PRIMARYへ変換すると、Inventory GUIとは無関係なGesture画面まで誤作動します。
+        if (event.hand != EquipmentSlot.HAND) return
+        // Interactionが入力の入口になっているセッションでは、ARM_SWINGを
+        // そのままActionへ変換すると、同じ左クリックのPrePlayerAttackEntityEvent
+        // と二重に判定されます。Interactionを持たない旧クライアント／画面だけを
+        // フォールバックとして扱い、Paper 26.1.2の通常経路は攻撃イベントへ一本化します。
+        if (service.isParticipating(event.player.uniqueId)) return
         if (dispatch(event.player, primary(event.player))) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onWorldInteract(event: PlayerInteractEvent) {
+        if (service.isWorldClickSuppressed(event.player.uniqueId)) {
+            if (event.action.isRightClick) {
+                // KantanのGesture GUIでは、画面外も含めて右クリックを通常ワールドへ
+                // 到達させません。Inventory GUIの右クリックとは別イベント経路です。
+                event.setUseInteractedBlock(Event.Result.DENY)
+                event.setUseItemInHand(Event.Result.DENY)
+            } else if (event.action.isLeftClick) {
+                // 画面内であれば通常どおりActionを解決し、未割当領域でも外部ブロックへ
+                // は漏らさないため、結果に関係なくイベントを吸収します。
+                dispatch(event.player, primary(event.player))
+            }
+            event.isCancelled = true
+            return
+        }
         val gesture = when {
             event.action.isLeftClick -> primary(event.player)
-            event.action.isRightClick -> secondary(event.player)
+            event.action.isRightClick -> {
+                if (service.isSecondaryInputDisabled(event.player.uniqueId)) {
+                    // Inventory GUIとは別に、Gesture GUI操作中のワールド右クリックだけを拒否します。
+                    event.setUseInteractedBlock(Event.Result.DENY)
+                    event.setUseItemInHand(Event.Result.DENY)
+                    event.isCancelled = true
+                    return
+                }
+                secondary(event.player)
+            }
             else -> return
         }
         if (dispatch(event.player, gesture)) event.isCancelled = true
@@ -41,23 +72,48 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
-        val catcher = service.ownsCatcher(event.rightClicked)
+        val catcher = service.ownsCatcher(event.rightClicked, event.player.uniqueId)
+        if (service.isWorldClickSuppressed(event.player.uniqueId)) {
+            // 右クリックActionは原則廃止し、Interaction以外のエンティティも含めて
+            // 外部プラグインへ入力を渡さない完全吸収とします。
+            event.isCancelled = true
+            return
+        }
+        if (service.isSecondaryInputDisabled(event.player.uniqueId)) {
+            if (catcher) event.isCancelled = true
+            return
+        }
         // catcherは背後のブロックを遮る入口であり、正規の要素判定は同じ視線rayで行います。
         val handled = dispatch(event.player, secondary(event.player))
         if (catcher || handled) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    fun onEntityInteractAt(event: PlayerInteractAtEntityEvent) {
-        val catcher = service.ownsCatcher(event.rightClicked)
-        val handled = dispatch(event.player, secondary(event.player))
+    fun onEntityAttack(event: PrePlayerAttackEntityEvent) {
+        val player = event.player
+        val catcher = service.ownsCatcher(event.attacked, player.uniqueId)
+        if (service.isWorldClickSuppressed(player.uniqueId)) {
+            // 画面内ならActionを解決し、対象が別エンティティでも攻撃自体は吸収します。
+            dispatch(player, primary(player))
+            event.isCancelled = true
+            return
+        }
+        if (!catcher) return
+        val handled = dispatch(player, primary(player))
         if (catcher || handled) event.isCancelled = true
     }
 
+    /** 古いPaper経路でInteractionがPreイベントへ到達しない場合の防御的フォールバックです。 */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    fun onEntityAttack(event: EntityDamageByEntityEvent) {
+    fun onLegacyEntityAttack(event: EntityDamageByEntityEvent) {
         val player = event.damager as? Player ?: return
-        val catcher = service.ownsCatcher(event.entity)
+        val catcher = service.ownsCatcher(event.entity, player.uniqueId)
+        if (service.isWorldClickSuppressed(player.uniqueId)) {
+            dispatch(player, primary(player))
+            event.isCancelled = true
+            return
+        }
+        if (!catcher) return
         val handled = dispatch(player, primary(player))
         if (catcher || handled) event.isCancelled = true
     }
@@ -87,7 +143,10 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     private fun dispatch(player: Player, gesture: GestureGuiGesture): Boolean {
         val key = GestureGuiInputKey(player.uniqueId, gesture)
         val tick = Bukkit.getCurrentTick()
-        if (inputDeduplicator.isHandled(key, tick)) return service.isParticipating(player.uniqueId)
+        // 既に同tickの正規イベントを処理済みなら、参加状態に関係なく後続イベントも
+        // 消費します。右クリック無効化などで最初のイベント時点にactorを作らない
+        // ケースでも、後続の通常ワールド処理へ漏らさないためです。
+        if (inputDeduplicator.isHandled(key, tick)) return true
         // ARM_SWINGが先に届いても、まだrayが画面要素へ交差していない場合があります。
         // イベントを消費しただけの再試行可能な結果まで重複済みとして記録すると、
         // 同じtickのInteractイベントが再判定できず、クリック音もActionも消えます。

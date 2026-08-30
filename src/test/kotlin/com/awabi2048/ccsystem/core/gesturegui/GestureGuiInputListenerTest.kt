@@ -29,4 +29,5 @@ class GestureGuiInputListenerTest {
         assertTrue(gate.isHandled(key, 42))
         assertFalse(gate.isHandled(key, 43))
     }
+
 }

@@ -472,7 +472,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.block_state", value = EmbeddedLocalizedValue.Text("ブロック状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.item_possession", value = EmbeddedLocalizedValue.Text("アイテム所持"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.player_not_found", value = EmbeddedLocalizedValue.Text("プレイヤーが見つかりません。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_programs", value = EmbeddedLocalizedValue.Text("/kankoma programs - プログラム一覧を開きます"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_programs", value = EmbeddedLocalizedValue.Text("/kankoma library - ライブラリを開きます（履歴: /kankoma history）"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_placed", value = EmbeddedLocalizedValue.Text("/kankoma placed - 設置済み拡張コマンドブロックを表示します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_reload", value = EmbeddedLocalizedValue.Text("/kankoma reload - 設定を再読み込みします"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placements_header", value = EmbeddedLocalizedValue.Text("設置済み拡張コマンドブロック: {count}"), domain = DOMAIN),

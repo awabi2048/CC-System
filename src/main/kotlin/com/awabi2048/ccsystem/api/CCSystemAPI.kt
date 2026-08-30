@@ -48,7 +48,7 @@ interface CCSystemAPI {
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 9
         // GestureGuiElementへ入力時点の動的ガードを追加したため、consumerが
         // 古いAPIへ接続しないよう契約版を更新します。
-        const val GESTURE_GUI_CONTRACT_VERSION: Int = 8
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 9
     }
     /**
      * プレイヤーの言語設定を取得します
