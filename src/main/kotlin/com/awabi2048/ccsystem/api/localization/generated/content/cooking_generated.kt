@@ -24,6 +24,8 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_ERROR_AMBIGUOUS_RECIPE: LocalizationKey<String> = LocalizationKey.text("cooking.error.ambiguous_recipe", setOf())
     @JvmField val COOKING_ERROR_TIER_LOCKED: LocalizationKey<String> = LocalizationKey.text("cooking.error.tier_locked", setOf())
     @JvmField val COOKING_ERROR_CONTAINER_REQUIRED: LocalizationKey<String> = LocalizationKey.text("cooking.error.container_required", setOf())
+    @JvmField val COOKING_ERROR_LIQUID_MISMATCH: LocalizationKey<String> = LocalizationKey.text("cooking.error.liquid_mismatch", setOf())
+    @JvmField val COOKING_ERROR_HEAT_REQUIRED: LocalizationKey<String> = LocalizationKey.text("cooking.error.heat_required", setOf())
     @JvmField val COOKING_RECIPE_COOKED_RICE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.cooked_rice", setOf())
     @JvmField val COOKING_RECIPE_TOMATO_SAUCE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.tomato_sauce", setOf())
     @JvmField val COOKING_RECIPE_DASHI: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.dashi", setOf())
@@ -163,6 +165,14 @@ object ContentCookingGeneratedKeys {
     @JvmField val CUSTOM_ITEMS_COOKING_RICE_VINEGAR_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.rice_vinegar.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_TOFU_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.tofu.name", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_TOFU_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.tofu.description", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SEA_WATER_BUCKET_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.sea_water_bucket.name", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SEA_WATER_BUCKET_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.sea_water_bucket.description", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SOY_MILK_BOTTLE_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_milk_bottle.name", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SOY_MILK_BOTTLE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_milk_bottle.description", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_NIGARI_BOTTLE_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.nigari_bottle.name", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_NIGARI_BOTTLE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.nigari_bottle.description", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SALT_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.salt.name", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SALT_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.salt.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_COCOA_SYRUP_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.cocoa_syrup.name", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_COCOA_SYRUP_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.cocoa_syrup.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_PAN_FRIED_POTATO_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.pan_fried_potato.name", setOf())
@@ -383,6 +393,8 @@ object ContentCookingGeneratedKeys {
         COOKING_ERROR_AMBIGUOUS_RECIPE,
         COOKING_ERROR_TIER_LOCKED,
         COOKING_ERROR_CONTAINER_REQUIRED,
+        COOKING_ERROR_LIQUID_MISMATCH,
+        COOKING_ERROR_HEAT_REQUIRED,
         COOKING_RECIPE_COOKED_RICE,
         COOKING_RECIPE_TOMATO_SAUCE,
         COOKING_RECIPE_DASHI,
@@ -522,6 +534,14 @@ object ContentCookingGeneratedKeys {
         CUSTOM_ITEMS_COOKING_RICE_VINEGAR_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_TOFU_NAME,
         CUSTOM_ITEMS_COOKING_TOFU_DESCRIPTION,
+        CUSTOM_ITEMS_COOKING_SEA_WATER_BUCKET_NAME,
+        CUSTOM_ITEMS_COOKING_SEA_WATER_BUCKET_DESCRIPTION,
+        CUSTOM_ITEMS_COOKING_SOY_MILK_BOTTLE_NAME,
+        CUSTOM_ITEMS_COOKING_SOY_MILK_BOTTLE_DESCRIPTION,
+        CUSTOM_ITEMS_COOKING_NIGARI_BOTTLE_NAME,
+        CUSTOM_ITEMS_COOKING_NIGARI_BOTTLE_DESCRIPTION,
+        CUSTOM_ITEMS_COOKING_SALT_NAME,
+        CUSTOM_ITEMS_COOKING_SALT_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_COCOA_SYRUP_NAME,
         CUSTOM_ITEMS_COOKING_COCOA_SYRUP_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_PAN_FRIED_POTATO_NAME,
