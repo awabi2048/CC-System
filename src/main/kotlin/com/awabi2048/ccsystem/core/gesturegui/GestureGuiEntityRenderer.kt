@@ -255,14 +255,19 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         newView: GestureGuiView,
     ) {
         val newIds = newView.visuals.mapTo(HashSet(), GestureGuiVisual::visualId)
-        oldView.visuals.forEach { visual ->
-            if (visual.visualId !in newIds) handle.visualEntities.remove(visual.visualId)?.let { entity ->
+        // oldViewは利用側の状態更新が失敗した場合に実体Mapより古くなることが
+        // あります。旧viewだけを走査すると、その間に作られたTextDisplayが画面へ
+        // 残り続けるため、削除対象は常に現在のMapを正本として求めます。
+        handle.visualEntities.keys.toList()
+            // パネル枠もvisualEntitiesで管理していますが、view.visualsには含まれない
+            // 内部IDです。枠を差分削除すると更新後に背景だけが消えるため保持します。
+            .filter { !it.startsWith(PANEL_FRAME_PREFIX) && it !in newIds }
+            .forEach { visualId ->
+            handle.visualEntities.remove(visualId)?.let { entity ->
                 handle.contents.remove(entity)
                 entity.remove()
             }
-            if (visual.visualId !in newIds) {
-                handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visual.visualId) }
-            }
+            handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visualId) }
         }
         handle.hiddenVisualIds.entries.removeIf { it.value.isEmpty() }
         newView.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
@@ -290,6 +295,17 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             applyVisual(entity, pose, visual)
             handle.visualEntities[visual.visualId] = entity
         }
+        // 差分適用の途中で例外や外部プラグインのEntity操作が発生すると、Mapへ
+        // 登録されていない実体だけがcontentsに残る場合があります。通常のvisual／
+        // パネル枠はすべてMapで追跡しているため、ここで孤立Entityを一括回収し、
+        // 説明TextDisplayが更新回数に応じて累積することを防ぎます。
+        val trackedEntities = handle.visualEntities.values.toSet()
+        handle.contents.toList()
+            .filterNot { it in trackedEntities }
+            .forEach { entity ->
+                handle.contents.remove(entity)
+                entity.remove()
+            }
     }
 
     private fun applyVisual(entity: Entity, pose: GestureGuiScreenPose, visual: GestureGuiVisual) {
@@ -627,6 +643,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     private companion object {
+        const val PANEL_FRAME_PREFIX = "__panel_frame_"
         // 斜め視点の深度量子化でも隣接レイヤーが重ならないよう、従来値の5/3倍を確保します。
         const val LAYER_DEPTH = 0.005
         // パネルの画面法線方向の厚みは従来値の約2倍です。

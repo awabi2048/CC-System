@@ -146,6 +146,13 @@ class GestureGuiServiceImpl(
         }
         check(owner.isOnline) { "gesture GUI owner must be online" }
         close(owner.uniqueId, GestureGuiCloseMode.IMMEDIATE)
+        // 公開Gesture画面の第三者として参加中の場合、その画面の入力claimを
+        // 持ったまま新しい所有者画面を開くとPRIMARYが競合します。所有者画面は
+        // 閉じても別セッションのactorまでは閉じないため、開くプレイヤーだけを
+        // 他セッションから離脱させ、公開画面自体は維持します。
+        sessions.values.toList()
+            .filter { it.ownerId != owner.uniqueId && owner.uniqueId in it.actors }
+            .forEach { removeActor(it, owner.uniqueId) }
         registeredOwners += owner.uniqueId
 
         val revision = nextRevision++
@@ -773,8 +780,11 @@ class GestureGuiServiceImpl(
         val claims = mutableListOf<PlayerInteractionClaim>()
         try {
             PlayerInteractionChannel.entries.forEach { channel ->
-                claims += claimService.claim(player.uniqueId, channel, owner)
-                    ?: throw IllegalStateException("gesture GUI could not claim $channel for ${player.uniqueId}")
+                claims += claimInputChannel(player.uniqueId, channel, owner)
+                    ?: throw IllegalStateException(
+                        "gesture GUI could not claim $channel for ${player.uniqueId}; " +
+                            "currentOwner=${claimService.ownerOf(player.uniqueId, channel)}",
+                    )
             }
         } catch (failure: Throwable) {
             claims.forEach(PlayerInteractionClaim::close)
@@ -796,6 +806,35 @@ class GestureGuiServiceImpl(
             claims.forEach(PlayerInteractionClaim::close)
             throw failure
         }
+    }
+
+    /**
+     * 入力claimの取得を一箇所へ集約します。
+     *
+     * Gesture GUIはセッション終了時にclaimを解放しますが、プラグインの途中再起動や
+     * 生成途中の失敗では、セッションMapに存在しない `gesture-gui:<UUID>` だけが残る
+     * 可能性があります。その所有者を無条件に奪うと公開画面の第三者入力を壊すため、
+     * 現在のセッションMapに実体がないUUIDだけを所有者指定で回収して一度だけ再試行します。
+     */
+    private fun claimInputChannel(
+        playerId: UUID,
+        channel: PlayerInteractionChannel,
+        owner: String,
+    ): PlayerInteractionClaim? {
+        claimService.claim(playerId, channel, owner)?.let { return it }
+        val currentOwner = claimService.ownerOf(playerId, channel) ?: return null
+        if (!currentOwner.startsWith(GESTURE_OWNER_PREFIX)) return null
+        val sessionId = currentOwner.removePrefix(GESTURE_OWNER_PREFIX)
+            .let { runCatching { UUID.fromString(it) }.getOrNull() }
+            ?: return null
+        val liveSession = sessions.values.any { session ->
+            session.id == sessionId &&
+                session.state != GestureGuiSessionState.CLOSING &&
+                (session.ownerId == playerId || playerId in session.actors)
+        }
+        if (liveSession) return null
+        claimService.releaseAll(playerId, currentOwner)
+        return claimService.claim(playerId, channel, owner)
     }
 
     private fun removeActor(session: Session, actorId: UUID) {
@@ -1098,6 +1137,7 @@ class GestureGuiServiceImpl(
     )
 
     private companion object {
+        const val GESTURE_OWNER_PREFIX = "gesture-gui:"
         const val MAX_YAW_STEP = 8.0f
         const val YAW_TARGET_EPSILON = 0.05f
         const val CHILD_SCREEN_DEPTH = 0.25
