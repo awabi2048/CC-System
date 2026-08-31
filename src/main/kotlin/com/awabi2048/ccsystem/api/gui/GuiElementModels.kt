@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.localization.LocalizationKey
 import java.util.UUID
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.event.inventory.ClickType
 
 enum class GuiNameStyle(val colorCode: String) {
@@ -211,7 +212,12 @@ data class GuiItemSpec(
     val name: GuiNameSpec,
     val lore: GuiLoreSpec,
     val role: GuiElementRole,
-    val amount: Int
+    val amount: Int,
+    /**
+     * GUI内だけで使う表示モデルです。生成物のitem_modelも共通GUI経路で付与し、
+     * 呼び出し側がItemMetaを直接書き換えないようにします。
+     */
+    val itemModel: NamespacedKey? = null,
 )
 
 enum class GuiValueTone(val colorCode: String) {
