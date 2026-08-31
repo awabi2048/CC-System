@@ -97,6 +97,16 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_PLAYERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearby_players", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_RANDOM_PLAYER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.random_player", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearest_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_INHERITED_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.inherited_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PLAYER_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.player_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_ENTITY_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.entity_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_TARGET_EXISTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_target_exists", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_entity_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_variable_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ITEM_POSSESSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_item_possession", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.context_source", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_INHERIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.context_inherit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_ENTITIES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearby_entities", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_COORDINATES_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.coordinates_set", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_OTHER_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.other_entity", setOf())
@@ -679,6 +689,16 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_PLAYERS,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_RANDOM_PLAYER,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_INHERITED_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PLAYER_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_ENTITY_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_TARGET_EXISTS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ENTITY_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_VARIABLE_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ITEM_POSSESSION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_SOURCE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_INHERIT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEARBY_ENTITIES,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_COORDINATES_SET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_OTHER_ENTITY,
