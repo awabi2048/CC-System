@@ -209,6 +209,11 @@ data class GestureGuiHoverText(
     /** 画面上の文字サイズです。通常テキストと同じ規則でTextDisplay用の倍率へ変換されます。 */
     val size: Double = 0.006,
     val lineWidth: Int = 160,
+    /**
+     * ホバー表示の層です。replacesVisualIdを指定した場合、深さは置換対象visualの層より
+     * 0.02ブロックだけ前面へ解決され、この値は対象を解決できない場合のフォールバック
+     * として使われます。置換しないホバーは、この層のまま画面の最前面へ浮きます。
+     */
     val layer: Int = 30,
     /**
      * ホバー中だけ一時的に置き換える通常表示のvisualIdです。

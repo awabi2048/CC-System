@@ -49,6 +49,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
         /** ホバー説明で一時的に隠している通常visualを操作者単位で保持します。 */
         val hiddenVisualIds: MutableMap<UUID, MutableSet<String>> = mutableMapOf()
+
+        /** ホバー置換の深さ解決に使う、visualIdごとの層です。 */
+        val visualLayers: MutableMap<String, Int> = mutableMapOf()
     }
 
     internal data class CatcherHandle(val actorId: UUID, val entity: Interaction)
@@ -116,6 +119,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 view.definition.allowlist,
                 view.definition.accessPolicy,
             )
+            // ホバー置換が置換対象と同じ深さへ解決できるよう、層を記録します。
+            view.visuals.forEach { visual -> handle.visualLayers[visual.visualId] = visual.layer }
             // PUBLICを含め、初期表示対象をアクセス定義に基づいて背景だけ明示します。
             // contentsの表示は呼び出し側（アニメーション完了時／非アニメーション経路の
             // 翌tick表示）へ委ねます。spawnと同tickにcontentsを表示すると、アニメーション
@@ -237,6 +242,16 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         return true
     }
 
+    /** ホバー置換の深さ解決のため、通常visualの層を参照します。 */
+    fun visualLayer(handle: ScreenHandle, visualId: String): Int? = handle.visualLayers[visualId]
+
+    /**
+     * 置換対象の層より0.02ブロック（LAYER_DEPTH×HOVER_FLOAT_LAYERS）だけ前面の層です。
+     * 置換対象を操作者へ隠したうえで近い深さに載せることで、ホバー中の法線方向の
+     * 跳ねを最小にしつつ、層の重なり規則（前面に浮く）を維持します。
+     */
+    fun hoverReplaceLayer(baseLayer: Int): Int = (baseLayer + HOVER_FLOAT_LAYERS).coerceAtMost(MAX_LAYER)
+
     private fun viewers(handle: ScreenHandle): Sequence<Player> = Bukkit.getOnlinePlayers()
         .asSequence()
         .filter { isViewer(handle, it.uniqueId) }
@@ -281,6 +296,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 handle.contents.remove(entity)
                 entity.remove()
             }
+            handle.visualLayers.remove(visualId)
             handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visualId) }
         }
         handle.hiddenVisualIds.entries.removeIf { it.value.isEmpty() }
@@ -308,6 +324,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             mark(entity, sessionId, revision)
             applyVisual(entity, pose, visual)
             handle.visualEntities[visual.visualId] = entity
+            handle.visualLayers[visual.visualId] = visual.layer
         }
         // 差分適用の途中で例外や外部プラグインのEntity操作が発生すると、Mapへ
         // 登録されていない実体だけがcontentsに残る場合があります。通常のvisual／
@@ -390,6 +407,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.background.clear()
         handle.contents.clear()
         handle.visualEntities.clear()
+        handle.visualLayers.clear()
         handle.hiddenVisualIds.clear()
     }
 
@@ -698,6 +716,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val PANEL_FRAME_PREFIX = "__panel_frame_"
         // 斜め視点の深度量子化でも隣接レイヤーが重ならないよう、従来値の5/3倍を確保します。
         const val LAYER_DEPTH = 0.005
+        /** ホバー置換が置換対象より前面へ浮く量です。LAYER_DEPTH×4 = 0.02ブロック。 */
+        const val HOVER_FLOAT_LAYERS = 4
+        /** GestureGui APIが許容する層の上限です。 */
+        const val MAX_LAYER = 40
         // パネルの画面法線方向の厚みは従来値の約2倍です。
         const val BLOCK_NORMAL_DEPTH = 0.025f
         const val PANEL_BACKGROUND_LAYER = 0
