@@ -40,7 +40,7 @@ $c=[Text.StringBuilder]::new()
 [void]$c.AppendLine('      cauldron: "大釜調理"')
 foreach($line in @('    close: "閉じる"','    info: "料理情報"','    start: "開始"','    cancel: "取消"','    state: "状態"','    heat: "火力"')){[void]$c.AppendLine($line)}
 [void]$c.AppendLine('  liquid:')
-foreach($line in @('    water: "水"','    sea_water: "海水"','    soy_milk: "豆乳"','    bittern: "にがり"','    mixed: "{components}を混ぜたもの"','    amount: "{amount} mB （{remaining}/{maximum}）"','    collect: "容器を持ってクリックして取り出します"')){[void]$c.AppendLine($line)}
+foreach($line in @('    water: "水"','    sea_water: "海水"','    soy_milk: "豆乳"','    bittern: "にがり"','    mixed: "{components}を混ぜたもの"','    amount: "{amount} mB （{remaining}/{maximum}）"','    collect: "容器を持ってクリックして取り出します"','    empty: "空"','    insert_material: "アイテムを持ってクリックすると、材料を投入できます"','    remove_material: "クリックで投入した材料を取り出せます\n溶け出してしまうものなど、一部の材料は投入すると取り出せません"')){[void]$c.AppendLine($line)}
 [void]$c.AppendLine('  process:')
 [void]$c.AppendLine('    started: "§a調理を開始しました。"')
 [void]$c.AppendLine('    completed: "§a処理が完了しました。"')
