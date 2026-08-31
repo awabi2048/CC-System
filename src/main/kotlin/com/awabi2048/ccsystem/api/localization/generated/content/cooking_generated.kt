@@ -20,6 +20,9 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_LIQUID_MIXED: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.mixed", setOf("components"))
     @JvmField val COOKING_LIQUID_AMOUNT: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.amount", setOf("amount", "remaining", "maximum"))
     @JvmField val COOKING_LIQUID_COLLECT: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.collect", setOf())
+    @JvmField val COOKING_LIQUID_EMPTY: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.empty", setOf())
+    @JvmField val COOKING_LIQUID_INSERT_MATERIAL: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.insert_material", setOf())
+    @JvmField val COOKING_LIQUID_REMOVE_MATERIAL: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.remove_material", setOf())
     @JvmField val COOKING_PROCESS_STARTED: LocalizationKey<String> = LocalizationKey.text("cooking.process.started", setOf())
     @JvmField val COOKING_PROCESS_COMPLETED: LocalizationKey<String> = LocalizationKey.text("cooking.process.completed", setOf())
     @JvmField val COOKING_PROCESS_CANCELLED: LocalizationKey<String> = LocalizationKey.text("cooking.process.cancelled", setOf())
@@ -396,6 +399,9 @@ object ContentCookingGeneratedKeys {
         COOKING_LIQUID_MIXED,
         COOKING_LIQUID_AMOUNT,
         COOKING_LIQUID_COLLECT,
+        COOKING_LIQUID_EMPTY,
+        COOKING_LIQUID_INSERT_MATERIAL,
+        COOKING_LIQUID_REMOVE_MATERIAL,
         COOKING_PROCESS_STARTED,
         COOKING_PROCESS_COMPLETED,
         COOKING_PROCESS_CANCELLED,
