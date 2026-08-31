@@ -13,7 +13,13 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_UI_CANCEL: LocalizationKey<String> = LocalizationKey.text("cooking.ui.cancel", setOf())
     @JvmField val COOKING_UI_STATE: LocalizationKey<String> = LocalizationKey.text("cooking.ui.state", setOf())
     @JvmField val COOKING_UI_HEAT: LocalizationKey<String> = LocalizationKey.text("cooking.ui.heat", setOf())
-    @JvmField val COOKING_UI_LIQUID_RESULT: LocalizationKey<String> = LocalizationKey.text("cooking.ui.liquid_result", setOf())
+    @JvmField val COOKING_LIQUID_WATER: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.water", setOf())
+    @JvmField val COOKING_LIQUID_SEA_WATER: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.sea_water", setOf())
+    @JvmField val COOKING_LIQUID_SOY_MILK: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.soy_milk", setOf())
+    @JvmField val COOKING_LIQUID_BITTERN: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.bittern", setOf())
+    @JvmField val COOKING_LIQUID_MIXED: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.mixed", setOf("components"))
+    @JvmField val COOKING_LIQUID_AMOUNT: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.amount", setOf("amount", "remaining", "maximum"))
+    @JvmField val COOKING_LIQUID_COLLECT: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.collect", setOf())
     @JvmField val COOKING_PROCESS_STARTED: LocalizationKey<String> = LocalizationKey.text("cooking.process.started", setOf())
     @JvmField val COOKING_PROCESS_COMPLETED: LocalizationKey<String> = LocalizationKey.text("cooking.process.completed", setOf())
     @JvmField val COOKING_PROCESS_CANCELLED: LocalizationKey<String> = LocalizationKey.text("cooking.process.cancelled", setOf())
@@ -26,6 +32,7 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_ERROR_CONTAINER_REQUIRED: LocalizationKey<String> = LocalizationKey.text("cooking.error.container_required", setOf())
     @JvmField val COOKING_ERROR_LIQUID_MISMATCH: LocalizationKey<String> = LocalizationKey.text("cooking.error.liquid_mismatch", setOf())
     @JvmField val COOKING_ERROR_HEAT_REQUIRED: LocalizationKey<String> = LocalizationKey.text("cooking.error.heat_required", setOf())
+    @JvmField val COOKING_ERROR_INVENTORY_FULL: LocalizationKey<String> = LocalizationKey.text("cooking.error.inventory_full", setOf())
     @JvmField val COOKING_RECIPE_COOKED_RICE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.cooked_rice", setOf())
     @JvmField val COOKING_RECIPE_TOMATO_SAUCE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.tomato_sauce", setOf())
     @JvmField val COOKING_RECIPE_DASHI: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.dashi", setOf())
@@ -382,7 +389,13 @@ object ContentCookingGeneratedKeys {
         COOKING_UI_CANCEL,
         COOKING_UI_STATE,
         COOKING_UI_HEAT,
-        COOKING_UI_LIQUID_RESULT,
+        COOKING_LIQUID_WATER,
+        COOKING_LIQUID_SEA_WATER,
+        COOKING_LIQUID_SOY_MILK,
+        COOKING_LIQUID_BITTERN,
+        COOKING_LIQUID_MIXED,
+        COOKING_LIQUID_AMOUNT,
+        COOKING_LIQUID_COLLECT,
         COOKING_PROCESS_STARTED,
         COOKING_PROCESS_COMPLETED,
         COOKING_PROCESS_CANCELLED,
@@ -395,6 +408,7 @@ object ContentCookingGeneratedKeys {
         COOKING_ERROR_CONTAINER_REQUIRED,
         COOKING_ERROR_LIQUID_MISMATCH,
         COOKING_ERROR_HEAT_REQUIRED,
+        COOKING_ERROR_INVENTORY_FULL,
         COOKING_RECIPE_COOKED_RICE,
         COOKING_RECIPE_TOMATO_SAUCE,
         COOKING_RECIPE_DASHI,
