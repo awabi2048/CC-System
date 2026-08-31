@@ -102,6 +102,8 @@ class GestureGuiServiceImpl(
         var screens: List<ScreenRuntime>,
         val children: MutableList<ChildRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
+        /** セッション中に一度でも参加したUUID。Dialog掃除を権限剥奪後も可能にします。 */
+        val knownActorIds: MutableSet<UUID>,
         /** 固定位置モードのアンカー。nullならプレイヤー追従 */
         val fixedAnchor: Location? = null,
         /** 利用側のローカル状態を終了通知へ接続するリスナー */
@@ -184,6 +186,7 @@ class GestureGuiServiceImpl(
                 screens = screens.toList(),
                 children = mutableListOf(),
                 actors = mutableMapOf(),
+                knownActorIds = mutableSetOf(owner.uniqueId),
                 fixedAnchor = anchor,
                 sessionListener = options.sessionListener,
                 layout = options.layout,
@@ -273,8 +276,16 @@ class GestureGuiServiceImpl(
         destroy(old)
         val opened = open(owner, views, options)
         val current = sessions[ownerId] ?: return false
-        actors.asSequence().filter { it != ownerId }.mapNotNull(Bukkit::getPlayer).filter(Player::isOnline).forEach {
-            runCatching { current.actors[it.uniqueId] = createActor(current, it) }
+        actors.asSequence()
+            .filter { it != ownerId }
+            .mapNotNull(Bukkit::getPlayer)
+            .filter(Player::isOnline)
+            .filter { actor -> views.any { view -> view.definition.canOperate(ownerId, actor.uniqueId) } }
+            .forEach { actor ->
+                runCatching {
+                    current.actors[actor.uniqueId] = createActor(current, actor)
+                    current.knownActorIds += actor.uniqueId
+                }
         }
         return opened.ownerId == ownerId
     }
@@ -300,6 +311,7 @@ class GestureGuiServiceImpl(
                     session.revision,
                     modalOverlayPose(parent.pose, childIndex),
                     options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
+                    view.definition,
                 )
             }
             renderer.spawnScreen(owner, session.id, session.revision, pose, view)
@@ -417,12 +429,14 @@ class GestureGuiServiceImpl(
         dialogId: String,
     ): Boolean {
         val session = sessions[ownerId] ?: return false
-        if (session.id != sessionId || player.uniqueId != ownerId) return false
+        if (session.id != sessionId || player.uniqueId !in session.knownActorIds) return false
         return closeExternalDialog(player, dialogOwner, dialogId)
     }
 
     override fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean =
         dispatchGesture(actor, gesture).consumed
+
+    override fun leave(actorId: UUID): Boolean = leaveOrClose(actorId)
 
     /**
      * 入力イベントの消費とAction実行済みを分離します。
@@ -460,6 +474,7 @@ class GestureGuiServiceImpl(
             val actorRuntime = runCatching { createActor(session, actor) }.getOrNull()
                 ?: return GestureGuiDispatchResult.UNHANDLED
             session.actors[actor.uniqueId] = actorRuntime
+            session.knownActorIds += actor.uniqueId
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) {
@@ -736,20 +751,36 @@ class GestureGuiServiceImpl(
     private fun reconcileExternalActors() {
         val activeSessions = sessions.values.filter { it.state == GestureGuiSessionState.ACTIVE }
         Bukkit.getOnlinePlayers().forEach { player ->
-            if (player.uniqueId in sessions) return@forEach
             // 描画の可視性は入力対象の有無から独立させます。従来は視線が画面に
             // 当たったときだけshowToしていたため、PUBLIC画面でも視界へ戻った際に
             // 内容が欠けたり、アクセス変更後の可視状態がtrackingに戻されました。
             // 毎tickのshowToはPaper側で既表示Entityを再送せず、参加・再追跡時だけを
             // 補完するための冪等操作です。
             activeSessions.forEach { session ->
-                session.screens
-                    .filter { it.view.definition.canOperate(session.ownerId, player.uniqueId) }
-                    .forEach { renderer.showTo(it.render, player) }
-                session.children
-                    .filter { it.view.definition.canOperate(session.ownerId, player.uniqueId) }
-                    .forEach { renderer.showTo(it.render, player) }
+                // 動的権限を失ったプレイヤーは、既にEntityを受信済みでも同じtickで
+                // 非表示にします。入力claimだけを解放すると、表示だけが残って
+                // 「操作できそうに見える」状態になるためです。
+                session.screens.forEach { screen ->
+                    if (screen.view.definition.canOperate(session.ownerId, player.uniqueId)) {
+                        renderer.showTo(screen.render, player)
+                    } else {
+                        renderer.hideFrom(screen.render, player)
+                    }
+                }
+                session.children.forEach { child ->
+                    if (child.view.definition.canOperate(session.ownerId, player.uniqueId)) {
+                        renderer.showTo(child.render, player)
+                        child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
+                    } else {
+                        renderer.hideFrom(child.render, player)
+                        child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
+                    }
+                }
             }
+            // 自分が別のGestureセッションを所有している場合は、同じ入力claimを
+            // 二つのセッションへ同時に渡さず、ここから先のactor選択だけを省略します。
+            // 画面の可視性は上で個別に反映済みです。
+            if (player.uniqueId in sessions) return@forEach
             val desired = activeSessions.mapNotNull { session ->
                 accessibleTarget(session, player)?.let { session to it }
             }.minByOrNull { (_, hit) -> hit.hit.distance }
@@ -818,6 +849,7 @@ class GestureGuiServiceImpl(
         session.actors[player.uniqueId]?.let { return it }
         val created = runCatching { createActor(session, player) }.getOrNull() ?: return null
         session.actors[player.uniqueId] = created
+        session.knownActorIds += player.uniqueId
         return created
     }
 

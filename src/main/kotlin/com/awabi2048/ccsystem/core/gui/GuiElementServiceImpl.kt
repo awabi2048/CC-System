@@ -84,6 +84,7 @@ class GuiElementServiceImpl(
             ItemFlag.HIDE_ENCHANTS,
             ItemFlag.HIDE_ADDITIONAL_TOOLTIP
         )
+        normalizedSpec.itemModel?.let(meta::setItemModel)
         meta.isHideTooltip = normalizedSpec.role == GuiElementRole.DECORATION
         GuiItemMarker.mark(meta, normalizedSpec.role)
         item.itemMeta = meta
@@ -114,6 +115,8 @@ class GuiElementServiceImpl(
         item.editMeta { meta -> GuiItemMarker.mark(meta, role) }
         return item
     }
+
+    override fun isGuiItem(item: ItemStack?): Boolean = GuiItemMarker.isMarked(item)
 
     override fun menuEntry(player: Player?, spec: GuiMenuEntrySpec): MenuElement {
         val enabledActions = spec.expandedActions().filter { it.enabled }

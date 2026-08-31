@@ -38,13 +38,15 @@ $c=[Text.StringBuilder]::new()
 [void]$c.AppendLine('      cutting: "まな板"')
 [void]$c.AppendLine('      pan: "フライパン調理"')
 [void]$c.AppendLine('      cauldron: "大釜調理"')
-foreach($line in @('    close: "閉じる"','    info: "料理情報"','    start: "開始"','    cancel: "取消"','    state: "状態"','    heat: "火力"','    liquid_result: "液体成果物"')){[void]$c.AppendLine($line)}
+foreach($line in @('    close: "閉じる"','    info: "料理情報"','    start: "開始"','    cancel: "取消"','    state: "状態"','    heat: "火力"')){[void]$c.AppendLine($line)}
+[void]$c.AppendLine('  liquid:')
+foreach($line in @('    water: "水"','    sea_water: "海水"','    soy_milk: "豆乳"','    bittern: "にがり"','    mixed: "{components}を混ぜたもの"','    amount: "{amount} mB （{remaining}/{maximum}）"','    collect: "容器を持ってクリックして取り出します"')){[void]$c.AppendLine($line)}
 [void]$c.AppendLine('  process:')
 [void]$c.AppendLine('    started: "§a調理を開始しました。"')
 [void]$c.AppendLine('    completed: "§a処理が完了しました。"')
 [void]$c.AppendLine('    cancelled: "§e処理を取り消しました。"')
 [void]$c.AppendLine('  error:')
-foreach($line in @('    no_heat: "§c有効な火力がありません。"','    no_pan: "§c開始時のフライパンを持ってください。"','    in_use: "§cこの設備は使用中です。"','    recipe_not_found: "§c一致するレシピがありません。"','    ambiguous_recipe: "§c候補を一意に決定できません。"','    tier_locked: "§cこのレシピは未解放です。"','    container_required: "§c正しい空容器が必要です。"')){[void]$c.AppendLine($line)}
+foreach($line in @('    no_heat: "§c有効な火力がありません。"','    no_pan: "§c開始時のフライパンを持ってください。"','    in_use: "§cこの設備は使用中です。"','    recipe_not_found: "§c一致するレシピがありません。"','    ambiguous_recipe: "§c候補を一意に決定できません。"','    tier_locked: "§cこのレシピは未解放です。"','    container_required: "§c正しい空容器が必要です。"','    inventory_full: "§cインベントリに空きがありません。"')){[void]$c.AppendLine($line)}
 [void]$c.AppendLine('  recipe:')
 foreach($p in $names.GetEnumerator()) {[void]$c.AppendLine("    $($p.Key): `"$($p.Value)`"")}
 [void]$c.AppendLine('  catalog:')

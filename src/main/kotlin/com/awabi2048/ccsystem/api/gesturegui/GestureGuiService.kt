@@ -133,8 +133,9 @@ interface GestureGuiService {
     fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean
     /**
-     * 現在のGesture GUIセッションに属する、所有者・ID一致の外部Dialogだけを閉じます。
-     * セッションIDも照合するため、古いエディターの終了処理が別機能のDialogを閉じません。
+     * 現在のGesture GUIセッションに一度でも参加したプレイヤーのうち、所有者・ID一致の
+     * 外部Dialogだけを閉じます。セッションIDも照合するため、古いエディターの終了処理が
+     * 別機能のDialogを閉じません。権限剥奪後のDialogを後始末する用途にも使います。
      */
     fun closeExternalDialogIfCurrent(
         ownerId: UUID,
@@ -144,6 +145,11 @@ interface GestureGuiService {
         dialogId: String,
     ): Boolean
     fun handleGesture(actor: Player, gesture: GestureGuiGesture): Boolean
+    /**
+     * 所有者ならセッション全体を閉じ、第三者ならその第三者だけを参加解除します。
+     * 共有画面の「閉じる」操作を、第三者が所有者の画面ごと閉じないための入口です。
+     */
+    fun leave(actorId: UUID): Boolean
     fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot?
     fun shutdown()
 }

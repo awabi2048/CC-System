@@ -19,6 +19,9 @@ interface GuiElementService {
     /** 直接生成したアイテムの表示を変更せず、GUI保護マーカーだけを付与する。 */
     fun mark(item: ItemStack, role: GuiElementRole = GuiElementRole.CONTENT): ItemStack
 
+    /** GUI経路で生成されたアイテムかを判定し、入力アイテムとの混同を防ぎます。 */
+    fun isGuiItem(item: ItemStack?): Boolean
+
     /**
      * 意味情報から表示とRuntime操作を同時生成する。
      * 外部システムは生成後のItemStackやLoreを変更しない。
