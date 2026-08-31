@@ -7,12 +7,14 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_UI_TITLE_CUTTING: LocalizationKey<String> = LocalizationKey.text("cooking.ui.title.cutting", setOf())
     @JvmField val COOKING_UI_TITLE_PAN: LocalizationKey<String> = LocalizationKey.text("cooking.ui.title.pan", setOf())
     @JvmField val COOKING_UI_TITLE_CAULDRON: LocalizationKey<String> = LocalizationKey.text("cooking.ui.title.cauldron", setOf())
+    @JvmField val COOKING_UI_TITLE_FERMENTATION: LocalizationKey<String> = LocalizationKey.text("cooking.ui.title.fermentation", setOf())
     @JvmField val COOKING_UI_CLOSE: LocalizationKey<String> = LocalizationKey.text("cooking.ui.close", setOf())
     @JvmField val COOKING_UI_INFO: LocalizationKey<String> = LocalizationKey.text("cooking.ui.info", setOf())
     @JvmField val COOKING_UI_START: LocalizationKey<String> = LocalizationKey.text("cooking.ui.start", setOf())
     @JvmField val COOKING_UI_CANCEL: LocalizationKey<String> = LocalizationKey.text("cooking.ui.cancel", setOf())
     @JvmField val COOKING_UI_STATE: LocalizationKey<String> = LocalizationKey.text("cooking.ui.state", setOf())
     @JvmField val COOKING_UI_HEAT: LocalizationKey<String> = LocalizationKey.text("cooking.ui.heat", setOf())
+    @JvmField val COOKING_UI_EQUIPMENT: LocalizationKey<String> = LocalizationKey.text("cooking.ui.equipment", setOf())
     @JvmField val COOKING_LIQUID_WATER: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.water", setOf())
     @JvmField val COOKING_LIQUID_SEA_WATER: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.sea_water", setOf())
     @JvmField val COOKING_LIQUID_SOY_MILK: LocalizationKey<String> = LocalizationKey.text("cooking.liquid.soy_milk", setOf())
@@ -40,6 +42,7 @@ object ContentCookingGeneratedKeys {
     @JvmField val COOKING_RECIPE_TOMATO_SAUCE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.tomato_sauce", setOf())
     @JvmField val COOKING_RECIPE_DASHI: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.dashi", setOf())
     @JvmField val COOKING_RECIPE_MISO: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.miso", setOf())
+    @JvmField val COOKING_RECIPE_SOY_SAUCE_MOROMI: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.soy_sauce_moromi", setOf())
     @JvmField val COOKING_RECIPE_SOY_SAUCE: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.soy_sauce", setOf())
     @JvmField val COOKING_RECIPE_CURRY_ROUX: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.curry_roux", setOf())
     @JvmField val COOKING_RECIPE_BUTTER: LocalizationKey<String> = LocalizationKey.text("cooking.recipe.butter", setOf())
@@ -157,6 +160,8 @@ object ContentCookingGeneratedKeys {
     @JvmField val CUSTOM_ITEMS_COOKING_DASHI_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.dashi.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_MISO_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.miso.name", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_MISO_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.miso.description", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SOY_SAUCE_MOROMI_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_sauce_moromi.name", setOf())
+    @JvmField val CUSTOM_ITEMS_COOKING_SOY_SAUCE_MOROMI_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_sauce_moromi.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_SOY_SAUCE_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_sauce.name", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_SOY_SAUCE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.soy_sauce.description", setOf())
     @JvmField val CUSTOM_ITEMS_COOKING_CURRY_ROUX_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.cooking.curry_roux.name", setOf())
@@ -386,12 +391,14 @@ object ContentCookingGeneratedKeys {
         COOKING_UI_TITLE_CUTTING,
         COOKING_UI_TITLE_PAN,
         COOKING_UI_TITLE_CAULDRON,
+        COOKING_UI_TITLE_FERMENTATION,
         COOKING_UI_CLOSE,
         COOKING_UI_INFO,
         COOKING_UI_START,
         COOKING_UI_CANCEL,
         COOKING_UI_STATE,
         COOKING_UI_HEAT,
+        COOKING_UI_EQUIPMENT,
         COOKING_LIQUID_WATER,
         COOKING_LIQUID_SEA_WATER,
         COOKING_LIQUID_SOY_MILK,
@@ -419,6 +426,7 @@ object ContentCookingGeneratedKeys {
         COOKING_RECIPE_TOMATO_SAUCE,
         COOKING_RECIPE_DASHI,
         COOKING_RECIPE_MISO,
+        COOKING_RECIPE_SOY_SAUCE_MOROMI,
         COOKING_RECIPE_SOY_SAUCE,
         COOKING_RECIPE_CURRY_ROUX,
         COOKING_RECIPE_BUTTER,
@@ -536,6 +544,8 @@ object ContentCookingGeneratedKeys {
         CUSTOM_ITEMS_COOKING_DASHI_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_MISO_NAME,
         CUSTOM_ITEMS_COOKING_MISO_DESCRIPTION,
+        CUSTOM_ITEMS_COOKING_SOY_SAUCE_MOROMI_NAME,
+        CUSTOM_ITEMS_COOKING_SOY_SAUCE_MOROMI_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_SOY_SAUCE_NAME,
         CUSTOM_ITEMS_COOKING_SOY_SAUCE_DESCRIPTION,
         CUSTOM_ITEMS_COOKING_CURRY_ROUX_NAME,
