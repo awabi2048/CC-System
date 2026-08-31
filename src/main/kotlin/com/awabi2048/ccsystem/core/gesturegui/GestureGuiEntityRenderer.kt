@@ -2,6 +2,7 @@ package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccessPolicy
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
@@ -42,6 +43,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val ownerId: UUID,
         var access: GestureGuiAccess,
         var allowlist: Set<UUID>,
+        var accessPolicy: GestureGuiAccessPolicy?,
     ) {
         val all: List<Entity> get() = background + contents
 
@@ -112,6 +114,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 owner.uniqueId,
                 view.definition.access,
                 view.definition.allowlist,
+                view.definition.accessPolicy,
             )
             // PUBLICを含め、初期表示対象をアクセス定義に基づいて背景だけ明示します。
             // contentsの表示は呼び出し側（アニメーション完了時／非アニメーション経路の
@@ -176,24 +179,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     fun updateAccess(handle: ScreenHandle, view: GestureGuiView) {
         val nextAccess = view.definition.access
         val nextAllowlist = view.definition.allowlist
-        if (handle.access != nextAccess || handle.allowlist != nextAllowlist) {
+        val nextAccessPolicy = view.definition.accessPolicy
+        if (handle.access != nextAccess || handle.allowlist != nextAllowlist || handle.accessPolicy !== nextAccessPolicy) {
             // 公開→非公開、またはallowlist変更時に既存クライアントへ残った
             // Entityを明示的に隠し、アクセス定義と可視状態を同一tickで揃えます。
             handle.all.forEach { entity ->
                 Bukkit.getOnlinePlayers()
                     .filterNot { player ->
-                        when (nextAccess) {
-                            GestureGuiAccess.PUBLIC -> true
-                            GestureGuiAccess.OWNER_ONLY -> player.uniqueId == handle.ownerId
-                            GestureGuiAccess.ALLOWLIST ->
-                                player.uniqueId == handle.ownerId || player.uniqueId in nextAllowlist
-                        }
+                        canView(handle.ownerId, nextAccess, nextAllowlist, nextAccessPolicy, player.uniqueId)
                     }
                     .forEach { player -> player.hideEntity(plugin, entity) }
             }
         }
         handle.access = nextAccess
         handle.allowlist = nextAllowlist
+        handle.accessPolicy = nextAccessPolicy
     }
 
     private fun showBackground(handle: ScreenHandle) {
@@ -208,6 +208,11 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             handle.contents.filter { isVisualVisible(handle, it, player.uniqueId) }
                 .forEach { player.showEntity(plugin, it) }
         }
+    }
+
+    /** 動的権限を失ったプレイヤーへ、既に配布済みの画面を残さないために隠します。 */
+    fun hideFrom(handle: ScreenHandle, player: Player) {
+        handle.all.forEach { entity -> player.hideEntity(plugin, entity) }
     }
 
     /**
@@ -232,17 +237,26 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         return true
     }
 
-    private fun viewers(handle: ScreenHandle): Sequence<Player> = when (handle.access) {
-        GestureGuiAccess.PUBLIC -> Bukkit.getOnlinePlayers().asSequence()
-        GestureGuiAccess.OWNER_ONLY -> listOfNotNull(Bukkit.getPlayer(handle.ownerId)).asSequence()
-        GestureGuiAccess.ALLOWLIST -> listOfNotNull(Bukkit.getPlayer(handle.ownerId)).asSequence() +
-            handle.allowlist.asSequence().mapNotNull(Bukkit::getPlayer)
-    }.filter(Player::isOnline)
+    private fun viewers(handle: ScreenHandle): Sequence<Player> = Bukkit.getOnlinePlayers()
+        .asSequence()
+        .filter { isViewer(handle, it.uniqueId) }
 
-    private fun isViewer(handle: ScreenHandle, playerId: UUID): Boolean = when (handle.access) {
-        GestureGuiAccess.PUBLIC -> true
-        GestureGuiAccess.OWNER_ONLY -> playerId == handle.ownerId
-        GestureGuiAccess.ALLOWLIST -> playerId == handle.ownerId || playerId in handle.allowlist
+    private fun isViewer(handle: ScreenHandle, playerId: UUID): Boolean =
+        canView(handle.ownerId, handle.access, handle.allowlist, handle.accessPolicy, playerId)
+
+    private fun canView(
+        ownerId: UUID,
+        access: GestureGuiAccess,
+        allowlist: Set<UUID>,
+        accessPolicy: GestureGuiAccessPolicy?,
+        playerId: UUID,
+    ): Boolean {
+        val staticallyAllowed = when (access) {
+            GestureGuiAccess.PUBLIC -> true
+            GestureGuiAccess.OWNER_ONLY -> playerId == ownerId
+            GestureGuiAccess.ALLOWLIST -> playerId == ownerId || playerId in allowlist
+        }
+        return staticallyAllowed && (accessPolicy?.canOperate(ownerId, playerId) ?: true)
     }
 
     /** 同一visualIdの実体を再利用し、追加・変更・削除だけを反映します。 */
@@ -404,6 +418,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         revision: Long,
         pose: GestureGuiScreenPose,
         material: Material = Material.GRAY_STAINED_GLASS,
+        definition: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition,
     ): BlockDisplay = spawnPanelBlock(
         owner.world, pose, Bukkit.createBlockData(material),
         0.0, 0.0, pose.width, pose.height, MODAL_OVERLAY_LAYER,
@@ -411,7 +426,12 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     ).also {
         mark(it, sessionId, revision)
         hideAxiomDisplayGizmo(it)
-        owner.showEntity(plugin, it)
+        // モーダル子画面を見られる第三者にも同じ遮蔽面を送ります。所有者だけへ
+        // overlayを配ると、共有画面では子画面の背後に親の操作面が見えたままになり、
+        // 表示と入力の遮蔽範囲が操作者ごとに分岐します。
+        Bukkit.getOnlinePlayers()
+            .filter { player -> definition.canOperate(owner.uniqueId, player.uniqueId) }
+            .forEach { player -> player.showEntity(plugin, it) }
     }
 
     fun updateModalOverlay(overlay: BlockDisplay, pose: GestureGuiScreenPose) {

@@ -71,6 +71,26 @@ class GestureGuiModelsTest {
     }
 
     @Test
+    fun `dynamic access policy is evaluated after static public access`() {
+        val owner = UUID.randomUUID()
+        val operator = UUID.randomUUID()
+        var enabled = false
+        val screen = screen(
+            GestureGuiAccess.PUBLIC,
+            accessPolicy = GestureGuiAccessPolicy { ownerId, actorId ->
+                actorId == ownerId || (actorId == operator && enabled)
+            },
+        )
+
+        assertTrue(screen.canOperate(owner, owner))
+        assertFalse(screen.canOperate(owner, operator))
+        enabled = true
+        assertTrue(screen.canOperate(owner, operator))
+        enabled = false
+        assertFalse(screen.canOperate(owner, operator))
+    }
+
+    @Test
     fun `element ids must be stable and unique in a screen`() {
         val element = GestureGuiElement("action", GestureGuiBounds(-0.1, -0.1, 0.1, 0.1))
         assertThrows(IllegalArgumentException::class.java) {
@@ -182,6 +202,9 @@ class GestureGuiModelsTest {
         }
     }
 
-    private fun screen(access: GestureGuiAccess, allowlist: Set<UUID> = emptySet()) =
-        GestureGuiScreenDefinition("screen", emptyList(), access, allowlist)
+    private fun screen(
+        access: GestureGuiAccess,
+        allowlist: Set<UUID> = emptySet(),
+        accessPolicy: GestureGuiAccessPolicy? = null,
+    ) = GestureGuiScreenDefinition("screen", emptyList(), access, allowlist, accessPolicy)
 }
