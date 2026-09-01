@@ -932,12 +932,22 @@ class GestureGuiServiceImpl(
                 }
             }
         }
+        // 置換対象の通常visualと深さを揃えます。対象を操作者へ隠したうえで
+        // 0.02ブロックだけ前面へ浮かせることで、ホバー中の法線方向の跳ねを最小化し、
+        // 層の重なり規則（前面に浮く）も維持します。対象を解決できない場合は
+        // 従来どおりhover.layerを使います。
+        val effectiveHover = desiredReplacement
+            ?.let { replacement ->
+                renderer.visualLayer(replacement.render, replacement.visualId)
+                    ?.let { base -> hoverText?.copy(layer = renderer.hoverReplaceLayer(base)) }
+            }
+            ?: hoverText
         if (actor.hoverIdentity != identity || actor.hover == null) {
             actor.hover?.let(renderer::removeHover)
-            actor.hover = renderer.spawnHover(player, session.id, session.revision, pose!!, hoverText!!)
+            actor.hover = renderer.spawnHover(player, session.id, session.revision, pose!!, effectiveHover!!)
             actor.hoverIdentity = identity
         } else {
-            renderer.updateHover(actor.hover!!, pose!!, hoverText!!)
+            renderer.updateHover(actor.hover!!, pose!!, effectiveHover!!)
         }
     }
 
