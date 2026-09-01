@@ -99,4 +99,45 @@ class MenuDialogInputTest {
         )
         assertEquals(false, request.canCloseWithEscape)
     }
+
+    @Test
+    fun `footer actions require an exitless multi action dialog`() {
+        val button = MenuDialogButton(
+            Component.text("操作"),
+            MenuDialogHandler { _, _ -> MenuActionResult.Success() },
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            MenuDialogRequest(
+                owner = "test",
+                id = "footer-with-exit",
+                title = Component.text("入力"),
+                body = emptyList(),
+                confirm = button,
+                cancel = button,
+                footerActions = listOf(button),
+            )
+        }
+    }
+
+    @Test
+    fun `exitless multi action dialog accepts footer actions`() {
+        val button = MenuDialogButton(
+            Component.text("操作"),
+            MenuDialogHandler { _, _ -> MenuActionResult.Success() },
+        )
+        val request = MenuDialogRequest(
+            owner = "test",
+            id = "exitless-footer",
+            title = Component.text("入力"),
+            body = emptyList(),
+            confirm = button,
+            cancel = button,
+            additionalActions = listOf(button),
+            footerActions = listOf(button),
+            columns = 3,
+            multiActionWithoutExit = true,
+        )
+        assertEquals(true, request.multiActionWithoutExit)
+        assertEquals(3, request.columns)
+    }
 }

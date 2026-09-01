@@ -110,6 +110,17 @@ internal class MenuDialogServiceImpl(
         val additionalActions = request.additionalActions.map {
             button(request, it)
         }
+        val footerActions = request.footerActions.map {
+            button(request, it)
+        }
+        val multiActionButtons = if (request.multiActionWithoutExit) {
+            // 候補を先に置き、最後の行を confirm/footer/cancel で埋めます。
+            // 候補数を最大12件、列数を3列に制限する呼び出し側と組み合わせると、
+            // 12件＋3ボタン＝15セルとなり、フッターが必ず独立した最下行になります。
+            additionalActions + listOf(confirm) + footerActions + listOf(cancel)
+        } else {
+            listOf(confirm) + additionalActions
+        }
         val dialog = Dialog.create { factory ->
             factory.empty()
                 .base(
@@ -130,11 +141,15 @@ internal class MenuDialogServiceImpl(
                         .build()
                 )
                 .type(
-                    if (additionalActions.isEmpty()) {
+                    if (!request.multiActionWithoutExit && additionalActions.isEmpty() && footerActions.isEmpty()) {
                         DialogType.confirmation(confirm, cancel)
+                    } else if (request.multiActionWithoutExit) {
+                        // Paper APIのexitActionはnullableな実装契約を持つため、
+                        // nullを渡してキャンセルを本体のmultiActionへ移します。
+                        DialogType.multiAction(multiActionButtons, null, request.columns)
                     } else {
                         DialogType.multiAction(
-                            listOf(confirm) + additionalActions,
+                            multiActionButtons,
                             cancel,
                             request.columns,
                         )
