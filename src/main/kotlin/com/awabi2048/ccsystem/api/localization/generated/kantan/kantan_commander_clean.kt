@@ -324,7 +324,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MINIMUM_DISTANCE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.minimum_distance_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MAXIMUM_DISTANCE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.maximum_distance_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_RANGE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.range_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_RANGE_CONSTRAINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.range_constraint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SOUND_PARAMETERS_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.sound_parameters_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SOUND_PARAMETERS_CONSTRAINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.sound_parameters_constraint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.destination", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_CONTEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.context", setOf())
@@ -631,8 +633,17 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_value_input_suffix", setOf("label"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_position_variable_prompt", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_variable_value_prompt", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_TEMPLATE_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_template_hint", setOf("variable_name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_save_failed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_input_format", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_empty", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_TRAILING_CHARACTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_trailing_characters", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_UNCLOSED_PARENTHESIS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_unclosed_parenthesis", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_OPERAND_REQUIRED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_operand_required", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_NUMBER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_number", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_CHARACTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_character", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_READONLY_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_readonly_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_VARIABLE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_variable_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_variable_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_set", setOf("item"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_overwritten", setOf("item"))
@@ -1010,7 +1021,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MINIMUM_DISTANCE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_MAXIMUM_DISTANCE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_RANGE_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_RANGE_CONSTRAINT,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SOUND_PARAMETERS_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SOUND_PARAMETERS_CONSTRAINT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_CONTEXT,
@@ -1326,8 +1339,17 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_TEMPLATE_HINT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_EMPTY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_TRAILING_CHARACTERS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_UNCLOSED_PARENTHESIS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_OPERAND_REQUIRED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_NUMBER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_CHARACTER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_READONLY_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_VARIABLE_NAME,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN,
