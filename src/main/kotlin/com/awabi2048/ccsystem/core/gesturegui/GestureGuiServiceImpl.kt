@@ -96,6 +96,8 @@ class GestureGuiServiceImpl(
         var state: GestureGuiSessionState,
         var retainedYaw: Float,
         var targetYaw: Float?,
+        /** 視線が画面外にある状態の連続tick数。短い視線移動では画面を回転させません。 */
+        var gazeOutsideTicks: Int,
         var anchorX: Double,
         var anchorZ: Double,
         var appliedYaw: Float,
@@ -180,6 +182,7 @@ class GestureGuiServiceImpl(
                 state = GestureGuiSessionState.OPENING,
                 retainedYaw = owner.location.yaw,
                 targetYaw = null,
+                gazeOutsideTicks = 0,
                 anchorX = owner.eyeLocation.x,
                 anchorZ = owner.eyeLocation.z,
                 appliedYaw = owner.location.yaw,
@@ -691,47 +694,56 @@ class GestureGuiServiceImpl(
             }
             // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
             if (session.fixedAnchor == null) {
-            val insideScreenArea = if (session.screens.size == 1) {
-                hit(session, owner, margin = 0.06) != null
-            } else {
-                GestureGuiGeometry.containsScreenEnvelope(
-                    ray(owner).direction,
-                    session.retainedYaw.toDouble(),
-                    session.screens.size,
-                    session.screens.map { it.view.panel.width to it.view.panel.height },
-                    session.layout,
-                    session.verticalSlots,
-                )
-            }
-            if (!insideScreenArea && session.targetYaw == null) {
-                // 画面外へ出た瞬間の移動先を固定します。画面が途中で視線内へ戻っても、
-                // このyawが画面中央へ来るまでは追従を中断しません。
-                session.targetYaw = owner.location.yaw
-            }
-            session.targetYaw?.let { targetYaw ->
-                val delta = shortestYawDelta(session.retainedYaw, targetYaw)
-                if (abs(delta) <= YAW_TARGET_EPSILON) {
-                    session.retainedYaw = targetYaw
-                    session.targetYaw = null
+                val insideScreenArea = if (session.screens.size == 1) {
+                    hit(session, owner, margin = 0.06) != null
                 } else {
-                    session.retainedYaw += delta.coerceIn(-MAX_YAW_STEP, MAX_YAW_STEP)
+                    GestureGuiGeometry.containsScreenEnvelope(
+                        ray(owner).direction,
+                        session.retainedYaw.toDouble(),
+                        session.screens.size,
+                        session.screens.map { it.view.panel.width to it.view.panel.height },
+                        session.layout,
+                        session.verticalSlots,
+                    )
                 }
-            }
-            val eye = owner.eyeLocation
-            val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
-            val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
-            // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
-            if (horizontalMoved || yawMoved) {
-                val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
-                session.screens.zip(newPoses).forEach { (screen, pose) ->
-                    screen.pose = pose
-                    renderer.updatePose(screen.render, pose, screen.view)
+                session.gazeOutsideTicks = GestureGuiFollowPolicy.nextOutsideTicks(
+                    session.gazeOutsideTicks,
+                    insideScreenArea,
+                )
+                if (GestureGuiFollowPolicy.shouldStartRealignment(
+                        insideScreenArea,
+                        session.gazeOutsideTicks,
+                        session.targetYaw,
+                    )
+                ) {
+                    // 画面外視線が3秒続いた時点の移動先を固定します。短い視線移動で
+                    // 画面を回転させず、再調整を開始した後の既存の滑らかな追従は維持します。
+                    session.targetYaw = owner.location.yaw
                 }
-                repositionChildren(session)
-                session.anchorX = eye.x
-                session.anchorZ = eye.z
-                session.appliedYaw = session.retainedYaw
-            }
+                session.targetYaw?.let { targetYaw ->
+                    val delta = shortestYawDelta(session.retainedYaw, targetYaw)
+                    if (abs(delta) <= YAW_TARGET_EPSILON) {
+                        session.retainedYaw = targetYaw
+                        session.targetYaw = null
+                    } else {
+                        session.retainedYaw += delta.coerceIn(-MAX_YAW_STEP, MAX_YAW_STEP)
+                    }
+                }
+                val eye = owner.eyeLocation
+                val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
+                val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
+                // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
+                if (horizontalMoved || yawMoved) {
+                    val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
+                    session.screens.zip(newPoses).forEach { (screen, pose) ->
+                        screen.pose = pose
+                        renderer.updatePose(screen.render, pose, screen.view)
+                    }
+                    repositionChildren(session)
+                    session.anchorX = eye.x
+                    session.anchorZ = eye.z
+                    session.appliedYaw = session.retainedYaw
+                }
             }
             if (session.state == GestureGuiSessionState.ACTIVE) {
                 // 視線・距離・遮蔽のいずれかで操作対象でなくなった間はInteraction自体を
