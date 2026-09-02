@@ -75,7 +75,7 @@ data class MenuDialogRequest(
      * exitActionではなく、multiAction本体の末尾へ配置するフッター操作です。
      *
      * Paper DialogのexitActionはmultiActionの外側に描画されるため、候補一覧と
-     * ［設定］［補助操作］［キャンセル］を同じ3列グリッドの最下行へ揃えられません。
+     * ［確定］［候補を表示］［キャンセル］を同じ3列グリッドの最下行へ揃えられません。
      * [multiActionWithoutExit]と組み合わせ、候補操作→confirm→footer→cancelの順で
      * 一つのアクション列として構築します。
      */

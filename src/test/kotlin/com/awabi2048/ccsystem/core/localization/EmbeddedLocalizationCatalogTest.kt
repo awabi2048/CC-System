@@ -32,6 +32,30 @@ class EmbeddedLocalizationCatalogTest {
     }
 
     @Test
+    fun `KantanのDialog操作ラベルは確定と候補表示を使う`() {
+        assertEquals(
+            EmbeddedLocalizedValue.Text("確定"),
+            EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.confirm"),
+        )
+        assertEquals(
+            EmbeddedLocalizedValue.Text("候補を表示"),
+            EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.show_details"),
+        )
+        assertEquals(
+            EmbeddedLocalizedValue.Text("Confirm"),
+            EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.confirm"),
+        )
+        assertEquals(
+            EmbeddedLocalizedValue.Text("Show candidates"),
+            EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.show_details"),
+        )
+        assertEquals(
+            EmbeddedLocalizedValue.Text("キャンセル"),
+            EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.cancel"),
+        )
+    }
+
+    @Test
     fun `キー不足はビルド時検証を失敗させる`() {
         val result = EmbeddedLocalizationCatalog.validateEntries(
             mapOf(
