@@ -668,6 +668,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_reopen_hint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_add", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_insert", setOf())
+    /** for戻り経路へマウスを合わせたときに表示する処理の説明です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_LOOP_RETURN_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.loop_return_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.mainhand_save_get_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SETTINGS_FIELD_FALLBACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.settings_field_fallback", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_TARGET_ACTION_FALLBACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.target_action_fallback", setOf())
@@ -1386,6 +1388,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_LOOP_RETURN_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SETTINGS_FIELD_FALLBACK,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_TARGET_ACTION_FALLBACK,
