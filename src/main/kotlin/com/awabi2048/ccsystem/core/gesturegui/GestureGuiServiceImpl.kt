@@ -953,7 +953,7 @@ class GestureGuiServiceImpl(
         val effectiveHover = desiredReplacement
             ?.let { replacement ->
                 renderer.visualLayer(replacement.render, replacement.visualId)
-                    ?.let { base -> hoverText?.copy(layer = renderer.hoverReplaceLayer(base)) }
+                    ?.let { base -> hoverText.copy(layer = renderer.hoverReplaceLayer(base)) }
             }
             ?: hoverText
         if (actor.hoverIdentity != identity || actor.hover == null) {
