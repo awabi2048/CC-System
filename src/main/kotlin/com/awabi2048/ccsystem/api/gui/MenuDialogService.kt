@@ -71,9 +71,23 @@ data class MenuDialogRequest(
     val confirm: MenuDialogButton,
     val cancel: MenuDialogButton,
     val additionalActions: List<MenuDialogButton> = emptyList(),
+    /**
+     * exitActionではなく、multiAction本体の末尾へ配置するフッター操作です。
+     *
+     * Paper DialogのexitActionはmultiActionの外側に描画されるため、候補一覧と
+     * ［設定］［補助操作］［キャンセル］を同じ3列グリッドの最下行へ揃えられません。
+     * [multiActionWithoutExit]と組み合わせ、候補操作→confirm→footer→cancelの順で
+     * 一つのアクション列として構築します。
+     */
+    val footerActions: List<MenuDialogButton> = emptyList(),
     val columns: Int = 1,
     val sounds: MenuActionSoundPolicy = MenuActionSoundPolicy(),
     val canCloseWithEscape: Boolean = true,
+    /**
+     * exitActionを使わず、cancelもmultiAction本体の操作として配置します。
+     * 既存Dialogはfalseのままなので、既存の確認Dialogの表示位置を変更しません。
+     */
+    val multiActionWithoutExit: Boolean = false,
 ) {
     init {
         require(owner.isNotBlank()) { "owner must not be blank" }
@@ -81,6 +95,9 @@ data class MenuDialogRequest(
         require(inputs.map { it.id }.all { it.isNotBlank() }) { "dialog input ids must not be blank" }
         require(inputs.map { it.id }.distinct().size == inputs.size) { "dialog input ids must be unique" }
         require(columns > 0) { "dialog columns must be positive" }
+        require(footerActions.isEmpty() || multiActionWithoutExit) {
+            "footer actions require a multi-action dialog without an exit action"
+        }
     }
 
     val routeId: String
