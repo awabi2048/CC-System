@@ -523,23 +523,37 @@ class GestureGuiServiceImpl(
         renderer.ownsCatcher(entity, playerId)
 
     /** KantanCommander等がInteractionの右クリックを無効化するためのセッション単位判定です。 */
-    internal fun isSecondaryInputDisabled(playerId: UUID): Boolean =
+    internal fun isSecondaryInputDisabled(player: Player): Boolean =
         sessions.values.any { session ->
-            session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
-                (playerId == session.ownerId || playerId in session.actors) &&
-                !session.secondaryInputEnabled
+            !session.secondaryInputEnabled && isScreenInputActive(session, player)
         }
 
     /**
      * 外部ブロック／エンティティ操作を漏らさないためのセッション単位の入力遮断です。
      * 開幕アニメーション中もcatcherを生成済みなので、ACTIVE待ちの1 tickを無防備にしません。
      */
-    internal fun isWorldClickSuppressed(playerId: UUID): Boolean =
+    internal fun isWorldClickSuppressed(player: Player): Boolean =
         sessions.values.any { session ->
-            session.state in setOf(GestureGuiSessionState.OPENING, GestureGuiSessionState.ACTIVE) &&
-                (playerId == session.ownerId || playerId in session.actors) &&
-                session.suppressWorldClicks
+            session.suppressWorldClicks && isScreenInputActive(session, player)
         }
+
+    /**
+     * 現在の入力をGesture GUIへ渡せるかを返します。
+     *
+     * セッションに参加しているだけでは入力を奪いません。ACTIVE中は同じ視線判定を
+     * dispatchGestureと共有し、画面から視線を外したクリックを通常ワールドへ戻します。
+     */
+    internal fun isScreenInputActive(player: Player): Boolean =
+        sessions.values.any { session -> isScreenInputActive(session, player) }
+
+    private fun isScreenInputActive(session: Session, player: Player): Boolean {
+        val participating = player.uniqueId == session.ownerId || player.uniqueId in session.actors
+        val sameWorldAsOwner = Bukkit.getPlayer(session.ownerId)?.world?.uid == player.world.uid
+        val lookingAtScreen = session.state == GestureGuiSessionState.ACTIVE &&
+            sameWorldAsOwner &&
+            accessibleTarget(session, player) != null
+        return GestureGuiInputCapturePolicy.isActive(session.state, participating, lookingAtScreen)
+    }
 
     internal fun isParticipating(playerId: UUID): Boolean =
         playerId in sessions || sessions.values.any { playerId in it.actors }

@@ -45,14 +45,14 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
             // メインハンドだけに限定します。Kantanの完全遮断中だけは、無視したオフハンド
             // からブロック・アイテム使用が漏れないようイベント自体を拒否します。
             if (
-                service.isWorldClickSuppressed(event.player.uniqueId) ||
-                service.isSecondaryInputDisabled(event.player.uniqueId)
+                service.isWorldClickSuppressed(event.player) ||
+                service.isSecondaryInputDisabled(event.player)
             ) {
                 suppressWorldRightClick(event)
             }
             return
         }
-        if (service.isWorldClickSuppressed(event.player.uniqueId)) {
+        if (service.isWorldClickSuppressed(event.player)) {
             if (event.action.isRightClick) {
                 // KantanのGesture GUIでは、画面外も含めて右クリックを通常ワールドへ
                 // 到達させません。Inventory GUIの右クリックとは別イベント経路です。
@@ -68,7 +68,7 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
         val gesture = when {
             event.action.isLeftClick -> primary(event.player)
             event.action.isRightClick -> {
-                if (service.isSecondaryInputDisabled(event.player.uniqueId)) {
+                if (service.isSecondaryInputDisabled(event.player)) {
                     // Inventory GUIとは別に、Gesture GUI操作中のワールド右クリックだけを拒否します。
                     suppressWorldRightClick(event)
                     return
@@ -82,23 +82,24 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
-        val catcher = service.ownsCatcher(event.rightClicked, event.player.uniqueId)
+        val catcher = service.isScreenInputActive(event.player) &&
+            service.ownsCatcher(event.rightClicked, event.player.uniqueId)
         if (!GestureGuiRightClickHandPolicy.accepts(event.hand)) {
             // Interactionへのオフハンド右クリックは、正規の右クリック判定へ渡しません。
             // 所有catcher／完全遮断セッションだけは、背後のエンティティ操作を防ぐため
             // イベントをキャンセルします。
-            if (catcher || service.isWorldClickSuppressed(event.player.uniqueId)) {
+            if (catcher || service.isWorldClickSuppressed(event.player)) {
                 event.isCancelled = true
             }
             return
         }
-        if (service.isWorldClickSuppressed(event.player.uniqueId)) {
+        if (service.isWorldClickSuppressed(event.player)) {
             // 右クリックActionは原則廃止し、Interaction以外のエンティティも含めて
             // 外部プラグインへ入力を渡さない完全吸収とします。
             event.isCancelled = true
             return
         }
-        if (service.isSecondaryInputDisabled(event.player.uniqueId)) {
+        if (service.isSecondaryInputDisabled(event.player)) {
             if (catcher) event.isCancelled = true
             return
         }
@@ -110,8 +111,9 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityAttack(event: PrePlayerAttackEntityEvent) {
         val player = event.player
-        val catcher = service.ownsCatcher(event.attacked, player.uniqueId)
-        if (service.isWorldClickSuppressed(player.uniqueId)) {
+        val catcher = service.isScreenInputActive(player) &&
+            service.ownsCatcher(event.attacked, player.uniqueId)
+        if (service.isWorldClickSuppressed(player)) {
             // 画面内ならActionを解決し、対象が別エンティティでも攻撃自体は吸収します。
             dispatch(player, primary(player))
             event.isCancelled = true
@@ -126,8 +128,9 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onLegacyEntityAttack(event: EntityDamageByEntityEvent) {
         val player = event.damager as? Player ?: return
-        val catcher = service.ownsCatcher(event.entity, player.uniqueId)
-        if (service.isWorldClickSuppressed(player.uniqueId)) {
+        val catcher = service.isScreenInputActive(player) &&
+            service.ownsCatcher(event.entity, player.uniqueId)
+        if (service.isWorldClickSuppressed(player)) {
             dispatch(player, primary(player))
             event.isCancelled = true
             return
@@ -149,7 +152,10 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onJump(event: PlayerJumpEvent) {
-        if (!event.player.isSneaking || !service.leaveOrClose(event.player.uniqueId)) return
+        if (!service.isScreenInputActive(event.player) ||
+            !event.player.isSneaking ||
+            !service.leaveOrClose(event.player.uniqueId)
+        ) return
         event.isCancelled = true
     }
 
