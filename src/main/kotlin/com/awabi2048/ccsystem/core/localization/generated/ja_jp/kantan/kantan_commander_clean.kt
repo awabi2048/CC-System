@@ -279,6 +279,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.stay", value = EmbeddedLocalizedValue.Text("表示"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.fade_out", value = EmbeddedLocalizedValue.Text("フェードアウト"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.duration_invalid", value = EmbeddedLocalizedValue.Text("各時間は0以上の秒数で指定してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.time_format_hint", value = EmbeddedLocalizedValue.Text("時間は0～86400秒の範囲で、0.05秒（1 tick）単位で指定してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.duration_tick_invalid", value = EmbeddedLocalizedValue.Text("§c⚠️ 時間の設定は、1 tick = 0.05秒 の単位で行ってください"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.position_variable_title", value = EmbeddedLocalizedValue.Text("位置型変数から選択"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.position_variable_body", value = EmbeddedLocalizedValue.Text("位置型の変数名を指定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.rotation_title", value = EmbeddedLocalizedValue.Text("向きを数値で指定"), domain = DOMAIN),

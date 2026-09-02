@@ -267,6 +267,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.stay", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FADE_OUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.fade_out", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.duration_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIME_FORMAT_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.time_format_hint", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_TICK_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.duration_tick_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.position_variable_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.position_variable_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.rotation_title", setOf())
@@ -978,6 +980,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STAY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FADE_OUT,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIME_FORMAT_HINT,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_TICK_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_TITLE,
