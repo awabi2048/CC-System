@@ -9,9 +9,9 @@ class KantanLocalizationContractTest {
         val keys = LocalizationCatalogContract.keys()
             .filter { it.startsWith("kantan_commander_clean.") }
 
-        assertEquals(734, keys.size)
+        assertEquals(695, keys.size)
         assertEquals(
-            "389884662d5a180a1673885586ea440daef464d4d0b45f6459e374ae47de2979",
+            "e447bce7ffdd34c9b275478b3e05efbe2c4981c0bbccac0e4aee01eb56d1a152",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
