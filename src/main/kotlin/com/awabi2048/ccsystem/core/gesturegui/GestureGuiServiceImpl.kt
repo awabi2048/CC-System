@@ -734,10 +734,12 @@ class GestureGuiServiceImpl(
             }
             }
             if (session.state == GestureGuiSessionState.ACTIVE) {
-                // 視線が画面外にある間はInteraction自体を削除します。残したまま視点だけを
-                // 追従させると、画面を見ていないクリックまでEntity操作として扱われ、
-                // 外部エンティティの操作経路と競合します。視線が戻ったtickで再生成します。
-                val ownerHit = targetHit(session, owner)
+                // 視線・距離・遮蔽のいずれかで操作対象でなくなった間はInteraction自体を
+                // 削除します。残したまま視点だけを追従させると、画面を見ていない、または
+                // 遠すぎるクリックまでEntity操作として扱われ、外部エンティティの操作経路と
+                // 競合します。条件が戻ったtickで再生成します。画面の表示可否は別途
+                // GestureGuiVisibilityPolicyで判定するため、遠距離でも画面自体は残ります。
+                val ownerHit = accessibleTarget(session, owner)
                 if (ownerHit == null) {
                     removeActor(session, session.ownerId)
                 } else {
@@ -775,14 +777,14 @@ class GestureGuiServiceImpl(
                 // 非表示にします。入力claimだけを解放すると、表示だけが残って
                 // 「操作できそうに見える」状態になるためです。
                 session.screens.forEach { screen ->
-                    if (screen.view.definition.canOperate(session.ownerId, player.uniqueId)) {
+                    if (screen.view.definition.canView(session.ownerId, player.uniqueId)) {
                         renderer.showTo(screen.render, player)
                     } else {
                         renderer.hideFrom(screen.render, player)
                     }
                 }
                 session.children.forEach { child ->
-                    if (child.view.definition.canOperate(session.ownerId, player.uniqueId)) {
+                    if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
                         renderer.showTo(child.render, player)
                         child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
                     } else {
@@ -804,10 +806,10 @@ class GestureGuiServiceImpl(
             val (session, hit) = desired ?: return@forEach
             val actor = getOrCreateActor(session, player) ?: return@forEach
             session.screens.filter {
-                it.view.definition.canOperate(session.ownerId, player.uniqueId)
+                it.view.definition.canView(session.ownerId, player.uniqueId)
             }.forEach { renderer.showTo(it.render, player) }
             session.children.filter {
-                it.view.definition.canOperate(session.ownerId, player.uniqueId)
+                it.view.definition.canView(session.ownerId, player.uniqueId)
             }.forEach { renderer.showTo(it.render, player) }
             renderer.moveCatcher(actor.catcher, catcherLocation(player))
             updateHover(session, actor, player, hit)

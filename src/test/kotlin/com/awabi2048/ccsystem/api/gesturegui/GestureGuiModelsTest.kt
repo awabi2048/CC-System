@@ -91,6 +91,21 @@ class GestureGuiModelsTest {
     }
 
     @Test
+    fun `visibility policy can keep a screen visible while operation is unavailable`() {
+        val owner = UUID.randomUUID()
+        val viewer = UUID.randomUUID()
+        val screen = screen(
+            GestureGuiAccess.PUBLIC,
+            accessPolicy = GestureGuiAccessPolicy { _, _ -> false },
+            visibilityPolicy = GestureGuiVisibilityPolicy { _, viewerId -> viewerId == viewer },
+        )
+
+        assertFalse(screen.canOperate(owner, viewer))
+        assertTrue(screen.canView(owner, viewer))
+        assertFalse(screen.canView(owner, UUID.randomUUID()))
+    }
+
+    @Test
     fun `element ids must be stable and unique in a screen`() {
         val element = GestureGuiElement("action", GestureGuiBounds(-0.1, -0.1, 0.1, 0.1))
         assertThrows(IllegalArgumentException::class.java) {
@@ -206,5 +221,6 @@ class GestureGuiModelsTest {
         access: GestureGuiAccess,
         allowlist: Set<UUID> = emptySet(),
         accessPolicy: GestureGuiAccessPolicy? = null,
-    ) = GestureGuiScreenDefinition("screen", emptyList(), access, allowlist, accessPolicy)
+        visibilityPolicy: GestureGuiVisibilityPolicy? = null,
+    ) = GestureGuiScreenDefinition("screen", emptyList(), access, allowlist, accessPolicy, visibilityPolicy)
 }

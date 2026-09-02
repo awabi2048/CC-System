@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccessPolicy
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisibilityPolicy
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
@@ -44,6 +45,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         var access: GestureGuiAccess,
         var allowlist: Set<UUID>,
         var accessPolicy: GestureGuiAccessPolicy?,
+        var visibilityPolicy: GestureGuiVisibilityPolicy?,
     ) {
         val all: List<Entity> get() = background + contents
 
@@ -118,6 +120,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 view.definition.access,
                 view.definition.allowlist,
                 view.definition.accessPolicy,
+                view.definition.visibilityPolicy,
             )
             // ホバー置換が置換対象と同じ深さへ解決できるよう、層を記録します。
             view.visuals.forEach { visual -> handle.visualLayers[visual.visualId] = visual.layer }
@@ -185,13 +188,25 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val nextAccess = view.definition.access
         val nextAllowlist = view.definition.allowlist
         val nextAccessPolicy = view.definition.accessPolicy
-        if (handle.access != nextAccess || handle.allowlist != nextAllowlist || handle.accessPolicy !== nextAccessPolicy) {
+        val nextVisibilityPolicy = view.definition.visibilityPolicy
+        if (handle.access != nextAccess ||
+            handle.allowlist != nextAllowlist ||
+            handle.accessPolicy !== nextAccessPolicy ||
+            handle.visibilityPolicy !== nextVisibilityPolicy
+        ) {
             // 公開→非公開、またはallowlist変更時に既存クライアントへ残った
             // Entityを明示的に隠し、アクセス定義と可視状態を同一tickで揃えます。
             handle.all.forEach { entity ->
                 Bukkit.getOnlinePlayers()
                     .filterNot { player ->
-                        canView(handle.ownerId, nextAccess, nextAllowlist, nextAccessPolicy, player.uniqueId)
+                        canView(
+                            handle.ownerId,
+                            nextAccess,
+                            nextAllowlist,
+                            nextAccessPolicy,
+                            nextVisibilityPolicy,
+                            player.uniqueId,
+                        )
                     }
                     .forEach { player -> player.hideEntity(plugin, entity) }
             }
@@ -199,6 +214,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.access = nextAccess
         handle.allowlist = nextAllowlist
         handle.accessPolicy = nextAccessPolicy
+        handle.visibilityPolicy = nextVisibilityPolicy
     }
 
     private fun showBackground(handle: ScreenHandle) {
@@ -257,13 +273,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         .filter { isViewer(handle, it.uniqueId) }
 
     private fun isViewer(handle: ScreenHandle, playerId: UUID): Boolean =
-        canView(handle.ownerId, handle.access, handle.allowlist, handle.accessPolicy, playerId)
+        canView(
+            handle.ownerId,
+            handle.access,
+            handle.allowlist,
+            handle.accessPolicy,
+            handle.visibilityPolicy,
+            playerId,
+        )
 
     private fun canView(
         ownerId: UUID,
         access: GestureGuiAccess,
         allowlist: Set<UUID>,
         accessPolicy: GestureGuiAccessPolicy?,
+        visibilityPolicy: GestureGuiVisibilityPolicy?,
         playerId: UUID,
     ): Boolean {
         val staticallyAllowed = when (access) {
@@ -271,7 +295,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             GestureGuiAccess.OWNER_ONLY -> playerId == ownerId
             GestureGuiAccess.ALLOWLIST -> playerId == ownerId || playerId in allowlist
         }
-        return staticallyAllowed && (accessPolicy?.canOperate(ownerId, playerId) ?: true)
+        val dynamicallyVisible = visibilityPolicy?.canView(ownerId, playerId)
+            ?: accessPolicy?.canOperate(ownerId, playerId)
+            ?: true
+        return staticallyAllowed && dynamicallyVisible
     }
 
     /** 同一visualIdの実体を再利用し、追加・変更・削除だけを反映します。 */
@@ -448,7 +475,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         // overlayを配ると、共有画面では子画面の背後に親の操作面が見えたままになり、
         // 表示と入力の遮蔽範囲が操作者ごとに分岐します。
         Bukkit.getOnlinePlayers()
-            .filter { player -> definition.canOperate(owner.uniqueId, player.uniqueId) }
+            .filter { player -> definition.canView(owner.uniqueId, player.uniqueId) }
             .forEach { player -> player.showEntity(plugin, it) }
     }
 

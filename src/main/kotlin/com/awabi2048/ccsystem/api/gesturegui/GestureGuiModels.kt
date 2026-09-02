@@ -142,11 +142,22 @@ enum class GestureGuiAccess {
  * 画面定義へ追加で適用する、実行時の操作認可です。
  *
  * ALLOWLISTは画面を開いた時点のUUID集合を表すため、ワールド単位の権限や
- * ロールが変化する機能では認可が古くなります。このポリシーは可視性・入力受付の
- * 両方から同じ時点で評価され、呼び出し側が現在の権限を再確認できます。
+ * ロールが変化する機能では認可が古くなります。距離や遮蔽など、入力受付にだけ
+ * 適用する条件もこのポリシーへ渡せます。
  */
 fun interface GestureGuiAccessPolicy {
     fun canOperate(ownerId: UUID, actorId: UUID): Boolean
+}
+
+/**
+ * 画面定義へ追加で適用する、実行時の表示認可です。
+ *
+ * 操作認可とは分離されているため、共有画面を表示したまま、距離や視線などの
+ * 一時的な条件だけで入力受付を停止できます。画面の表示中に権限が変化する
+ * 機能では、呼び出し側が現在の表示権限を再確認できます。
+ */
+fun interface GestureGuiVisibilityPolicy {
+    fun canView(ownerId: UUID, viewerId: UUID): Boolean
 }
 
 /**
@@ -245,8 +256,10 @@ data class GestureGuiScreenDefinition(
     val elements: List<GestureGuiElement>,
     val access: GestureGuiAccess = GestureGuiAccess.OWNER_ONLY,
     val allowlist: Set<UUID> = emptySet(),
-    /** 静的なaccess判定へ追加する実行時認可。nullなら従来どおりです。 */
+    /** 静的なaccess判定へ追加する実行時の操作認可。nullなら従来どおりです。 */
     val accessPolicy: GestureGuiAccessPolicy? = null,
+    /** 静的なaccess判定へ追加する実行時の表示認可。nullなら操作認可を表示にも適用します。 */
+    val visibilityPolicy: GestureGuiVisibilityPolicy? = null,
 ) {
     init {
         require(screenId.isNotBlank()) { "gesture GUI screenId must not be blank" }
@@ -258,11 +271,21 @@ data class GestureGuiScreenDefinition(
         }
     }
 
-    fun canOperate(ownerId: UUID, actorId: UUID): Boolean = when (access) {
+    private fun hasStaticAccess(actorId: UUID, ownerId: UUID): Boolean = when (access) {
         GestureGuiAccess.OWNER_ONLY -> actorId == ownerId
         GestureGuiAccess.ALLOWLIST -> actorId == ownerId || actorId in allowlist
         GestureGuiAccess.PUBLIC -> true
-    } && (accessPolicy?.canOperate(ownerId, actorId) ?: true)
+    }
+
+    fun canOperate(ownerId: UUID, actorId: UUID): Boolean =
+        hasStaticAccess(actorId, ownerId) && (accessPolicy?.canOperate(ownerId, actorId) ?: true)
+
+    /** 表示認可が未指定の既存画面では、従来どおり操作認可を表示にも適用します。 */
+    fun canView(ownerId: UUID, viewerId: UUID): Boolean =
+        hasStaticAccess(viewerId, ownerId) &&
+            (visibilityPolicy?.canView(ownerId, viewerId)
+                ?: accessPolicy?.canOperate(ownerId, viewerId)
+                ?: true)
 }
 
 /** BukkitのLocationへ依存せず座標計算を検証するための三次元ベクトルです。 */
