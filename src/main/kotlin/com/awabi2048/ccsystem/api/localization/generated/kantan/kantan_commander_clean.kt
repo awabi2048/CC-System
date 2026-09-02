@@ -652,6 +652,56 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_ITEM_SAVE_RETRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_item_save_retry", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_TAKEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_taken", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_INCOMPLETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_context_incomplete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.destination", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FACING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.facing", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GIVE_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.give_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.give_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.count", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.action", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OTHER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.other", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISPLAY_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.display_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.mode", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.text", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DURATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.duration", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_WAIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.wait", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.tags", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.sound", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.sound_parameters", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.effect", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_LEVEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.level", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SECONDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.seconds", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INTENSITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.intensity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SHAKE_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.shake_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.equipment_slot", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.equipment_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OVERWRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.overwrite", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.tag", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block_operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_FROM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block_from", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_TO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block_to", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition_kind", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EXECUTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.executor", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.disk", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.variable", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_START_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.start_source", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_END_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.end_source", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_STEP_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.step_source", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_START_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.start_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_END_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.end_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_STEP_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.step_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONTEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.context", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INVERTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.inverted", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INCLUSIVE_END: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.inclusive_end", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_context_status", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_upper_render", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_reopen_hint", setOf())
@@ -1359,6 +1409,56 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_ITEM_SAVE_RETRY,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_TAKEN,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_INCOMPLETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DESTINATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FACING,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GIVE_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GIVE_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_COUNT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ACTION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OTHER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISPLAY_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_MODE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TEXT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DURATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_WAIT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAGS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_PARAMETERS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EFFECT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_LEVEL,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SECONDS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INTENSITY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SHAKE_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_SLOT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OVERWRITE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OPERATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_OPERATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_FROM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_TO,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EXECUTOR,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VARIABLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_START_SOURCE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_END_SOURCE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_STEP_SOURCE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_START_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_END_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_STEP_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONTEXT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INVERTED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INCLUSIVE_END,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_CONTEXT_STATUS,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT,
