@@ -44,6 +44,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.state_label", value = EmbeddedLocalizedValue.Text("State"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_label", value = EmbeddedLocalizedValue.Text("Interval"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center", value = EmbeddedLocalizedValue.Text("Go to Command Start"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_glyph", value = EmbeddedLocalizedValue.Text("🕋"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_description", value = EmbeddedLocalizedValue.TextList(listOf("Returns the view to the map's upper-left starting position")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_action", value = EmbeddedLocalizedValue.Text("Go to starting position"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info", value = EmbeddedLocalizedValue.Text("Overview"), domain = DOMAIN),

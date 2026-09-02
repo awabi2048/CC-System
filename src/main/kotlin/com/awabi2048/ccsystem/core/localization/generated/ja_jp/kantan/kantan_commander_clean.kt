@@ -44,6 +44,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.state_label", value = EmbeddedLocalizedValue.Text("状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.interval_label", value = EmbeddedLocalizedValue.Text("実行間隔"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center", value = EmbeddedLocalizedValue.Text("コマンド先頭へ移動"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_glyph", value = EmbeddedLocalizedValue.Text("🕋"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_description", value = EmbeddedLocalizedValue.TextList(listOf("表示位置をマップ左上の開始位置へ戻します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.center_action", value = EmbeddedLocalizedValue.Text("開始位置へ移動"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info", value = EmbeddedLocalizedValue.Text("全体情報"), domain = DOMAIN),

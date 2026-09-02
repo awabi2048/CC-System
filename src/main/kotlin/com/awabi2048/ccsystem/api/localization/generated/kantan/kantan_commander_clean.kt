@@ -32,6 +32,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_STATE_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.state_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.interval_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center", setOf())
+    /** ジェスチャーGUIの「先頭へ移動」ブロックに表示する短い記号です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_glyph", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.center_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info", setOf())
@@ -726,6 +728,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_STATE_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO,
