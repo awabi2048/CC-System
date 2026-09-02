@@ -1,6 +1,8 @@
 package com.awabi2048.ccsystem.core.localization
 
 import com.awabi2048.ccsystem.api.localization.generated.MyworldBiomesKeys
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.lang.reflect.Modifier
 import org.bukkit.block.Biome
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -34,24 +36,36 @@ class EmbeddedLocalizationCatalogTest {
     @Test
     fun `KantanのDialog操作ラベルは確定と候補表示を使う`() {
         assertEquals(
-            EmbeddedLocalizedValue.Text("確定"),
+            EmbeddedLocalizedValue.Text("&a確定"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("候補を表示"),
+            EmbeddedLocalizedValue.Text("&e候補を表示"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("Confirm"),
+            EmbeddedLocalizedValue.Text("&aConfirm"),
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("Show candidates"),
+            EmbeddedLocalizedValue.Text("&eShow candidates"),
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("キャンセル"),
+            EmbeddedLocalizedValue.Text("&cキャンセル"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.cancel"),
+        )
+        assertEquals(
+            NamedTextColor.GREEN,
+            LegacyComponentSerializer.legacyAmpersand().deserialize("&a確定").color(),
+        )
+        assertEquals(
+            NamedTextColor.YELLOW,
+            LegacyComponentSerializer.legacyAmpersand().deserialize("&e候補を表示").color(),
+        )
+        assertEquals(
+            NamedTextColor.RED,
+            LegacyComponentSerializer.legacyAmpersand().deserialize("&cキャンセル").color(),
         )
     }
 
