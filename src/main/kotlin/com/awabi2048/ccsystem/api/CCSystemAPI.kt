@@ -46,9 +46,9 @@ interface CCSystemAPI {
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
-        // GestureGuiVisual.Blockの縁取りを縦内側・横外側の混在配置へ変更したため、consumerが旧APIへ
-        // 接続しないよう契約版を更新します。
-        const val GESTURE_GUI_CONTRACT_VERSION: Int = 14
+        // GestureGuiVisual.Blockの縁取り配置と、操作者別のホバーBlockDisplay差し替えを
+        // 追加したため、consumerが旧APIへ接続しないよう契約版を更新します。
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 15
     }
     /**
      * プレイヤーの言語設定を取得します

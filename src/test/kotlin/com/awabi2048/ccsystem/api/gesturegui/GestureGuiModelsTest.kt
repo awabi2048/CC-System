@@ -4,6 +4,7 @@ import java.util.UUID
 import java.lang.reflect.Proxy
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -199,6 +200,42 @@ class GestureGuiModelsTest {
         )
         assertThrows(IllegalArgumentException::class.java) {
             GestureGuiView(GestureGuiScreenDefinition("screen", listOf(element)), emptyList()) {}
+        }
+    }
+
+    @Test
+    fun `hover block replacement targets a block visual in the same view`() {
+        val blockData = Proxy.newProxyInstance(
+            BlockData::class.java.classLoader,
+            arrayOf(BlockData::class.java),
+        ) { _, _, _ -> null } as BlockData
+        val block = GestureGuiVisual.Block("button", 0.0, 0.0, 0.4, 0.12, blockData)
+        val element = GestureGuiElement(
+            elementId = "button-action",
+            bounds = GestureGuiBounds(-0.2, -0.06, 0.4, 0.12),
+            hoverText = GestureGuiHoverText(
+                Component.text("hover"),
+                0.0,
+                0.0,
+                hoverBlockVisualId = "button",
+                hoverBlockData = blockData,
+            ),
+        )
+
+        val view = GestureGuiView(
+            GestureGuiScreenDefinition("screen", listOf(element)),
+            listOf(block),
+        ) {}
+
+        assertEquals("button", view.definition.elements.single().hoverText?.hoverBlockVisualId)
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiView(
+                GestureGuiScreenDefinition(
+                    "screen",
+                    listOf(element.copy(hoverText = element.hoverText?.copy(hoverBlockVisualId = "missing"))),
+                ),
+                listOf(block),
+            ) {}
         }
     }
 

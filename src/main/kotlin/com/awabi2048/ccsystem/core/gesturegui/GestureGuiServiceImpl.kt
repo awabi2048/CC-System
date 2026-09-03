@@ -15,6 +15,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiSessionListener
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVerticalSlot
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaim
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
@@ -52,7 +53,10 @@ class GestureGuiServiceImpl(
 ) : GestureGuiService {
     private data class HoverReplacement(
         val render: GestureGuiEntityRenderer.ScreenHandle,
-        val visualId: String,
+        /** 説明文の差し替えに伴い、主Visualと枠をまとめて隠すIDです。 */
+        val visualIds: Set<String>,
+        /** 背景テクスチャだけを差し替え、選択中の枠を残すIDです。 */
+        val visualBodyIds: Set<String>,
     )
 
     private data class ActorRuntime(
@@ -915,7 +919,12 @@ class GestureGuiServiceImpl(
         actor.claims.forEach(PlayerInteractionClaim::close)
         actor.hoverReplacement?.let { replacement ->
             Bukkit.getPlayer(actorId)?.let { player ->
-                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+                replacement.visualIds.forEach { visualId ->
+                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
+                }
+                replacement.visualBodyIds.forEach { visualId ->
+                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
+                }
             }
         }
         actor.hover?.let(renderer::removeHover)
@@ -937,7 +946,12 @@ class GestureGuiServiceImpl(
         } else null
         if (identity == null) {
             actor.hoverReplacement?.let { replacement ->
-                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+                replacement.visualIds.forEach { visualId ->
+                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
+                }
+                replacement.visualBodyIds.forEach { visualId ->
+                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
+                }
             }
             actor.hoverReplacement = null
             actor.hover?.let(renderer::removeHover)
@@ -946,17 +960,44 @@ class GestureGuiServiceImpl(
             return
         }
         val render = target?.child?.render ?: target?.screen?.render
-        val desiredReplacement = hoverText?.replacesVisualId?.let { visualId ->
-            render?.let { HoverReplacement(it, visualId) }
+        val hoverVisual = hoverText?.hoverBlockVisualId?.let { visualId ->
+            view.visuals.firstOrNull { it.visualId == visualId } as? GestureGuiVisual.Block
+        }
+        val descriptionVisualIds = buildSet<String> {
+            hoverText?.replacesVisualId?.let(::add)
+        }
+        val bodyVisualIds = buildSet<String> {
+            hoverText?.hoverBlockVisualId?.let(::add)
+        } - descriptionVisualIds
+        val desiredReplacement = render?.let { currentRender ->
+            if (descriptionVisualIds.isEmpty() && bodyVisualIds.isEmpty()) {
+                null
+            } else {
+                HoverReplacement(currentRender, descriptionVisualIds, bodyVisualIds)
+            }
         }
         if (actor.hoverReplacement != desiredReplacement) {
             actor.hoverReplacement?.let { replacement ->
-                renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = true)
+                replacement.visualIds.forEach { visualId ->
+                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
+                }
+                replacement.visualBodyIds.forEach { visualId ->
+                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
+                }
             }
             actor.hoverReplacement = null
             desiredReplacement?.let { replacement ->
-                if (renderer.setVisualVisible(replacement.render, replacement.visualId, player, visible = false)) {
-                    actor.hoverReplacement = replacement
+                val hiddenVisualIds = replacement.visualIds.filterTo(linkedSetOf()) { visualId ->
+                    renderer.setVisualVisible(replacement.render, visualId, player, visible = false)
+                }
+                val hiddenVisualBodyIds = replacement.visualBodyIds.filterTo(linkedSetOf()) { visualId ->
+                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = false)
+                }
+                if (hiddenVisualIds.isNotEmpty() || hiddenVisualBodyIds.isNotEmpty()) {
+                    actor.hoverReplacement = replacement.copy(
+                        visualIds = hiddenVisualIds,
+                        visualBodyIds = hiddenVisualBodyIds,
+                    )
                 }
             }
         }
@@ -964,18 +1005,37 @@ class GestureGuiServiceImpl(
         // 0.02ブロックだけ前面へ浮かせることで、ホバー中の法線方向の跳ねを最小化し、
         // 層の重なり規則（前面に浮く）も維持します。対象を解決できない場合は
         // 従来どおりhover.layerを使います。
-        val effectiveHover = desiredReplacement
-            ?.let { replacement ->
-                renderer.visualLayer(replacement.render, replacement.visualId)
-                    ?.let { base -> hoverText.copy(layer = renderer.hoverReplaceLayer(base)) }
+        val effectiveHover = hoverText?.let { currentHover ->
+            val descriptionVisualId = currentHover.replacesVisualId
+            if (descriptionVisualId != null && render != null) {
+                renderer.visualLayer(render, descriptionVisualId)
+                    ?.let { base -> currentHover.copy(layer = renderer.hoverReplaceLayer(base)) }
+                    ?: currentHover
+            } else {
+                currentHover
             }
-            ?: hoverText
+        }
         if (actor.hoverIdentity != identity || actor.hover == null) {
             actor.hover?.let(renderer::removeHover)
-            actor.hover = renderer.spawnHover(player, session.id, session.revision, pose!!, effectiveHover!!)
+            actor.hover = renderer.spawnHover(
+                player,
+                session.id,
+                session.revision,
+                pose!!,
+                effectiveHover!!,
+                hoverVisual,
+            )
             actor.hoverIdentity = identity
         } else {
-            renderer.updateHover(actor.hover!!, pose!!, effectiveHover!!)
+            renderer.updateHover(
+                player,
+                actor.hover!!,
+                session.id,
+                session.revision,
+                pose!!,
+                effectiveHover!!,
+                hoverVisual,
+            )
         }
     }
 

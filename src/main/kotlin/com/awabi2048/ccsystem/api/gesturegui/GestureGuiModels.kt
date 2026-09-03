@@ -5,6 +5,7 @@ import kotlin.math.sqrt
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
 /** 画面の実寸と共通外観です。寸法・枠幅はブロック単位です。 */
@@ -234,6 +235,10 @@ data class GestureGuiHoverText(
      * 場合、CC-Systemは操作者に対して既定表示を隠し、ホバー終了時に復元します。
      */
     val replacesVisualId: String? = null,
+    /** ホバー中に一時表示するBlockDisplayの置換対象visualIdです。 */
+    val hoverBlockVisualId: String? = null,
+    /** hoverBlockVisualIdへ一時表示するBlockDisplayのBlockDataです。操作者ごとにだけ配布されます。 */
+    val hoverBlockData: BlockData? = null,
 ) {
     init {
         require(x.isFinite() && y.isFinite()) { "gesture GUI hover position must be finite" }
@@ -242,6 +247,12 @@ data class GestureGuiHoverText(
         require(layer in 1..40) { "gesture GUI hover layer must be between 1 and 40" }
         require(replacesVisualId == null || replacesVisualId.isNotBlank()) {
             "gesture GUI hover replacesVisualId must not be blank"
+        }
+        require(hoverBlockVisualId == null || hoverBlockVisualId.isNotBlank()) {
+            "gesture GUI hover hoverBlockVisualId must not be blank"
+        }
+        require((hoverBlockVisualId == null) == (hoverBlockData == null)) {
+            "gesture GUI hover hoverBlockVisualId and hoverBlockData must be specified together"
         }
     }
 

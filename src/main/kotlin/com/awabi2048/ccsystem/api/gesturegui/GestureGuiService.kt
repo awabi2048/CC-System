@@ -121,6 +121,11 @@ data class GestureGuiView(
         require(definition.elements.mapNotNull { it.hoverText?.replacesVisualId }.all { it in visualIds }) {
             "gesture GUI hover replacesVisualId must reference a visual in the same screen"
         }
+        val blockVisualIds = visuals.filterIsInstance<GestureGuiVisual.Block>()
+            .mapTo(hashSetOf(), GestureGuiVisual.Block::visualId)
+        require(definition.elements.mapNotNull { it.hoverText?.hoverBlockVisualId }.all { it in blockVisualIds }) {
+            "gesture GUI hover hoverBlockVisualId must reference a Block visual in the same screen"
+        }
     }
 }
 

@@ -15,6 +15,7 @@ import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.Color
 import org.bukkit.entity.Display
@@ -57,10 +58,18 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
 
         /** ホバー置換の深さ解決に使う、visualIdごとの層です。 */
         val visualLayers: MutableMap<String, Int> = mutableMapOf()
+
+        /** BlockDisplay本体だけをホバー差し替えする際の操作者別非表示状態です。 */
+        val hiddenVisualBodyIds: MutableMap<UUID, MutableSet<String>> = mutableMapOf()
     }
 
     internal data class CatcherHandle(val actorId: UUID, val entity: Interaction)
-    internal data class HoverHandle(val actorId: UUID, val entity: TextDisplay)
+    internal data class HoverHandle(
+        val actorId: UUID,
+        val entity: TextDisplay,
+        /** ホバー中だけ操作者へ配布する背景差し替えBlockDisplayです。 */
+        var blockEntity: BlockDisplay? = null,
+    )
 
     fun spawnScreen(
         owner: Player,
@@ -265,10 +274,29 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         if (visible) {
             hidden.remove(visualId)
             if (hidden.isEmpty()) handle.hiddenVisualIds.remove(player.uniqueId)
+            handle.hiddenVisualBodyIds[player.uniqueId]?.remove(visualId)
+            handle.hiddenVisualBodyIds.entries.removeIf { it.value.isEmpty() }
             entities.forEach { entity -> player.showEntity(plugin, entity) }
         } else {
             hidden += visualId
             entities.forEach { entity -> player.hideEntity(plugin, entity) }
+        }
+        return true
+    }
+
+    /** 通常visualのBlockDisplay本体だけを操作者単位で切り替えます。 */
+    fun setVisualBodyVisible(handle: ScreenHandle, visualId: String, player: Player, visible: Boolean): Boolean {
+        val entity = handle.visualEntities[visualId] ?: return false
+        if (entity !is BlockDisplay) return false
+        val hiddenWhole = handle.hiddenVisualIds[player.uniqueId].orEmpty()
+        val hiddenBody = handle.hiddenVisualBodyIds.getOrPut(player.uniqueId) { mutableSetOf() }
+        if (visible) {
+            hiddenBody.remove(visualId)
+            if (hiddenBody.isEmpty()) handle.hiddenVisualBodyIds.remove(player.uniqueId)
+            if (visualId !in hiddenWhole) player.showEntity(plugin, entity)
+        } else {
+            hiddenBody += visualId
+            player.hideEntity(plugin, entity)
         }
         return true
     }
@@ -337,8 +365,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             removeVisualEntities(handle, visualId)
             handle.visualLayers.remove(visualId)
             handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visualId) }
+            handle.hiddenVisualBodyIds.values.forEach { hidden -> hidden.remove(visualId) }
         }
         handle.hiddenVisualIds.entries.removeIf { it.value.isEmpty() }
+        handle.hiddenVisualBodyIds.entries.removeIf { it.value.isEmpty() }
         newView.visuals.sortedBy(GestureGuiVisual::layer).forEach { visual ->
             val current = handle.visualEntities[visual.visualId]
             val compatible = when (visual) {
@@ -545,7 +575,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         // 主Visual・枠・将来の装飾で同じ可視性規則を共有します。
         val visualId = entity.persistentDataContainer.get(visualKey, PersistentDataType.STRING)
             ?: return true
-        return visualId !in (handle.hiddenVisualIds[playerId] ?: emptySet())
+        if (visualId in (handle.hiddenVisualIds[playerId] ?: emptySet())) return false
+        return entity != handle.visualEntities[visualId] ||
+            visualId !in (handle.hiddenVisualBodyIds[playerId] ?: emptySet())
     }
 
     /** 主Visualと、そのVisualに属する枠Entityを同じ表示単位として返します。 */
@@ -598,6 +630,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.visualOutlineEntities.clear()
         handle.visualLayers.clear()
         handle.hiddenVisualIds.clear()
+        handle.hiddenVisualBodyIds.clear()
     }
 
     /**
@@ -683,32 +716,89 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         revision: Long,
         pose: GestureGuiScreenPose,
         hover: GestureGuiHoverText,
+        hoverVisual: GestureGuiVisual.Block? = null,
     ): HoverHandle {
-        val entity = player.world.spawn(
-            textLocation(player.world, pose, hover.x, hover.y, hover.layer),
-            TextDisplay::class.java,
+        val hoverBlockData = hover.hoverBlockData
+        val blockEntity = if (
+            hoverVisual != null &&
+            hover.hoverBlockVisualId == hoverVisual.visualId &&
+            hoverBlockData != null
         ) {
-            prepareTextDisplay(it, pose)
-            it.isVisibleByDefault = false
-            applyHover(it, pose, hover)
-            mark(it, sessionId, revision)
-            hideAxiomDisplayGizmo(it)
+            spawnHoverBlock(player.world, sessionId, revision, pose, hoverVisual, hoverBlockData)
+        } else {
+            null
+        }
+        val entity = try {
+            player.world.spawn(
+                textLocation(player.world, pose, hover.x, hover.y, hover.layer),
+                TextDisplay::class.java,
+            ) {
+                prepareTextDisplay(it, pose)
+                it.isVisibleByDefault = false
+                applyHover(it, pose, hover)
+                mark(it, sessionId, revision)
+                hideAxiomDisplayGizmo(it)
+            }
+        } catch (failure: Throwable) {
+            // TextDisplay生成に失敗しても、先に作ったホバー面を残さないようにします。
+            blockEntity?.remove()
+            throw failure
         }
         // isVisibleByDefault=falseの実体はtracking開始後に個別表示します。同一tickのshowは
         // クライアントへspawn packetが送られる前に消費される実装差があるため、次tickへ分離します。
         Bukkit.getScheduler().runTask(plugin, Runnable {
             if (player.isOnline && entity.isValid) player.showEntity(plugin, entity)
+            if (player.isOnline && blockEntity?.isValid == true) player.showEntity(plugin, blockEntity)
         })
-        return HoverHandle(player.uniqueId, entity)
+        return HoverHandle(player.uniqueId, entity, blockEntity)
     }
 
-    fun updateHover(handle: HoverHandle, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
+    fun updateHover(
+        player: Player,
+        handle: HoverHandle,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        hover: GestureGuiHoverText,
+        hoverVisual: GestureGuiVisual.Block? = null,
+    ) {
         // 同じ要素IDのまま画面が更新される場合も、位置だけでなく文面・幅・縮尺を
         // 更新します。設定変更後に古いホバー説明が残る問題を防ぎます。
         applyHover(handle.entity, pose, hover)
+        val blockData = hover.hoverBlockData
+        if (hoverVisual != null &&
+            hover.hoverBlockVisualId == hoverVisual.visualId &&
+            blockData != null
+        ) {
+            val visual = hoverVisual
+            val current = handle.blockEntity
+            if (current == null || !current.isValid) {
+                handle.blockEntity = spawnHoverBlock(
+                    player.world,
+                    sessionId,
+                    revision,
+                    pose,
+                    visual,
+                    blockData,
+                )
+                val created = handle.blockEntity
+                Bukkit.getScheduler().runTask(plugin, Runnable {
+                    if (player.isOnline && created?.isValid == true) player.showEntity(plugin, created)
+                })
+            } else {
+                applyHoverBlock(current, pose, visual, blockData)
+            }
+        } else {
+            handle.blockEntity?.remove()
+            handle.blockEntity = null
+        }
     }
 
-    fun removeHover(handle: HoverHandle) = handle.entity.remove()
+    fun removeHover(handle: HoverHandle) {
+        handle.entity.remove()
+        handle.blockEntity?.remove()
+        handle.blockEntity = null
+    }
 
     fun ownsCatcher(entity: Entity, playerId: UUID? = null): Boolean {
         val owner = entity.persistentDataContainer.get(actorKey, PersistentDataType.STRING)
@@ -731,6 +821,39 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             applyGlow(it, visual.glowColor)
             hideAxiomDisplayGizmo(it)
         }
+
+    /** ホバー中だけ操作者へ配布する、通常BlockDisplayと同寸法の差し替え面です。 */
+    private fun spawnHoverBlock(
+        world: World,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Block,
+        blockData: BlockData,
+    ): BlockDisplay = world.spawn(
+        visualLocation(world, pose, visual.x, visual.y, visual.layer),
+        BlockDisplay::class.java,
+    ) {
+        prepareDisplay(it, pose)
+        it.isVisibleByDefault = false
+        applyHoverBlock(it, pose, visual, blockData)
+        mark(it, sessionId, revision)
+        hideAxiomDisplayGizmo(it)
+    }
+
+    private fun applyHoverBlock(
+        entity: BlockDisplay,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Block,
+        blockData: BlockData,
+    ) {
+        // BlockDataは共有Viewから参照されるため、Entityごとに複製して外部変更の影響を
+        // 切り離します。通常visualの寸法・ローカル座標をそのまま引き継ぐことで、
+        // ホバー中だけボタン面を差し替えても縁取りや当たり判定の位置は動きません。
+        entity.block = blockData.clone()
+        entity.setTransformation(blockTransform(visual.width.toFloat(), visual.height.toFloat()))
+        entity.teleport(visualLocation(entity.world, pose, visual.x, visual.y, visual.layer))
+    }
 
     private fun spawnPanelBlock(
         world: World,
