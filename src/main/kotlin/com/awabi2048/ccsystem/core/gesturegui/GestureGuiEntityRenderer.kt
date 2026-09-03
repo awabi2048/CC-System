@@ -1032,7 +1032,13 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         x: Double,
         y: Double,
         layer: Int,
-    ): Location = visualLocation(world, pose, x, y - TEXT_BASELINE_OFFSET, layer).apply {
+    ): Location = visualLocation(
+        world,
+        pose,
+        x,
+        y - TEXT_BASELINE_OFFSET,
+        GestureGuiTextDepth.effectiveLayer(layer),
+    ).apply {
         yaw = GestureGuiGeometry.textDisplayYaw(pose)
         pitch = GestureGuiGeometry.textDisplayPitch(pose)
     }
@@ -1041,8 +1047,12 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val PANEL_FRAME_PREFIX = "__panel_frame_"
         // 斜め視点の深度量子化でも隣接レイヤーが重ならないよう、従来値の5/3倍を確保します。
         const val LAYER_DEPTH = 0.005
-        /** ホバー置換が置換対象より前面へ浮く量です。LAYER_DEPTH×4 = 0.02ブロック。 */
-        const val HOVER_FLOAT_LAYERS = 4
+        /**
+         * ホバー置換が置換対象より前面へ浮く論理層数です。
+         * TextDisplayの層間距離を半分にした後も、置換対象の前面を確保するため
+         * 従来の4層分の実距離（0.02 block）を維持します。
+         */
+        const val HOVER_FLOAT_LAYERS = 8
         /** GestureGui APIが許容する層の上限です。 */
         const val MAX_LAYER = 40
         // パネルの画面法線方向の厚みは従来値の約2倍です。
