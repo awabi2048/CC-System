@@ -8,6 +8,25 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+/**
+ * BlockDisplayへ重ねる矩形の内側枠です。
+ *
+ * 縁取りはDisplay Entityの後処理ではなく、四辺の薄いBlockDisplayとして描画します。
+ * そのため、画面の向きが反転しても枠の上下左右が崩れないよう、rendererは対象と同じ
+ * ローカル座標系・回転を使って各辺を配置します。
+ */
+data class GestureGuiOutline(
+    val blockData: BlockData,
+    /** 対象矩形の短辺に対する枠の太さです。0.10なら短辺の10%になります。 */
+    val thicknessRatio: Double = 0.10,
+) {
+    init {
+        require(thicknessRatio.isFinite() && thicknessRatio > 0.0 && thicknessRatio < 0.5) {
+            "gesture GUI outline thicknessRatio must be finite and between 0 and 0.5"
+        }
+    }
+}
+
 /** ジェスチャーGUIに描画する要素です。座標は画面中央基準、寸法はブロック単位です。 */
 sealed interface GestureGuiVisual {
     val visualId: String
@@ -25,6 +44,8 @@ sealed interface GestureGuiVisual {
         override val layer: Int = 4,
         /** 選択ハイライト等に用いるglowの色(ARGB)。nullならglowなし。Geyser非対応時の背景色変更と併用 */
         val glowColor: Int? = null,
+        /** ボタン矩形の内側へ追加する四辺の枠。nullなら枠なし。 */
+        val outline: GestureGuiOutline? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }

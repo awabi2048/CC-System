@@ -34,6 +34,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     private val sessionKey = NamespacedKey(plugin, "gesture_gui_session")
     private val actorKey = NamespacedKey(plugin, "gesture_gui_actor")
     private val revisionKey = NamespacedKey(plugin, "gesture_gui_revision")
+    private val visualKey = NamespacedKey(plugin, "gesture_gui_visual")
     private val axiomEnabled = plugin.server.pluginManager.isPluginEnabled("AxiomPaper")
     private var axiomWarningLogged = false
 
@@ -41,6 +42,8 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val background: MutableList<BlockDisplay>,
         val contents: MutableList<Entity>,
         val visualEntities: MutableMap<String, Entity>,
+        /** 主Visualごとの内側枠を構成するDisplay Entity群です。 */
+        val visualOutlineEntities: MutableMap<String, MutableList<BlockDisplay>>,
         val ownerId: UUID,
         var access: GestureGuiAccess,
         var allowlist: Set<UUID>,
@@ -75,6 +78,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val backgrounds = mutableListOf<BlockDisplay>()
         val contents = mutableListOf<Entity>()
         val entities = linkedMapOf<String, Entity>()
+        val outlineEntities = linkedMapOf<String, MutableList<BlockDisplay>>()
         val panel = view.panel
         try {
             // 全素材を先に解決し、枠素材の不正で背景だけが残る部分生成を防ぎます。
@@ -110,12 +114,21 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 }
                 entities[visual.visualId] = entity
                 contents += entity
-                mark(entity, sessionId, revision)
+                mark(entity, sessionId, revision, visual.visualId)
+                val outlines = createOutlineEntities(world, pose, visual, visibleByDefault)
+                if (outlines.isNotEmpty()) {
+                    outlines.forEach { outline ->
+                        contents += outline
+                        mark(outline, sessionId, revision, visual.visualId)
+                    }
+                    outlineEntities[visual.visualId] = outlines
+                }
             }
             val handle = ScreenHandle(
                 backgrounds,
                 contents,
                 entities,
+                outlineEntities,
                 owner.uniqueId,
                 view.definition.access,
                 view.definition.allowlist,
@@ -167,6 +180,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 visualLocation(entity.world, pose, visual.x, visual.y, visual.layer)
             }
             entity.teleport(location)
+            updateOutlinePose(handle, pose, visual)
         }
     }
 
@@ -245,15 +259,16 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
      * 内へ記録します。
      */
     fun setVisualVisible(handle: ScreenHandle, visualId: String, player: Player, visible: Boolean): Boolean {
-        val entity = handle.visualEntities[visualId] ?: return false
+        if (handle.visualEntities[visualId] == null) return false
+        val entities = visualEntities(handle, visualId)
         val hidden = handle.hiddenVisualIds.getOrPut(player.uniqueId) { mutableSetOf() }
         if (visible) {
             hidden.remove(visualId)
             if (hidden.isEmpty()) handle.hiddenVisualIds.remove(player.uniqueId)
-            player.showEntity(plugin, entity)
+            entities.forEach { entity -> player.showEntity(plugin, entity) }
         } else {
             hidden += visualId
-            player.hideEntity(plugin, entity)
+            entities.forEach { entity -> player.hideEntity(plugin, entity) }
         }
         return true
     }
@@ -319,10 +334,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
             // 内部IDです。枠を差分削除すると更新後に背景だけが消えるため保持します。
             .filter { !it.startsWith(PANEL_FRAME_PREFIX) && it !in newIds }
             .forEach { visualId ->
-            handle.visualEntities.remove(visualId)?.let { entity ->
-                handle.contents.remove(entity)
-                entity.remove()
-            }
+            removeVisualEntities(handle, visualId)
             handle.visualLayers.remove(visualId)
             handle.hiddenVisualIds.values.forEach { hidden -> hidden.remove(visualId) }
         }
@@ -344,20 +356,22 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
                 }
                 // 先に新しい実体を生成します。生成に失敗しても旧実体を残し、
                 // 画面が一時的に空白になることを防ぎます。
-                current?.let { old -> handle.contents.remove(old); old.remove() }
+                removeVisualEntities(handle, visual.visualId)
                 handle.contents += created
                 created
             }
-            mark(entity, sessionId, revision)
+            mark(entity, sessionId, revision, visual.visualId)
             applyVisual(entity, pose, visual)
             handle.visualEntities[visual.visualId] = entity
             handle.visualLayers[visual.visualId] = visual.layer
+            syncOutlineEntities(handle, sessionId, revision, pose, visual)
         }
         // 差分適用の途中で例外や外部プラグインのEntity操作が発生すると、Mapへ
         // 登録されていない実体だけがcontentsに残る場合があります。通常のvisual／
         // パネル枠はすべてMapで追跡しているため、ここで孤立Entityを一括回収し、
         // 説明TextDisplayが更新回数に応じて累積することを防ぎます。
-        val trackedEntities = handle.visualEntities.values.toSet()
+        val trackedEntities = handle.visualEntities.values.toSet() +
+            handle.visualOutlineEntities.values.flatten()
         handle.contents.toList()
             .filterNot { it in trackedEntities }
             .forEach { entity ->
@@ -390,6 +404,131 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         }
     }
 
+    /** 視点追従・パン・子画面再配置時に枠も主Visualと同じposeへ移動します。 */
+    private fun updateOutlinePose(
+        handle: ScreenHandle,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual,
+    ) {
+        if (visual !is GestureGuiVisual.Block) return
+        val outlines = handle.visualOutlineEntities[visual.visualId] ?: return
+        val segments = outlineSegments(visual)
+        outlines.forEachIndexed { index, entity ->
+            val segment = segments.getOrNull(index) ?: return@forEachIndexed
+            entity.teleport(outlineLocation(entity.world, pose, visual, segment))
+        }
+    }
+
+    /**
+     * 差分更新で枠の生成・更新・削除を一元化します。
+     *
+     * 枠は主VisualのIDで追跡します。これにより、主Visualの表示抑制・アクセス変更・
+     * セッション終了が枠だけ取り残すことなく、同じライフサイクルで処理されます。
+     */
+    private fun syncOutlineEntities(
+        handle: ScreenHandle,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual,
+    ) {
+        if (visual !is GestureGuiVisual.Block || visual.outline == null) {
+            handle.visualOutlineEntities.remove(visual.visualId)?.forEach { entity ->
+                handle.contents.remove(entity)
+                entity.remove()
+            }
+            return
+        }
+
+        val world = handle.background.firstOrNull()?.world ?: return
+        val current = handle.visualOutlineEntities[visual.visualId]
+        val outlines = if (current != null && current.size == OUTLINE_SEGMENT_COUNT &&
+            current.all { it.isValid }
+        ) {
+            current
+        } else {
+            // 新しい4本を先に作成し、作成に失敗した場合は途中生成分を回収します。
+            val created = createOutlineEntities(world, pose, visual, visibleByDefault = false)
+            current?.forEach { entity ->
+                handle.contents.remove(entity)
+                entity.remove()
+            }
+            handle.contents.addAll(created)
+            handle.visualOutlineEntities[visual.visualId] = created
+            created
+        }
+        val segments = outlineSegments(visual)
+        outlines.forEachIndexed { index, entity ->
+            val segment = segments.getOrNull(index) ?: return@forEachIndexed
+            mark(entity, sessionId, revision, visual.visualId)
+            applyOutlineSegment(entity, pose, visual, segment)
+        }
+    }
+
+    /** 枠の4本を生成します。縁取りの表示開始は主Visualと同じcontents経路に委ねます。 */
+    private fun createOutlineEntities(
+        world: World,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual,
+        visibleByDefault: Boolean,
+    ): MutableList<BlockDisplay> {
+        val block = visual as? GestureGuiVisual.Block ?: return mutableListOf()
+        val outline = block.outline ?: return mutableListOf()
+        val created = mutableListOf<BlockDisplay>()
+        try {
+            outlineSegments(block).forEach { segment ->
+                created += world.spawn(
+                    outlineLocation(world, pose, block, segment),
+                    BlockDisplay::class.java,
+                ) {
+                    prepareDisplay(it, pose)
+                    it.isVisibleByDefault = visibleByDefault
+                    it.block = outline.blockData.clone()
+                    it.setTransformation(blockTransform(segment.width.toFloat(), segment.height.toFloat()))
+                    hideAxiomDisplayGizmo(it)
+                }
+            }
+            return created
+        } catch (failure: Throwable) {
+            created.forEach(BlockDisplay::remove)
+            throw failure
+        }
+    }
+
+    private fun applyOutlineSegment(
+        entity: BlockDisplay,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Block,
+        segment: GestureGuiOutlineSegment,
+    ) {
+        val outline = visual.outline ?: return
+        // BlockDataは外部Viewの再利用中に変更される可能性があるため、各Entityへ
+        // 独立したコピーを渡します。枠同士が同じmutable BlockDataを共有しません。
+        entity.block = outline.blockData.clone()
+        entity.setTransformation(blockTransform(segment.width.toFloat(), segment.height.toFloat()))
+        entity.teleport(outlineLocation(entity.world, pose, visual, segment))
+    }
+
+    private fun outlineSegments(visual: GestureGuiVisual.Block): List<GestureGuiOutlineSegment> =
+        GestureGuiOutlineGeometry.segments(
+            visual.width,
+            visual.height,
+            visual.outline?.thicknessRatio ?: return emptyList(),
+        )
+
+    private fun outlineLocation(
+        world: World,
+        pose: GestureGuiScreenPose,
+        visual: GestureGuiVisual.Block,
+        segment: GestureGuiOutlineSegment,
+    ): Location = visualLocation(
+        world,
+        pose,
+        visual.x + segment.x,
+        visual.y + segment.y,
+        visual.layer.toDouble() + OUTLINE_LAYER_OFFSET,
+    )
+
     private fun applyHover(entity: TextDisplay, pose: GestureGuiScreenPose, hover: GestureGuiHoverText) {
         entity.teleport(textLocation(entity.world, pose, hover.x, hover.y, hover.layer))
         entity.text(hover.text)
@@ -401,8 +540,30 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     }
 
     private fun isVisualVisible(handle: ScreenHandle, entity: Entity, playerId: UUID): Boolean {
-        val visualId = handle.visualEntities.entries.firstOrNull { it.value === entity }?.key ?: return true
+        // 枠Entityも主Visualと同じIDをPDCへ保持します。Mapを全走査して逆引きすると
+        // 枠の本数に比例して判定コストが増えるため、Entity側のタグを正本にして、
+        // 主Visual・枠・将来の装飾で同じ可視性規則を共有します。
+        val visualId = entity.persistentDataContainer.get(visualKey, PersistentDataType.STRING)
+            ?: return true
         return visualId !in (handle.hiddenVisualIds[playerId] ?: emptySet())
+    }
+
+    /** 主Visualと、そのVisualに属する枠Entityを同じ表示単位として返します。 */
+    private fun visualEntities(handle: ScreenHandle, visualId: String): List<Entity> = buildList {
+        handle.visualEntities[visualId]?.let(::add)
+        handle.visualOutlineEntities[visualId]?.let(::addAll)
+    }
+
+    /** 主Visualと枠をまとめて破棄し、差分更新時の孤立Entityを残しません。 */
+    private fun removeVisualEntities(handle: ScreenHandle, visualId: String) {
+        handle.visualOutlineEntities.remove(visualId)?.forEach { entity ->
+            handle.contents.remove(entity)
+            entity.remove()
+        }
+        handle.visualEntities.remove(visualId)?.let { entity ->
+            handle.contents.remove(entity)
+            entity.remove()
+        }
     }
 
     /**
@@ -434,6 +595,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         handle.background.clear()
         handle.contents.clear()
         handle.visualEntities.clear()
+        handle.visualOutlineEntities.clear()
         handle.visualLayers.clear()
         handle.hiddenVisualIds.clear()
     }
@@ -704,9 +866,14 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         AxisAngle4f(),
     )
 
-    private fun mark(entity: Entity, sessionId: UUID, revision: Long) {
+    private fun mark(entity: Entity, sessionId: UUID, revision: Long, visualId: String? = null) {
         entity.persistentDataContainer.set(sessionKey, PersistentDataType.STRING, sessionId.toString())
         entity.persistentDataContainer.set(revisionKey, PersistentDataType.LONG, revision)
+        if (visualId != null) {
+            entity.persistentDataContainer.set(visualKey, PersistentDataType.STRING, visualId)
+        } else {
+            entity.persistentDataContainer.remove(visualKey)
+        }
     }
 
     private fun visualLocation(
@@ -715,6 +882,14 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         x: Double,
         y: Double,
         layer: Int,
+    ): Location = visualLocation(world, pose, x, y, layer.toDouble())
+
+    private fun visualLocation(
+        world: World,
+        pose: GestureGuiScreenPose,
+        x: Double,
+        y: Double,
+        layer: Double,
     ): Location {
         // 背景の厚みや斜め視点の深度精度に負けない距離を確保し、前景ほどプレイヤー側へ出します。
         val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * LAYER_DEPTH)
@@ -757,6 +932,9 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val TEXT_BASELINE_OFFSET = 0.018
         // 0.24 block手前に置き、0.25 block手前から始まる子画面の直後へ重ねます。
         const val MODAL_OVERLAY_LAYER = 48
+        /** 主Visualの表面へ枠を重ねるための半層です。整数層と同じ向きで前面へ出します。 */
+        const val OUTLINE_LAYER_OFFSET = 0.5
+        const val OUTLINE_SEGMENT_COUNT = 4
     }
 
     private data class PanelPart(val x: Double, val y: Double, val width: Double, val height: Double)
