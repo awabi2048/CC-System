@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test
 
 class GestureGuiOutlineGeometryTest {
     @Test
-    fun `outer outline uses ten percent of the short side and has no gaps`() {
+    fun `mixed outline keeps vertical edges inside and horizontal edges outside`() {
         val segments = GestureGuiOutlineGeometry.segments(0.66, 0.10, 0.10)
 
         assertEquals(4, segments.size)
-        assertSegment(segments[0], 0.0, 0.055, 0.68, 0.01)
-        assertSegment(segments[1], 0.0, -0.055, 0.68, 0.01)
+        assertSegment(segments[0], 0.0, 0.045, 0.68, 0.01)
+        assertSegment(segments[1], 0.0, -0.045, 0.68, 0.01)
         assertSegment(segments[2], -0.335, 0.0, 0.01, 0.10)
         assertSegment(segments[3], 0.335, 0.0, 0.01, 0.10)
 

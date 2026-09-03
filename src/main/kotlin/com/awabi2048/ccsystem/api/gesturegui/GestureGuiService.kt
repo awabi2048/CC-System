@@ -9,11 +9,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 /**
- * BlockDisplayの外周へ重ねる矩形枠です。
+ * BlockDisplayの縦内側・横外側へ重ねる矩形枠です。
  *
  * 縁取りはDisplay Entityの後処理ではなく、四辺の薄いBlockDisplayとして描画します。
- * 本体の側面で表示が反転することを避けるため、rendererは対象の外周側へ各辺をずらし、
- * 対象と同じローカル座標系・回転を使って配置します。
+ * 本体の側面で表示が反転することを避けるため、rendererは上下辺を縦方向の内側へ、
+ * 左右辺を横方向の外側へずらし、対象と同じローカル座標系・回転を使って配置します。
  */
 data class GestureGuiOutline(
     val blockData: BlockData,
@@ -44,7 +44,7 @@ sealed interface GestureGuiVisual {
         override val layer: Int = 4,
         /** 選択ハイライト等に用いるglowの色(ARGB)。nullならglowなし。Geyser非対応時の背景色変更と併用 */
         val glowColor: Int? = null,
-        /** ボタン矩形の外周へ追加する四辺の枠。nullなら枠なし。 */
+        /** ボタン矩形へ縦内側・横外側で追加する四辺の枠。nullなら枠なし。 */
         val outline: GestureGuiOutline? = null,
     ) : GestureGuiVisual {
         init {
