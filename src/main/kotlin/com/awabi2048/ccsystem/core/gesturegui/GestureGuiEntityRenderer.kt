@@ -42,7 +42,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         val background: MutableList<BlockDisplay>,
         val contents: MutableList<Entity>,
         val visualEntities: MutableMap<String, Entity>,
-        /** 主Visualごとの内側枠を構成するDisplay Entity群です。 */
+        /** 主Visualごとの外周枠を構成するDisplay Entity群です。 */
         val visualOutlineEntities: MutableMap<String, MutableList<BlockDisplay>>,
         val ownerId: UUID,
         var access: GestureGuiAccess,
@@ -465,7 +465,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         }
     }
 
-    /** 枠の4本を生成します。縁取りの表示開始は主Visualと同じcontents経路に委ねます。 */
+    /** 外周枠の4本を生成します。表示開始は主Visualと同じcontents経路に委ねます。 */
     private fun createOutlineEntities(
         world: World,
         pose: GestureGuiScreenPose,
@@ -932,7 +932,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val TEXT_BASELINE_OFFSET = 0.018
         // 0.24 block手前に置き、0.25 block手前から始まる子画面の直後へ重ねます。
         const val MODAL_OVERLAY_LAYER = 48
-        /** 主Visualの表面へ枠を重ねるための半層です。整数層と同じ向きで前面へ出します。 */
+        /** 主Visualの外周枠を前面へ出すための半層です。整数層と同じ向きで配置します。 */
         const val OUTLINE_LAYER_OFFSET = 0.5
         const val OUTLINE_SEGMENT_COUNT = 4
     }
