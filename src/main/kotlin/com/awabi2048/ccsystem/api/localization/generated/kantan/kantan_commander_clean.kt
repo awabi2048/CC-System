@@ -742,13 +742,17 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DESCRIPTION_SINGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_description_single", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_empty", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_count", setOf("value"))
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DETAIL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_detail", setOf("value", "type"))
+    /** ワールド内変数一覧でホバー表示する値行です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_value", setOf("value"))
+    /** ワールド内変数一覧でホバー表示する型行です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_type", setOf("type"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_CREATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_create", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_body", setOf("name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_number_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_string_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_create_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_next", setOf())
@@ -1518,13 +1522,15 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DESCRIPTION_SINGLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_EMPTY,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_COUNT,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DETAIL,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_CREATE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT,
