@@ -755,6 +755,20 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.block_operation_description", value = EmbeddedLocalizedValue.TextList(listOf("/setblock、/fill 等に相当します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.entity_delete", value = EmbeddedLocalizedValue.Text("エンティティをキルする"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.entity_delete_description", value = EmbeddedLocalizedValue.TextList(listOf("/kill に相当します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables", value = EmbeddedLocalizedValue.Text("ワールド内変数の編集"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_title", value = EmbeddedLocalizedValue.Text("ワールド内変数一覧"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_description_single", value = EmbeddedLocalizedValue.Text("変数にホバーして値と型を確認し、選択して編集します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_empty", value = EmbeddedLocalizedValue.Text("変数はまだありません。新規作成から定義します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_count", value = EmbeddedLocalizedValue.Text("{value}件"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_detail", value = EmbeddedLocalizedValue.Text("値: {value} 型: {type}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_create", value = EmbeddedLocalizedValue.Text("新規作成"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の削除"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_body", value = EmbeddedLocalizedValue.Text("{name} を削除しますか"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の値を編集"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_body", value = EmbeddedLocalizedValue.Text("新しい値を入力します。型は変更できません"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_invalid", value = EmbeddedLocalizedValue.Text("値が不正です。型に合う値を入力してください"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_create_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の新規作成"), domain = DOMAIN),
     )
 
 }
