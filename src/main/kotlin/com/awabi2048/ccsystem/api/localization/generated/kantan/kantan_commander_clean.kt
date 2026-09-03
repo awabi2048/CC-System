@@ -752,6 +752,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_body", setOf("name"))
+    /** 使用中のワールド内変数を削除できないことと、クリック時の案内です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_IN_USE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_in_use", setOf())
+    /** 使用中のワールド内変数についてチャットへ出す一覧の見出しです。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_USAGE_HEADER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_usage_header", setOf("name"))
+    /** 使用中のワールド内変数を参照するプログラム名の行です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_USAGE_ENTRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_delete_usage_entry", setOf("name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_number_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_string_body", setOf())
@@ -1533,6 +1539,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_IN_USE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_USAGE_HEADER,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DELETE_USAGE_ENTRY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY,
