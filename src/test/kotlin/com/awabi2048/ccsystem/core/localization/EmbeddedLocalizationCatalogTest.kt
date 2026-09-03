@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.localization
 
 import com.awabi2048.ccsystem.api.localization.generated.MyworldBiomesKeys
+import com.awabi2048.ccsystem.api.localization.LocalizationCatalogContract
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.lang.reflect.Modifier
@@ -67,6 +68,29 @@ class EmbeddedLocalizationCatalogTest {
             NamedTextColor.RED,
             LegacyComponentSerializer.legacyAmpersand().deserialize("&cキャンセル").color(),
         )
+    }
+
+    @Test
+    fun `Kantanの警告キーは表示用制御文字を含まない`() {
+        val keys = LocalizationCatalogContract.keys()
+            .filter { it.startsWith("kantan_commander_clean.gui.gesture.warning.") }
+            .plus(
+                listOf(
+                    "kantan_commander_clean.gui.gesture.message_context_incomplete",
+                    "kantan_commander_clean.gui.dialog.duration_tick_invalid",
+                ),
+            )
+
+        for (locale in EmbeddedLocalizationCatalog.locales) {
+            for (key in keys) {
+                val value = EmbeddedLocalizationCatalog.value(locale, key)
+                assertTrue(value is EmbeddedLocalizedValue.Text, "警告キーの値型が不正です: locale=$locale key=$key")
+                val text = (value as EmbeddedLocalizedValue.Text).value
+                // 警告色・状態はGUI側の意味表現へ任せ、カタログ値へ制御記号を混在させません。
+                assertFalse(text.contains("⚠"), "警告記号が残っています: locale=$locale key=$key")
+                assertFalse(text.contains("§"), "レガシー制御文字が残っています: locale=$locale key=$key")
+            }
+        }
     }
 
     @Test
