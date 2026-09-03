@@ -110,6 +110,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.context_source", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_INHERIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.context_inherit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_disk", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_CONTROL_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_control_block", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_EXECUTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_executor", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_MYWORLD_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_myworld_spawn", setOf())
@@ -175,8 +176,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_OTHER_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.other_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_POSITION_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.current_position_set", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.current_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAPTURED_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.captured_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONTEXT_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.context_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DISK_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.disk_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONTROL_BLOCK_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.control_block_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EXECUTOR_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.executor_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TARGET_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.target_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MYWORLD_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.myworld_spawn", setOf())
@@ -287,6 +290,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TEXT_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_text_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_value", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_VALUE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_value_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_WORLD_VARIABLE_VALUE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_world_variable_value_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_ENTITY_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_entity_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_tags", setOf())
@@ -851,6 +855,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_SOURCE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONTEXT_INHERIT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_DISK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_CONTROL_BLOCK,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_EXECUTOR,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_MYWORLD_SPAWN,
@@ -916,8 +921,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_OTHER_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_POSITION_SET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAPTURED_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONTEXT_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DISK_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONTROL_BLOCK_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EXECUTOR_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_TARGET_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_MYWORLD_SPAWN,
@@ -1031,6 +1038,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TEXT_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_VALUE_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_WORLD_VARIABLE_VALUE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_ENTITY_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TAGS,
