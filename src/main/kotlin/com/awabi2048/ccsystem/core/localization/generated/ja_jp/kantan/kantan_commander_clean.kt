@@ -766,9 +766,11 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の削除"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_body", value = EmbeddedLocalizedValue.Text("{name} を削除しますか"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の値を編集"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_body", value = EmbeddedLocalizedValue.Text("新しい値を入力します。型は変更できません"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_invalid", value = EmbeddedLocalizedValue.Text("値が不正です。型に合う値を入力してください"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_body", value = EmbeddedLocalizedValue.Text("保存する値を入力してください。数値型は有限の数値、文字列型は256文字以内で入力できます。型は変更できません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_invalid", value = EmbeddedLocalizedValue.Text("入力値が型に適合しません。数値型には有限の数値、文字列型には256文字以内の文字列を入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_create_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の新規作成"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_next", value = EmbeddedLocalizedValue.Text("次へ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_duplicate", value = EmbeddedLocalizedValue.Text("その名前のワールド内変数はすでに定義されています。別の名前を入力してください。"), domain = DOMAIN),
     )
 
 }

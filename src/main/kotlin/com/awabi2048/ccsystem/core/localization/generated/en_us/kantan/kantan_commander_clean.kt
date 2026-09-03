@@ -766,9 +766,11 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_title", value = EmbeddedLocalizedValue.Text("Delete world variable"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_delete_body", value = EmbeddedLocalizedValue.Text("Delete {name}?"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_title", value = EmbeddedLocalizedValue.Text("Edit world variable value"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_body", value = EmbeddedLocalizedValue.Text("Enter a new value. The type cannot be changed"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_invalid", value = EmbeddedLocalizedValue.Text("Invalid value. Enter a value matching the type"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_body", value = EmbeddedLocalizedValue.Text("Enter the value to save. Numeric values must be finite; strings may contain up to 256 characters. The type cannot be changed."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_invalid", value = EmbeddedLocalizedValue.Text("The value does not match the type. Enter a finite number for numeric variables or a string of up to 256 characters."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_create_title", value = EmbeddedLocalizedValue.Text("Create world variable"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_next", value = EmbeddedLocalizedValue.Text("Next"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_duplicate", value = EmbeddedLocalizedValue.Text("A world variable with that name is already defined. Enter a different name."), domain = DOMAIN),
     )
 
 }
