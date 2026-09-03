@@ -1049,10 +1049,10 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
         const val LAYER_DEPTH = 0.005
         /**
          * ホバー置換が置換対象より前面へ浮く論理層数です。
-         * TextDisplayの層間距離を半分にした後も、置換対象の前面を確保するため
+         * TextDisplayの層間距離を元の25%へ縮めた後も、置換対象の前面を確保するため
          * 従来の4層分の実距離（0.02 block）を維持します。
          */
-        const val HOVER_FLOAT_LAYERS = 8
+        const val HOVER_FLOAT_LAYERS = 16
         /** GestureGui APIが許容する層の上限です。 */
         const val MAX_LAYER = 40
         // パネルの画面法線方向の厚みは従来値の約2倍です。

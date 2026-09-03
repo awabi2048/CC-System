@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test
 
 class GestureGuiTextDepthTest {
     @Test
-    fun `text depth keeps the content surface and halves the distance above it`() {
+    fun `text depth keeps the content surface and quarters the distance above it`() {
         assertEquals(4.0, GestureGuiTextDepth.effectiveLayer(4), 1.0e-9)
-        assertEquals(5.0, GestureGuiTextDepth.effectiveLayer(6), 1.0e-9)
-        assertEquals(12.0, GestureGuiTextDepth.effectiveLayer(20), 1.0e-9)
+        assertEquals(4.5, GestureGuiTextDepth.effectiveLayer(6), 1.0e-9)
+        assertEquals(8.0, GestureGuiTextDepth.effectiveLayer(20), 1.0e-9)
     }
 
     @Test
