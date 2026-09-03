@@ -624,13 +624,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_overwrite_yes", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_label", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CURRENT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_current_value", setOf("value"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CANCEL_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_cancel_failed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_prompt", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_current", setOf("x", "y", "z"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_coordinate_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_prompt", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_current", setOf("yaw", "pitch"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_rotation_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_value_input_suffix", setOf("label"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_position_variable_prompt", setOf())
@@ -1381,13 +1378,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_LABEL,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CURRENT_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_CANCEL_FAILED,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_PROMPT,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_CURRENT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_COORDINATE_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_PROMPT,
-        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_CURRENT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_ROTATION_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VALUE_INPUT_SUFFIX,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_POSITION_VARIABLE_PROMPT,
