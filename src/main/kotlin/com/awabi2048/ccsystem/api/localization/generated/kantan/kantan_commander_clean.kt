@@ -737,6 +737,33 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_create_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_next", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DUPLICATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_duplicate", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TEST_EXECUTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.test_execution", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TEST_EXECUTION_GLYPH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.test_execution_glyph", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_CONFIRM_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.confirm_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DEBUG_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.debug_mode", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DEBUG_MODE_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.debug_mode_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_OUTPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.log_output", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.on", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.off", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_STATUS_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.status_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_RESULT_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.result_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ELAPSED_TIME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.elapsed_time", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DURATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.duration", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_COMMAND_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.command_count", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_FINAL_RESULT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.final_result", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.success", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_FAILURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.failure", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_INTERRUPTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.interrupted", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_CAUSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.cause", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_CONFIRM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.confirm", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.cancel", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_COMPLETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.complete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_RUNNING_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.running_hint", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_BUSY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_busy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_NORMAL_BUSY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_normal_busy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_ADMIN_MUTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_admin_mutation", setOf("action"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_log_success", setOf("attempt", "command"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_FAILURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_log_failure", setOf("attempt", "command"))
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
@@ -1492,5 +1519,32 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DUPLICATE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TEST_EXECUTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TEST_EXECUTION_GLYPH,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_CONFIRM_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_DEBUG_MODE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_DEBUG_MODE_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_OUTPUT,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_ON,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_OFF,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_STATUS_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_RESULT_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_ELAPSED_TIME,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_DURATION,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_COMMAND_COUNT,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_FINAL_RESULT,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_SUCCESS,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_FAILURE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_INTERRUPTED,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_CAUSE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_CONFIRM,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_CANCEL,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_COMPLETE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_RUNNING_HINT,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_BUSY,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_NORMAL_BUSY,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_ADMIN_MUTATION,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_SUCCESS,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_FAILURE,
     )
 }
