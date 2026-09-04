@@ -48,8 +48,8 @@ internal class SystemEntityRegistryImpl : SystemEntityRegistry {
         return when (namespace) {
             "kantancommander" -> value == "summoned_entity" || value == "summoned_by_script"
             "cc-system" -> value.startsWith("gesture_gui_") || value.startsWith("display-effect")
-            "cc-content" -> value in LEGACY_CC_CONTENT_MOB_KEYS
-            "cccontent" -> value.startsWith("crops_")
+            "cc-content" -> value in LEGACY_CC_CONTENT_ENTITY_KEYS
+            "cccontent" -> value in LEGACY_CC_CONTENT_CROP_ENTITY_KEYS
             "myworldmanager" -> value == "portal_display_id"
             else -> false
         }
@@ -87,6 +87,44 @@ internal class SystemEntityRegistryImpl : SystemEntityRegistry {
             "mob_definition_id",
             "mob_feature_id",
             "is_custom_mob",
+        )
+
+        val LEGACY_CC_CONTENT_ENTITY_KEYS = LEGACY_CC_CONTENT_MOB_KEYS + setOf(
+            "skeleton_effect_arrow",
+            "skeleton_effect_arrow_type",
+            "skeleton_effect_arrow_amp",
+            "skeleton_effect_arrow_duration",
+            "mob_shot_arrow",
+            "custom_projectile_damage",
+            "blaze_direct_hit_applied",
+            "downgrade_aoe_protect_until",
+            "stealth_fang",
+            "shulker_levitation_bullet",
+            "shulker_levitation_bullet_amp",
+            "shulker_levitation_bullet_duration",
+            "shulker_warp_sniper_projectile",
+            "weapon_throw_player_pickup_disabled",
+            "minigame_world_uuid",
+            "minigame_owner_uuid",
+            "minigame_game_id",
+            "minigame_marker_type",
+            "minigame_manager",
+            "minigame_checkpoint_index",
+            "item_type",
+            "item_name",
+            "display_uuid",
+        )
+
+        val LEGACY_CC_CONTENT_CROP_ENTITY_KEYS = setOf(
+            "crops_support",
+            "crops_crop_type",
+            "crops_stage",
+            "crops_progress",
+            "crops_support_display",
+            "crops_crop_display",
+            // cccontent名前空間で保存された旧大型経験値瓶Projectileも、更新前に
+            // 生成されたEntityを取りこぼさないために認識します。
+            "large_experience_bottle",
         )
     }
 }
