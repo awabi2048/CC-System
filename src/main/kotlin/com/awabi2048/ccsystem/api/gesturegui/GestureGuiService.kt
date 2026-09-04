@@ -28,6 +28,18 @@ data class GestureGuiOutline(
 }
 
 /** ジェスチャーGUIに描画する要素です。座標は画面中央基準、寸法はブロック単位です。 */
+/**
+ * GestureGuiVisual.Text の水平方向の文字揃えです。
+ *
+ * TextDisplay の列挙型をAPIモデルへ露出させず、利用側がGUI基盤の実装詳細に
+ * 依存しないようにします。既存の Text は CENTER を既定値として互換性を保ちます。
+ */
+enum class GestureGuiTextAlignment {
+    LEFT,
+    CENTER,
+    RIGHT,
+}
+
 sealed interface GestureGuiVisual {
     val visualId: String
     val x: Double
@@ -65,6 +77,8 @@ sealed interface GestureGuiVisual {
         val lineWidth: Int = 160,
         override val layer: Int = 20,
         val seeThrough: Boolean = false,
+        /** TextDisplayへ反映する水平方向の文字揃えです。 */
+        val alignment: GestureGuiTextAlignment = GestureGuiTextAlignment.CENTER,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
