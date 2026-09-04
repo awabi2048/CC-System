@@ -102,6 +102,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_variable_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_CONTROL_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_control_block_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ITEM_POSSESSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_item_possession", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_disk", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_CONTROL_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_control_block", setOf())
@@ -126,6 +127,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_count", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_REDSTONE_INPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_redstone_input", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_invert_on", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_invert_off", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_boolean", setOf())
@@ -529,6 +531,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.player_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.variable_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.control_block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_REDSTONE_INPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.control_block_redstone_input", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_ITEM_POSSESSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.item_possession", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLAYER_NOT_FOUND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.player_not_found", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PERMISSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.no_permission", setOf())
@@ -846,6 +850,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ENTITY_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_VARIABLE_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_CONTROL_BLOCK_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_ITEM_POSSESSION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_DISK,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_CONTROL_BLOCK,
@@ -870,6 +875,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_COUNT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_REDSTONE_INPUT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_ON,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_OFF,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN,
@@ -1282,6 +1288,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_REDSTONE_INPUT,
         KANTAN_COMMANDER_CLEAN_CONDITION_ITEM_POSSESSION,
         KANTAN_COMMANDER_CLEAN_MESSAGE_PLAYER_NOT_FOUND,
         KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PERMISSION,
