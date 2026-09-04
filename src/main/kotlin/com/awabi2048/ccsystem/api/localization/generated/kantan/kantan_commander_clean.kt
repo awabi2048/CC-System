@@ -559,6 +559,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.duplicate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.open_filters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.partial_override", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_open_filters", setOf())
@@ -1306,6 +1307,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS,

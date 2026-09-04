@@ -577,6 +577,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.get_item", value = EmbeddedLocalizedValue.Text("設定中のアイテムを取得"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.get_item_hover", value = EmbeddedLocalizedValue.Text("保存済みのアイテムをインベントリへ取得します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete", value = EmbeddedLocalizedValue.Text("削除"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.duplicate", value = EmbeddedLocalizedValue.Text("コマンドを複製"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.open_filters", value = EmbeddedLocalizedValue.Text("詳細条件を編集"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.partial_override", value = EmbeddedLocalizedValue.Text("一部を上書き"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.desc_open_filters", value = EmbeddedLocalizedValue.Text("選択中の項目をもう一度クリックすると、距離・種類・件数などの詳細設定を開きます"), domain = DOMAIN),
