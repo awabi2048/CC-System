@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.displayeffect.paper
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectDisposalReason
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectWorldUnavailableException
 import com.awabi2048.ccsystem.core.displayeffect.DisplayParticleBackend
@@ -25,9 +26,10 @@ import java.util.UUID
 /** 1パーティクルを1つの微小BlockDisplayとして描画する、billboard非依存のbackendです。 */
 internal class PaperDisplayParticleBackend(
     private val plugin: Plugin,
+    private val systemEntityRegistry: SystemEntityRegistry,
     origin: Location,
     private val resolver: PaperMaterialAssetResolver,
-    private val ownerPluginName: String,
+    private val ownerPlugin: Plugin,
     private val instanceId: UUID
 ) : DisplayParticleBackend {
     private val anchor = origin.clone()
@@ -136,8 +138,9 @@ internal class PaperDisplayParticleBackend(
 
     private fun markOwned(entity: BlockDisplay) {
         entity.persistentDataContainer.set(instanceKey, PersistentDataType.STRING, instanceId.toString())
-        entity.persistentDataContainer.set(ownerKey, PersistentDataType.STRING, ownerPluginName)
+        entity.persistentDataContainer.set(ownerKey, PersistentDataType.STRING, ownerPlugin.name)
         entity.addScoreboardTag("ccsystem.display-particle")
+        systemEntityRegistry.mark(entity, ownerPlugin)
     }
 
     private fun location(state: DisplayParticleState): Location {

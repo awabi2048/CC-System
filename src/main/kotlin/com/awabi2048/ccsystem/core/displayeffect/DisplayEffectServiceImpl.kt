@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.displayeffect
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetResolver
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetResolutionException
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectInstance
@@ -29,7 +30,8 @@ import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
 
 /** CC-SystemのメインスレッドでDisplay Effect Runtime群を進行させるサービスです。 */
 internal class DisplayEffectServiceImpl(
-    private val plugin: Plugin
+    private val plugin: Plugin,
+    private val systemEntityRegistry: SystemEntityRegistry,
 ) : DisplayEffectService, Listener {
     private data class ActiveEffect(
         val instance: DisplayEffectInstanceImpl,
@@ -120,7 +122,7 @@ internal class DisplayEffectServiceImpl(
 
         val instanceId = UUID.randomUUID()
         val backend = runCatching {
-            PaperDisplayEffectBackend(plugin, anchor, assetResolver, owner.name)
+            PaperDisplayEffectBackend(plugin, systemEntityRegistry, anchor, assetResolver, owner)
         }.getOrElse { failure ->
             return rejected(failure)
         }
@@ -227,7 +229,14 @@ internal class DisplayEffectServiceImpl(
         }
 
         val instanceId = UUID.randomUUID()
-        val backend = PaperDisplayParticleBackend(plugin, anchor, materialAssetResolver, owner.name, instanceId)
+        val backend = PaperDisplayParticleBackend(
+            plugin,
+            systemEntityRegistry,
+            anchor,
+            materialAssetResolver,
+            owner,
+            instanceId,
+        )
         val runtime = DisplayParticleRuntime(preset, request, backend)
         return when (val result = runtime.start()) {
             DisplayEffectRuntimeResult.Started -> {

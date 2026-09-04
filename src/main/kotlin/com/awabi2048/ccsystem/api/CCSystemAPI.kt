@@ -24,6 +24,7 @@ import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import com.awabi2048.ccsystem.api.localization.LocalizationKey
@@ -125,6 +126,9 @@ interface CCSystemAPI {
     fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService
 
     fun getNaturalOriginRegistry(): NaturalOriginRegistry
+
+    /** システムが生成・管理するEntityを識別する共通台帳です。 */
+    fun getSystemEntityRegistry(): SystemEntityRegistry
 
     fun getCosmeticPlatform(): CosmeticPlatform
 

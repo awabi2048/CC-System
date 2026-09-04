@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseMode
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiChildOptions
@@ -50,6 +51,7 @@ class GestureGuiServiceImpl(
     private val plugin: Plugin,
     private val claimService: PlayerInteractionClaimService,
     private val closeExternalDialog: (Player, String, String) -> Boolean,
+    private val systemEntityRegistry: SystemEntityRegistry,
 ) : GestureGuiService {
     private data class HoverReplacement(
         val render: GestureGuiEntityRenderer.ScreenHandle,
@@ -126,7 +128,7 @@ class GestureGuiServiceImpl(
         val suppressWorldClicks: Boolean = false,
     )
 
-    private val renderer = GestureGuiEntityRenderer(plugin)
+    private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
     private val registeredOwners = mutableSetOf<UUID>()
     private val sessions = mutableMapOf<UUID, Session>()
     private var nextRevision = 1L

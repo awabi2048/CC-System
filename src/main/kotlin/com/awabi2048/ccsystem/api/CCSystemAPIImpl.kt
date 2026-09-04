@@ -23,6 +23,7 @@ import com.awabi2048.ccsystem.api.time.SeasonService
 import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.ConfigSchemaServiceImpl
 import com.awabi2048.ccsystem.core.config.LanguageManager
@@ -54,6 +55,7 @@ import com.awabi2048.ccsystem.core.resource.NaturalOriginRuntime
 import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.core.world.WorldDirectoryServiceImpl
 import com.awabi2048.ccsystem.core.world.WorldIdentityServiceImpl
+import com.awabi2048.ccsystem.core.entity.SystemEntityRegistryImpl
 import com.awabi2048.ccsystem.core.queue.ChunkTaskQueueManager
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import com.awabi2048.ccsystem.core.queue.model.ContentType
@@ -77,6 +79,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         }
         NaturalOriginRuntime.initialize(dataFolder)
     }
+    private val systemEntityRegistry: SystemEntityRegistry = SystemEntityRegistryImpl()
     private val menuNavigationService = MenuNavigationServiceImpl()
     private val menuCommandService = MenuCommandServiceImpl()
     private val guiElementService = GuiElementServiceImpl(::resolveLocalizedText)
@@ -117,6 +120,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
         plugin,
         playerInteractionClaimService,
         menuDialogService::closeIfCurrent,
+        systemEntityRegistry,
     ).also {
         // 入力とライフサイクルを同じサービスへ接続し、Entity UUIDを外部へ公開しません。
         plugin.server.pluginManager.registerEvents(GestureGuiInputListener(it), plugin)
@@ -142,8 +146,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     private val contentActionDispatcher = ContentActionDispatcherImpl { owner, failure ->
         Bukkit.getLogger().warning("[CC-System][ContentAction] 購読者 $owner の処理に失敗しました: ${failure.message}")
     }
-    private val cosmeticPlatform = CosmeticPlatformImpl(plugin, dataFolder)
-    private val displayEffectService = DisplayEffectServiceImpl(plugin)
+    private val cosmeticPlatform = CosmeticPlatformImpl(plugin, dataFolder, systemEntityRegistry)
+    private val displayEffectService = DisplayEffectServiceImpl(plugin, systemEntityRegistry)
 
     init {
         plugin.server.pluginManager.registerEvents(displayEffectService, plugin)
@@ -294,6 +298,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     override fun getResourceWorldLifecycleService(): ResourceWorldLifecycleService = ResourceWorldLifecycleRuntime.service
 
     override fun getNaturalOriginRegistry(): NaturalOriginRegistry = NaturalOriginRuntime.registry
+
+    override fun getSystemEntityRegistry(): SystemEntityRegistry = systemEntityRegistry
 
     override fun getCosmeticPlatform(): CosmeticPlatform = cosmeticPlatform
 

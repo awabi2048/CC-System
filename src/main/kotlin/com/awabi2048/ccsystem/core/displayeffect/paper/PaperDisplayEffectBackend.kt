@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.displayeffect.paper
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAppearance
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetResolver
 import com.awabi2048.ccsystem.api.displayeffect.DisplayEffectAssetId
@@ -105,9 +106,10 @@ internal data class PaperDisplayEffectRenderConfig(
  */
 internal class PaperDisplayEffectBackend(
     private val plugin: Plugin,
+    private val systemEntityRegistry: SystemEntityRegistry,
     origin: Location,
     private val assetResolver: DisplayEffectAssetResolver = PaperMaterialAssetResolver(),
-    private val ownerPluginName: String? = null,
+    private val ownerPlugin: Plugin? = null,
     private val renderConfig: PaperDisplayEffectRenderConfig = PaperDisplayEffectRenderConfig()
 ) : DisplayEffectBackend {
     private data class ManagedDisplay(
@@ -255,9 +257,10 @@ internal class PaperDisplayEffectBackend(
         container.set(ownerKey, PersistentDataType.BYTE, 1.toByte())
         container.set(instanceKey, PersistentDataType.STRING, request.instanceId.toString())
         container.set(nodeKey, PersistentDataType.STRING, request.nodeId.value)
-        ownerPluginName?.let { container.set(consumerKey, PersistentDataType.STRING, it) }
+        ownerPlugin?.let { container.set(consumerKey, PersistentDataType.STRING, it.name) }
         container.set(schemaKey, PersistentDataType.INTEGER, 1)
         entity.addScoreboardTag(OWNER_TAG)
+        systemEntityRegistry.mark(entity, ownerPlugin ?: plugin)
     }
 
     private fun prepareFrame(frame: DisplayEffectFrame): PreparedFrame {

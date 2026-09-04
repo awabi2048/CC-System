@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.cosmetic
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.cosmetic.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.Interaction
@@ -19,7 +20,8 @@ import java.util.UUID
 
 internal class CosmeticPlatformImpl(
     private val plugin: JavaPlugin,
-    dataFolder: File
+    dataFolder: File,
+    private val systemEntityRegistry: SystemEntityRegistry,
 ) : CosmeticPlatform, CosmeticFactRegistry, Listener {
     private val repository = CosmeticProfileRepository(File(dataFolder, "data/cosmetics/profiles.yml"))
     private val medals = linkedMapOf<CosmeticId, MedalDefinition>()
@@ -180,7 +182,7 @@ internal class CosmeticPlatformImpl(
                 it.billboard = org.bukkit.entity.Display.Billboard.CENTER
                 it.isSeeThrough = true
                 it.teleportDuration = 1
-            }
+            }.also { systemEntityRegistry.mark(it, plugin) }
             val interaction = if (
                 presentation.onClick != null &&
                 presentation.interactionWidth != null &&
@@ -191,7 +193,10 @@ internal class CosmeticPlatformImpl(
                     it.interactionWidth = presentation.interactionWidth
                     it.interactionHeight = presentation.interactionHeight
                     it.isResponsive = true
-                }.also { interactionOwners[it.uniqueId] = playerId }
+                }.also {
+                    systemEntityRegistry.mark(it, plugin)
+                    interactionOwners[it.uniqueId] = playerId
+                }
             } else null
             medalRuntime[playerId] = ActiveMedal(
                 id,

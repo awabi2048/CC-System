@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
+import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccessPolicy
@@ -31,7 +32,10 @@ import org.joml.AxisAngle4f
 import org.joml.Vector3f
 
 /** Paper Entityの生成・差分移動・破棄をセッションランタイムから隔離します。 */
-internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
+internal class GestureGuiEntityRenderer(
+    private val plugin: Plugin,
+    private val systemEntityRegistry: SystemEntityRegistry,
+) {
     private val sessionKey = NamespacedKey(plugin, "gesture_gui_session")
     private val actorKey = NamespacedKey(plugin, "gesture_gui_actor")
     private val revisionKey = NamespacedKey(plugin, "gesture_gui_revision")
@@ -990,6 +994,7 @@ internal class GestureGuiEntityRenderer(private val plugin: Plugin) {
     )
 
     private fun mark(entity: Entity, sessionId: UUID, revision: Long, visualId: String? = null) {
+        systemEntityRegistry.mark(entity, plugin)
         entity.persistentDataContainer.set(sessionKey, PersistentDataType.STRING, sessionId.toString())
         entity.persistentDataContainer.set(revisionKey, PersistentDataType.LONG, revision)
         if (visualId != null) {
