@@ -620,8 +620,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_invert_on", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.choice_invert_off", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_item_overwrite_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_BLOCK_OVERWRITE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_block_overwrite_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_delete_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_WARN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_item_overwrite_warn", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_BLOCK_OVERWRITE_WARN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_block_overwrite_warn", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_WARN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_delete_warn", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.confirm_overwrite_yes", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_title", setOf())
@@ -1405,8 +1407,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_ON,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CHOICE_INVERT_OFF,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_TITLE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_BLOCK_OVERWRITE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_ITEM_OVERWRITE_WARN,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_BLOCK_OVERWRITE_WARN,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_DELETE_WARN,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_CONFIRM_OVERWRITE_YES,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_TITLE,
