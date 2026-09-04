@@ -751,7 +751,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_next", value = EmbeddedLocalizedValue.Text("次へ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_duplicate", value = EmbeddedLocalizedValue.Text("その名前のワールド内変数はすでに定義されています。別の名前を入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.particle_parameters_body", value = EmbeddedLocalizedValue.Text("パーティクルの散布範囲（X・Y・Z）、速度、1回の表示個数を設定してください。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.particle_parameters_constraint", value = EmbeddedLocalizedValue.Text("範囲と速度は0以上の有限数、個数は1以上の整数で入力してください。個数はワールドごとの1秒上限にも加算されます。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.particle_parameters_constraint", value = EmbeddedLocalizedValue.Text("範囲は有限数、速度は0以上の有限数、個数は1以上の整数で入力してください。個数はワールドごとの1秒上限にも加算されます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.particle_data_body", value = EmbeddedLocalizedValue.Text("パーティクル種類に必要な追加データを、種類に応じた形式で入力してください。不要な種類は空欄のままにします。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.particle_data_invalid", value = EmbeddedLocalizedValue.Text("選択したパーティクル種類に適合する追加データを入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.particle", value = EmbeddedLocalizedValue.Text("パーティクルの種類"), domain = DOMAIN),
