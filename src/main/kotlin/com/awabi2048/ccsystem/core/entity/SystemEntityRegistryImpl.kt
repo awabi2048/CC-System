@@ -51,6 +51,9 @@ internal class SystemEntityRegistryImpl : SystemEntityRegistry {
             "cc-content" -> value in LEGACY_CC_CONTENT_ENTITY_KEYS
             "cccontent" -> value in LEGACY_CC_CONTENT_CROP_ENTITY_KEYS
             "myworldmanager" -> value == "portal_display_id"
+            // FreeCam旧版の本体・座席は共通マーカー導入前からこのPDCを持つため、
+            // サーバー再起動後に残った一時Entityも同じ保護境界へ取り込みます。
+            "chanponutilities" -> value == "freecam_body" || value == "freecam_owner"
             else -> false
         }
     }
