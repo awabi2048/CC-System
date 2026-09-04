@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseReason
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
@@ -154,6 +155,7 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
     fun onJump(event: PlayerJumpEvent) {
         if (!service.isScreenInputActive(event.player) ||
             !event.player.isSneaking ||
+            !service.notifyCloseRequested(event.player.uniqueId, GestureGuiCloseReason.SHIFT_JUMP) ||
             !service.leaveOrClose(event.player.uniqueId)
         ) return
         event.isCancelled = true

@@ -49,7 +49,7 @@ interface CCSystemAPI {
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
         // GestureGuiVisual.Blockの縁取り配置と、操作者別のホバーBlockDisplay差し替えを
         // 追加したため、consumerが旧APIへ接続しないよう契約版を更新します。
-        const val GESTURE_GUI_CONTRACT_VERSION: Int = 16
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 17
     }
     /**
      * プレイヤーの言語設定を取得します
