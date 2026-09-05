@@ -1012,7 +1012,15 @@ class GestureGuiServiceImpl(
                     }
                     GestureGuiFollowPolicy.FollowMotionState.STOPPED -> {
                         if (session.followDirty && session.state == GestureGuiSessionState.ACTIVE) {
-                            resummonFollowScreens(session, owner)
+                            // 視線が画面内に入っている間は一切の再描画を行わず、
+                            // 位置を固定します。dirtyは維持するため、視線が外れた
+                            // 時点で再召喚が走ります。明示操作・内容変更・ホバーは
+                            // この制限の対象外です。
+                            if (isGazeInsideScreen(session, owner)) {
+                                GestureGuiFollowMetrics.recordGazeFrozenSkipped()
+                            } else {
+                                resummonFollowScreens(session, owner)
+                            }
                         }
                     }
                 }
@@ -1339,6 +1347,27 @@ class GestureGuiServiceImpl(
         renderer.remove(child.render)
         child.overlay?.remove()
     }
+
+    /**
+     * 所有者の視線が画面内に入っているかを返します。
+     *
+     * 停止確定後の再召喚ゲート専用です。単画面は当たり判定、複数画面は
+     * 画面包絡で判定し、いずれも表示姿勢基準(retainedYaw)で評価します。
+     * ホバー・キャッチャー・明示操作の判定には影響しません。
+     */
+    private fun isGazeInsideScreen(session: Session, owner: Player): Boolean =
+        if (session.screens.size == 1) {
+            targetHit(session, owner, margin = 0.06) != null
+        } else {
+            GestureGuiGeometry.containsScreenEnvelope(
+                ray(owner).direction,
+                session.retainedYaw.toDouble(),
+                session.screens.size,
+                session.screens.map { it.view.panel.width to it.view.panel.height },
+                session.layout,
+                session.verticalSlots,
+            )
+        }
 
     private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
         val ray = ray(player)
