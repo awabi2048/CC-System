@@ -47,7 +47,6 @@ object GestureGuiGeometry {
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
-        tiltScale: Double = 1.0,
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
@@ -58,7 +57,7 @@ object GestureGuiGeometry {
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL -> {
                 val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
-                val pitches = verticalCenters(sizes, verticalSlots, tiltScale)
+                val pitches = verticalCenters(sizes, verticalSlots)
                 val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
@@ -131,21 +130,30 @@ object GestureGuiGeometry {
 
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL ->
-                verticalCenters(sizes, verticalSlots, tiltScale).mapIndexed { index, pitchDegrees ->
-                    val pitch = Math.toRadians(pitchDegrees)
-                    val direction = GestureGuiVector3(
-                        forward.x * cos(pitch),
-                        -sin(pitch),
-                        forward.z * cos(pitch),
+                verticalCenters(sizes, verticalSlots).mapIndexed { index, pitchDegrees ->
+                    // 中心位置は無倍率の配置角で決めます。向きだけにtiltScaleを
+                    // 掛けることで、辺縁の隙間設計を保ったまま傾きを抑えます。
+                    // 両方へ掛けると寸法据え置きで辺縁が重なり合います。
+                    val positionPitch = Math.toRadians(pitchDegrees)
+                    val tiltPitch = Math.toRadians(pitchDegrees * tiltScale)
+                    val positionDirection = GestureGuiVector3(
+                        forward.x * cos(positionPitch),
+                        -sin(positionPitch),
+                        forward.z * cos(positionPitch),
                     )
-                    // Displayのローカル+Zに合わせ、normalは開設者の目から画面中心へ向けます。
-                    // right×normalから、各画面のpitchに沿って傾いた上方向を導出します。
+                    val direction = GestureGuiVector3(
+                        forward.x * cos(tiltPitch),
+                        -sin(tiltPitch),
+                        forward.z * cos(tiltPitch),
+                    )
+                    // Displayのローカル+Zに合わせ、normalは傾き調整後の向きへ合わせます。
+                    // right×normalから、各画面のtiltに沿って傾いた上方向を導出します。
                     val normal = direction
                     val up = right.cross(normal).normalized()
                     GestureGuiScreenPose(
                         screenIndex = index,
                         centerPitchDegrees = pitchDegrees,
-                        center = eye + direction * SCREEN_DISTANCE,
+                        center = eye + positionDirection * SCREEN_DISTANCE,
                         right = right,
                         up = up,
                         normal = normal,
@@ -182,23 +190,19 @@ object GestureGuiGeometry {
     /**
      * 指定スロットを3画面ぶんの縦配置へ投影します。欠けたスロットは最大寸法で予約し、
      * 実体を生成せずに上・中・下の視野関係だけを維持します。
-     *
-     * tiltScaleで中心pitchを倍率調整します。1.0で従来配置、小さくするほど
-     * 垂直に近づきます。表示と視線包絡判定の双方から同じ値を渡します。
      */
     private fun verticalCenters(
         sizes: List<Pair<Double, Double>>,
         verticalSlots: List<GestureGuiVerticalSlot>?,
-        tiltScale: Double = 1.0,
     ): List<Double> {
-        if (verticalSlots == null) return centerPitches(sizes).map { it * tiltScale }
+        if (verticalSlots == null) return centerPitches(sizes)
         val fallback = sizes.maxBy { it.first * it.second }
         val slotSizes = List(3) { slotIndex ->
             val viewIndex = verticalSlots.indexOfFirst { it.ordinal == slotIndex }
             if (viewIndex >= 0) sizes[viewIndex] else fallback
         }
         val allCenters = centerPitches(slotSizes)
-        return verticalSlots.map { allCenters[it.ordinal] * tiltScale }
+        return verticalSlots.map { allCenters[it.ordinal] }
     }
 
     private fun validateVerticalSlots(

@@ -43,7 +43,7 @@ class GestureGuiGeometryTest {
     }
 
     @Test
-    fun `tilt scale halves the vertical spread while keeping the middle centered`() {
+    fun `tilt scale flattens orientation while keeping positions`() {
         val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
         val normal = GestureGuiGeometry.poses(
             GestureGuiVector3(0.0, 0.0, 0.0),
@@ -60,10 +60,18 @@ class GestureGuiGeometryTest {
         )
 
         assertEquals(2, halved.size)
-        assertEquals(normal[0].centerPitchDegrees * 0.5, halved[0].centerPitchDegrees, 1.0e-9)
-        assertEquals(normal[1].centerPitchDegrees * 0.5, halved[1].centerPitchDegrees, 1.0e-9)
-        // 画面間の上下関係は維持されます。
+        // 中心位置は無倍率のままのため、辺縁の隙間設計が保たれます。
+        assertEquals(normal[0].center.x, halved[0].center.x, 1.0e-9)
+        assertEquals(normal[0].center.y, halved[0].center.y, 1.0e-9)
+        assertEquals(normal[0].center.z, halved[0].center.z, 1.0e-9)
+        assertEquals(normal[1].center.x, halved[1].center.x, 1.0e-9)
+        assertEquals(normal[1].center.y, halved[1].center.y, 1.0e-9)
+        assertEquals(normal[1].center.z, halved[1].center.z, 1.0e-9)
         assertTrue(halved[0].center.y > halved[1].center.y)
+        // 向きだけが半減します。上部画面の法線の上下成分が半分になります。
+        val normalPitch = Math.toDegrees(kotlin.math.asin(-normal[0].normal.y))
+        val halvedPitch = Math.toDegrees(kotlin.math.asin(-halved[0].normal.y))
+        assertEquals(normalPitch * 0.5, halvedPitch, 1.0e-9)
     }
 
     @Test
