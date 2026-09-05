@@ -97,6 +97,17 @@ data class GestureGuiOpenOptions(
      * Inventory GUIのクリックイベントや、secondaryInputEnabledのAction解決には影響しません。
      */
     val suppressWorldClicks: Boolean = false,
+    /**
+     * 追従pose全体へ加算するY方向の補正です(ブロック単位、マイナスで下げる)。
+     * 固定位置モードの初期配置には影響せず、追従中の再計算にだけ適用します。
+     */
+    val verticalOffset: Double = 0.0,
+    /**
+     * 画面の上下傾き倍率です。1.0で従来どおり各画面が目を向き、
+     * 小さくするほど垂直に近づきます。0.0で完全な垂直壁配置になります。
+     * 固定位置モードの初期配置には影響せず、追従中の再計算にだけ適用します。
+     */
+    val tiltScale: Double = 1.0,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {

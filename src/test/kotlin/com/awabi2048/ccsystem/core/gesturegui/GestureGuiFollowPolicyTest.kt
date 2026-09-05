@@ -31,4 +31,50 @@ class GestureGuiFollowPolicyTest {
         assertFalse(GestureGuiFollowPolicy.shouldStartRealignment(true, outsideTicks, null))
         assertFalse(GestureGuiFollowPolicy.shouldStartRealignment(false, outsideTicks, 90.0f))
     }
+
+    @Test
+    fun `significant motion uses position only without axis filtering`() {
+        // 移動判定はPosition専用です。X/Y/Zのどれか1軸だけの移動でも
+        // 移動として扱います(Y軸のみのジャンプ・段差を含む)。
+        // yawの変化は移動とみなしません。
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.05, 0.0, 0.0))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.05, 0.0))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.05))
+        assertFalse(GestureGuiFollowPolicy.isSignificantMotion(0.001, 0.0, 0.0))
+    }
+
+    @Test
+    fun `stop is confirmed only after three still ticks following motion`() {
+        // 移動中はMOVINGを返します。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.MOVING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 100L, lastMotionTick = 90L, moved = true),
+        )
+        // 一度も動いていないセッションは再召喚しません。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.SETTLING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 100L, lastMotionTick = -1L, moved = false),
+        )
+        // 停止2tickまでは確定しません。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.SETTLING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 102L, lastMotionTick = 100L, moved = false),
+        )
+        // 停止3tickで確定します。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.STOPPED,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 103L, lastMotionTick = 100L, moved = false),
+        )
+    }
+
+    @Test
+    fun `resummon on stop requires half a meter of displacement`() {
+        // 前回確定位置から0.5m未満の変位では実体を作り直しません。
+        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.2, 0.0, 0.0))
+        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.4, 0.0))
+        // 0.5m以上の変位で再召喚します。
+        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.5, 0.0, 0.0))
+        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.0, -2.5))
+        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.3, 0.4, 0.0))
+    }
 }

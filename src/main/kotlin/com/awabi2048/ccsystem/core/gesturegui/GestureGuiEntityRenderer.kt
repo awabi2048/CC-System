@@ -55,6 +55,13 @@ internal class GestureGuiEntityRenderer(
         var allowlist: Set<UUID>,
         var accessPolicy: GestureGuiAccessPolicy?,
         var visibilityPolicy: GestureGuiVisibilityPolicy?,
+        /**
+         * 背景へ最後に適用したパネル実寸です。追従tickでは寸法不変のまま
+         * メタデータを送ると背景だけ適用時刻がずれ、内容物とのティアを招くため、
+         * 変化時のみ送る判定に使います。
+         */
+        var lastPanelWidth: Double = Double.NaN,
+        var lastPanelHeight: Double = Double.NaN,
     ) {
         val all: List<Entity> get() = background + contents
 
@@ -151,6 +158,8 @@ internal class GestureGuiEntityRenderer(
             )
             // ホバー置換が置換対象と同じ深さへ解決できるよう、層を記録します。
             view.visuals.forEach { visual -> handle.visualLayers[visual.visualId] = visual.layer }
+            handle.lastPanelWidth = panel.width
+            handle.lastPanelHeight = panel.height
             // PUBLICを含め、初期表示対象をアクセス定義に基づいて背景だけ明示します。
             // contentsの表示は呼び出し側（アニメーション完了時／非アニメーション経路の
             // 翌tick表示）へ委ねます。spawnと同tickにcontentsを表示すると、アニメーション
@@ -168,12 +177,47 @@ internal class GestureGuiEntityRenderer(
         }
     }
 
-    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
+    /**
+     * 追従更新の直前に、画面実体の補間を無効化します。
+     *
+     * teleport/interpolationDurationが残っていると、追従中の毎tick teleportが
+     * クライアント側で追いかけ再生になり、背景と内容物が相互にずれます。
+     * 追従では移動の滑らかさより位置の正確さを優先し、0 durationで即時確定させます。
+     * 開閉アニメは専用関数が独自のdurationを設定するため、ここでは触りません。
+     * 追従更新はACTIVE状態でのみ本関数を呼ぶことで、アニメ中の上書きを避けます。
+     */
+    fun snapFollowEntities(handle: ScreenHandle) {
+        handle.all.filterIsInstance<Display>().forEach {
+            it.teleportDuration = 0
+            it.interpolationDuration = 0
+        }
+    }
+
+    /** 単体実体(モーダルオーバーレイ等)を追従スナップ対象にします。 */
+    fun snapFollowEntity(entity: Entity) {
+        (entity as? Display)?.let {
+            it.teleportDuration = 0
+            it.interpolationDuration = 0
+        }
+    }
+
+    /**
+     * 追従・パン・子画面再配置時に画面全体を新poseへ移動し、teleportした体数を返します。
+     *
+     * 背景の実寸確定は寸法変化時のみ行い、追従中の冗長メタデータで背景だけが
+     * 先行適用されるティアを抑えます。戻り値は追従計測の teleport 母数に使います。
+     */
+    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView): Int {
         val panel = view.panel
         // パネル寸法の変更を座標移動だけで済ませると、旧サイズの背景が残り、
-        // 子画面やズーム更新時に入力面と見た目がずれます。毎回同じ実寸へ確定します。
-        setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        // 子画面やズーム更新時に入力面と見た目がずれます。変化時のみ実寸へ確定します。
+        if (handle.lastPanelWidth != panel.width || handle.lastPanelHeight != panel.height) {
+            setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        } else {
+            GestureGuiFollowMetrics.recordBackgroundResizeSkipped()
+        }
         handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
+        var teleported = handle.background.size
         val innerHeight = panel.height - panel.frameWidth * 2.0
         val frameParts = listOf(
             PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
@@ -182,9 +226,12 @@ internal class GestureGuiEntityRenderer(
             PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
         )
         frameParts.forEachIndexed { index, part ->
-            handle.visualEntities["__panel_frame_$index"]?.teleport(
-                visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
-            )
+            handle.visualEntities["__panel_frame_$index"]?.let {
+                it.teleport(
+                    visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
+                )
+                teleported++
+            }
         }
         view.visuals.forEach { visual ->
             val entity = handle.visualEntities[visual.visualId] ?: return@forEach
@@ -194,12 +241,19 @@ internal class GestureGuiEntityRenderer(
                 visualLocation(entity.world, pose, visual.x, visual.y, visual.layer)
             }
             entity.teleport(location)
+            teleported++
+            // 枠も主Visualと同じposeへ移動するため、teleport母数へ含めます。
+            teleported += handle.visualOutlineEntities[visual.visualId]?.size ?: 0
             updateOutlinePose(handle, pose, visual)
         }
+        return teleported
     }
 
-    fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) =
+    fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) {
         setBackgroundSize(handle.background, width, height, interpolationTicks)
+        handle.lastPanelWidth = width.toDouble()
+        handle.lastPanelHeight = height.toDouble()
+    }
 
     fun setBackgroundScaleZero(handle: ScreenHandle, interpolationTicks: Int) =
         setBackgroundScaleZero(handle.background, interpolationTicks)
@@ -739,6 +793,11 @@ internal class GestureGuiEntityRenderer(
                 TextDisplay::class.java,
             ) {
                 prepareTextDisplay(it, pose)
+                // ホバーは追従に合わせて毎tick再配置されるため、生成時から補完を
+                // 無効化します。ホバーに開閉アニメはないため、常時スナップで
+                // 問題ありません。
+                it.teleportDuration = 0
+                it.interpolationDuration = 0
                 it.isVisibleByDefault = false
                 applyHover(it, pose, hover)
                 mark(it, sessionId, revision)
@@ -840,6 +899,10 @@ internal class GestureGuiEntityRenderer(
         BlockDisplay::class.java,
     ) {
         prepareDisplay(it, pose)
+        // ホバー面も追従に合わせて毎tick再配置されるため、生成時から補完を
+        // 無効化します。
+        it.teleportDuration = 0
+        it.interpolationDuration = 0
         it.isVisibleByDefault = false
         applyHoverBlock(it, pose, visual, blockData)
         mark(it, sessionId, revision)
