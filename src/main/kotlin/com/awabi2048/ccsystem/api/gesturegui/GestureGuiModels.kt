@@ -56,8 +56,21 @@ data class GestureGuiChildOptions(    val parentScreenId: String,
  * Dialogや入力トークンなどの所有状態を解放できます。通知内で同じセッションを閉じ直す
  * 必要はありません。
  */
+enum class GestureGuiCloseReason {
+    SHIFT_JUMP,
+}
+
 fun interface GestureGuiSessionListener {
     fun onClosed(ownerId: UUID, sessionId: UUID)
+
+    /** セッションが閉じる前の入力理由を、必要な利用側へ通知します。 */
+    fun onCloseRequested(
+        ownerId: UUID,
+        sessionId: UUID,
+        actorId: UUID,
+        reason: GestureGuiCloseReason,
+    ) {
+    }
 }
 
 /** 固定位置モードの画面配置を指定します。open時に指定すると画面をワールド固定し、プレイヤー追従しなくなります。 */

@@ -156,6 +156,21 @@ class GestureGuiModelsTest {
     }
 
     @Test
+    fun `text visual supports explicit horizontal alignment while keeping center default`() {
+        val defaultText = GestureGuiVisual.Text("default", 0.0, 0.0, Component.text("Default"))
+        val leftText = GestureGuiVisual.Text(
+            "left",
+            0.0,
+            0.0,
+            Component.text("Left"),
+            alignment = GestureGuiTextAlignment.LEFT,
+        )
+
+        assertEquals(GestureGuiTextAlignment.CENTER, defaultText.alignment)
+        assertEquals(GestureGuiTextAlignment.LEFT, leftText.alignment)
+    }
+
+    @Test
     fun `element guard is evaluated again for the same rendered element`() {
         var enabled = false
         val element = GestureGuiElement(
