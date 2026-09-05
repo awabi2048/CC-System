@@ -741,8 +741,7 @@ internal class GestureGuiEntityRenderer(
      * 移動中の追従表示に使うダミーパネルを生成します。
      *
      * 本体と同じ外形の背景ボード1枚だけを持ち、内容物・枠・入力面・ホバー面は
-     * 作りません。背景は tinted_glass の質感で生成し、形状と追従だけを明示します。
-     * Glow は透明・半透明の背景では視認できないため使用しません。
+     * 作りません。背景は glass の質感へ白のGlowを付与し、形状と追従だけを明示します。
      * 単一実体のため毎 tick の補間追従でも面内ティアを招きません。
      * 可視性の判定は本体と同じアクセス定義を複写し、公開画面の第三者にも
      * 同じ範囲で配布できるようにします。
@@ -768,6 +767,8 @@ internal class GestureGuiEntityRenderer(
             it.isVisibleByDefault = false
             it.block = Bukkit.createBlockData(DUMMY_PANEL_MATERIAL)
             it.setTransformation(blockTransform(width.toFloat(), height.toFloat()))
+            // 選択ハイライトの黄と区別するため、ダミーの追従表示は白の輪郭にします。
+            applyGlow(it, Color.WHITE.asARGB())
             mark(it, sessionId, revision)
             hideAxiomDisplayGizmo(it)
         }
@@ -1201,9 +1202,9 @@ internal class GestureGuiEntityRenderer(
         const val PANEL_BACKGROUND_LAYER = 0
         /**
          * 移動中のダミーパネルに使う背景素材です。
-         * 暗色の質感で形状だけを示し、内容物を見せないことで視界と追従認識を両立します。
+         * 透明感のある質感へ白のGlowを重ね、形状と追従だけを示します。
          */
-        val DUMMY_PANEL_MATERIAL: Material = Material.TINTED_GLASS
+        val DUMMY_PANEL_MATERIAL: Material = Material.GLASS
         // 背景と枠は同じ厚みを持つため、中心間距離を背景厚より大きくして立体領域の交差を防ぎます。
         // 6 layer × 0.005 = 0.030 blockで、厚み0.025 blockに安全余白を確保します。
         const val PANEL_FRAME_LAYER = 6

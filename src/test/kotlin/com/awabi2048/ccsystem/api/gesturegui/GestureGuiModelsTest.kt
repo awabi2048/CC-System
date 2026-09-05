@@ -58,6 +58,18 @@ class GestureGuiModelsTest {
             )
         }
     }
+
+    @Test
+    fun `open options default to the standard screen distance and reject invalid values`() {
+        assertEquals(GestureGuiOpenOptions.DEFAULT_SCREEN_DISTANCE, GestureGuiOpenOptions().screenDistance)
+        assertEquals(2.25, GestureGuiOpenOptions(screenDistance = 2.25).screenDistance)
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiOpenOptions(screenDistance = 0.0)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            GestureGuiOpenOptions(screenDistance = Double.NaN)
+        }
+    }
     @Test
     fun `access policy separates owner allowlist and public operation`() {
         val owner = UUID.randomUUID()

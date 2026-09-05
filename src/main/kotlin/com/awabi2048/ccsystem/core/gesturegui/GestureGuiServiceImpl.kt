@@ -158,6 +158,8 @@ class GestureGuiServiceImpl(
         val verticalOffset: Double = 0.0,
         /** 画面の上下傾き倍率です。1.0で従来配置、小さくするほど垂直に近づきます。 */
         val tiltScale: Double = 1.0,
+        /** 追従表示で目位置から画面中心までの距離です(ブロック単位)。 */
+        val screenDistance: Double,
         /**
          * 移動中に本体を隠してダミーパネルで追従しているかです。
          * 本体の view・pose は保持したまま実体だけを隠し、停止確定後に
@@ -232,7 +234,7 @@ class GestureGuiServiceImpl(
                 }
                 ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale)
+            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale, options.screenDistance)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -269,6 +271,7 @@ class GestureGuiServiceImpl(
                 suppressWorldClicks = options.suppressWorldClicks,
                 verticalOffset = options.verticalOffset,
                 tiltScale = options.tiltScale,
+                screenDistance = options.screenDistance,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -572,6 +575,7 @@ class GestureGuiServiceImpl(
                 session.verticalSlots,
                 session.verticalOffset,
                 session.tiltScale,
+                session.screenDistance,
             )
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルのpose計算に失敗しました", failure)
@@ -638,6 +642,7 @@ class GestureGuiServiceImpl(
                 session.verticalSlots,
                 session.verticalOffset,
                 session.tiltScale,
+                session.screenDistance,
             )
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの追従計算に失敗しました", failure)
@@ -687,6 +692,7 @@ class GestureGuiServiceImpl(
             suppressWorldClicks = old.suppressWorldClicks,
             verticalOffset = old.verticalOffset,
             tiltScale = old.tiltScale,
+            screenDistance = old.screenDistance,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -1585,10 +1591,12 @@ class GestureGuiServiceImpl(
      *
      * 停止確定後の再召喚ゲート専用です。単画面は当たり判定、複数画面は
      * 画面包絡で判定し、いずれも表示姿勢基準(retainedYaw)で評価します。
+     * 視線が画面へ向いていても、操作可能距離より離れている場合は画面外として扱い、
+     * 置き去りになった画面へ追従が戻らなくなる状態を防ぎます。
      * ホバー・キャッチャー・明示操作の判定には影響しません。
      */
-    private fun isGazeInsideScreen(session: Session, owner: Player): Boolean =
-        if (session.screens.size == 1) {
+    private fun isGazeInsideScreen(session: Session, owner: Player): Boolean {
+        val angularInside = if (session.screens.size == 1) {
             targetHit(session, owner, margin = 0.06) != null
         } else {
             GestureGuiGeometry.containsScreenEnvelope(
@@ -1599,8 +1607,16 @@ class GestureGuiServiceImpl(
                 session.layout,
                 session.verticalSlots,
                 session.tiltScale,
+                session.screenDistance,
             )
         }
+        if (!angularInside) return false
+        val eye = ray(owner).origin
+        val range = operableRange(owner)
+        return session.screens.any { screen ->
+            (screen.pose.center - eye).length() <= range
+        }
+    }
 
     private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
         // ダミー表示中は本体の古いposeへの入力を無効化します。dispatch・視線・
@@ -1650,7 +1666,7 @@ class GestureGuiServiceImpl(
     }
 
     private fun validateReach(session: Session, player: Player, target: TargetHit): TargetHit? {
-        val maximum = (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
+        val maximum = operableRange(player)
         if (target.hit.distance > maximum) return null
         val eye = player.eyeLocation
         val block = player.world.rayTraceBlocks(
@@ -1664,8 +1680,15 @@ class GestureGuiServiceImpl(
         return target.takeIf { blockDistance == null || blockDistance + 0.01 >= target.hit.distance }
     }
 
-    private fun ray(player: Player): GestureGuiRay {
-        val eye = player.eyeLocation
+    /**
+     * プレイヤーが画面を操作できる距離です(ブロック単位)。
+     * 入力到達判定と視線ゲートで同じ ENTITY_INTERACTION_RANGE 基準を使い、
+     * 表示と入力の距離条件を一致させます。
+     */
+    private fun operableRange(player: Player): Double =
+        (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
+
+    private fun ray(player: Player): GestureGuiRay {        val eye = player.eyeLocation
         val direction = eye.direction
         return GestureGuiRay(
             GestureGuiVector3(eye.x, eye.y, eye.z),
@@ -1681,6 +1704,7 @@ class GestureGuiServiceImpl(
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
         verticalOffset: Double = 0.0,
         tiltScale: Double = 1.0,
+        screenDistance: Double = GestureGuiOpenOptions.DEFAULT_SCREEN_DISTANCE,
     ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
@@ -1689,6 +1713,7 @@ class GestureGuiServiceImpl(
         layout,
         verticalSlots,
         tiltScale,
+        screenDistance,
     ).map { pose ->
         if (verticalOffset == 0.0) pose
         else pose.copy(center = pose.center + GestureGuiVector3(0.0, verticalOffset, 0.0))
@@ -1721,6 +1746,7 @@ class GestureGuiServiceImpl(
             session.verticalSlots,
             session.verticalOffset,
             session.tiltScale,
+            session.screenDistance,
         )
     } else {
         // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。

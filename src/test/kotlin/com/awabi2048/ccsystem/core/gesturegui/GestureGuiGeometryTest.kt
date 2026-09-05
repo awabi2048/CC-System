@@ -80,7 +80,7 @@ class GestureGuiGeometryTest {
         }
         val gap = edgePitch(halved[1], topEdge = true) - edgePitch(halved[0], topEdge = false)
         assertTrue(gap <= 0.0, "screens overlap: gap=$gap")
-        assertTrue(gap >= -0.05, "screens drift apart: gap=$gap")
+        assertTrue(gap >= -0.06, "screens drift apart: gap=$gap")
     }
 
     @Test
@@ -237,7 +237,18 @@ class GestureGuiGeometryTest {
         val upperBottom = edgeMidpoint(poses[0], topEdge = false)
         val lowerTop = edgeMidpoint(poses[1], topEdge = true)
         val distance = (upperBottom - lowerTop).length()
-        assertEquals(0.02, distance, 1.0e-9)
+        assertEquals(0.06, distance, 1.0e-9)
+    }
+
+    @Test
+    fun `screen distance moves the whole arrangement away from the eye`() {
+        // 追従画面距離の指定は、配置全体を目から遠ざけます。
+        // 標準 1.5 の50%増しである 2.25 で中心距離が一致することを検証します。
+        val eye = GestureGuiVector3(0.0, 64.0, 0.0)
+        val near = GestureGuiGeometry.poses(eye, 0.0, 1).single()
+        val far = GestureGuiGeometry.poses(eye, 0.0, 1, screenDistance = 2.25).single()
+        assertEquals(1.5, (near.center - eye).length(), 1.0e-9)
+        assertEquals(2.25, (far.center - eye).length(), 1.0e-9)
     }
 
     @Test

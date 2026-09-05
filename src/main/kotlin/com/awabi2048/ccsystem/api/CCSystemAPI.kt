@@ -49,7 +49,8 @@ interface CCSystemAPI {
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
         // Gesture GUIの追従位置固定・入力遮断・終了要求通知を追加したため、consumerが
         // 旧APIへ接続しないよう契約版を更新します。
-        const val GESTURE_GUI_CONTRACT_VERSION: Int = 17
+        // 追従画面距離の指定を追加したため、契約版を更新します。
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 18
     }
     /**
      * プレイヤーの言語設定を取得します

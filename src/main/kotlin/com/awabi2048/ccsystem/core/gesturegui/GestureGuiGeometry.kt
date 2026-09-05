@@ -48,6 +48,7 @@ object GestureGuiGeometry {
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
         tiltScale: Double = 1.0,
+        screenDistance: Double = SCREEN_DISTANCE,
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
@@ -57,12 +58,12 @@ object GestureGuiGeometry {
         val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL -> {
-                val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
+                val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / screenDistance)) }
                 // 包絡は解き直し後の中心角で評価し、表示と判定の範囲を一致させます。
                 // 上下端は角度和の近似ではなく、傾き確定後の実辺端角そのもので求めます。
                 // 位置と向きを分離した配置では atan((h/2)/D) が実辺とずれるため、
                 // ヒンジ結合と同じ辺点角を使い、描画・当たり・包絡を一致させます。
-                val arrangement = verticalStripArrangement(sizes, verticalSlots, tiltScale)
+                val arrangement = verticalStripArrangement(sizes, verticalSlots, tiltScale, screenDistance)
                 val top = arrangement.indices.minOf { index ->
                     edgePitchAngle(
                         arrangement[index].centerOffset,
@@ -83,10 +84,10 @@ object GestureGuiGeometry {
             }
             GestureGuiScreenLayout.HORIZONTAL -> {
                 // 横並びでは画面幅に応じて水平視野が広がり、縦方向は最も高い画面で決まります。
-                val yaws = centerYaws(sizes)
-                val left = yaws.indices.minOf { yaws[it] - Math.toDegrees(atan((sizes[it].first / 2.0) / SCREEN_DISTANCE)) }
-                val right = yaws.indices.maxOf { yaws[it] + Math.toDegrees(atan((sizes[it].first / 2.0) / SCREEN_DISTANCE)) }
-                val verticalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.second / 2.0) / SCREEN_DISTANCE)) }
+                val yaws = centerYaws(sizes, screenDistance)
+                val left = yaws.indices.minOf { yaws[it] - Math.toDegrees(atan((sizes[it].first / 2.0) / screenDistance)) }
+                val right = yaws.indices.maxOf { yaws[it] + Math.toDegrees(atan((sizes[it].first / 2.0) / screenDistance)) }
+                val verticalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.second / 2.0) / screenDistance)) }
                 val relativeYaw = (rayYaw - retainedYawDegrees + 540.0) % 360.0 - 180.0
                 relativeYaw in left..right && rayPitch in -verticalHalfAngle..verticalHalfAngle
             }
@@ -105,10 +106,13 @@ object GestureGuiGeometry {
     }
 
     /** 可変画面の上下角に約2度の余白を加え、中央pitchを動的に配置します。 */
-    fun centerPitches(sizes: List<Pair<Double, Double>>): List<Double> {
+    fun centerPitches(
+        sizes: List<Pair<Double, Double>>,
+        distance: Double = SCREEN_DISTANCE,
+    ): List<Double> {
         require(sizes.size in 1..3) { "gesture GUI requires one to three screens" }
         if (sizes.size == 1) return listOf(20.0)
-        val halfAngles = sizes.map { Math.toDegrees(atan((it.second / 2.0) / SCREEN_DISTANCE)) }
+        val halfAngles = sizes.map { Math.toDegrees(atan((it.second / 2.0) / distance)) }
         val centers = MutableList(sizes.size) { 0.0 }
         for (index in 1 until centers.size) {
             centers[index] = centers[index - 1] + halfAngles[index - 1] + halfAngles[index] + SCREEN_VERTICAL_GAP_DEGREES
@@ -118,10 +122,13 @@ object GestureGuiGeometry {
     }
 
     /** 可変画面の左右角に約2度の余白を加え、中央yawオフセットを動的に配置します。左が負です。 */
-    fun centerYaws(sizes: List<Pair<Double, Double>>): List<Double> {
+    fun centerYaws(
+        sizes: List<Pair<Double, Double>>,
+        distance: Double = SCREEN_DISTANCE,
+    ): List<Double> {
         require(sizes.size in 1..3) { "gesture GUI requires one to three screens" }
         if (sizes.size == 1) return listOf(0.0)
-        val halfAngles = sizes.map { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
+        val halfAngles = sizes.map { Math.toDegrees(atan((it.first / 2.0) / distance)) }
         val centers = MutableList(sizes.size) { 0.0 }
         for (index in 1 until centers.size) {
             centers[index] = centers[index - 1] + halfAngles[index - 1] + halfAngles[index] + SCREEN_VERTICAL_GAP_DEGREES
@@ -139,6 +146,7 @@ object GestureGuiGeometry {
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
         tiltScale: Double = 1.0,
+        screenDistance: Double = SCREEN_DISTANCE,
     ): List<GestureGuiScreenPose> {
         require(yawDegrees.isFinite()) { "gesture GUI yaw must be finite" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
@@ -149,7 +157,7 @@ object GestureGuiGeometry {
 
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL ->
-                verticalStripArrangement(sizes, verticalSlots, tiltScale).mapIndexed { index, angles ->
+                verticalStripArrangement(sizes, verticalSlots, tiltScale, screenDistance).mapIndexed { index, angles ->
                     // 中心位置はヒンジ結合が解いた3Dオフセットをyaw回転して求めます。
                     // 球面拘束を外すことで、隣接画面との共有辺が空間的に一致します。
                     // 向きだけに tiltScale を掛ける点は変えず、辺縁の傾き設計を保ちます。
@@ -180,7 +188,7 @@ object GestureGuiGeometry {
             GestureGuiScreenLayout.HORIZONTAL ->
                 // 左右並びは各画面の中心方向へnormalを振り、首を振って正面から
                 // 参照できるようにします。最初の画面が左、後続が右へ配置されます。
-                centerYaws(sizes).mapIndexed { index, yawOffsetDegrees ->
+                centerYaws(sizes, screenDistance).mapIndexed { index, yawOffsetDegrees ->
                     val screenYaw = yawDegrees + yawOffsetDegrees
                     val screenYawRad = Math.toRadians(screenYaw)
                     val direction = GestureGuiVector3(-sin(screenYawRad), 0.0, cos(screenYawRad))
@@ -190,7 +198,7 @@ object GestureGuiGeometry {
                     GestureGuiScreenPose(
                         screenIndex = index,
                         centerPitchDegrees = 0.0,
-                        center = eye + direction * SCREEN_DISTANCE,
+                        center = eye + direction * screenDistance,
                         right = screenRight,
                         up = up,
                         normal = normal,
@@ -209,7 +217,7 @@ object GestureGuiGeometry {
      * 空間的な間隔そのものになります。辺画素の深度競合を避けつつ、横から見ても
      * 一点の溝として読めるよう、従来の角度隙間（約5.7cm相当）より小さい値にします。
      */
-    private const val HINGE_EDGE_CLEARANCE = 0.02
+    private const val HINGE_EDGE_CLEARANCE = 0.06
 
     /**
      * 画面の配置角と傾き角と中心オフセットです。中心位置は球面拘束を受けず、
@@ -242,8 +250,10 @@ object GestureGuiGeometry {
         sizes: List<Pair<Double, Double>>,
         verticalSlots: List<GestureGuiVerticalSlot>?,
         tiltScale: Double,
+        screenDistance: Double = SCREEN_DISTANCE,
     ): List<VerticalStripAngles> {
         require(tiltScale >= 0.0) { "gesture GUI tilt scale must be non-negative" }
+        require(screenDistance.isFinite() && screenDistance > 0.0) { "gesture GUI screen distance must be positive and finite" }
         // スロット順(上→下)へ正規化します。スロットなしはview順をそのまま使います。
         data class SlotEntry(val size: Pair<Double, Double>, val viewIndex: Int)
         val slots: List<SlotEntry> = if (verticalSlots == null) {
@@ -257,7 +267,7 @@ object GestureGuiGeometry {
             }
         }
         val slotSizes = slots.map { it.size }
-        val arcPitches = centerPitches(slotSizes)
+        val arcPitches = centerPitches(slotSizes, screenDistance)
         val tilts = arcPitches.map { it * tiltScale }
         // 傾き確定後の上方向を yaw=0 正準系で求めます。poses() と同じ right×normal 規則です。
         fun upOf(tiltPitchDegrees: Double): GestureGuiVector3 {
@@ -282,8 +292,8 @@ object GestureGuiGeometry {
             val anchorPitch = Math.toRadians(arcPitches[anchorIdx])
             centers[anchorIdx] = GestureGuiVector3(
                 0.0,
-                -SCREEN_DISTANCE * sin(anchorPitch),
-                SCREEN_DISTANCE * cos(anchorPitch),
+                -screenDistance * sin(anchorPitch),
+                screenDistance * cos(anchorPitch),
             )
         }
         for (index in anchorIdx + 1 until slots.size) {
