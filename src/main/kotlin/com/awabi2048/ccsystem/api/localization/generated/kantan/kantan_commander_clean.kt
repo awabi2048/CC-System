@@ -637,6 +637,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_variable_value_prompt", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_TEMPLATE_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_template_hint", setOf("variable_name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_save_failed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_LIST_REFRESH_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_list_refresh_failed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SCAN_INCOMPLETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_scan_incomplete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_input_format", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_empty", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_TRAILING_CHARACTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_trailing_characters", setOf())
@@ -1449,6 +1451,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_VARIABLE_VALUE_PROMPT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_TEMPLATE_HINT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SAVE_FAILED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_LIST_REFRESH_FAILED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_SCAN_INCOMPLETE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_INPUT_FORMAT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_EMPTY,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_TRAILING_CHARACTERS,

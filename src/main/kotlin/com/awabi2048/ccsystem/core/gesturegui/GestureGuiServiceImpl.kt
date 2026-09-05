@@ -295,7 +295,7 @@ class GestureGuiServiceImpl(
 
     override fun pinToCurrentPosition(ownerId: UUID): Boolean {
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
-        if (session.fixedAnchor != null) return false
+        if (!GestureGuiClipTogglePolicy.canPin(session.state, session.fixedAnchor)) return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
         // 既存のscreen.poseを変更せず、次のtickから追従分岐だけを止めます。
         // fixedPoses()で再計算しないため、ボタンを押した瞬間の表示位置を正確に保持できます。
@@ -303,6 +303,31 @@ class GestureGuiServiceImpl(
         session.fixedPoseSnapshot = session.screens.map(ScreenRuntime::pose)
         session.targetYaw = null
         session.gazeOutsideTicks = 0
+        return true
+    }
+
+    override fun unpinToFollow(ownerId: UUID): Boolean {
+        val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
+        if (!GestureGuiClipTogglePolicy.canUnpin(session.state, session.fixedAnchor)) return false
+        val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        session.fixedAnchor = null
+        session.fixedPoseSnapshot = null
+        session.targetYaw = null
+        session.gazeOutsideTicks = 0
+        // 固定中は姿勢(rotYaw)も固定なので、解除ではyawを変えずに現在の目位置へ
+        // poseを即座に再計算します。回転ジャンプを起こさず、画面だけが追従位置へ
+        // 復帰します。以降のtickは通常の追従分岐へ戻ります。
+        val eye = owner.eyeLocation
+        session.anchorX = eye.x
+        session.anchorY = eye.y
+        session.anchorZ = eye.z
+        val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
+        session.screens.zip(newPoses).forEach { (screen, pose) ->
+            screen.pose = pose
+            renderer.updatePose(screen.render, pose, screen.view)
+        }
+        repositionChildren(session)
+        session.appliedYaw = session.retainedYaw
         return true
     }
 

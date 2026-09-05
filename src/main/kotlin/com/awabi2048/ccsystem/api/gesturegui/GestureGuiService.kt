@@ -176,6 +176,15 @@ interface GestureGuiService {
      * 実行時poseを保持したまま追従だけを停止します。
      */
     fun pinToCurrentPosition(ownerId: UUID): Boolean
+
+    /**
+     * クリップ固定中の画面を解除し、プレイヤー追従へ戻します。
+     *
+     * 解除時は固定されていたposeから現在の目位置へ追従基準を同期するため、
+     * 解除直後に画面がジャンプしません。追従していない(未固定・非ACTIVE)場合は
+     * falseを返します。クリップは [pinToCurrentPosition] との往復(トグル)で使います。
+     */
+    fun unpinToFollow(ownerId: UUID): Boolean
     fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean
     fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean
