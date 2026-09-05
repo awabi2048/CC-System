@@ -467,10 +467,19 @@ class GestureGuiServiceImpl(
             GestureGuiFollowMetrics.recordStopResummon(
                 newScreens.sumOf { it.render.all.size } + newChildren.sumOf { it.render.all.size },
             )
+            // DIAG-CLICK-TODO-REMOVE: 再召喚の可視性配布の成否を追跡します。
+            val diagNewCount = newScreens.sumOf { it.render.all.size } + newChildren.sumOf { it.render.all.size }
+            val diagPose = newScreens.firstOrNull()?.pose
+            plugin.logger.info(
+                "Gesture再召喚診断: spawned=${diagNewCount} " +
+                    "pose=${diagPose?.let { "(${"%.2f".format(it.center.x)},${"%.2f".format(it.center.y)},${"%.2f".format(it.center.z)})" } ?: "none"} " +
+                    "revision=${session.revision}",
+            )
             Bukkit.getScheduler().runTask(plugin, Runnable {
                 if (sessions[session.ownerId] !== session) {
                     // セッションが閉じられた場合は古い実体だけ確実に除去します。
                     // 新実体はセッションタグ付きのため終了処理で回収されます。
+                    plugin.logger.info("Gesture再召喚診断: session-changed old-removed")
                     swappedScreens.forEach { renderer.remove(it.oldRender) }
                     swappedChildren.forEach {
                         renderer.remove(it.oldRender)
@@ -478,15 +487,18 @@ class GestureGuiServiceImpl(
                     }
                     return@Runnable
                 }
+                var shown = 0
                 Bukkit.getOnlinePlayers().forEach { player ->
-                    newScreens.forEach { renderer.showTo(it.render, player) }
-                    newChildren.forEach { renderer.showTo(it.render, player) }
+                    newScreens.forEach { renderer.showTo(it.render, player); shown++ }
+                    newChildren.forEach { renderer.showTo(it.render, player); shown++ }
                 }
                 swappedScreens.forEach { renderer.remove(it.oldRender) }
                 swappedChildren.forEach {
                     renderer.remove(it.oldRender)
                     it.oldOverlay?.remove()
                 }
+                // DIAG-CLICK-TODO-REMOVE: 同上。
+                plugin.logger.info("Gesture再召喚診断: shown=${shown} old-removed revision=${session.revision}")
             })
             return true
         } catch (failure: Throwable) {
@@ -693,7 +705,9 @@ class GestureGuiServiceImpl(
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
             .mapNotNull { session -> accessibleTarget(session, actor)?.let { session to it } }
             .minByOrNull { (_, target) -> target.hit.distance }
-            ?: return GestureGuiDispatchResult.UNHANDLED
+            ?: return GestureGuiDispatchResult.UNHANDLED.also {
+                diagLogClick(actor, "no-candidate:${diagnoseNoTarget(actor)}")
+            }
         val (session, target) = candidate
         if (!session.secondaryInputEnabled &&
             gesture in setOf(GestureGuiGesture.SECONDARY, GestureGuiGesture.SHIFT_SECONDARY)
@@ -702,13 +716,24 @@ class GestureGuiServiceImpl(
             // Interaction由来のActionだけを無効化します。
             return GestureGuiDispatchResult.CONSUMED
         }
-        if (target.blocked) return GestureGuiDispatchResult.CONSUMED
-        val view = target.view ?: return GestureGuiDispatchResult.CONSUMED
+        if (target.blocked) return GestureGuiDispatchResult.CONSUMED.also {
+            diagLogClick(actor, "blocked")
+        }
+        val view = target.view ?: return GestureGuiDispatchResult.CONSUMED.also {
+            diagLogClick(actor, "view-null")
+        }
         val element = view.definition.elements.firstOrNull { it.elementId == target.hit.elementId }
         // 画面内の未割当操作も吸収しますが、Actionは実行しません。
         // ただし同一パケットの後続InteractでEntity位置が確定する可能性があるため、
         // この分岐だけは入力重複抑止の対象にしません。
         if (element == null || !element.acceptsGesture(actor, gesture)) {
+            diagLogClick(
+                actor,
+                "no-element:screen=${view.definition.screenId} " +
+                    "hitElement=${target.hit.elementId} " +
+                    "local=${"%.3f".format(target.hit.localX)},${"%.3f".format(target.hit.localY)} " +
+                    "dist=${"%.3f".format(target.hit.distance)}",
+            )
             return GestureGuiDispatchResult.RETRYABLE_CONSUMED
         }
         if (actor.uniqueId !in session.actors) {
@@ -716,12 +741,15 @@ class GestureGuiServiceImpl(
             // trueを返すとListenerが元イベントをキャンセルし、claimを所有する
             // 別機能へ入力が届かなくなるため、失敗時は未処理として返します。
             val actorRuntime = runCatching { createActor(session, actor) }.getOrNull()
-                ?: return GestureGuiDispatchResult.UNHANDLED
+                ?: return GestureGuiDispatchResult.UNHANDLED.also {
+                    diagLogClick(actor, "actor-create-failed")
+                }
             session.actors[actor.uniqueId] = actorRuntime
             session.knownActorIds += actor.uniqueId
         }
         val revision = session.revision
         if (sessions[session.ownerId] !== session || session.state != GestureGuiSessionState.ACTIVE) {
+            diagLogClick(actor, "session-changed")
             return GestureGuiDispatchResult.CONSUMED
         }
         // 余白は選択解除用の透過的な入力面であり、ボタン操作音を鳴らしません。
@@ -733,6 +761,54 @@ class GestureGuiServiceImpl(
             GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
         return GestureGuiDispatchResult.ACTION_HANDLED
+    }
+
+    // DIAG-CLICK-TODO-REMOVE: クリック不取得の切り分け用一時診断ログです。
+    // 原因特定後に呼び出し元ごと除去します。
+    private val diagLastClickLog = java.util.concurrent.ConcurrentHashMap<java.util.UUID, Long>()
+
+    // DIAG-CLICK-TODO-REMOVE: 同上。
+    private fun diagLogClick(actor: Player, detail: String) {
+        val now = System.currentTimeMillis()
+        val last = diagLastClickLog[actor.uniqueId] ?: 0L
+        if (now - last < 3000L) return
+        diagLastClickLog[actor.uniqueId] = now
+        val eye = actor.eyeLocation
+        plugin.logger.info(
+            "Gestureクリック診断: player=${actor.name} ${detail} " +
+                "eye=(${"%.2f".format(eye.x)},${"%.2f".format(eye.y)},${"%.2f".format(eye.z)}) " +
+                "sessions=${sessions.size}",
+        )
+    }
+
+    // DIAG-CLICK-TODO-REMOVE: 同上。候補なしの場合に段階内訳を返します。
+    private fun diagnoseNoTarget(actor: Player): String {
+        val parts = mutableListOf<String>()
+        sessions.values.asSequence()
+            .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
+            .forEach { session ->
+                val hit = targetHit(session, actor)
+                if (hit == null) {
+                    val pose = session.screens.firstOrNull()?.pose
+                    parts += "sess~${session.ownerId.toString().take(8)}:no-hit " +
+                        "pose=${pose?.let { "(${"%.2f".format(it.center.x)},${"%.2f".format(it.center.y)},${"%.2f".format(it.center.z)})" } ?: "none"} " +
+                        "actors=${session.actors.keys.size}"
+                    return@forEach
+                }
+                val allowed = hit.view?.definition?.canOperate(session.ownerId, actor.uniqueId) == true
+                if (!allowed) {
+                    parts += "sess~${session.ownerId.toString().take(8)}:no-operate element=${hit.hit.elementId}"
+                    return@forEach
+                }
+                val reachOk = validateReach(session, actor, hit) != null
+                if (!reachOk) {
+                    parts += "sess~${session.ownerId.toString().take(8)}:no-reach dist=${"%.2f".format(hit.hit.distance)}"
+                    return@forEach
+                }
+                parts += "sess~${session.ownerId.toString().take(8)}:ok-but-not-nearest"
+            }
+        if (parts.isEmpty()) parts += "no-active-session-in-world"
+        return parts.joinToString(";")
     }
 
     override fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot? = sessions[ownerId]?.let(::snapshot)
