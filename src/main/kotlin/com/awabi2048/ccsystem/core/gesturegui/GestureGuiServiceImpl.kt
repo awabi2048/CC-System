@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.core.gesturegui
 import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseMode
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseReason
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiChildOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiOpenOptions
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
@@ -570,6 +571,25 @@ class GestureGuiServiceImpl(
         if (actorId in sessions) return close(actorId)
         val session = sessions.values.firstOrNull { actorId in it.actors } ?: return false
         removeActor(session, actorId)
+        return true
+    }
+
+    /** 画面を閉じる入力の直前に、利用側の実行状態を停止できる通知を送ります。 */
+    internal fun notifyCloseRequested(actorId: UUID, reason: GestureGuiCloseReason): Boolean {
+        val session = sessions.values.firstOrNull {
+            actorId == it.ownerId || actorId in it.actors
+        } ?: return false
+        session.sessionListener?.let { listener ->
+            runCatching {
+                listener.onCloseRequested(session.ownerId, session.id, actorId, reason)
+            }.onFailure { failure ->
+                plugin.logger.log(
+                    Level.WARNING,
+                    "Gesture GUI終了要求通知に失敗しました: owner=${session.ownerId} session=${session.id}",
+                    failure,
+                )
+            }
+        }
         return true
     }
 

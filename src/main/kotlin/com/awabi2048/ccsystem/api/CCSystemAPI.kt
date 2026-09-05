@@ -47,9 +47,9 @@ interface CCSystemAPI {
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
-        // Gesture GUIの追従位置固定操作と入力遮断判定を追加したため、consumerが
+        // Gesture GUIの追従位置固定・入力遮断・終了要求通知を追加したため、consumerが
         // 旧APIへ接続しないよう契約版を更新します。
-        const val GESTURE_GUI_CONTRACT_VERSION: Int = 16
+        const val GESTURE_GUI_CONTRACT_VERSION: Int = 17
     }
     /**
      * プレイヤーの言語設定を取得します
