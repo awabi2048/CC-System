@@ -75,10 +75,7 @@ class EmbeddedLocalizationCatalogTest {
         val keys = LocalizationCatalogContract.keys()
             .filter { it.startsWith("kantan_commander_clean.gui.gesture.warning.") }
             .plus(
-                listOf(
-                    "kantan_commander_clean.gui.gesture.message_context_incomplete",
-                    "kantan_commander_clean.gui.dialog.duration_tick_invalid",
-                ),
+                listOf("kantan_commander_clean.gui.dialog.duration_tick_invalid"),
             )
 
         for (locale in EmbeddedLocalizationCatalog.locales) {
