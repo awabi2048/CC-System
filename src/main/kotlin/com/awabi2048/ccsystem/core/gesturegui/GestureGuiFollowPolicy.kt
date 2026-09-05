@@ -22,9 +22,6 @@ internal object GestureGuiFollowPolicy {
     /** 追従更新を無視する水平移動のデッドバンドです（ブロック単位）。 */
     const val FOLLOW_POSITION_DEADBAND: Double = 0.002
 
-    /** 追従更新を無視するyaw変化のデッドバンドです（度）。 */
-    const val FOLLOW_YAW_DEADBAND_DEGREES: Float = 0.2f
-
     /**
      * 無移動が何tick続けば停止確定とするかです。20TPS前提で10tick=約0.5秒です。
      * 確定したらその場へ再召喚し、完全に固定します。
@@ -58,20 +55,19 @@ internal object GestureGuiFollowPolicy {
             outsideTicks >= GAZE_REALIGN_DELAY_TICKS
 
     /**
-     * デッドバンドを超える移動があったかを返します。
+     * デッドバンドを超える位置移動があったかを返します。
      *
+     * 移動判定はPosition専用です。yawの変化は移動とみなしません。
      * Y移動も追従対象に含め、ジャンプや段差で描画と判定が分岐しないようにします。
-     * 回転のみの移動も対象に含め、その場回転の停止後に正対した画面へ確定させます。
      */
     fun isSignificantMotion(
         deltaX: Double,
         deltaY: Double,
         deltaZ: Double,
-        yawDeltaAbs: Float,
     ): Boolean {
         val movedSq = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
         val deadbandSq = FOLLOW_POSITION_DEADBAND * FOLLOW_POSITION_DEADBAND
-        return movedSq >= deadbandSq || yawDeltaAbs >= FOLLOW_YAW_DEADBAND_DEGREES
+        return movedSq >= deadbandSq
     }
 
     /**

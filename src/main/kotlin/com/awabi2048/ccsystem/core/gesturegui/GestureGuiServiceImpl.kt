@@ -105,9 +105,6 @@ class GestureGuiServiceImpl(
         var targetYaw: Float?,
         /** 視線が画面外にある状態の連続tick数。短い視線移動では画面を回転させません。 */
         var gazeOutsideTicks: Int,
-        var anchorX: Double,
-        var anchorY: Double,
-        var anchorZ: Double,
         /**
          * 最後に移動を検出したサービスtick番号です。停止確定
          * ([GestureGuiFollowPolicy.STOP_SETTLE_TICKS]無移動継続)の基準に使います。
@@ -115,12 +112,14 @@ class GestureGuiServiceImpl(
          */
         var lastMotionTick: Long = -1L,
         /**
-         * 前tickに観測した所有者のyawです。移動判定のyaw差分は、凍結した
-         * retainedYawではなく、必ずこの毎tick更新値との差で求めます。
-         * 凍結値を基準にすると、頭を振ったまま静止しても差が残り続けて
+         * 前tickに観測した所有者の目位置です。移動判定は適用済み位置ではなく、
+         * 必ずこの毎tick更新値との差で求めます。
+         * 適用済み位置を基準にすると、一度動いた後に静止しても差が残り続けて
          * 永久に移動扱いになり、停止確定へ到達できなくなります。
          */
-        var lastObservedYaw: Float = 0f,
+        var lastEyeX: Double,
+        var lastEyeY: Double,
+        var lastEyeZ: Double,
         /**
          * 凍結中に確定待ちの移動があるかです。停止確定時に一度だけ再召喚し、
          * 直後にfalseへ戻すことで、停止中の再召喚の繰り返しを防ぎます。
@@ -228,9 +227,9 @@ class GestureGuiServiceImpl(
                 retainedYaw = owner.location.yaw,
                 targetYaw = null,
                 gazeOutsideTicks = 0,
-                anchorX = owner.eyeLocation.x,
-                anchorY = owner.eyeLocation.y,
-                anchorZ = owner.eyeLocation.z,
+                lastEyeX = owner.eyeLocation.x,
+                lastEyeY = owner.eyeLocation.y,
+                lastEyeZ = owner.eyeLocation.z,
                 screens = screens.toList(),
                 children = mutableListOf(),
                 actors = mutableMapOf(),
@@ -336,9 +335,9 @@ class GestureGuiServiceImpl(
         // poseを即座に再計算します。回転ジャンプを起こさず、画面だけが追従位置へ
         // 復帰します。以降のtickは通常の追従分岐へ戻ります。
         val eye = owner.eyeLocation
-        session.anchorX = eye.x
-        session.anchorY = eye.y
-        session.anchorZ = eye.z
+        session.lastEyeX = eye.x
+        session.lastEyeY = eye.y
+        session.lastEyeZ = eye.z
         val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
         var teleported = 0
         session.screens.zip(newPoses).forEach { (screen, pose) ->
@@ -347,7 +346,6 @@ class GestureGuiServiceImpl(
         }
         teleported += repositionChildren(session)
         GestureGuiFollowMetrics.recordPoseUpdate(teleported)
-        session.lastObservedYaw = owner.location.yaw
         // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
         session.lastMotionTick = tickIndex
         session.followDirty = false
@@ -365,7 +363,6 @@ class GestureGuiServiceImpl(
     private fun resummonFollowScreens(session: Session, owner: Player): Boolean {
         // 現在の視線へ正対させ、以降は動くまで完全に固定します。
         session.retainedYaw = owner.location.yaw
-        session.lastObservedYaw = owner.location.yaw
         session.targetYaw = null
         session.gazeOutsideTicks = 0
         session.revision = nextRevision++
@@ -462,9 +459,9 @@ class GestureGuiServiceImpl(
                 actor.hoverIdentity = null
                 actor.hoverReplacement = null
             }
-            session.anchorX = eye.x
-            session.anchorY = eye.y
-            session.anchorZ = eye.z
+            session.lastEyeX = eye.x
+            session.lastEyeY = eye.y
+            session.lastEyeZ = eye.z
             session.lastMotionTick = tickIndex
             session.followDirty = false
             GestureGuiFollowMetrics.recordStopResummon(
@@ -992,18 +989,17 @@ class GestureGuiServiceImpl(
                 // 移動中の毎tick teleportが背景と内容物の適用時刻差でティアを招くため、
                 // 追従の滑らかさより停止時の位置正確さを優先します。
                 val eye = owner.eyeLocation
-                // yaw差分は前tick観測値との差で求めます。凍結中のretainedYaw/
-                // appliedYawを基準にすると、頭を振ったまま静止しても差が残り続け、
-                // 永久に移動扱いになって停止確定へ到達できなくなります。
-                val currentYaw = owner.location.yaw
-                val yawDeltaAbs = abs(shortestYawDelta(session.lastObservedYaw, currentYaw))
-                session.lastObservedYaw = currentYaw
+                // 移動判定はPosition専用です。前tick観測値との差で求め、
+                // 適用済み位置を基準にすると静止後も差が残り続けるため使いません。
+                // 再召喚時にはその時の目線へ正対させるため、向きは別途扱います。
                 val moved = GestureGuiFollowPolicy.isSignificantMotion(
-                    eye.x - session.anchorX,
-                    eye.y - session.anchorY,
-                    eye.z - session.anchorZ,
-                    yawDeltaAbs,
+                    eye.x - session.lastEyeX,
+                    eye.y - session.lastEyeY,
+                    eye.z - session.lastEyeZ,
                 )
+                session.lastEyeX = eye.x
+                session.lastEyeY = eye.y
+                session.lastEyeZ = eye.z
                 GestureGuiFollowMetrics.recordEvaluation()
                 when (GestureGuiFollowPolicy.decideFollowMotion(tickIndex, session.lastMotionTick, moved)) {
                     GestureGuiFollowPolicy.FollowMotionState.MOVING -> {
@@ -1532,7 +1528,6 @@ class GestureGuiServiceImpl(
     private fun catcherLocation(player: Player): Location =
         player.eyeLocation.clone().subtract(0.0, GESTURE_CATCHER_SIZE / 2.0, 0.0)
 
-    private fun shortestYawDelta(from: Float, to: Float): Float = ((to - from + 540f) % 360f) - 180f
 
     private fun playTransitionSound(player: Player, opening: Boolean) {
         player.world.playSound(

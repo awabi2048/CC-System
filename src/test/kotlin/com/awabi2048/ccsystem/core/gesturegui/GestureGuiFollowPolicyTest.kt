@@ -33,14 +33,14 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
-    fun `significant motion includes every single axis without filtering`() {
-        // 追従に軸の除外はありません。X/Y/Zのどれか1軸だけの移動でも
+    fun `significant motion uses position only without axis filtering`() {
+        // 移動判定はPosition専用です。X/Y/Zのどれか1軸だけの移動でも
         // 移動として扱います(Y軸のみのジャンプ・段差を含む)。
-        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.05, 0.0, 0.0, 0.0f))
-        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.05, 0.0, 0.0f))
-        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.05, 0.0f))
-        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.0, 1.0f))
-        assertFalse(GestureGuiFollowPolicy.isSignificantMotion(0.001, 0.0, 0.0, 0.05f))
+        // yawの変化は移動とみなしません。
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.05, 0.0, 0.0))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.05, 0.0))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.05))
+        assertFalse(GestureGuiFollowPolicy.isSignificantMotion(0.001, 0.0, 0.0))
     }
 
     @Test
