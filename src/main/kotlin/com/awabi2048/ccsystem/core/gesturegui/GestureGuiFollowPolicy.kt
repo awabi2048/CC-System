@@ -34,7 +34,7 @@ internal object GestureGuiFollowPolicy {
      * 前回確定位置からの変位がこの値未満の場合は、実体の作り直しを行わず
      * 基準位置だけを更新します。微動のたびに再召喚してちらつかせないためです。
      */
-    const val RESUMMON_MIN_DISTANCE: Double = 1.0
+    const val RESUMMON_MIN_DISTANCE: Double = 0.5
 
     /** 移動・停止の判定結果です。 */
     internal enum class FollowMotionState {

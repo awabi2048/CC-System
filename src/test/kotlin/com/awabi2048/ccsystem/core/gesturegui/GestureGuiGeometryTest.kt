@@ -43,6 +43,30 @@ class GestureGuiGeometryTest {
     }
 
     @Test
+    fun `tilt scale halves the vertical spread while keeping the middle centered`() {
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        val normal = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            screenCount = 2,
+            verticalSlots = slots,
+        )
+        val halved = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            screenCount = 2,
+            verticalSlots = slots,
+            tiltScale = 0.5,
+        )
+
+        assertEquals(2, halved.size)
+        assertEquals(normal[0].centerPitchDegrees * 0.5, halved[0].centerPitchDegrees, 1.0e-9)
+        assertEquals(normal[1].centerPitchDegrees * 0.5, halved[1].centerPitchDegrees, 1.0e-9)
+        // 画面間の上下関係は維持されます。
+        assertTrue(halved[0].center.y > halved[1].center.y)
+    }
+
+    @Test
     fun `vertical screen envelope excludes the missing bottom slot`() {
         fun direction(pitch: Double): GestureGuiVector3 {
             val pitchRadians = Math.toRadians(pitch)

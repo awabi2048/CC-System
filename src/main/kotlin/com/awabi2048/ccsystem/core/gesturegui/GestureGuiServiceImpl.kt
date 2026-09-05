@@ -156,6 +156,8 @@ class GestureGuiServiceImpl(
         val suppressWorldClicks: Boolean = false,
         /** 追従pose全体へ加算するY方向の補正です(ブロック単位)。 */
         val verticalOffset: Double = 0.0,
+        /** 画面の上下傾き倍率です。1.0で従来配置、小さくするほど垂直に近づきます。 */
+        val tiltScale: Double = 1.0,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
@@ -219,7 +221,7 @@ class GestureGuiServiceImpl(
                 }
                 ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset)
+            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -255,6 +257,7 @@ class GestureGuiServiceImpl(
                 secondaryInputEnabled = options.secondaryInputEnabled,
                 suppressWorldClicks = options.suppressWorldClicks,
                 verticalOffset = options.verticalOffset,
+                tiltScale = options.tiltScale,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -528,6 +531,7 @@ class GestureGuiServiceImpl(
             secondaryInputEnabled = old.secondaryInputEnabled,
             suppressWorldClicks = old.suppressWorldClicks,
             verticalOffset = old.verticalOffset,
+            tiltScale = old.tiltScale,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -1400,6 +1404,7 @@ class GestureGuiServiceImpl(
                 session.screens.map { it.view.panel.width to it.view.panel.height },
                 session.layout,
                 session.verticalSlots,
+                session.tiltScale,
             )
         }
 
@@ -1478,6 +1483,7 @@ class GestureGuiServiceImpl(
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
         verticalOffset: Double = 0.0,
+        tiltScale: Double = 1.0,
     ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
@@ -1485,6 +1491,7 @@ class GestureGuiServiceImpl(
         views.map { it.panel.width to it.panel.height },
         layout,
         verticalSlots,
+        tiltScale,
     ).map { pose ->
         if (verticalOffset == 0.0) pose
         else pose.copy(center = pose.center + GestureGuiVector3(0.0, verticalOffset, 0.0))
@@ -1516,6 +1523,7 @@ class GestureGuiServiceImpl(
             session.layout,
             session.verticalSlots,
             session.verticalOffset,
+            session.tiltScale,
         )
     } else {
         // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。

@@ -68,13 +68,13 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
-    fun `resummon on stop requires one meter of displacement`() {
-        // 前回確定位置から1m未満の変位では実体を作り直しません。
-        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.5, 0.0, 0.0))
-        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.9, 0.0))
-        // 1m以上の変位で再召喚します。
-        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(1.0, 0.0, 0.0))
+    fun `resummon on stop requires half a meter of displacement`() {
+        // 前回確定位置から0.5m未満の変位では実体を作り直しません。
+        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.2, 0.0, 0.0))
+        assertFalse(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.4, 0.0))
+        // 0.5m以上の変位で再召喚します。
+        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.5, 0.0, 0.0))
         assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.0, -2.5))
-        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.6, 0.8, 0.0))
+        assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.3, 0.4, 0.0))
     }
 }
