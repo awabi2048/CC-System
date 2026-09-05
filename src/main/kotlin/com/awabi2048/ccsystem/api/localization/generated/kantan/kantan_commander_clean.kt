@@ -568,6 +568,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PLAY_CONFIGURED_SOUND: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.play_configured_sound", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_APPLY_CONFIGURED_EFFECT: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.apply_configured_effect", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.duplicate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.open_filters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.partial_override", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_open_filters", setOf())
@@ -1324,6 +1325,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PLAY_CONFIGURED_SOUND,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_APPLY_CONFIGURED_EFFECT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_OPEN_FILTERS,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_PARTIAL_OVERRIDE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS,

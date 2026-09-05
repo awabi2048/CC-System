@@ -7,7 +7,8 @@
 
     <groupId>com.awabi2048</groupId>
     <artifactId>CC-System</artifactId>
-    <version>26.904.12</version>
+    <!-- 2026-09-05 統合版。他のfeature成果物と座標を共有しないため新規採番します。 -->
+    <version>26.905.2</version>
     <packaging>jar</packaging>
 
     <name>CC-System</name>
