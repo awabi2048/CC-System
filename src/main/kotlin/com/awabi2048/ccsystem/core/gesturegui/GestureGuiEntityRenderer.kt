@@ -54,6 +54,13 @@ internal class GestureGuiEntityRenderer(
         var allowlist: Set<UUID>,
         var accessPolicy: GestureGuiAccessPolicy?,
         var visibilityPolicy: GestureGuiVisibilityPolicy?,
+        /**
+         * 背景へ最後に適用したパネル実寸です。追従tickでは寸法不変のまま
+         * メタデータを送ると背景だけ適用時刻がずれ、内容物とのティアを招くため、
+         * 変化時のみ送る判定に使います。
+         */
+        var lastPanelWidth: Double = Double.NaN,
+        var lastPanelHeight: Double = Double.NaN,
     ) {
         val all: List<Entity> get() = background + contents
 
@@ -150,6 +157,8 @@ internal class GestureGuiEntityRenderer(
             )
             // ホバー置換が置換対象と同じ深さへ解決できるよう、層を記録します。
             view.visuals.forEach { visual -> handle.visualLayers[visual.visualId] = visual.layer }
+            handle.lastPanelWidth = panel.width
+            handle.lastPanelHeight = panel.height
             // PUBLICを含め、初期表示対象をアクセス定義に基づいて背景だけ明示します。
             // contentsの表示は呼び出し側（アニメーション完了時／非アニメーション経路の
             // 翌tick表示）へ委ねます。spawnと同tickにcontentsを表示すると、アニメーション
@@ -167,12 +176,23 @@ internal class GestureGuiEntityRenderer(
         }
     }
 
-    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
+    /**
+     * 追従・パン・子画面再配置時に画面全体を新poseへ移動し、teleportした体数を返します。
+     *
+     * 背景の実寸確定は寸法変化時のみ行い、追従中の冗長メタデータで背景だけが
+     * 先行適用されるティアを抑えます。戻り値は追従計測の teleport 母数に使います。
+     */
+    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView): Int {
         val panel = view.panel
         // パネル寸法の変更を座標移動だけで済ませると、旧サイズの背景が残り、
-        // 子画面やズーム更新時に入力面と見た目がずれます。毎回同じ実寸へ確定します。
-        setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        // 子画面やズーム更新時に入力面と見た目がずれます。変化時のみ実寸へ確定します。
+        if (handle.lastPanelWidth != panel.width || handle.lastPanelHeight != panel.height) {
+            setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
+        } else {
+            GestureGuiFollowMetrics.recordBackgroundResizeSkipped()
+        }
         handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
+        var teleported = handle.background.size
         val innerHeight = panel.height - panel.frameWidth * 2.0
         val frameParts = listOf(
             PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
@@ -181,9 +201,12 @@ internal class GestureGuiEntityRenderer(
             PanelPart(-(panel.width - panel.frameWidth) / 2.0, 0.0, panel.frameWidth, innerHeight),
         )
         frameParts.forEachIndexed { index, part ->
-            handle.visualEntities["__panel_frame_$index"]?.teleport(
-                visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
-            )
+            handle.visualEntities["__panel_frame_$index"]?.let {
+                it.teleport(
+                    visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
+                )
+                teleported++
+            }
         }
         view.visuals.forEach { visual ->
             val entity = handle.visualEntities[visual.visualId] ?: return@forEach
@@ -193,12 +216,19 @@ internal class GestureGuiEntityRenderer(
                 visualLocation(entity.world, pose, visual.x, visual.y, visual.layer)
             }
             entity.teleport(location)
+            teleported++
+            // 枠も主Visualと同じposeへ移動するため、teleport母数へ含めます。
+            teleported += handle.visualOutlineEntities[visual.visualId]?.size ?: 0
             updateOutlinePose(handle, pose, visual)
         }
+        return teleported
     }
 
-    fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) =
+    fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) {
         setBackgroundSize(handle.background, width, height, interpolationTicks)
+        handle.lastPanelWidth = width.toDouble()
+        handle.lastPanelHeight = height.toDouble()
+    }
 
     fun setBackgroundScaleZero(handle: ScreenHandle, interpolationTicks: Int) =
         setBackgroundScaleZero(handle.background, interpolationTicks)

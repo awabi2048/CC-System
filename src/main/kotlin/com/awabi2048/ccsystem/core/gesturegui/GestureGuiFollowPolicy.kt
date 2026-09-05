@@ -11,6 +11,29 @@ package com.awabi2048.ccsystem.core.gesturegui
 internal object GestureGuiFollowPolicy {
     const val GAZE_REALIGN_DELAY_TICKS: Int = 60
 
+    /**
+     * 追従poseの再計算間隔です。20TPS前提で2tick＝約10Hzに間引きます。
+     *
+     * Display群へ80発前後のteleportを毎tick送ると、同一tick内の到着差で
+     * 背景と内容物が相互にずれます。間引きでパケット数を半減させ、
+     * ティアの発生頻度と持続を抑えます。視線の再調整判定は毎tick継続し、
+     * 3秒規則の時間単位は変えません。
+     */
+    const val FOLLOW_POSE_INTERVAL_TICKS: Long = 2L
+
+    /** 追従更新を無視する水平移動のデッドバンドです（ブロック単位）。 */
+    const val FOLLOW_POSITION_DEADBAND: Double = 0.002
+
+    /** 追従更新を無視するyaw変化のデッドバンドです（度）。 */
+    const val FOLLOW_YAW_DEADBAND_DEGREES: Float = 0.2f
+
+    /** 追従pose更新の判定結果です。計測ログと更新可否を同じ分岐で共有します。 */
+    internal enum class FollowPoseDecision {
+        UPDATE,
+        SKIP_INTERVAL,
+        SKIP_DEADBAND,
+    }
+
     /** 現在の視線状態を観測した後の連続画面外tick数を返します。 */
     fun nextOutsideTicks(previousTicks: Int, insideScreenArea: Boolean): Int {
         if (insideScreenArea) return 0
@@ -26,4 +49,30 @@ internal object GestureGuiFollowPolicy {
         !insideScreenArea &&
             targetYaw == null &&
             outsideTicks >= GAZE_REALIGN_DELAY_TICKS
+
+    /** 前回適用tickから間隔が経過したかを返します。初回は必ず true です。 */
+    fun isFollowIntervalElapsed(nowTick: Long, lastAppliedTick: Long): Boolean =
+        lastAppliedTick < 0L || nowTick - lastAppliedTick >= FOLLOW_POSE_INTERVAL_TICKS
+
+    /**
+     * 追従poseを適用すべきかを判定します。
+     *
+     * interval未経過を最優先で切り捨て、次に微小移動を切り捨てます。
+     * anchor側に前回適用位置を残すことで、切り捨て分の移動は次回へ累積します。
+     */
+    fun decideFollowPose(
+        nowTick: Long,
+        lastAppliedTick: Long,
+        deltaX: Double,
+        deltaZ: Double,
+        yawDeltaAbs: Float,
+    ): FollowPoseDecision {
+        if (!isFollowIntervalElapsed(nowTick, lastAppliedTick)) return FollowPoseDecision.SKIP_INTERVAL
+        val movedSq = deltaX * deltaX + deltaZ * deltaZ
+        val deadbandSq = FOLLOW_POSITION_DEADBAND * FOLLOW_POSITION_DEADBAND
+        if (movedSq < deadbandSq && yawDeltaAbs < FOLLOW_YAW_DEADBAND_DEGREES) {
+            return FollowPoseDecision.SKIP_DEADBAND
+        }
+        return FollowPoseDecision.UPDATE
+    }
 }

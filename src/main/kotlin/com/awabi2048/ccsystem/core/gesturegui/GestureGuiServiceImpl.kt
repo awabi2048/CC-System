@@ -107,6 +107,11 @@ class GestureGuiServiceImpl(
         var anchorX: Double,
         var anchorZ: Double,
         var appliedYaw: Float,
+        /**
+         * 追従poseを最後に適用したサービスtick番号です。約10Hz間引きの基準に使い、
+         * 間引き中の移動は anchor へ残して次回へ累積します。
+         */
+        var lastFollowAppliedTick: Long = -1L,
         var screens: List<ScreenRuntime>,
         val children: MutableList<ChildRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
@@ -132,6 +137,8 @@ class GestureGuiServiceImpl(
     private val registeredOwners = mutableSetOf<UUID>()
     private val sessions = mutableMapOf<UUID, Session>()
     private var nextRevision = 1L
+    /** 追従の約10Hz間引きと計測ログ周期の基準になるサービスtick番号です。 */
+    private var tickIndex: Long = 0L
     private var tickTask: BukkitTask? = Bukkit.getScheduler().runTaskTimer(plugin, Runnable(::tick), 1L, 1L)
 
     override fun registerOwner(ownerId: UUID) {
@@ -692,6 +699,7 @@ class GestureGuiServiceImpl(
     }
 
     private fun tick() {
+        tickIndex++
         sessions.values.toList().forEach { session ->
             val owner = Bukkit.getPlayer(session.ownerId)
             if (owner == null || !owner.isOnline) {
@@ -739,16 +747,37 @@ class GestureGuiServiceImpl(
                 val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
                 val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
                 // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
+                // 毎tickの全量teleportは背景と内容物の到着差でティアを招くため、約10Hzへ
+                // 間引きます。視線再調整のtick計測は毎tick継続し、3秒規則は変えません。
                 if (horizontalMoved || yawMoved) {
-                    val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
-                    session.screens.zip(newPoses).forEach { (screen, pose) ->
-                        screen.pose = pose
-                        renderer.updatePose(screen.render, pose, screen.view)
+                    GestureGuiFollowMetrics.recordEvaluation()
+                    val decision = GestureGuiFollowPolicy.decideFollowPose(
+                        tickIndex,
+                        session.lastFollowAppliedTick,
+                        eye.x - session.anchorX,
+                        eye.z - session.anchorZ,
+                        abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)),
+                    )
+                    when (decision) {
+                        GestureGuiFollowPolicy.FollowPoseDecision.SKIP_INTERVAL ->
+                            GestureGuiFollowMetrics.recordSkippedInterval()
+                        GestureGuiFollowPolicy.FollowPoseDecision.SKIP_DEADBAND ->
+                            GestureGuiFollowMetrics.recordSkippedDeadband()
+                        GestureGuiFollowPolicy.FollowPoseDecision.UPDATE -> {
+                            val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
+                            var teleported = 0
+                            session.screens.zip(newPoses).forEach { (screen, pose) ->
+                                screen.pose = pose
+                                teleported += renderer.updatePose(screen.render, pose, screen.view)
+                            }
+                            teleported += repositionChildren(session)
+                            GestureGuiFollowMetrics.recordPoseUpdate(teleported)
+                            session.anchorX = eye.x
+                            session.anchorZ = eye.z
+                            session.appliedYaw = session.retainedYaw
+                            session.lastFollowAppliedTick = tickIndex
+                        }
                     }
-                    repositionChildren(session)
-                    session.anchorX = eye.x
-                    session.anchorZ = eye.z
-                    session.appliedYaw = session.retainedYaw
                 }
             }
             if (session.state == GestureGuiSessionState.ACTIVE) {
@@ -776,6 +805,7 @@ class GestureGuiServiceImpl(
             }
         }
         reconcileExternalActors()
+        GestureGuiFollowMetrics.maybeLog(plugin, tickIndex)
     }
 
     /**
@@ -1186,13 +1216,18 @@ class GestureGuiServiceImpl(
         }
     }
 
-    private fun repositionChildren(session: Session) {
+    private fun repositionChildren(session: Session): Int {
+        var teleported = 0
         session.children.forEachIndexed { index, child ->
             val parent = parentRuntime(session, child.options.parentScreenId) ?: return@forEachIndexed
             child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
-            renderer.updatePose(child.render, child.pose, child.view)
-            child.overlay?.let { renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index)) }
+            teleported += renderer.updatePose(child.render, child.pose, child.view)
+            child.overlay?.let {
+                renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index))
+                teleported++
+            }
         }
+        return teleported
     }
 
     /**
