@@ -28,6 +28,18 @@ data class GestureGuiOutline(
 }
 
 /** ジェスチャーGUIに描画する要素です。座標は画面中央基準、寸法はブロック単位です。 */
+/**
+ * GestureGuiVisual.Text の水平方向の文字揃えです。
+ *
+ * TextDisplay の列挙型をAPIモデルへ露出させず、利用側がGUI基盤の実装詳細に
+ * 依存しないようにします。既存の Text は CENTER を既定値として互換性を保ちます。
+ */
+enum class GestureGuiTextAlignment {
+    LEFT,
+    CENTER,
+    RIGHT,
+}
+
 sealed interface GestureGuiVisual {
     val visualId: String
     val x: Double
@@ -65,6 +77,8 @@ sealed interface GestureGuiVisual {
         val lineWidth: Int = 160,
         override val layer: Int = 20,
         val seeThrough: Boolean = false,
+        /** TextDisplayへ反映する水平方向の文字揃えです。 */
+        val alignment: GestureGuiTextAlignment = GestureGuiTextAlignment.CENTER,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
@@ -155,6 +169,22 @@ interface GestureGuiService {
     fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean
     /** 指定した画面のみを即座に差し替えます(アニメーションなし)。下部パネル切替や選択反映に用います。 */
     fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean
+    /**
+     * プレイヤー追従中の画面を、現在描画されているposeのままワールドへ固定します。
+     *
+     * 画面を再生成して近似位置を計算し直すと、クリックした瞬間の表示位置とずれるため、
+     * 実行時poseを保持したまま追従だけを停止します。
+     */
+    fun pinToCurrentPosition(ownerId: UUID): Boolean
+
+    /**
+     * クリップ固定中の画面を解除し、プレイヤー追従へ戻します。
+     *
+     * 解除時は固定されていたposeから現在の目位置へ追従基準を同期するため、
+     * 解除直後に画面がジャンプしません。追従していない(未固定・非ACTIVE)場合は
+     * falseを返します。クリップは [pinToCurrentPosition] との往復(トグル)で使います。
+     */
+    fun unpinToFollow(ownerId: UUID): Boolean
     fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean
     fun closeChild(ownerId: UUID, screenId: String): Boolean
     fun close(ownerId: UUID, mode: GestureGuiCloseMode = GestureGuiCloseMode.ANIMATED): Boolean

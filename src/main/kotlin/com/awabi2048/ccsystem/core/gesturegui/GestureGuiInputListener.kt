@@ -1,6 +1,7 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseReason
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.event.player.PlayerArmSwingEvent
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
@@ -39,6 +40,12 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onWorldInteract(event: PlayerInteractEvent) {
+        if (event.action.isRightClick && service.isSneakRightClickSuppressed(event.player)) {
+            // 追従画面とのray交差が外れているtickでも、スニーク右クリックは
+            // バニラ配置・ブロック使用・外部プラグインへ完全には渡しません。
+            suppressWorldRightClick(event)
+            return
+        }
         if (event.action.isRightClick && !GestureGuiRightClickHandPolicy.accepts(event.hand)) {
             // PlayerInteractEventはメイン／オフハンドごとに発火します。右クリックを
             // 両方Actionへ渡すと、同じ入力が二重実行されるため、Gesture GUIの正規入口は
@@ -82,6 +89,12 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
+        if (service.isSneakRightClickSuppressed(event.player)) {
+            // EntityInteractionもPlayerInteractEventとは別経路で届くため、同じ
+            // スニーク右クリック遮断契約を先に適用します。
+            event.isCancelled = true
+            return
+        }
         val catcher = service.isScreenInputActive(event.player) &&
             service.ownsCatcher(event.rightClicked, event.player.uniqueId)
         if (!GestureGuiRightClickHandPolicy.accepts(event.hand)) {
@@ -152,8 +165,9 @@ class GestureGuiInputListener(private val service: GestureGuiServiceImpl) : List
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     fun onJump(event: PlayerJumpEvent) {
-        if (!service.isScreenInputActive(event.player) ||
-            !event.player.isSneaking ||
+        if (!event.player.isSneaking ||
+            !service.isCloseGestureActive(event.player) ||
+            !service.notifyCloseRequested(event.player.uniqueId, GestureGuiCloseReason.SHIFT_JUMP) ||
             !service.leaveOrClose(event.player.uniqueId)
         ) return
         event.isCancelled = true

@@ -46,6 +46,7 @@ class GestureGuiFollowPolicyTest {
             nowTick = 10L,
             lastAppliedTick = 8L,
             deltaX = 0.001,
+            deltaY = 0.0,
             deltaZ = 0.0,
             yawDeltaAbs = 0.05f,
         )
@@ -59,6 +60,15 @@ class GestureGuiFollowPolicyTest {
             nowTick = 10L,
             lastAppliedTick = 8L,
             deltaX = 0.05,
+            deltaY = 0.0,
+            deltaZ = 0.0,
+            yawDeltaAbs = 0.0f,
+        )
+        val lifted = GestureGuiFollowPolicy.decideFollowPose(
+            nowTick = 10L,
+            lastAppliedTick = 8L,
+            deltaX = 0.0,
+            deltaY = 0.05,
             deltaZ = 0.0,
             yawDeltaAbs = 0.0f,
         )
@@ -66,6 +76,7 @@ class GestureGuiFollowPolicyTest {
             nowTick = 10L,
             lastAppliedTick = 8L,
             deltaX = 0.0,
+            deltaY = 0.0,
             deltaZ = 0.0,
             yawDeltaAbs = 1.0f,
         )
@@ -73,11 +84,13 @@ class GestureGuiFollowPolicyTest {
             nowTick = 9L,
             lastAppliedTick = 8L,
             deltaX = 1.0,
+            deltaY = 1.0,
             deltaZ = 0.0,
             yawDeltaAbs = 10.0f,
         )
 
         assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, moved)
+        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, lifted)
         assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, rotated)
         assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.SKIP_INTERVAL, throttled)
     }

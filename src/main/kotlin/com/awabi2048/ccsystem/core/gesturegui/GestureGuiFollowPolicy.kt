@@ -59,16 +59,18 @@ internal object GestureGuiFollowPolicy {
      *
      * interval未経過を最優先で切り捨て、次に微小移動を切り捨てます。
      * anchor側に前回適用位置を残すことで、切り捨て分の移動は次回へ累積します。
+     * Y移動も追従対象に含め、ジャンプや段差で描画と判定が分岐しないようにします。
      */
     fun decideFollowPose(
         nowTick: Long,
         lastAppliedTick: Long,
         deltaX: Double,
+        deltaY: Double,
         deltaZ: Double,
         yawDeltaAbs: Float,
     ): FollowPoseDecision {
         if (!isFollowIntervalElapsed(nowTick, lastAppliedTick)) return FollowPoseDecision.SKIP_INTERVAL
-        val movedSq = deltaX * deltaX + deltaZ * deltaZ
+        val movedSq = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
         val deadbandSq = FOLLOW_POSITION_DEADBAND * FOLLOW_POSITION_DEADBAND
         if (movedSq < deadbandSq && yawDeltaAbs < FOLLOW_YAW_DEADBAND_DEGREES) {
             return FollowPoseDecision.SKIP_DEADBAND

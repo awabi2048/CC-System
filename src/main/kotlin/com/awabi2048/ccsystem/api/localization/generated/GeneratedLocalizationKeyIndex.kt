@@ -23,6 +23,7 @@ object GeneratedLocalizationKeyIndex {
         addAll(ContentBreweryKeys.all())
         addAll(ContentBreweryGeneratedKeys.all())
         addAll(ContentCookingGeneratedKeys.all())
+        addAll(ContentCropsKeys.all())
         addAll(ContentCustomItemsKeys.all())
         addAll(ContentFishingKeys.all())
         addAll(ContentGuiKeys.all())

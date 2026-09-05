@@ -59,4 +59,68 @@ class GestureGuiInputCapturePolicyTest {
             ),
         )
     }
+
+    @Test
+    fun `close gesture remains active when gaze temporarily misses the screen`() {
+        assertTrue(
+            GestureGuiInputCapturePolicy.isCloseGestureActive(
+                GestureGuiSessionState.ACTIVE,
+                participating = true,
+            ),
+        )
+        assertTrue(
+            GestureGuiInputCapturePolicy.isCloseGestureActive(
+                GestureGuiSessionState.OPENING,
+                participating = true,
+            ),
+        )
+        assertFalse(
+            GestureGuiInputCapturePolicy.isCloseGestureActive(
+                GestureGuiSessionState.CLOSING,
+                participating = true,
+            ),
+        )
+        assertFalse(
+            GestureGuiInputCapturePolicy.isCloseGestureActive(
+                GestureGuiSessionState.ACTIVE,
+                participating = false,
+            ),
+        )
+    }
+
+    @Test
+    fun `sneak secondary input is consumed independently of screen gaze`() {
+        assertTrue(
+            GestureGuiInputCapturePolicy.isSneakSecondarySuppressed(
+                GestureGuiSessionState.ACTIVE,
+                participating = true,
+                sneaking = true,
+                secondaryInputEnabled = false,
+            ),
+        )
+        assertFalse(
+            GestureGuiInputCapturePolicy.isSneakSecondarySuppressed(
+                GestureGuiSessionState.ACTIVE,
+                participating = true,
+                sneaking = false,
+                secondaryInputEnabled = false,
+            ),
+        )
+        assertFalse(
+            GestureGuiInputCapturePolicy.isSneakSecondarySuppressed(
+                GestureGuiSessionState.ACTIVE,
+                participating = true,
+                sneaking = true,
+                secondaryInputEnabled = true,
+            ),
+        )
+        assertFalse(
+            GestureGuiInputCapturePolicy.isSneakSecondarySuppressed(
+                GestureGuiSessionState.CLOSING,
+                participating = true,
+                sneaking = true,
+                secondaryInputEnabled = false,
+            ),
+        )
+    }
 }

@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccess
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiAccessPolicy
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiTextAlignment
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisibilityPolicy
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
@@ -462,7 +463,7 @@ internal class GestureGuiEntityRenderer(
                 entity.text(visual.text)
                 entity.lineWidth = visual.lineWidth
                 entity.isSeeThrough = visual.seeThrough
-                entity.alignment = TextDisplay.TextAlignment.CENTER
+                entity.alignment = visual.alignment.toTextDisplayAlignment()
                 entity.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(GestureGuiTextMetrics.toDisplayScale(visual.size)), AxisAngle4f()))
             }
         }
@@ -941,7 +942,7 @@ internal class GestureGuiEntityRenderer(
             it.text(visual.text)
             it.lineWidth = visual.lineWidth
             it.isSeeThrough = visual.seeThrough
-            it.alignment = TextDisplay.TextAlignment.CENTER
+            it.alignment = visual.alignment.toTextDisplayAlignment()
             val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
             it.setTransformation(Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f()))
             hideAxiomDisplayGizmo(it)
@@ -963,6 +964,13 @@ internal class GestureGuiEntityRenderer(
                     )
                 }
             }
+    }
+
+    /** APIの文字揃えをPaperのTextDisplayへ変換します。 */
+    private fun GestureGuiTextAlignment.toTextDisplayAlignment(): TextDisplay.TextAlignment = when (this) {
+        GestureGuiTextAlignment.LEFT -> TextDisplay.TextAlignment.LEFT
+        GestureGuiTextAlignment.CENTER -> TextDisplay.TextAlignment.CENTER
+        GestureGuiTextAlignment.RIGHT -> TextDisplay.TextAlignment.RIGHT
     }
 
     private fun prepareDisplay(display: Display, pose: GestureGuiScreenPose) {
