@@ -105,6 +105,7 @@ class GestureGuiServiceImpl(
         /** 視線が画面外にある状態の連続tick数。短い視線移動では画面を回転させません。 */
         var gazeOutsideTicks: Int,
         var anchorX: Double,
+        var anchorY: Double,
         var anchorZ: Double,
         var appliedYaw: Float,
         var screens: List<ScreenRuntime>,
@@ -113,7 +114,9 @@ class GestureGuiServiceImpl(
         /** セッション中に一度でも参加したUUID。Dialog掃除を権限剥奪後も可能にします。 */
         val knownActorIds: MutableSet<UUID>,
         /** 固定位置モードのアンカー。nullならプレイヤー追従 */
-        val fixedAnchor: Location? = null,
+        var fixedAnchor: Location? = null,
+        /** 固定後の画面pose。refresh時もプレイヤー位置から再計算せず、この姿勢を引き継ぎます。 */
+        var fixedPoseSnapshot: List<GestureGuiScreenPose>? = null,
         /** 利用側のローカル状態を終了通知へ接続するリスナー */
         val sessionListener: GestureGuiSessionListener? = null,
         /** close通知を一度だけ送るための状態 */
@@ -146,7 +149,16 @@ class GestureGuiServiceImpl(
     override fun open(owner: Player, views: List<GestureGuiView>): GestureGuiSessionSnapshot =
         open(owner, views, GestureGuiOpenOptions())
 
-    override fun open(owner: Player, views: List<GestureGuiView>, options: GestureGuiOpenOptions): GestureGuiSessionSnapshot {
+    override fun open(owner: Player, views: List<GestureGuiView>, options: GestureGuiOpenOptions): GestureGuiSessionSnapshot =
+        openInternal(owner, views, options)
+
+    /** 公開openとrefreshで、固定画面の現在poseを引き継ぐための内部入口です。 */
+    private fun openInternal(
+        owner: Player,
+        views: List<GestureGuiView>,
+        options: GestureGuiOpenOptions,
+        fixedPoseOverride: List<GestureGuiScreenPose>? = null,
+    ): GestureGuiSessionSnapshot {
         require(views.size in 1..3) { "gesture GUI requires one to three screens" }
         require(views.map { it.definition.screenId }.distinct().size == views.size) {
             "gesture GUI screenId must be unique within a session"
@@ -169,7 +181,14 @@ class GestureGuiServiceImpl(
         val id = UUID.randomUUID()
         val anchor = options.anchor
         val poses = if (anchor != null) {
-            fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
+            fixedPoseOverride
+                ?.takeIf { it.size == views.size }
+                ?.mapIndexed { index, pose ->
+                    // 更新後のパネル寸法だけは新しいviewへ反映し、world上の中心・向きは
+                    // クリップ時点のposeから引き継ぎます。
+                    pose.copy(width = views[index].panel.width, height = views[index].panel.height)
+                }
+                ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
             poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots)
         }
@@ -190,6 +209,7 @@ class GestureGuiServiceImpl(
                 targetYaw = null,
                 gazeOutsideTicks = 0,
                 anchorX = owner.eyeLocation.x,
+                anchorY = owner.eyeLocation.y,
                 anchorZ = owner.eyeLocation.z,
                 appliedYaw = owner.location.yaw,
                 screens = screens.toList(),
@@ -197,6 +217,7 @@ class GestureGuiServiceImpl(
                 actors = mutableMapOf(),
                 knownActorIds = mutableSetOf(owner.uniqueId),
                 fixedAnchor = anchor,
+                fixedPoseSnapshot = anchor?.let { poses.toList() },
                 sessionListener = options.sessionListener,
                 layout = options.layout,
                 verticalSlots = options.verticalSlots,
@@ -245,6 +266,10 @@ class GestureGuiServiceImpl(
                 renderer.showImmediately(screen.render, newView.panel)
                 screen.copy(view = newView, pose = newPose)
             }
+            if (session.fixedAnchor != null) {
+                // 固定後の画面を更新しても、次回refreshの基準は更新後の現在poseです。
+                session.fixedPoseSnapshot = session.screens.map(ScreenRuntime::pose)
+            }
             repositionChildren(session)
             return true
         }
@@ -267,6 +292,19 @@ class GestureGuiServiceImpl(
         return false
     }
 
+    override fun pinToCurrentPosition(ownerId: UUID): Boolean {
+        val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
+        if (session.fixedAnchor != null) return false
+        val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        // 既存のscreen.poseを変更せず、次のtickから追従分岐だけを止めます。
+        // fixedPoses()で再計算しないため、ボタンを押した瞬間の表示位置を正確に保持できます。
+        session.fixedAnchor = owner.eyeLocation.clone()
+        session.fixedPoseSnapshot = session.screens.map(ScreenRuntime::pose)
+        session.targetYaw = null
+        session.gazeOutsideTicks = 0
+        return true
+    }
+
     override fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean {
         val old = sessions[ownerId] ?: return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
@@ -283,7 +321,14 @@ class GestureGuiServiceImpl(
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
         destroy(old)
-        val opened = open(owner, views, options)
+        val opened = openInternal(
+            owner,
+            views,
+            options,
+            fixedPoseOverride = old.fixedAnchor?.let {
+                old.fixedPoseSnapshot ?: old.screens.map(ScreenRuntime::pose)
+            },
+        )
         val current = sessions[ownerId] ?: return false
         actors.asSequence()
             .filter { it != ownerId }
@@ -547,6 +592,35 @@ class GestureGuiServiceImpl(
         }
 
     /**
+     * スニーク右クリックだけは視線判定を待たずに消費します。
+     *
+     * 追従中に画面とのray交差が一瞬外れても、Kantanの編集画面を開いている間は
+     * スニーク右クリックをバニラ配置や外部プラグインへ渡さない契約を維持します。
+     */
+    internal fun isSneakRightClickSuppressed(player: Player): Boolean =
+        sessions.values.any { session ->
+            val participating = player.uniqueId == session.ownerId || player.uniqueId in session.actors
+            val sameWorldAsOwner = Bukkit.getPlayer(session.ownerId)?.world?.uid == player.world.uid
+            sameWorldAsOwner && GestureGuiInputCapturePolicy.isSneakSecondarySuppressed(
+                state = session.state,
+                participating = participating,
+                sneaking = player.isSneaking,
+                secondaryInputEnabled = session.secondaryInputEnabled,
+            )
+        }
+
+    /**
+     * Shift+Jumpは画面を見失っていても、参加中のセッションの終了操作として扱います。
+     * 通常クリックの視線条件は維持し、終了専用の入力だけを別契約にします。
+     */
+    internal fun isCloseGestureActive(player: Player): Boolean =
+        sessions.values.any { session ->
+            val participating = player.uniqueId == session.ownerId || player.uniqueId in session.actors
+            val sameWorldAsOwner = Bukkit.getPlayer(session.ownerId)?.world?.uid == player.world.uid
+            sameWorldAsOwner && GestureGuiInputCapturePolicy.isCloseGestureActive(session.state, participating)
+        }
+
+    /**
      * 現在の入力をGesture GUIへ渡せるかを返します。
      *
      * セッションに参加しているだけでは入力を奪いません。ACTIVE中は同じ視線判定を
@@ -736,10 +810,15 @@ class GestureGuiServiceImpl(
                     }
                 }
                 val eye = owner.eyeLocation
-                val horizontalMoved = eye.x != session.anchorX || eye.z != session.anchorZ
+                val positionMoved = GestureGuiFollowPositionPolicy.hasMoved(
+                    GestureGuiVector3(eye.x, eye.y, eye.z),
+                    session.anchorX,
+                    session.anchorY,
+                    session.anchorZ,
+                )
                 val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
-                // XZが不変なら上下動だけでは画面を移動しません。yaw追従が必要な場合だけ姿勢を更新します。
-                if (horizontalMoved || yawMoved) {
+                // X/Y/Zの位置またはyawが変わったときに、描画poseと入力rayの基準を同tickで更新します。
+                if (positionMoved || yawMoved) {
                     val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
                     session.screens.zip(newPoses).forEach { (screen, pose) ->
                         screen.pose = pose
@@ -747,6 +826,7 @@ class GestureGuiServiceImpl(
                     }
                     repositionChildren(session)
                     session.anchorX = eye.x
+                    session.anchorY = eye.y
                     session.anchorZ = eye.z
                     session.appliedYaw = session.retainedYaw
                 }

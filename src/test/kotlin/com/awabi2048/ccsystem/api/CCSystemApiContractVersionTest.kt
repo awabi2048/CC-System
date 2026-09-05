@@ -10,7 +10,7 @@ class CCSystemApiContractVersionTest {
     @Test
     fun `GUI runtime contract version is stable and publicly visible`() {
         assertEquals(10, CCSystemAPI.GUI_RUNTIME_CONTRACT_VERSION)
-        assertEquals(15, CCSystemAPI.GESTURE_GUI_CONTRACT_VERSION)
+        assertEquals(16, CCSystemAPI.GESTURE_GUI_CONTRACT_VERSION)
         assertEquals(Int::class.javaPrimitiveType, CCSystemAPI::class.java.getMethod("getGuiRuntimeContractVersion").returnType)
         assertEquals(Int::class.javaPrimitiveType, CCSystemAPI::class.java.getMethod("getGestureGuiContractVersion").returnType)
         assertEquals(MenuReversibleProviderState::class.java, MenuReversibleStateRestoreContext::class.java.getMethod("getState").returnType)

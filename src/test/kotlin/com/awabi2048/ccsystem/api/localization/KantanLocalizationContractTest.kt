@@ -10,10 +10,11 @@ class KantanLocalizationContractTest {
             .filter { it.startsWith("kantan_commander_clean.") }
 
         // fd8fc1bの型付き値ソース、f5180f4の複製操作、b225febの制御ブロック状態、
-        // 5a30ab5の粒子設定19キーを統合した公開キー総数とfingerprintを固定します。
-        assertEquals(749, keys.size)
+        // 5a30ab5の粒子設定、8c22d71のGesture GUI操作キーを統合した公開キー総数と
+        // fingerprintを固定します。
+        assertEquals(754, keys.size)
         assertEquals(
-            "76239351db3c20084e337ea84eef795136746fa205c08c662da1bca3e9bbd7ad",
+            "ee8ed0e46cbc0bf523efa378dbbb3d7bbb2e6e688cdce15939b98408fe6d2352",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
