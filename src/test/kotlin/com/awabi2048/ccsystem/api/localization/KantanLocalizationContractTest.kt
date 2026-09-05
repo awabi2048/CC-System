@@ -9,12 +9,11 @@ class KantanLocalizationContractTest {
         val keys = LocalizationCatalogContract.keys()
             .filter { it.startsWith("kantan_commander_clean.") }
 
-        // fd8fc1bの型付き値ソース5キーに、f5180f4の複製操作キーを加えた
-        // 統合後の公開キー総数を固定します。fingerprintも同じ公開契約の全件を
-        // 反映するため、片方のブランチの期待値だけを残さないよう更新します。
-        assertEquals(726, keys.size)
+        // fd8fc1bの型付き値ソース、f5180f4の複製操作、b225febの制御ブロック状態
+        // 4キーを統合した公開キー総数とfingerprintを固定します。
+        assertEquals(730, keys.size)
         assertEquals(
-            "e9eb9c130fc802c99cba38f490a92de92e24e309c0e002aea942e79a06b106f0",
+            "f341c7f1ed4d8425a40b654d1853a79196a142ee7c0e665789953b766d6794c2",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
