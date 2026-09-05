@@ -43,7 +43,7 @@ class GestureGuiGeometryTest {
     }
 
     @Test
-    fun `tilt scale halves the vertical spread while keeping the middle centered`() {
+    fun `tilt scale flattens orientation while keeping edges adjacent`() {
         val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
         val normal = GestureGuiGeometry.poses(
             GestureGuiVector3(0.0, 0.0, 0.0),
@@ -60,10 +60,25 @@ class GestureGuiGeometryTest {
         )
 
         assertEquals(2, halved.size)
-        assertEquals(normal[0].centerPitchDegrees * 0.5, halved[0].centerPitchDegrees, 1.0e-9)
-        assertEquals(normal[1].centerPitchDegrees * 0.5, halved[1].centerPitchDegrees, 1.0e-9)
-        // 画面間の上下関係は維持されます。
-        assertTrue(halved[0].center.y > halved[1].center.y)
+        // Orientation halves while edges stay adjacent.
+        fun pitchOf(normal: GestureGuiVector3): Double =
+            Math.toDegrees(kotlin.math.asin((-normal.y).coerceIn(-1.0, 1.0)))
+        assertEquals(pitchOf(normal[0].normal) * 0.5, pitchOf(halved[0].normal), 1.0e-9)
+        // Upper-bottom vs lower-top elevation gap stays a small slit: no overlap, no drift.
+        fun edgePitch(
+            pose: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose,
+            topEdge: Boolean,
+        ): Double {
+            val sign = if (topEdge) 1.0 else -1.0
+            val px = pose.center.x
+            val py = pose.center.y + sign * (pose.height / 2.0) * pose.up.y
+            val pz = pose.center.z + sign * (pose.height / 2.0) * pose.up.z
+            val length = kotlin.math.sqrt(px * px + py * py + pz * pz)
+            return Math.toDegrees(kotlin.math.asin((py / length).coerceIn(-1.0, 1.0)))
+        }
+        val gap = edgePitch(halved[1], topEdge = true) - edgePitch(halved[0], topEdge = false)
+        assertTrue(gap <= 0.5, "screens overlap: gap=$gap")
+        assertTrue(gap >= -5.0, "screens drift apart: gap=$gap")
     }
 
     @Test
