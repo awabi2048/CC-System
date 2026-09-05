@@ -77,4 +77,17 @@ class GestureGuiFollowPolicyTest {
         assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.0, 0.0, -2.5))
         assertTrue(GestureGuiFollowPolicy.shouldResummonOnStop(0.3, 0.4, 0.0))
     }
+
+    @Test
+    fun `dummy follow starts only through the same gate as resummon on stop`() {
+        // 視線が画面内の間はダミーを開始せず、凍結を維持します。
+        assertFalse(GestureGuiFollowPolicy.shouldStartDummyFollow(true, 2.0, 0.0, 0.0))
+        // 閾値未満の変位ではダミーを開始しません。
+        assertFalse(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.2, 0.0, 0.0))
+        assertFalse(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.0, 0.4, 0.0))
+        // 視線外かつ0.5m以上の変位でダミーを開始します。
+        assertTrue(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.5, 0.0, 0.0))
+        assertTrue(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.0, 0.0, -2.5))
+        assertTrue(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.3, 0.4, 0.0))
+    }
 }

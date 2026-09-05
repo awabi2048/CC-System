@@ -212,4 +212,61 @@ class GestureGuiGeometryTest {
 
         assertEquals(1, hit?.screenIndex)
     }
+
+    @Test
+    fun `vertical screen envelope matches the tilted edge angles`() {
+        // 位置と向きを分離した配置では atan による近似端と実辺端がずれるため、
+        // 包絡の上下端は辺隣接ソルバーと同じ edgePitchAngle で決めなければなりません。
+        // tiltScale=0.5 の傾き確定後でも、包絡境界と実辺端が一致することを検証します。
+        listOf(1.0, 0.5).forEach { tilt ->
+            val sizes = listOf(
+                GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
+                GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
+            )
+            val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+            val arrangement = GestureGuiGeometry.verticalStripArrangement(sizes, slots, tilt)
+            val expectedTop = arrangement.indices.minOf { index ->
+                GestureGuiGeometry.edgePitchAngle(
+                    arrangement[index].centerPitchDegrees,
+                    sizes[index].second,
+                    arrangement[index].tiltPitchDegrees,
+                    topEdge = true,
+                )
+            }
+            val expectedBottom = arrangement.indices.maxOf { index ->
+                GestureGuiGeometry.edgePitchAngle(
+                    arrangement[index].centerPitchDegrees,
+                    sizes[index].second,
+                    arrangement[index].tiltPitchDegrees,
+                    topEdge = false,
+                )
+            }
+            fun direction(pitch: Double): GestureGuiVector3 {
+                val pitchRadians = Math.toRadians(pitch)
+                return GestureGuiVector3(0.0, -kotlin.math.sin(pitchRadians), kotlin.math.cos(pitchRadians))
+            }
+            fun inside(pitch: Double): Boolean = GestureGuiGeometry.containsScreenEnvelope(
+                direction(pitch),
+                0.0,
+                2,
+                sizes,
+                com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+                slots,
+                tilt,
+            )
+            // 走査で求めた包絡境界が実辺端と一致します。
+            var scannedTop = Double.MAX_VALUE
+            var scannedBottom = -Double.MAX_VALUE
+            var pitch = -89.0
+            while (pitch <= 89.0) {
+                if (inside(pitch)) {
+                    if (pitch < scannedTop) scannedTop = pitch
+                    if (pitch > scannedBottom) scannedBottom = pitch
+                }
+                pitch += 0.05
+            }
+            assertEquals(expectedTop, scannedTop, 0.1, "tilt=$tilt")
+            assertEquals(expectedBottom, scannedBottom, 0.1, "tilt=$tilt")
+        }
+    }
 }

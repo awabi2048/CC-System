@@ -737,6 +737,74 @@ internal class GestureGuiEntityRenderer(
         overlay.teleport(visualLocation(overlay.world, pose, 0.0, 0.0, MODAL_OVERLAY_LAYER))
     }
 
+    /**
+     * 移動中の追従表示に使うダミーパネルを生成します。
+     *
+     * 本体と同じ外形の背景ボード1枚だけを持ち、内容物・枠・入力面・ホバー面は
+     * 作りません。背景は完全透明な素材で生成し、Glow の輪郭だけで形状と追従を
+     * 明示します。透明素材では Glow が視認できない実装差があるため、実機で
+     * 確認できない場合は半透明ガラスへの切替を検討します。
+     * 単一実体のため毎 tick の補間追従でも面内ティアを招きません。
+     * 可視性の判定は本体と同じアクセス定義を複写し、公開画面の第三者にも
+     * 同じ範囲で配布できるようにします。
+     */
+    fun spawnDummyPanel(
+        owner: Player,
+        sessionId: UUID,
+        revision: Long,
+        pose: GestureGuiScreenPose,
+        width: Double,
+        height: Double,
+        access: GestureGuiAccess,
+        allowlist: Set<UUID>,
+        accessPolicy: GestureGuiAccessPolicy?,
+        visibilityPolicy: GestureGuiVisibilityPolicy?,
+    ): ScreenHandle {
+        val world = owner.world
+        val background = world.spawn(
+            visualLocation(world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER),
+            BlockDisplay::class.java,
+        ) {
+            prepareDisplay(it, pose)
+            it.isVisibleByDefault = false
+            it.block = Bukkit.createBlockData(DUMMY_PANEL_MATERIAL)
+            it.setTransformation(blockTransform(width.toFloat(), height.toFloat()))
+            // 選択ハイライトの黄と区別するため、ダミーの追従表示は白の輪郭にします。
+            applyGlow(it, Color.WHITE.asARGB())
+            mark(it, sessionId, revision)
+            hideAxiomDisplayGizmo(it)
+        }
+        val handle = ScreenHandle(
+            mutableListOf(background),
+            mutableListOf(),
+            linkedMapOf(),
+            linkedMapOf(),
+            owner.uniqueId,
+            access,
+            allowlist,
+            accessPolicy,
+            visibilityPolicy,
+        )
+        handle.lastPanelWidth = width
+        handle.lastPanelHeight = height
+        // 本体と同じく初期配布は背景だけを明示経路で行い、呼び出し側の reconcile と
+        // 同じ可視性規則へ載せます。
+        showBackground(handle)
+        return handle
+    }
+
+    /**
+     * ダミーパネルを新しい追従 pose へ移動します。
+     *
+     * 本体の updatePose と異なり背景1体だけの teleport のため、補間を残したまま
+     * 毎 tick 呼んでも背景と内容物の適用時刻差が生じません。戻り値は計測用の
+     * teleport 体数です。
+     */
+    fun moveDummy(handle: ScreenHandle, pose: GestureGuiScreenPose): Int {
+        handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
+        return handle.background.size
+    }
+
     fun spawnCatcher(
         player: Player,
         sessionId: UUID,
@@ -1134,6 +1202,11 @@ internal class GestureGuiEntityRenderer(
         // パネルの画面法線方向の厚みは従来値の約2倍です。
         const val BLOCK_NORMAL_DEPTH = 0.025f
         const val PANEL_BACKGROUND_LAYER = 0
+        /**
+         * 移動中のダミーパネルに使う完全透明な背景素材です。
+         * 視界を維持したまま Glow の輪郭だけで形状と追従を明示します。
+         */
+        val DUMMY_PANEL_MATERIAL: Material = Material.AIR
         // 背景と枠は同じ厚みを持つため、中心間距離を背景厚より大きくして立体領域の交差を防ぎます。
         // 6 layer × 0.005 = 0.030 blockで、厚み0.025 blockに安全余白を確保します。
         const val PANEL_FRAME_LAYER = 6

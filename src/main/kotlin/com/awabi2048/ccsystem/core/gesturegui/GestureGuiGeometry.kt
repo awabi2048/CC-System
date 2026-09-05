@@ -59,9 +59,26 @@ object GestureGuiGeometry {
             GestureGuiScreenLayout.VERTICAL -> {
                 val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
                 // 包絡は解き直し後の中心角で評価し、表示と判定の範囲を一致させます。
-                val pitches = verticalStripArrangement(sizes, verticalSlots, tiltScale).map { it.centerPitchDegrees }
-                val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
-                val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
+                // 上下端は角度和の近似ではなく、傾き確定後の実辺端角そのもので求めます。
+                // 位置と向きを分離した配置では atan((h/2)/D) が実辺とずれるため、
+                // 辺隣接ソルバーと同じ edgePitchAngle を使い、描画・当たり・包絡を一致させます。
+                val arrangement = verticalStripArrangement(sizes, verticalSlots, tiltScale)
+                val top = arrangement.indices.minOf { index ->
+                    edgePitchAngle(
+                        arrangement[index].centerPitchDegrees,
+                        sizes[index].second,
+                        arrangement[index].tiltPitchDegrees,
+                        topEdge = true,
+                    )
+                }
+                val bottom = arrangement.indices.maxOf { index ->
+                    edgePitchAngle(
+                        arrangement[index].centerPitchDegrees,
+                        sizes[index].second,
+                        arrangement[index].tiltPitchDegrees,
+                        topEdge = false,
+                    )
+                }
                 angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
             }
             GestureGuiScreenLayout.HORIZONTAL -> {
@@ -305,8 +322,9 @@ object GestureGuiGeometry {
      * 中心角・高さ・傾きが決まった画面の辺端角(目から見たpitch、度)を返します。
      * yaw=0の正準系で計算します。pitch配置はyaw回転に対して不変のため、
      * 任意yawの配置へそのまま適用できます。
+     * 包絡判定と単体テストから同じ辺定義を参照するため internal とします。
      */
-    private fun edgePitchAngle(
+    internal fun edgePitchAngle(
         centerPitchDegrees: Double,
         height: Double,
         tiltPitchDegrees: Double,
