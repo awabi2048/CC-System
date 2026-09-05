@@ -64,7 +64,8 @@ class GestureGuiGeometryTest {
         fun pitchOf(normal: GestureGuiVector3): Double =
             Math.toDegrees(kotlin.math.asin((-normal.y).coerceIn(-1.0, 1.0)))
         assertEquals(pitchOf(normal[0].normal) * 0.5, pitchOf(halved[0].normal), 1.0e-9)
-        // Upper-bottom vs lower-top elevation gap stays a small slit: no overlap, no drift.
+        // ヒンジ結合により共有辺は同一3D直線となり、隙間は生じません。
+        // 上画面の下辺と下画面の上辺の方向角差がゼロであることを検証します。
         fun edgePitch(
             pose: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose,
             topEdge: Boolean,
@@ -77,8 +78,7 @@ class GestureGuiGeometryTest {
             return Math.toDegrees(kotlin.math.asin((py / length).coerceIn(-1.0, 1.0)))
         }
         val gap = edgePitch(halved[1], topEdge = true) - edgePitch(halved[0], topEdge = false)
-        assertTrue(gap <= 0.5, "screens overlap: gap=$gap")
-        assertTrue(gap >= -5.0, "screens drift apart: gap=$gap")
+        assertEquals(0.0, gap, 1.0e-9, "hinge edges must coincide: gap=$gap")
     }
 
     @Test
@@ -214,10 +214,35 @@ class GestureGuiGeometryTest {
     }
 
     @Test
+    fun `hinge joint shares the same 3d edge midpoint`() {
+        // ヒンジ結合では上画面の下辺中点と下画面の上辺中点が3D空間で一致します。
+        // 角度上だけでなく空間的にも段差が残らないことを検証します。
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        val poses = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            screenCount = 2,
+            verticalSlots = slots,
+        )
+        fun edgeMidpoint(
+            pose: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose,
+            topEdge: Boolean,
+        ): GestureGuiVector3 {
+            val sign = if (topEdge) 1.0 else -1.0
+            return pose.center + pose.up * (sign * pose.height / 2.0)
+        }
+        val upperBottom = edgeMidpoint(poses[0], topEdge = false)
+        val lowerTop = edgeMidpoint(poses[1], topEdge = true)
+        assertEquals(lowerTop.x, upperBottom.x, 1.0e-9)
+        assertEquals(lowerTop.y, upperBottom.y, 1.0e-9)
+        assertEquals(lowerTop.z, upperBottom.z, 1.0e-9)
+    }
+
+    @Test
     fun `vertical screen envelope matches the tilted edge angles`() {
-        // 位置と向きを分離した配置では atan による近似端と実辺端がずれるため、
-        // 包絡の上下端は辺隣接ソルバーと同じ edgePitchAngle で決めなければなりません。
-        // tiltScale=0.5 の傾き確定後でも、包絡境界と実辺端が一致することを検証します。
+        // ヒンジ結合では隣接画面が同一3D直線を共有するため、包絡の上下端は
+        // 実辺点の方向角そのものに一致しなければなりません。
+        // tiltScale=0.5 の傾き確定後でも一致することを検証します。
         listOf(1.0, 0.5).forEach { tilt ->
             val sizes = listOf(
                 GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
@@ -227,7 +252,7 @@ class GestureGuiGeometryTest {
             val arrangement = GestureGuiGeometry.verticalStripArrangement(sizes, slots, tilt)
             val expectedTop = arrangement.indices.minOf { index ->
                 GestureGuiGeometry.edgePitchAngle(
-                    arrangement[index].centerPitchDegrees,
+                    arrangement[index].centerOffset,
                     sizes[index].second,
                     arrangement[index].tiltPitchDegrees,
                     topEdge = true,
@@ -235,7 +260,7 @@ class GestureGuiGeometryTest {
             }
             val expectedBottom = arrangement.indices.maxOf { index ->
                 GestureGuiGeometry.edgePitchAngle(
-                    arrangement[index].centerPitchDegrees,
+                    arrangement[index].centerOffset,
                     sizes[index].second,
                     arrangement[index].tiltPitchDegrees,
                     topEdge = false,

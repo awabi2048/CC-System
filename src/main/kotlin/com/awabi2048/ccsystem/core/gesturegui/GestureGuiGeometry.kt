@@ -61,11 +61,11 @@ object GestureGuiGeometry {
                 // 包絡は解き直し後の中心角で評価し、表示と判定の範囲を一致させます。
                 // 上下端は角度和の近似ではなく、傾き確定後の実辺端角そのもので求めます。
                 // 位置と向きを分離した配置では atan((h/2)/D) が実辺とずれるため、
-                // 辺隣接ソルバーと同じ edgePitchAngle を使い、描画・当たり・包絡を一致させます。
+                // ヒンジ結合と同じ辺点角を使い、描画・当たり・包絡を一致させます。
                 val arrangement = verticalStripArrangement(sizes, verticalSlots, tiltScale)
                 val top = arrangement.indices.minOf { index ->
                     edgePitchAngle(
-                        arrangement[index].centerPitchDegrees,
+                        arrangement[index].centerOffset,
                         sizes[index].second,
                         arrangement[index].tiltPitchDegrees,
                         topEdge = true,
@@ -73,7 +73,7 @@ object GestureGuiGeometry {
                 }
                 val bottom = arrangement.indices.maxOf { index ->
                     edgePitchAngle(
-                        arrangement[index].centerPitchDegrees,
+                        arrangement[index].centerOffset,
                         sizes[index].second,
                         arrangement[index].tiltPitchDegrees,
                         topEdge = false,
@@ -150,15 +150,10 @@ object GestureGuiGeometry {
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL ->
                 verticalStripArrangement(sizes, verticalSlots, tiltScale).mapIndexed { index, angles ->
-                    // 中心位置は辺隣接ソルバーが解いた配置角で決めます。向きだけに
-                    // tiltScaleを掛けることで、辺縁の隙間設計を保ったまま傾きを抑えます。
-                    val positionPitch = Math.toRadians(angles.centerPitchDegrees)
+                    // 中心位置はヒンジ結合が解いた3Dオフセットをyaw回転して求めます。
+                    // 球面拘束を外すことで、隣接画面との共有辺が空間的に一致します。
+                    // 向きだけに tiltScale を掛ける点は変えず、辺縁の傾き設計を保ちます。
                     val tiltPitch = Math.toRadians(angles.tiltPitchDegrees)
-                    val positionDirection = GestureGuiVector3(
-                        forward.x * cos(positionPitch),
-                        -sin(positionPitch),
-                        forward.z * cos(positionPitch),
-                    )
                     val direction = GestureGuiVector3(
                         forward.x * cos(tiltPitch),
                         -sin(tiltPitch),
@@ -168,10 +163,13 @@ object GestureGuiGeometry {
                     // right×normalから、各画面のtiltに沿って傾いた上方向を導出します。
                     val normal = direction
                     val up = right.cross(normal).normalized()
+                    // yaw=0正準系のオフセットを水平 yaw 回転へ載せます。
+                    // 中心高さはそのままに、奥行きだけを現在の正面方向へ向けます。
+                    val offset = angles.centerOffset
                     GestureGuiScreenPose(
                         screenIndex = index,
                         centerPitchDegrees = angles.centerPitchDegrees,
-                        center = eye + positionDirection * SCREEN_DISTANCE,
+                        center = eye + GestureGuiVector3(forward.x * offset.z, offset.y, forward.z * offset.z),
                         right = right,
                         up = up,
                         normal = normal,
@@ -206,22 +204,27 @@ object GestureGuiGeometry {
     private const val SCREEN_VERTICAL_GAP_DEGREES = 2.0
 
     /**
-     * 画面の配置角と傾き角です。中心位置はcenterPitchDegreesの視線上で
-     * 距離一定、向きはtiltPitchDegreesで決まります。両者が一致するときは
+     * 画面の配置角と傾き角と中心オフセットです。中心位置は球面拘束を受けず、
+     * yaw=0・目原点系での3Dオフセットそのもので決まります。両者が一致するときは
      * 従来の湾曲配置(各画面が目を向く)と等しくなります。
+     * centerPitchDegrees は解決後の中心の方向角であり、情報表示・包絡の目安に使います。
      */
     internal data class VerticalStripAngles(
         val centerPitchDegrees: Double,
         val tiltPitchDegrees: Double,
+        /** yaw=0・目原点系での中心オフセットです。x は常に 0 です。 */
+        val centerOffset: GestureGuiVector3,
     )
 
     /**
-     * 縦配置の画面群を、辺同士が接する折りたたみストリップとして解きます。
+     * 縦配置の画面群を、辺同士が同一3D直線を共有するヒンジ結合として解きます。
      *
-     * 傾きだけを寝かせると中心間隔が詰まって辺縁が重なるため、傾き確定後に
-     * 中心位置を解き直します。中央スロットを従来arc位置へ固定し、上下へ
-     * 辺端角が隙間分だけずれるよう中心角を二分法で求めます。表示と視線包絡
-     * 判定の双方が同じ配置を使うため、判定と描画は一致します。
+     * 角度上の隙間（約2度）で辺を離す従来方式では、横から見ると上下辺の間に
+     * 空間的な段差が残ります。ヒンジ結合では隣接画面の辺中点をそのまま共有し、
+     * 開いた本のように辺を一点で接合します。中央スロットを従来arc位置の球面上へ
+     * 固定し、そこから上下へ自画面の辺中点が共有点へ一致するよう中心を置くため、
+     * 反復計算なしに厳密解が求まります。表示と視線包絡判定の双方が同じ配置を
+     * 使うため、判定と描画は一致します。
      * view順で返します。欠けたスロットは最大寸法で空間を予約します。
      */
     internal fun verticalStripArrangement(
@@ -245,37 +248,45 @@ object GestureGuiGeometry {
         val slotSizes = slots.map { it.size }
         val arcPitches = centerPitches(slotSizes)
         val tilts = arcPitches.map { it * tiltScale }
-        val centers = DoubleArray(slots.size)
-        // 中央スロットを従来arc位置へ固定し、そこから上下へ解きます。
+        // 傾き確定後の上方向を yaw=0 正準系で求めます。poses() と同じ right×normal 規則です。
+        fun upOf(tiltPitchDegrees: Double): GestureGuiVector3 {
+            val tilt = Math.toRadians(tiltPitchDegrees)
+            val normal = GestureGuiVector3(0.0, -sin(tilt), cos(tilt))
+            return GestureGuiVector3(-1.0, 0.0, 0.0).cross(normal).normalized()
+        }
+        val ups = tilts.map(::upOf)
+        // 指定した辺の3D中点を返します。topEdge=trueなら上辺、falseなら下辺です。
+        fun edgeMidpoint(center: GestureGuiVector3, height: Double, up: GestureGuiVector3, topEdge: Boolean): GestureGuiVector3 {
+            val sign = if (topEdge) 1.0 else -1.0
+            return center + up * (sign * height / 2.0)
+        }
+        // 解決後の中心の方向角(Minecraft pitch、下が正)を返します。
+        fun centerAngle(center: GestureGuiVector3): Double =
+            Math.toDegrees(-asin((center.y / center.length()).coerceIn(-1.0, 1.0)))
+        val centers = Array(slots.size) { GestureGuiVector3(0.0, 0.0, 0.0) }
+        // 中央スロットを従来arc位置の球面上へ固定し、そこから上下へ解きます。
         // 中央固定により、単画面・2画面レイアウトの既存配置が維持されます。
         val anchorIdx = slots.size / 2
-        centers[anchorIdx] = arcPitches[anchorIdx]
-        for (index in anchorIdx + 1 until slots.size) {
-            val prev = index - 1
-            val target = edgePitchAngle(
-                centers[prev], slotSizes[prev].second, tilts[prev], topEdge = false,
-            ) + SCREEN_VERTICAL_GAP_DEGREES
-            centers[index] = solveEdgePitch(
-                targetEdgeAngle = target,
-                height = slotSizes[index].second,
-                tiltPitchDegrees = tilts[index],
-                topEdge = true,
+        run {
+            val anchorPitch = Math.toRadians(arcPitches[anchorIdx])
+            centers[anchorIdx] = GestureGuiVector3(
+                0.0,
+                -SCREEN_DISTANCE * sin(anchorPitch),
+                SCREEN_DISTANCE * cos(anchorPitch),
             )
+        }
+        for (index in anchorIdx + 1 until slots.size) {
+            // 一つ上の画面の下辺中点を共有点とし、自画面の上辺中点が一致するよう置きます。
+            val shared = edgeMidpoint(centers[index - 1], slotSizes[index - 1].second, ups[index - 1], topEdge = false)
+            centers[index] = shared - ups[index] * (slotSizes[index].second / 2.0)
         }
         for (index in anchorIdx - 1 downTo 0) {
-            val prev = index + 1
-            val target = edgePitchAngle(
-                centers[prev], slotSizes[prev].second, tilts[prev], topEdge = true,
-            ) - SCREEN_VERTICAL_GAP_DEGREES
-            centers[index] = solveEdgePitch(
-                targetEdgeAngle = target,
-                height = slotSizes[index].second,
-                tiltPitchDegrees = tilts[index],
-                topEdge = false,
-            )
+            // 一つ下の画面の上辺中点を共有点とし、自画面の下辺中点が一致するよう置きます。
+            val shared = edgeMidpoint(centers[index + 1], slotSizes[index + 1].second, ups[index + 1], topEdge = true)
+            centers[index] = shared + ups[index] * (slotSizes[index].second / 2.0)
         }
         val bySlot = slots.indices.associateWith { slotIndex ->
-            VerticalStripAngles(centers[slotIndex], tilts[slotIndex])
+            VerticalStripAngles(centerAngle(centers[slotIndex]), tilts[slotIndex], centers[slotIndex])
         }
         return if (verticalSlots == null) {
             slots.indices.map { bySlot.getValue(it) }
@@ -286,62 +297,26 @@ object GestureGuiGeometry {
     }
 
     /**
-     * 指定した辺端角を持つ中心角を二分法で求めます。
-     *
-     * topEdge=trueなら上辺、falseなら下辺を対象にします。単調区間
-     * [target-80, target+80]で40回反復し、収束しない場合は辺端半角分の
-     * 近似値へフォールバックします。
-     */
-    private fun solveEdgePitch(
-        targetEdgeAngle: Double,
-        height: Double,
-        tiltPitchDegrees: Double,
-        topEdge: Boolean,
-        distance: Double = SCREEN_DISTANCE,
-    ): Double {
-        val halfAngular = Math.toDegrees(atan((height / 2.0) / distance))
-        var lo = targetEdgeAngle - 80.0
-        var hi = targetEdgeAngle + 80.0
-        fun edgeAngle(center: Double): Double =
-            edgePitchAngle(center, height, tiltPitchDegrees, topEdge)
-        if ((edgeAngle(lo) - targetEdgeAngle) * (edgeAngle(hi) - targetEdgeAngle) > 0.0) {
-            return if (topEdge) targetEdgeAngle + halfAngular else targetEdgeAngle - halfAngular
-        }
-        repeat(40) {
-            val mid = (lo + hi) / 2.0
-            if ((edgeAngle(lo) - targetEdgeAngle) * (edgeAngle(mid) - targetEdgeAngle) <= 0.0) {
-                hi = mid
-            } else {
-                lo = mid
-            }
-        }
-        return (lo + hi) / 2.0
-    }
-
-    /**
-     * 中心角・高さ・傾きが決まった画面の辺端角(目から見たpitch、度)を返します。
-     * yaw=0の正準系で計算します。pitch配置はyaw回転に対して不変のため、
-     * 任意yawの配置へそのまま適用できます。
+     * 中心・高さ・傾きが決まった画面の辺端角(目から見たpitch、度)を返します。
+     * 中心は yaw=0・目原点系の3Dオフセットで受け、球面拘束を仮定しません。
+     * ヒンジ結合で球面を外れた中心でも、実辺点の方向角を厳密に求められます。
+     * pitch配置はyaw回転に対して不変のため、任意yawの配置へそのまま適用できます。
      * 包絡判定と単体テストから同じ辺定義を参照するため internal とします。
      */
     internal fun edgePitchAngle(
-        centerPitchDegrees: Double,
+        center: GestureGuiVector3,
         height: Double,
         tiltPitchDegrees: Double,
         topEdge: Boolean,
     ): Double {
-        val center = Math.toRadians(centerPitchDegrees)
         val tilt = Math.toRadians(tiltPitchDegrees)
-        // 中心点: (0, -D sin p, D cos p)。法線方向の上ベクトル: (0, cos t, sin t)。
-        val cx = 0.0
-        val cy = -SCREEN_DISTANCE * sin(center)
-        val cz = SCREEN_DISTANCE * cos(center)
+        // 法線方向の上ベクトル: (0, cos t, sin t)。poses() と同じ right×normal 規則です。
         val uy = cos(tilt)
         val uz = sin(tilt)
         val sign = if (topEdge) 1.0 else -1.0
-        val px = cx
-        val py = cy + sign * (height / 2.0) * uy
-        val pz = cz + sign * (height / 2.0) * uz
+        val px = center.x
+        val py = center.y + sign * (height / 2.0) * uy
+        val pz = center.z + sign * (height / 2.0) * uz
         val length = kotlin.math.sqrt(px * px + py * py + pz * pz)
         return Math.toDegrees(-asin((py / length).coerceIn(-1.0, 1.0)))
     }
