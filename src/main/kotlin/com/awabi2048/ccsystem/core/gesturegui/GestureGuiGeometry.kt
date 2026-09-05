@@ -204,6 +204,14 @@ object GestureGuiGeometry {
     private const val SCREEN_VERTICAL_GAP_DEGREES = 2.0
 
     /**
+     * ヒンジ結合で隣接辺同士を離す余白です（ブロック単位）。
+     * 外側の画面の辺を自画面の面内方向へこの分だけ逃がすため、平行な辺直線同士の
+     * 空間的な間隔そのものになります。辺画素の深度競合を避けつつ、横から見ても
+     * 一点の溝として読めるよう、従来の角度隙間（約5.7cm相当）より小さい値にします。
+     */
+    private const val HINGE_EDGE_CLEARANCE = 0.02
+
+    /**
      * 画面の配置角と傾き角と中心オフセットです。中心位置は球面拘束を受けず、
      * yaw=0・目原点系での3Dオフセットそのもので決まります。両者が一致するときは
      * 従来の湾曲配置(各画面が目を向く)と等しくなります。
@@ -217,14 +225,17 @@ object GestureGuiGeometry {
     )
 
     /**
-     * 縦配置の画面群を、辺同士が同一3D直線を共有するヒンジ結合として解きます。
+     * 縦配置の画面群を、辺同士が仮想ヒンジ軸を共有するヒンジ結合として解きます。
      *
      * 角度上の隙間（約2度）で辺を離す従来方式では、横から見ると上下辺の間に
-     * 空間的な段差が残ります。ヒンジ結合では隣接画面の辺中点をそのまま共有し、
-     * 開いた本のように辺を一点で接合します。中央スロットを従来arc位置の球面上へ
-     * 固定し、そこから上下へ自画面の辺中点が共有点へ一致するよう中心を置くため、
-     * 反復計算なしに厳密解が求まります。表示と視線包絡判定の双方が同じ配置を
-     * 使うため、判定と描画は一致します。
+     * 空間的な段差が残ります。ヒンジ結合では隣接画面の辺を同一ヒンジ軸へ向け、
+     * 開いた本のように辺を接合します。完全接触では辺画素の深度競合を招くため、
+     * 辺同士は [HINGE_EDGE_CLEARANCE] だけ離します。基準画面（中央スロット）は
+     * 固定したまま外側の画面だけを面内方向へ逃がし、仮想ヒンジ軸が空間上の
+     * 溝中央に残るようにします。
+     * 中央スロットを従来arc位置の球面上へ固定し、そこから上下へ自画面の辺中点が
+     * 共有点へ一致するよう中心を置くため、反復計算なしに厳密解が求まります。
+     * 表示と視線包絡判定の双方が同じ配置を使うため、判定と描画は一致します。
      * view順で返します。欠けたスロットは最大寸法で空間を予約します。
      */
     internal fun verticalStripArrangement(
@@ -276,14 +287,16 @@ object GestureGuiGeometry {
             )
         }
         for (index in anchorIdx + 1 until slots.size) {
-            // 一つ上の画面の下辺中点を共有点とし、自画面の上辺中点が一致するよう置きます。
+            // 一つ上の画面の下辺中点を共有点とし、自画面の上辺中点が余白を隔てて
+            // 向き合うよう置きます。余白は面内方向へ取り、辺直線の平行を保ちます。
             val shared = edgeMidpoint(centers[index - 1], slotSizes[index - 1].second, ups[index - 1], topEdge = false)
-            centers[index] = shared - ups[index] * (slotSizes[index].second / 2.0)
+            centers[index] = shared - ups[index] * (slotSizes[index].second / 2.0 + HINGE_EDGE_CLEARANCE)
         }
         for (index in anchorIdx - 1 downTo 0) {
-            // 一つ下の画面の上辺中点を共有点とし、自画面の下辺中点が一致するよう置きます。
+            // 一つ下の画面の上辺中点を共有点とし、自画面の下辺中点が余白を隔てて
+            // 向き合うよう置きます。余白は面内方向へ取り、辺直線の平行を保ちます。
             val shared = edgeMidpoint(centers[index + 1], slotSizes[index + 1].second, ups[index + 1], topEdge = true)
-            centers[index] = shared + ups[index] * (slotSizes[index].second / 2.0)
+            centers[index] = shared + ups[index] * (slotSizes[index].second / 2.0 + HINGE_EDGE_CLEARANCE)
         }
         val bySlot = slots.indices.associateWith { slotIndex ->
             VerticalStripAngles(centerAngle(centers[slotIndex]), tilts[slotIndex], centers[slotIndex])
