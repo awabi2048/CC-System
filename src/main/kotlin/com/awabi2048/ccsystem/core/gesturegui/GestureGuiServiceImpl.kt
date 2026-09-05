@@ -121,6 +121,14 @@ class GestureGuiServiceImpl(
         var lastEyeY: Double,
         var lastEyeZ: Double,
         /**
+         * 前回確定した追従基準位置です。停止確定時の再召喚は、この位置からの
+         * 変位が[GestureGuiFollowPolicy.RESUMMON_MIN_DISTANCE]以上の場合だけ
+         * 実体を作り直します。未満の場合は基準位置の更新に留め、ちらつきを防ぎます。
+         */
+        var lastAppliedX: Double,
+        var lastAppliedY: Double,
+        var lastAppliedZ: Double,
+        /**
          * 凍結中に確定待ちの移動があるかです。停止確定時に一度だけ再召喚し、
          * 直後にfalseへ戻すことで、停止中の再召喚の繰り返しを防ぎます。
          */
@@ -146,6 +154,8 @@ class GestureGuiServiceImpl(
         val secondaryInputEnabled: Boolean = true,
         /** 画面外を含むワールド左右クリックの外部操作を吸収する設定です。 */
         val suppressWorldClicks: Boolean = false,
+        /** 追従pose全体へ加算するY方向の補正です(ブロック単位)。 */
+        val verticalOffset: Double = 0.0,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
@@ -209,7 +219,7 @@ class GestureGuiServiceImpl(
                 }
                 ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots)
+            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -230,6 +240,9 @@ class GestureGuiServiceImpl(
                 lastEyeX = owner.eyeLocation.x,
                 lastEyeY = owner.eyeLocation.y,
                 lastEyeZ = owner.eyeLocation.z,
+                lastAppliedX = owner.eyeLocation.x,
+                lastAppliedY = owner.eyeLocation.y,
+                lastAppliedZ = owner.eyeLocation.z,
                 screens = screens.toList(),
                 children = mutableListOf(),
                 actors = mutableMapOf(),
@@ -241,6 +254,7 @@ class GestureGuiServiceImpl(
                 verticalSlots = options.verticalSlots,
                 secondaryInputEnabled = options.secondaryInputEnabled,
                 suppressWorldClicks = options.suppressWorldClicks,
+                verticalOffset = options.verticalOffset,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -338,6 +352,9 @@ class GestureGuiServiceImpl(
         session.lastEyeX = eye.x
         session.lastEyeY = eye.y
         session.lastEyeZ = eye.z
+        session.lastAppliedX = eye.x
+        session.lastAppliedY = eye.y
+        session.lastAppliedZ = eye.z
         val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
         var teleported = 0
         session.screens.zip(newPoses).forEach { (screen, pose) ->
@@ -462,6 +479,9 @@ class GestureGuiServiceImpl(
             session.lastEyeX = eye.x
             session.lastEyeY = eye.y
             session.lastEyeZ = eye.z
+            session.lastAppliedX = eye.x
+            session.lastAppliedY = eye.y
+            session.lastAppliedZ = eye.z
             session.lastMotionTick = tickIndex
             session.followDirty = false
             GestureGuiFollowMetrics.recordStopResummon(
@@ -507,6 +527,7 @@ class GestureGuiServiceImpl(
             verticalSlots = old.verticalSlots,
             secondaryInputEnabled = old.secondaryInputEnabled,
             suppressWorldClicks = old.suppressWorldClicks,
+            verticalOffset = old.verticalOffset,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -1018,8 +1039,21 @@ class GestureGuiServiceImpl(
                             // この制限の対象外です。
                             if (isGazeInsideScreen(session, owner)) {
                                 GestureGuiFollowMetrics.recordGazeFrozenSkipped()
-                            } else {
+                            } else if (GestureGuiFollowPolicy.shouldResummonOnStop(
+                                    eye.x - session.lastAppliedX,
+                                    eye.y - session.lastAppliedY,
+                                    eye.z - session.lastAppliedZ,
+                                )
+                            ) {
                                 resummonFollowScreens(session, owner)
+                            } else {
+                                // 前回確定位置からの変位が閾値未満の場合は実体を
+                                // 作り直さず、基準位置だけを更新して確定済みにします。
+                                session.lastAppliedX = eye.x
+                                session.lastAppliedY = eye.y
+                                session.lastAppliedZ = eye.z
+                                session.followDirty = false
+                                GestureGuiFollowMetrics.recordResummonSkippedBelowThreshold()
                             }
                         }
                     }
@@ -1443,6 +1477,7 @@ class GestureGuiServiceImpl(
         views: List<GestureGuiView>,
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
+        verticalOffset: Double = 0.0,
     ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
@@ -1450,7 +1485,10 @@ class GestureGuiServiceImpl(
         views.map { it.panel.width to it.panel.height },
         layout,
         verticalSlots,
-    )
+    ).map { pose ->
+        if (verticalOffset == 0.0) pose
+        else pose.copy(center = pose.center + GestureGuiVector3(0.0, verticalOffset, 0.0))
+    }
 
     /** 子画面を含む親解決結果です。親は必ず直近の同一IDを一つだけ返します。 */
     private data class ParentRuntime(
@@ -1471,7 +1509,14 @@ class GestureGuiServiceImpl(
         owner: Player,
         views: List<GestureGuiView>,
     ): List<GestureGuiScreenPose> = if (session.fixedAnchor == null) {
-        poses(owner, session.retainedYaw, views, session.layout, session.verticalSlots)
+        poses(
+            owner,
+            session.retainedYaw,
+            views,
+            session.layout,
+            session.verticalSlots,
+            session.verticalOffset,
+        )
     } else {
         // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。
         session.screens.mapIndexed { index, screen ->

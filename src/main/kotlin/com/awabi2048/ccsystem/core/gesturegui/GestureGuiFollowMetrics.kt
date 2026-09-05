@@ -19,6 +19,7 @@ internal object GestureGuiFollowMetrics {
     private val gazeFrozenSkips = AtomicLong(0L)
     private val stopResummons = AtomicLong(0L)
     private val resSummonedEntities = AtomicLong(0L)
+    private val resSummonSkips = AtomicLong(0L)
     private val teleportedEntities = AtomicLong(0L)
     private val backgroundResizeSkips = AtomicLong(0L)
 
@@ -47,6 +48,11 @@ internal object GestureGuiFollowMetrics {
         resSummonedEntities.addAndGet(entityCount.toLong())
     }
 
+    /** 変位が閾値未満で再召喚を見送った回数です。 */
+    fun recordResummonSkippedBelowThreshold() {
+        resSummonSkips.incrementAndGet()
+    }
+
     fun recordBackgroundResizeSkipped() {
         backgroundResizeSkips.incrementAndGet()
     }
@@ -62,6 +68,7 @@ internal object GestureGuiFollowMetrics {
             gazeFrozenSkips.set(0L)
             stopResummons.set(0L)
             resSummonedEntities.set(0L)
+            resSummonSkips.set(0L)
             teleportedEntities.set(0L)
             backgroundResizeSkips.set(0L)
             return
@@ -71,12 +78,14 @@ internal object GestureGuiFollowMetrics {
         val gazeFrozen = gazeFrozenSkips.getAndSet(0L)
         val resummons = stopResummons.getAndSet(0L)
         val resEntities = resSummonedEntities.getAndSet(0L)
+        val resSkips = resSummonSkips.getAndSet(0L)
         val entities = teleportedEntities.getAndSet(0L)
         val resizeSkips = backgroundResizeSkips.getAndSet(0L)
         val average = if (resummons > 0L) resEntities.toDouble() / resummons.toDouble() else 0.0
         plugin.logger.info(
             "Gesture追従計測: 評価=${eval} 凍結=${frozen} 視線凍結=${gazeFrozen} 再召喚=${resummons} " +
                 "再召喚実体計=${resEntities} 平均／再召喚=${"%.1f".format(average)} " +
+                "再召喚見送り=${resSkips} " +
                 "teleport計=${entities}(更新${updates}) 背景resize省略=${resizeSkips}",
         )
     }

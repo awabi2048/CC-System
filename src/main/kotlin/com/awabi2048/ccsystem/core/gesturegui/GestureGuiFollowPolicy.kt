@@ -28,6 +28,14 @@ internal object GestureGuiFollowPolicy {
      */
     const val STOP_SETTLE_TICKS: Long = 3L
 
+    /**
+     * 停止確定時に再召喚を行う最小移動量です(ブロック単位の距離)。
+     *
+     * 前回確定位置からの変位がこの値未満の場合は、実体の作り直しを行わず
+     * 基準位置だけを更新します。微動のたびに再召喚してちらつかせないためです。
+     */
+    const val RESUMMON_MIN_DISTANCE: Double = 1.0
+
     /** 移動・停止の判定結果です。 */
     internal enum class FollowMotionState {
         /** 移動中です。poseは凍結し、停止tickを更新します。 */
@@ -86,5 +94,20 @@ internal object GestureGuiFollowPolicy {
         lastMotionTick < 0L -> FollowMotionState.SETTLING
         nowTick - lastMotionTick >= STOP_SETTLE_TICKS -> FollowMotionState.STOPPED
         else -> FollowMotionState.SETTLING
+    }
+
+    /**
+     * 停止確定時に再召喚を行うべきかを返します。
+     *
+     * 前回確定位置からの変位が[RESUMMON_MIN_DISTANCE]未満の場合は作り直さず、
+     * 基準位置の更新だけに留めます。
+     */
+    fun shouldResummonOnStop(
+        deltaX: Double,
+        deltaY: Double,
+        deltaZ: Double,
+    ): Boolean {
+        val distSq = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
+        return distSq >= RESUMMON_MIN_DISTANCE * RESUMMON_MIN_DISTANCE
     }
 }
