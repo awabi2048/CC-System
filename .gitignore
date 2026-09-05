@@ -31,3 +31,7 @@ replay_pid*
 !README.md
 docs/
 src/test/resources/architecture/runtime-ui-legacy-allowlist.txt
+
+# Local worktree directories managed outside git.
+.codex-worktrees/
+.worktrees/
