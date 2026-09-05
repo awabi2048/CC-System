@@ -33,65 +33,37 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
-    fun `follow pose updates at twenty hertz intervals`() {
-        // 20TPS前提で毎tick更新します。初回は必ず更新します。
-        assertTrue(GestureGuiFollowPolicy.isFollowIntervalElapsed(0L, -1L))
-        assertTrue(GestureGuiFollowPolicy.isFollowIntervalElapsed(9L, 8L))
-        assertFalse(GestureGuiFollowPolicy.isFollowIntervalElapsed(8L, 8L))
+    fun `significant motion includes every single axis without filtering`() {
+        // 追従に軸の除外はありません。X/Y/Zのどれか1軸だけの移動でも
+        // 移動として扱います(Y軸のみのジャンプ・段差を含む)。
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.05, 0.0, 0.0, 0.0f))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.05, 0.0, 0.0f))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.05, 0.0f))
+        assertTrue(GestureGuiFollowPolicy.isSignificantMotion(0.0, 0.0, 0.0, 1.0f))
+        assertFalse(GestureGuiFollowPolicy.isSignificantMotion(0.001, 0.0, 0.0, 0.05f))
     }
 
     @Test
-    fun `follow pose skips micro movements within the interval`() {
-        val decision = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 10L,
-            lastAppliedTick = 8L,
-            deltaX = 0.001,
-            deltaY = 0.0,
-            deltaZ = 0.0,
-            yawDeltaAbs = 0.05f,
+    fun `stop is confirmed only after ten still ticks following motion`() {
+        // 移動中はMOVINGを返します。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.MOVING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 100L, lastMotionTick = 90L, moved = true),
         )
-
-        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.SKIP_DEADBAND, decision)
-    }
-
-    @Test
-    fun `follow pose updates on large movements after the interval`() {
-        val moved = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 10L,
-            lastAppliedTick = 8L,
-            deltaX = 0.05,
-            deltaY = 0.0,
-            deltaZ = 0.0,
-            yawDeltaAbs = 0.0f,
+        // 一度も動いていないセッションは再召喚しません。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.SETTLING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 100L, lastMotionTick = -1L, moved = false),
         )
-        val lifted = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 10L,
-            lastAppliedTick = 8L,
-            deltaX = 0.0,
-            deltaY = 0.05,
-            deltaZ = 0.0,
-            yawDeltaAbs = 0.0f,
+        // 停止9tickまでは確定しません。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.SETTLING,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 109L, lastMotionTick = 100L, moved = false),
         )
-        val rotated = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 10L,
-            lastAppliedTick = 8L,
-            deltaX = 0.0,
-            deltaY = 0.0,
-            deltaZ = 0.0,
-            yawDeltaAbs = 1.0f,
+        // 停止10tickで確定します。
+        assertEquals(
+            GestureGuiFollowPolicy.FollowMotionState.STOPPED,
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 110L, lastMotionTick = 100L, moved = false),
         )
-        val throttled = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 8L,
-            lastAppliedTick = 8L,
-            deltaX = 1.0,
-            deltaY = 1.0,
-            deltaZ = 0.0,
-            yawDeltaAbs = 10.0f,
-        )
-
-        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, moved)
-        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, lifted)
-        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.UPDATE, rotated)
-        assertEquals(GestureGuiFollowPolicy.FollowPoseDecision.SKIP_INTERVAL, throttled)
     }
 }

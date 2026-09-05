@@ -15,8 +15,9 @@ internal object GestureGuiFollowMetrics {
 
     private val evaluations = AtomicLong(0L)
     private val poseUpdates = AtomicLong(0L)
-    private val skippedInterval = AtomicLong(0L)
-    private val skippedDeadband = AtomicLong(0L)
+    private val frozenSkips = AtomicLong(0L)
+    private val stopResummons = AtomicLong(0L)
+    private val resSummonedEntities = AtomicLong(0L)
     private val teleportedEntities = AtomicLong(0L)
     private val backgroundResizeSkips = AtomicLong(0L)
 
@@ -29,12 +30,15 @@ internal object GestureGuiFollowMetrics {
         teleportedEntities.addAndGet(teleportedEntityCount.toLong())
     }
 
-    fun recordSkippedInterval() {
-        skippedInterval.incrementAndGet()
+    /** 移動中の凍結でpose更新をスキップした回数です。 */
+    fun recordFrozenSkipped() {
+        frozenSkips.incrementAndGet()
     }
 
-    fun recordSkippedDeadband() {
-        skippedDeadband.incrementAndGet()
+    /** 停止確定で再召喚した回数と生成実体数です。 */
+    fun recordStopResummon(entityCount: Int) {
+        stopResummons.incrementAndGet()
+        resSummonedEntities.addAndGet(entityCount.toLong())
     }
 
     fun recordBackgroundResizeSkipped() {
@@ -48,22 +52,24 @@ internal object GestureGuiFollowMetrics {
         if (eval == 0L) {
             // 他計数だけ残る状態を避けるため、空区間でも全て破棄します。
             poseUpdates.set(0L)
-            skippedInterval.set(0L)
-            skippedDeadband.set(0L)
+            frozenSkips.set(0L)
+            stopResummons.set(0L)
+            resSummonedEntities.set(0L)
             teleportedEntities.set(0L)
             backgroundResizeSkips.set(0L)
             return
         }
         val updates = poseUpdates.getAndSet(0L)
-        val interval = skippedInterval.getAndSet(0L)
-        val deadband = skippedDeadband.getAndSet(0L)
+        val frozen = frozenSkips.getAndSet(0L)
+        val resummons = stopResummons.getAndSet(0L)
+        val resEntities = resSummonedEntities.getAndSet(0L)
         val entities = teleportedEntities.getAndSet(0L)
         val resizeSkips = backgroundResizeSkips.getAndSet(0L)
-        val average = if (updates > 0L) entities.toDouble() / updates.toDouble() else 0.0
+        val average = if (resummons > 0L) resEntities.toDouble() / resummons.toDouble() else 0.0
         plugin.logger.info(
-            "Gesture追従計測: 評価=${eval} 更新=${updates} 間引き=${interval} " +
-                "微小 skip=${deadband} teleport計=${entities} 平均／更新=${"%.1f".format(average)} " +
-                "背景resize省略=${resizeSkips}",
+            "Gesture追従計測: 評価=${eval} 凍結=${frozen} 再召喚=${resummons} " +
+                "再召喚実体計=${resEntities} 平均／再召喚=${"%.1f".format(average)} " +
+                "teleport計=${entities}(更新${updates}) 背景resize省略=${resizeSkips}",
         )
     }
 }

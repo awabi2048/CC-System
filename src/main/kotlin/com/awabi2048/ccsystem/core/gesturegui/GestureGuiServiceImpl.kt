@@ -110,10 +110,16 @@ class GestureGuiServiceImpl(
         var anchorZ: Double,
         var appliedYaw: Float,
         /**
-         * 追従poseを最後に適用したサービスtick番号です。約10Hz間引きの基準に使い、
-         * 間引き中の移動は anchor へ残して次回へ累積します。
+         * 最後に移動を検出したサービスtick番号です。停止確定
+         * ([GestureGuiFollowPolicy.STOP_SETTLE_TICKS]無移動継続)の基準に使います。
+         * 一度も動いていないセッションは-1のままにし、再召喚しません。
          */
-        var lastFollowAppliedTick: Long = -1L,
+        var lastMotionTick: Long = -1L,
+        /**
+         * 凍結中に確定待ちの移動があるかです。停止確定時に一度だけ再召喚し、
+         * 直後にfalseへ戻すことで、停止中の再召喚の繰り返しを防ぎます。
+         */
+        var followDirty: Boolean = false,
         var screens: List<ScreenRuntime>,
         val children: MutableList<ChildRuntime>,
         val actors: MutableMap<UUID, ActorRuntime>,
@@ -337,9 +343,154 @@ class GestureGuiServiceImpl(
         teleported += repositionChildren(session)
         GestureGuiFollowMetrics.recordPoseUpdate(teleported)
         session.appliedYaw = session.retainedYaw
-        // 直後にtickの間引き更新が重ならないよう、解除時の即時適用を基準にします。
-        session.lastFollowAppliedTick = tickIndex
+        // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
+        session.lastMotionTick = tickIndex
+        session.followDirty = false
         return true
+    }
+
+    /**
+     * 停止確定時に、画面実体を除去→再スポーンでその場へ確定させます。
+     *
+     * 移動中の毎tick teleportは背景と内容物の適用時刻差でティアを招くため、
+     * 移動中は凍結し、停止してから再召喚で正確な位置へ置きます。再召喚後は
+     * 完全に固定し、次に動くまで一切更新しません。向きは現在の視線yawへ正対
+     * させます。成功時のみtrueを返し、失敗時は凍結を維持して次回へ委ねます。
+     */
+    private fun resummonFollowScreens(session: Session, owner: Player): Boolean {
+        // 現在の視線へ正対させ、以降は動くまで完全に固定します。
+        session.retainedYaw = owner.location.yaw
+        session.appliedYaw = session.retainedYaw
+        session.targetYaw = null
+        session.gazeOutsideTicks = 0
+        session.revision = nextRevision++
+        val eye = owner.eyeLocation
+        val newPoses = try {
+            parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
+        } catch (failure: Throwable) {
+            plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚のpose計算に失敗しました", failure)
+            return false
+        }
+        data class SwappedScreen(
+            val oldRender: GestureGuiEntityRenderer.ScreenHandle,
+            val newRender: GestureGuiEntityRenderer.ScreenHandle,
+        )
+        data class SwappedChild(
+            val oldRender: GestureGuiEntityRenderer.ScreenHandle,
+            val oldOverlay: org.bukkit.entity.BlockDisplay?,
+            val newRender: GestureGuiEntityRenderer.ScreenHandle,
+        )
+        val swappedScreens = mutableListOf<SwappedScreen>()
+        val swappedChildren = mutableListOf<SwappedChild>()
+        try {
+            // 古い実体を先に隠し、新実体を隠したまま生成します。同tick表示の
+            // tracking未登録による欠けを避けるため、新実体の配布は次tickへ回します。
+            val online = Bukkit.getOnlinePlayers().toList()
+            val newScreens = session.screens.mapIndexed { index, screen ->
+                val newRender = renderer.spawnScreen(owner, session.id, session.revision, newPoses[index], screen.view)
+                renderer.setBackgroundSize(
+                    newRender,
+                    screen.view.panel.width.toFloat(),
+                    screen.view.panel.height.toFloat(),
+                    0,
+                )
+                newRender.hiddenVisualIds.putAll(
+                    screen.render.hiddenVisualIds.mapValues { it.value.toMutableSet() },
+                )
+                newRender.hiddenVisualBodyIds.putAll(
+                    screen.render.hiddenVisualBodyIds.mapValues { it.value.toMutableSet() },
+                )
+                online.forEach { renderer.hideFrom(screen.render, it) }
+                swappedScreens += SwappedScreen(screen.render, newRender)
+                screen.copy(pose = newPoses[index], render = newRender)
+            }
+            val newChildren = session.children.mapIndexed { index, child ->
+                // 親が見つからない子は旧来のrepositionChildrenと同様に維持します。
+                val parent = newScreens.firstOrNull {
+                    it.view.definition.screenId == child.options.parentScreenId
+                } ?: return@mapIndexed child
+                val newPose = childPose(
+                    parent.pose,
+                    child.view,
+                    child.options,
+                    newScreens.size + index,
+                    index,
+                )
+                var newOverlay: org.bukkit.entity.BlockDisplay? = null
+                val newRender = renderer.spawnScreen(owner, session.id, session.revision, newPose, child.view)
+                renderer.setBackgroundSize(
+                    newRender,
+                    child.view.panel.width.toFloat(),
+                    child.view.panel.height.toFloat(),
+                    0,
+                )
+                if (!child.options.allowParentInteraction) {
+                    newOverlay = renderer.spawnModalOverlay(
+                        owner,
+                        session.id,
+                        session.revision,
+                        modalOverlayPose(parent.pose, index),
+                        child.options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
+                        child.view.definition,
+                    )
+                }
+                newRender.hiddenVisualIds.putAll(
+                    child.render.hiddenVisualIds.mapValues { it.value.toMutableSet() },
+                )
+                newRender.hiddenVisualBodyIds.putAll(
+                    child.render.hiddenVisualBodyIds.mapValues { it.value.toMutableSet() },
+                )
+                online.forEach { renderer.hideFrom(child.render, it) }
+                child.overlay?.let { overlay ->
+                    online.forEach { it.hideEntity(plugin, overlay) }
+                }
+                swappedChildren += SwappedChild(child.render, child.overlay, newRender)
+                child.copy(pose = newPose, render = newRender, overlay = newOverlay)
+            }
+            session.screens = newScreens
+            newChildren.forEachIndexed { index, child -> session.children[index] = child }
+            // ホバー実体は古いposeに残るため破棄し、次tick以降のupdateHoverで
+            // 新poseへ作り直させます。置換情報は古い実体を指すため復元せず捨てます。
+            session.actors.values.forEach { actor ->
+                actor.hover?.let(renderer::removeHover)
+                actor.hover = null
+                actor.hoverIdentity = null
+                actor.hoverReplacement = null
+            }
+            session.anchorX = eye.x
+            session.anchorY = eye.y
+            session.anchorZ = eye.z
+            session.lastMotionTick = tickIndex
+            session.followDirty = false
+            GestureGuiFollowMetrics.recordStopResummon(
+                newScreens.sumOf { it.render.all.size } + newChildren.sumOf { it.render.all.size },
+            )
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                if (sessions[session.ownerId] !== session) {
+                    // セッションが閉じられた場合は古い実体だけ確実に除去します。
+                    // 新実体はセッションタグ付きのため終了処理で回収されます。
+                    swappedScreens.forEach { renderer.remove(it.oldRender) }
+                    swappedChildren.forEach {
+                        renderer.remove(it.oldRender)
+                        it.oldOverlay?.remove()
+                    }
+                    return@Runnable
+                }
+                Bukkit.getOnlinePlayers().forEach { player ->
+                    newScreens.forEach { renderer.showTo(it.render, player) }
+                    newChildren.forEach { renderer.showTo(it.render, player) }
+                }
+                swappedScreens.forEach { renderer.remove(it.oldRender) }
+                swappedChildren.forEach {
+                    renderer.remove(it.oldRender)
+                    it.oldOverlay?.remove()
+                }
+            })
+            return true
+        } catch (failure: Throwable) {
+            plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚に失敗しました", failure)
+            return false
+        }
     }
 
     override fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean {
@@ -831,92 +982,31 @@ class GestureGuiServiceImpl(
             }
             // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
             if (session.fixedAnchor == null) {
-                val insideScreenArea = if (session.screens.size == 1) {
-                    hit(session, owner, margin = 0.06) != null
-                } else {
-                    GestureGuiGeometry.containsScreenEnvelope(
-                        ray(owner).direction,
-                        session.retainedYaw.toDouble(),
-                        session.screens.size,
-                        session.screens.map { it.view.panel.width to it.view.panel.height },
-                        session.layout,
-                        session.verticalSlots,
-                    )
-                }
-                session.gazeOutsideTicks = GestureGuiFollowPolicy.nextOutsideTicks(
-                    session.gazeOutsideTicks,
-                    insideScreenArea,
-                )
-                if (GestureGuiFollowPolicy.shouldStartRealignment(
-                        insideScreenArea,
-                        session.gazeOutsideTicks,
-                        session.targetYaw,
-                    )
-                ) {
-                    // 画面外視線が3秒続いた時点の移動先を固定します。短い視線移動で
-                    // 画面を回転させず、再調整を開始した後の既存の滑らかな追従は維持します。
-                    session.targetYaw = owner.location.yaw
-                }
-                session.targetYaw?.let { targetYaw ->
-                    val delta = shortestYawDelta(session.retainedYaw, targetYaw)
-                    if (abs(delta) <= YAW_TARGET_EPSILON) {
-                        session.retainedYaw = targetYaw
-                        session.targetYaw = null
-                    } else {
-                        session.retainedYaw += delta.coerceIn(-MAX_YAW_STEP, MAX_YAW_STEP)
-                    }
-                }
+                // 視線再調整は停止時再召喚へ統合したため無効化しています。
+                // 移動中はposeを一切更新せず凍結し、停止確定後に再召喚で確定させます。
+                // 移動中の毎tick teleportが背景と内容物の適用時刻差でティアを招くため、
+                // 追従の滑らかさより停止時の位置正確さを優先します。
                 val eye = owner.eyeLocation
-                val positionMoved = GestureGuiFollowPositionPolicy.hasMoved(
-                    GestureGuiVector3(eye.x, eye.y, eye.z),
-                    session.anchorX,
-                    session.anchorY,
-                    session.anchorZ,
+                val yawDeltaAbs = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw))
+                val moved = GestureGuiFollowPolicy.isSignificantMotion(
+                    eye.x - session.anchorX,
+                    eye.y - session.anchorY,
+                    eye.z - session.anchorZ,
+                    yawDeltaAbs,
                 )
-                val yawMoved = abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)) > 1.0e-4f
-                // X/Y/Zの位置またはyawが変わったときに、描画poseと入力rayの基準を同tickで更新します。
-                // 毎tickの全量teleportは背景と内容物の到着差でティアを招くため、約10Hzへ
-                // 間引きます。視線再調整のtick計測は毎tick継続し、3秒規則は変えません。
-                if (positionMoved || yawMoved) {
-                    GestureGuiFollowMetrics.recordEvaluation()
-                    val decision = GestureGuiFollowPolicy.decideFollowPose(
-                        tickIndex,
-                        session.lastFollowAppliedTick,
-                        eye.x - session.anchorX,
-                        eye.y - session.anchorY,
-                        eye.z - session.anchorZ,
-                        abs(shortestYawDelta(session.appliedYaw, session.retainedYaw)),
-                    )
-                    when (decision) {
-                        GestureGuiFollowPolicy.FollowPoseDecision.SKIP_INTERVAL ->
-                            GestureGuiFollowMetrics.recordSkippedInterval()
-                        GestureGuiFollowPolicy.FollowPoseDecision.SKIP_DEADBAND ->
-                            GestureGuiFollowMetrics.recordSkippedDeadband()
-                        GestureGuiFollowPolicy.FollowPoseDecision.UPDATE -> {
-                            val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
-                            // 追従では補完(teleport/interpolationDuration)による追いかけ再生を
-                            // 行わず、計算したposeへ即時確定させます。背景と内容物の適用時刻
-                            // 差によるティアを、補間自体をなくすことで解消します。
-                            // 開閉アニメ中の上書きを避けるため、ACTIVE状態でのみ適用します。
-                            if (session.state == GestureGuiSessionState.ACTIVE) {
-                                session.screens.forEach { renderer.snapFollowEntities(it.render) }
-                                session.children.forEach {
-                                    renderer.snapFollowEntities(it.render)
-                                    it.overlay?.let(renderer::snapFollowEntity)
-                                }
-                            }
-                            var teleported = 0
-                            session.screens.zip(newPoses).forEach { (screen, pose) ->
-                                screen.pose = pose
-                                teleported += renderer.updatePose(screen.render, pose, screen.view)
-                            }
-                            teleported += repositionChildren(session)
-                            GestureGuiFollowMetrics.recordPoseUpdate(teleported)
-                            session.anchorX = eye.x
-                            session.anchorY = eye.y
-                            session.anchorZ = eye.z
-                            session.appliedYaw = session.retainedYaw
-                            session.lastFollowAppliedTick = tickIndex
+                GestureGuiFollowMetrics.recordEvaluation()
+                when (GestureGuiFollowPolicy.decideFollowMotion(tickIndex, session.lastMotionTick, moved)) {
+                    GestureGuiFollowPolicy.FollowMotionState.MOVING -> {
+                        session.lastMotionTick = tickIndex
+                        session.followDirty = true
+                        GestureGuiFollowMetrics.recordFrozenSkipped()
+                    }
+                    GestureGuiFollowPolicy.FollowMotionState.SETTLING -> {
+                        // 停止確定前は何もしません。次tickへ判定を持ち越します。
+                    }
+                    GestureGuiFollowPolicy.FollowMotionState.STOPPED -> {
+                        if (session.followDirty && session.state == GestureGuiSessionState.ACTIVE) {
+                            resummonFollowScreens(session, owner)
                         }
                     }
                 }
@@ -1244,9 +1334,6 @@ class GestureGuiServiceImpl(
         child.overlay?.remove()
     }
 
-    private fun hit(session: Session, player: Player, margin: Double = 0.0): TargetHit? =
-        targetHit(session, player, margin)
-
     private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
         val ray = ray(player)
         fun childHit(child: ChildRuntime): TargetHit? = child.takeIf {
@@ -1461,8 +1548,6 @@ class GestureGuiServiceImpl(
 
     private companion object {
         const val GESTURE_OWNER_PREFIX = "gesture-gui:"
-        const val MAX_YAW_STEP = 8.0f
-        const val YAW_TARGET_EPSILON = 0.05f
         const val CHILD_SCREEN_DEPTH = 0.25
         // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
         const val CHILD_STACK_DEPTH = 0.25
