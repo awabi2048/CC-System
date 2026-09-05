@@ -1404,6 +1404,7 @@ class GestureGuiServiceImpl(
                 session.screens.map { it.view.panel.width to it.view.panel.height },
                 session.layout,
                 session.verticalSlots,
+                session.tiltScale,
             )
         }
 

@@ -47,6 +47,7 @@ object GestureGuiGeometry {
         sizes: List<Pair<Double, Double>> = List(screenCount) { SCREEN_WIDTH to SCREEN_HEIGHT },
         layout: GestureGuiScreenLayout = GestureGuiScreenLayout.VERTICAL,
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
+        tiltScale: Double = 1.0,
     ): Boolean {
         require(screenCount in 1..3) { "gesture GUI requires one to three screens" }
         require(sizes.size == screenCount) { "gesture GUI screen size count must match screen count" }
@@ -57,7 +58,8 @@ object GestureGuiGeometry {
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL -> {
                 val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / SCREEN_DISTANCE)) }
-                val pitches = verticalCenters(sizes, verticalSlots)
+                // 包絡は解き直し後の中心角で評価し、表示と判定の範囲を一致させます。
+                val pitches = verticalStripArrangement(sizes, verticalSlots, tiltScale).map { it.centerPitchDegrees }
                 val top = pitches.indices.minOf { pitches[it] - Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 val bottom = pitches.indices.maxOf { pitches[it] + Math.toDegrees(atan((sizes[it].second / 2.0) / SCREEN_DISTANCE)) }
                 angularDistance(rayYaw, retainedYawDegrees) <= horizontalHalfAngle && rayPitch in top..bottom
@@ -130,12 +132,11 @@ object GestureGuiGeometry {
 
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL ->
-                verticalCenters(sizes, verticalSlots).mapIndexed { index, pitchDegrees ->
-                    // 中心位置は無倍率の配置角で決めます。向きだけにtiltScaleを
-                    // 掛けることで、辺縁の隙間設計を保ったまま傾きを抑えます。
-                    // 両方へ掛けると寸法据え置きで辺縁が重なり合います。
-                    val positionPitch = Math.toRadians(pitchDegrees)
-                    val tiltPitch = Math.toRadians(pitchDegrees * tiltScale)
+                verticalStripArrangement(sizes, verticalSlots, tiltScale).mapIndexed { index, angles ->
+                    // 中心位置は辺隣接ソルバーが解いた配置角で決めます。向きだけに
+                    // tiltScaleを掛けることで、辺縁の隙間設計を保ったまま傾きを抑えます。
+                    val positionPitch = Math.toRadians(angles.centerPitchDegrees)
+                    val tiltPitch = Math.toRadians(angles.tiltPitchDegrees)
                     val positionDirection = GestureGuiVector3(
                         forward.x * cos(positionPitch),
                         -sin(positionPitch),
@@ -152,7 +153,7 @@ object GestureGuiGeometry {
                     val up = right.cross(normal).normalized()
                     GestureGuiScreenPose(
                         screenIndex = index,
-                        centerPitchDegrees = pitchDegrees,
+                        centerPitchDegrees = angles.centerPitchDegrees,
                         center = eye + positionDirection * SCREEN_DISTANCE,
                         right = right,
                         up = up,
@@ -188,21 +189,143 @@ object GestureGuiGeometry {
     private const val SCREEN_VERTICAL_GAP_DEGREES = 2.0
 
     /**
-     * 指定スロットを3画面ぶんの縦配置へ投影します。欠けたスロットは最大寸法で予約し、
-     * 実体を生成せずに上・中・下の視野関係だけを維持します。
+     * 画面の配置角と傾き角です。中心位置はcenterPitchDegreesの視線上で
+     * 距離一定、向きはtiltPitchDegreesで決まります。両者が一致するときは
+     * 従来の湾曲配置(各画面が目を向く)と等しくなります。
      */
-    private fun verticalCenters(
+    internal data class VerticalStripAngles(
+        val centerPitchDegrees: Double,
+        val tiltPitchDegrees: Double,
+    )
+
+    /**
+     * 縦配置の画面群を、辺同士が接する折りたたみストリップとして解きます。
+     *
+     * 傾きだけを寝かせると中心間隔が詰まって辺縁が重なるため、傾き確定後に
+     * 中心位置を解き直します。中央スロットを従来arc位置へ固定し、上下へ
+     * 辺端角が隙間分だけずれるよう中心角を二分法で求めます。表示と視線包絡
+     * 判定の双方が同じ配置を使うため、判定と描画は一致します。
+     * view順で返します。欠けたスロットは最大寸法で空間を予約します。
+     */
+    internal fun verticalStripArrangement(
         sizes: List<Pair<Double, Double>>,
         verticalSlots: List<GestureGuiVerticalSlot>?,
-    ): List<Double> {
-        if (verticalSlots == null) return centerPitches(sizes)
-        val fallback = sizes.maxBy { it.first * it.second }
-        val slotSizes = List(3) { slotIndex ->
-            val viewIndex = verticalSlots.indexOfFirst { it.ordinal == slotIndex }
-            if (viewIndex >= 0) sizes[viewIndex] else fallback
+        tiltScale: Double,
+    ): List<VerticalStripAngles> {
+        require(tiltScale >= 0.0) { "gesture GUI tilt scale must be non-negative" }
+        // スロット順(上→下)へ正規化します。スロットなしはview順をそのまま使います。
+        data class SlotEntry(val size: Pair<Double, Double>, val viewIndex: Int)
+        val slots: List<SlotEntry> = if (verticalSlots == null) {
+            sizes.mapIndexed { index, size -> SlotEntry(size, index) }
+        } else {
+            val fallback = sizes.maxBy { it.first * it.second }
+            List(3) { slotIndex ->
+                val viewIndex = verticalSlots.indexOfFirst { it.ordinal == slotIndex }
+                val size = if (viewIndex >= 0) sizes[viewIndex] else fallback
+                SlotEntry(size, viewIndex)
+            }
         }
-        val allCenters = centerPitches(slotSizes)
-        return verticalSlots.map { allCenters[it.ordinal] }
+        val slotSizes = slots.map { it.size }
+        val arcPitches = centerPitches(slotSizes)
+        val tilts = arcPitches.map { it * tiltScale }
+        val centers = DoubleArray(slots.size)
+        // 中央スロットを従来arc位置へ固定し、そこから上下へ解きます。
+        // 中央固定により、単画面・2画面レイアウトの既存配置が維持されます。
+        val anchorIdx = slots.size / 2
+        centers[anchorIdx] = arcPitches[anchorIdx]
+        for (index in anchorIdx + 1 until slots.size) {
+            val prev = index - 1
+            val target = edgePitchAngle(
+                centers[prev], slotSizes[prev].second, tilts[prev], topEdge = false,
+            ) + SCREEN_VERTICAL_GAP_DEGREES
+            centers[index] = solveEdgePitch(
+                targetEdgeAngle = target,
+                height = slotSizes[index].second,
+                tiltPitchDegrees = tilts[index],
+                topEdge = true,
+            )
+        }
+        for (index in anchorIdx - 1 downTo 0) {
+            val prev = index + 1
+            val target = edgePitchAngle(
+                centers[prev], slotSizes[prev].second, tilts[prev], topEdge = true,
+            ) - SCREEN_VERTICAL_GAP_DEGREES
+            centers[index] = solveEdgePitch(
+                targetEdgeAngle = target,
+                height = slotSizes[index].second,
+                tiltPitchDegrees = tilts[index],
+                topEdge = false,
+            )
+        }
+        val bySlot = slots.indices.associateWith { slotIndex ->
+            VerticalStripAngles(centers[slotIndex], tilts[slotIndex])
+        }
+        return if (verticalSlots == null) {
+            slots.indices.map { bySlot.getValue(it) }
+        } else {
+            // view順へ戻します。各viewはverticalSlots[viewIndex]のスロットに属します。
+            verticalSlots.map { slot -> bySlot.getValue(slot.ordinal) }
+        }
+    }
+
+    /**
+     * 指定した辺端角を持つ中心角を二分法で求めます。
+     *
+     * topEdge=trueなら上辺、falseなら下辺を対象にします。単調区間
+     * [target-80, target+80]で40回反復し、収束しない場合は辺端半角分の
+     * 近似値へフォールバックします。
+     */
+    private fun solveEdgePitch(
+        targetEdgeAngle: Double,
+        height: Double,
+        tiltPitchDegrees: Double,
+        topEdge: Boolean,
+        distance: Double = SCREEN_DISTANCE,
+    ): Double {
+        val halfAngular = Math.toDegrees(atan((height / 2.0) / distance))
+        var lo = targetEdgeAngle - 80.0
+        var hi = targetEdgeAngle + 80.0
+        fun edgeAngle(center: Double): Double =
+            edgePitchAngle(center, height, tiltPitchDegrees, topEdge)
+        if ((edgeAngle(lo) - targetEdgeAngle) * (edgeAngle(hi) - targetEdgeAngle) > 0.0) {
+            return if (topEdge) targetEdgeAngle + halfAngular else targetEdgeAngle - halfAngular
+        }
+        repeat(40) {
+            val mid = (lo + hi) / 2.0
+            if ((edgeAngle(lo) - targetEdgeAngle) * (edgeAngle(mid) - targetEdgeAngle) <= 0.0) {
+                hi = mid
+            } else {
+                lo = mid
+            }
+        }
+        return (lo + hi) / 2.0
+    }
+
+    /**
+     * 中心角・高さ・傾きが決まった画面の辺端角(目から見たpitch、度)を返します。
+     * yaw=0の正準系で計算します。pitch配置はyaw回転に対して不変のため、
+     * 任意yawの配置へそのまま適用できます。
+     */
+    private fun edgePitchAngle(
+        centerPitchDegrees: Double,
+        height: Double,
+        tiltPitchDegrees: Double,
+        topEdge: Boolean,
+    ): Double {
+        val center = Math.toRadians(centerPitchDegrees)
+        val tilt = Math.toRadians(tiltPitchDegrees)
+        // 中心点: (0, -D sin p, D cos p)。法線方向の上ベクトル: (0, cos t, sin t)。
+        val cx = 0.0
+        val cy = -SCREEN_DISTANCE * sin(center)
+        val cz = SCREEN_DISTANCE * cos(center)
+        val uy = cos(tilt)
+        val uz = sin(tilt)
+        val sign = if (topEdge) 1.0 else -1.0
+        val px = cx
+        val py = cy + sign * (height / 2.0) * uy
+        val pz = cz + sign * (height / 2.0) * uz
+        val length = kotlin.math.sqrt(px * px + py * py + pz * pz)
+        return Math.toDegrees(-asin((py / length).coerceIn(-1.0, 1.0)))
     }
 
     private fun validateVerticalSlots(
