@@ -33,11 +33,11 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
-    fun `follow pose updates at ten hertz intervals`() {
-        // 20TPS前提で2tickごとに更新します。初回は必ず更新します。
+    fun `follow pose updates at twenty hertz intervals`() {
+        // 20TPS前提で毎tick更新します。初回は必ず更新します。
         assertTrue(GestureGuiFollowPolicy.isFollowIntervalElapsed(0L, -1L))
-        assertTrue(GestureGuiFollowPolicy.isFollowIntervalElapsed(10L, 8L))
-        assertFalse(GestureGuiFollowPolicy.isFollowIntervalElapsed(9L, 8L))
+        assertTrue(GestureGuiFollowPolicy.isFollowIntervalElapsed(9L, 8L))
+        assertFalse(GestureGuiFollowPolicy.isFollowIntervalElapsed(8L, 8L))
     }
 
     @Test
@@ -81,7 +81,7 @@ class GestureGuiFollowPolicyTest {
             yawDeltaAbs = 1.0f,
         )
         val throttled = GestureGuiFollowPolicy.decideFollowPose(
-            nowTick = 9L,
+            nowTick = 8L,
             lastAppliedTick = 8L,
             deltaX = 1.0,
             deltaY = 1.0,

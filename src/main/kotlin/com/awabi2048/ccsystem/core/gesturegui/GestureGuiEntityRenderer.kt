@@ -178,6 +178,30 @@ internal class GestureGuiEntityRenderer(
     }
 
     /**
+     * 追従更新の直前に、画面実体の補間を無効化します。
+     *
+     * teleport/interpolationDurationが残っていると、追従中の毎tick teleportが
+     * クライアント側で追いかけ再生になり、背景と内容物が相互にずれます。
+     * 追従では移動の滑らかさより位置の正確さを優先し、0 durationで即時確定させます。
+     * 開閉アニメは専用関数が独自のdurationを設定するため、ここでは触りません。
+     * 追従更新はACTIVE状態でのみ本関数を呼ぶことで、アニメ中の上書きを避けます。
+     */
+    fun snapFollowEntities(handle: ScreenHandle) {
+        handle.all.filterIsInstance<Display>().forEach {
+            it.teleportDuration = 0
+            it.interpolationDuration = 0
+        }
+    }
+
+    /** 単体実体(モーダルオーバーレイ等)を追従スナップ対象にします。 */
+    fun snapFollowEntity(entity: Entity) {
+        (entity as? Display)?.let {
+            it.teleportDuration = 0
+            it.interpolationDuration = 0
+        }
+    }
+
+    /**
      * 追従・パン・子画面再配置時に画面全体を新poseへ移動し、teleportした体数を返します。
      *
      * 背景の実寸確定は寸法変化時のみ行い、追従中の冗長メタデータで背景だけが
@@ -769,6 +793,11 @@ internal class GestureGuiEntityRenderer(
                 TextDisplay::class.java,
             ) {
                 prepareTextDisplay(it, pose)
+                // ホバーは追従に合わせて毎tick再配置されるため、生成時から補完を
+                // 無効化します。ホバーに開閉アニメはないため、常時スナップで
+                // 問題ありません。
+                it.teleportDuration = 0
+                it.interpolationDuration = 0
                 it.isVisibleByDefault = false
                 applyHover(it, pose, hover)
                 mark(it, sessionId, revision)
@@ -870,6 +899,10 @@ internal class GestureGuiEntityRenderer(
         BlockDisplay::class.java,
     ) {
         prepareDisplay(it, pose)
+        // ホバー面も追従に合わせて毎tick再配置されるため、生成時から補完を
+        // 無効化します。
+        it.teleportDuration = 0
+        it.interpolationDuration = 0
         it.isVisibleByDefault = false
         applyHoverBlock(it, pose, visual, blockData)
         mark(it, sessionId, revision)

@@ -12,14 +12,14 @@ internal object GestureGuiFollowPolicy {
     const val GAZE_REALIGN_DELAY_TICKS: Int = 60
 
     /**
-     * 追従poseの再計算間隔です。20TPS前提で2tick＝約10Hzに間引きます。
+     * 追従poseの再計算間隔です。20TPS前提で1tickごとに更新します(20Hz)。
      *
-     * Display群へ80発前後のteleportを毎tick送ると、同一tick内の到着差で
-     * 背景と内容物が相互にずれます。間引きでパケット数を半減させ、
-     * ティアの発生頻度と持続を抑えます。視線の再調整判定は毎tick継続し、
-     * 3秒規則の時間単位は変えません。
+     * 追従更新では補完を無効化して即時確定(スナップ)させるため、毎tickのteleport
+     * でも追いかけ再生が起きず、背景と内容物の適用時刻差によるティアを抑えます。
+     * 間引きが必要になった場合はこの定数だけを戻せば10Hz運用へ切り替えられます。
+     * 視線の再調整判定は毎tick継続し、3秒規則の時間単位は変えません。
      */
-    const val FOLLOW_POSE_INTERVAL_TICKS: Long = 2L
+    const val FOLLOW_POSE_INTERVAL_TICKS: Long = 1L
 
     /** 追従更新を無視する水平移動のデッドバンドです（ブロック単位）。 */
     const val FOLLOW_POSITION_DEADBAND: Double = 0.002

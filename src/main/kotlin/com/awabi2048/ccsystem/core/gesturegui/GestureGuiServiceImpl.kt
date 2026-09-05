@@ -894,6 +894,17 @@ class GestureGuiServiceImpl(
                             GestureGuiFollowMetrics.recordSkippedDeadband()
                         GestureGuiFollowPolicy.FollowPoseDecision.UPDATE -> {
                             val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
+                            // 追従では補完(teleport/interpolationDuration)による追いかけ再生を
+                            // 行わず、計算したposeへ即時確定させます。背景と内容物の適用時刻
+                            // 差によるティアを、補間自体をなくすことで解消します。
+                            // 開閉アニメ中の上書きを避けるため、ACTIVE状態でのみ適用します。
+                            if (session.state == GestureGuiSessionState.ACTIVE) {
+                                session.screens.forEach { renderer.snapFollowEntities(it.render) }
+                                session.children.forEach {
+                                    renderer.snapFollowEntities(it.render)
+                                    it.overlay?.let(renderer::snapFollowEntity)
+                                }
+                            }
                             var teleported = 0
                             session.screens.zip(newPoses).forEach { (screen, pose) ->
                                 screen.pose = pose
