@@ -14,9 +14,10 @@ class KantanLocalizationContractTest {
         // および一覧更新失敗・スキャン不完全のエラー分離キーを統合した公開キー総数とfingerprintを固定します。
         // 簡易GUI（統合版専用インベントリ）対応で起動条件・タイマー等の設定項目キー30件を廃止し、
         // 簡易GUI用5件を追加しました。
-        assertEquals(758, keys.size)
+        // テスト実行調整で所要時間内訳・実処理時間・ログ見出し・失敗理由・中断通知の16件を追加しました。
+        assertEquals(774, keys.size)
         assertEquals(
-            "a9ef9f3b12b2ab964b1e1008d8429ce7004cce4d8e72e702b983f8cfeb746ddc",
+            "606b746216bc604070cd72b422a6a6c77e65b8c14b63fd5f0c4f5351211edc2a",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
