@@ -33,13 +33,6 @@ internal object JaJpGestureGuiCatalog {
         entry("gesture_gui.demo.choice.trader", "商人"),
         entry("gesture_gui.demo.choice.guardian", "守護者"),
         entry("gesture_gui.exit_guidance", "Shift＋ジャンプで終了"),
-        entry("gesture_gui.debug.subtitle", "§7視線:{inside} 包絡:{envelope} hit:{hit} 距離:{dist}/{range} {motion}{dirty}{dummy} 変位:{displacement}"),
-        entry("gesture_gui.debug.resummon", "§e[Gaze] 再召喚しました 変位:{displacement}m（視線外のため）"),
-        entry("gesture_gui.debug.resummon_failed", "§c[Gaze] 再召喚に失敗しました: {detail}"),
-        entry("gesture_gui.debug.dummy_started", "§e[Gaze] ダミー追従を開始しました 変位:{displacement}m（視線外のため）"),
-        entry("gesture_gui.debug.dummy_restored", "§e[Gaze] 本体へ復帰しました（再召喚見送り 変位:{displacement}m）"),
-        entry("gesture_gui.debug.main_restored_for_update", "§e[Gaze] 内容更新のため本体へ復帰しました（見た目が凍結位置へ戻ります）"),
-        entry("gesture_gui.debug.unpinned", "§e[Gaze] 固定解除のため現在位置へ再配置しました"),
     )
 
     private fun entry(key: String, value: String) =

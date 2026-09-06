@@ -90,4 +90,48 @@ class GestureGuiFollowPolicyTest {
         assertTrue(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.0, 0.0, -2.5))
         assertTrue(GestureGuiFollowPolicy.shouldStartDummyFollow(false, 0.3, 0.4, 0.0))
     }
+
+    @Test
+    fun `cone angle measures the operator direction from the screen center`() {
+        // 画面正面の軸上は0度です。軸は操作者側（−normal）を渡します。
+        assertEquals(
+            0.0,
+            GestureGuiFollowPolicy.coneAngleDegrees(0.0, 0.0, 1.875, 0.0, 0.0, 1.0),
+            1.0e-9,
+        )
+        // 真横は90度、背後は180度です。
+        assertEquals(
+            90.0,
+            GestureGuiFollowPolicy.coneAngleDegrees(1.875, 0.0, 0.0, 0.0, 0.0, 1.0),
+            1.0e-9,
+        )
+        assertEquals(
+            180.0,
+            GestureGuiFollowPolicy.coneAngleDegrees(0.0, 0.0, -1.875, 0.0, 0.0, 1.0),
+            1.0e-9,
+        )
+        // 頂点一致と軸縮退時は0度とし、距離条件へ委ねます。
+        assertEquals(
+            0.0,
+            GestureGuiFollowPolicy.coneAngleDegrees(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+            1.0e-9,
+        )
+        assertEquals(
+            0.0,
+            GestureGuiFollowPolicy.coneAngleDegrees(0.0, 0.0, 1.0, 0.0, 0.0, 0.0),
+            1.0e-9,
+        )
+    }
+
+    @Test
+    fun `cone contains the front sector up to sixty degrees`() {
+        // 正面は錐内です。
+        assertTrue(GestureGuiFollowPolicy.isInsideCone(0.0, 0.0, 1.875, 0.0, 0.0, 1.0))
+        // 境界（60度）は内側、超過は外側です。
+        val boundary = 1.875 * kotlin.math.tan(Math.toRadians(60.0))
+        assertTrue(GestureGuiFollowPolicy.isInsideCone(boundary, 0.0, 1.875, 0.0, 0.0, 1.0))
+        assertFalse(GestureGuiFollowPolicy.isInsideCone(boundary + 0.1, 0.0, 1.875, 0.0, 0.0, 1.0))
+        // 背後は外側です。
+        assertFalse(GestureGuiFollowPolicy.isInsideCone(0.0, 0.0, -1.0, 0.0, 0.0, 1.0))
+    }
 }

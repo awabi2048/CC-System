@@ -1,5 +1,8 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
+import kotlin.math.acos
+import kotlin.math.sqrt
+
 /**
  * プレイヤー追従Gesture GUIの移動・停止判定を一元化します。
  *
@@ -97,6 +100,48 @@ internal object GestureGuiFollowPolicy {
     }
 
     /**
+     * 画面中心を頂点とする円錐の半角です（度）。
+     *
+     * 操作者がいずれかの親画面の円錐内かつ操作可能距離内にいる間は画面正面に
+     * いるとみなし、視線方向にかかわらず位置を固定します。目の前まで近づいて
+     * 大きく下を向いた場合も画面が逃げなくなります。背後（90度超）は半角に
+     * かかわらず外側です。
+     */
+    const val CONE_HALF_ANGLE_DEGREES: Double = 60.0
+
+    /**
+     * 中心から見た操作者の方向と円錐軸のなす角を返します（度）。
+     *
+     * 頂点一致（ゼロ長のオフセット）や軸の縮退時は0度とし、呼び出し側の
+     * 距離条件へ委ねます。
+     */
+    fun coneAngleDegrees(
+        offsetX: Double,
+        offsetY: Double,
+        offsetZ: Double,
+        axisX: Double,
+        axisY: Double,
+        axisZ: Double,
+    ): Double {
+        val offsetSq = offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ
+        val axisSq = axisX * axisX + axisY * axisY + axisZ * axisZ
+        if (offsetSq <= 1.0e-12 || axisSq <= 1.0e-12) return 0.0
+        val cosAngle = (offsetX * axisX + offsetY * axisY + offsetZ * axisZ) / sqrt(offsetSq * axisSq)
+        return Math.toDegrees(acos(cosAngle.coerceIn(-1.0, 1.0)))
+    }
+
+    /** 円錐内にいるかを返します。 */
+    fun isInsideCone(
+        offsetX: Double,
+        offsetY: Double,
+        offsetZ: Double,
+        axisX: Double,
+        axisY: Double,
+        axisZ: Double,
+        halfAngleDegrees: Double = CONE_HALF_ANGLE_DEGREES,
+    ): Boolean = coneAngleDegrees(offsetX, offsetY, offsetZ, axisX, axisY, axisZ) <= halfAngleDegrees
+
+    /**
      * 停止確定時に再召喚を行うべきかを返します。
      *
      * 前回確定位置からの変位が[RESUMMON_MIN_DISTANCE]未満の場合は作り直さず、
@@ -114,8 +159,8 @@ internal object GestureGuiFollowPolicy {
     /**
      * 移動中に本体をダミーパネルへ切り替えてよいかを返します。
      *
-     * 停止時再召喚と同一のゲート（視線外かつ閾値以上の変位）の通過を要求します。
-     * 小さな揺れや視線が画面内にある間はダミーを開始せず、従来どおり凍結を維持します。
+     * 停止時再召喚と同一のゲート（セクタ外かつ閾値以上の変位）の通過を要求します。
+     * 小さな揺れやセクタ内の間はダミーを開始せず、従来どおり凍結を維持します。
      * ゲートを維持することで、停止時に再召喚が見送られる移動ではダミー自体が
      * 開始されず、本体復帰の不整合が生じません。
      */
