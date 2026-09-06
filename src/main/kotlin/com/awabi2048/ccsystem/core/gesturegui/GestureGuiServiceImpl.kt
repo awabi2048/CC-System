@@ -1284,8 +1284,8 @@ class GestureGuiServiceImpl(
                     GestureGuiFollowPolicy.FollowMotionState.STOPPED -> {
                         debugMotion = "STOPPED"
                         if (session.followDirty && session.state == GestureGuiSessionState.ACTIVE) {
-                            // 視線が画面内に入っている間は一切の再描画を行わず、
-                            // 位置を固定します。dirtyは維持するため、視線が外れた
+                            // 操作者が球面セクタ内にいる間は一切の再描画を行わず、
+                            // 位置を固定します。dirtyは維持するため、セクタ外へ出た
                             // 時点で再召喚が走ります。明示操作・内容変更・ホバーは
                             // この制限の対象外です。
                             if (isGazeInsideScreen(session, owner)) {
@@ -1670,59 +1670,49 @@ class GestureGuiServiceImpl(
     }
 
     /**
-     * 所有者の視線が画面内に入っているかを返します。
+     * 操作者が画面正面の球面セクタ内にいるかを返します。
      *
-     * 停止確定後の再召喚ゲート専用です。単画面は当たり判定、複数画面は
-     * 画面包絡で判定し、いずれも表示姿勢基準(retainedYaw)で評価します。
-     * 包絡は視線方向だけを見るため、複数画面では凍結poseとの3D交差も合わせて
-     * 要求します。視線を動かさずに横移動した場合でも、画面から外れれば
-     * 画面外として扱えます。溝内の視線は余白付き当たり判定が吸収します。
-     * 視線が画面へ向いていても、操作可能距離より離れている場合は画面外として扱い、
-     * 置き去りになった画面へ追従が戻らなくなる状態を防ぎます。
+     * 停止確定後の再召喚ゲートとダミー開始ゲートで共有します。頂点＝凍結中心・
+     * 軸＝操作者側（−normal）・半角60度・半径＝操作可能距離のセクタに
+     * いずれかの親画面で入っていれば内側とします。視線方向は使わないため、
+     * 目の前まで近づいて大きく下を向いても画面は動きません。
+     * 当たり判定・包絡は位置更新条件に含めません。
      * ホバー・キャッチャー・明示操作の判定には影響しません。
      */
     private fun isGazeInsideScreen(session: Session, owner: Player): Boolean =
         evaluateGaze(session, owner, motionName = "", displacement = 0.0).inside
 
     /**
-     * 所有者の視線判定を内訳付きで評価します。
+     * 球面セクタ判定を内訳付きで評価します。
      *
      * 判定式は [isGazeInsideScreen] と同一であり、デバッグ表示と tick 判定で
      * 共有します。`motionName` と `displacement` は観測専用の付帯情報であり、
-     * 判定結果へ影響しません。
+     * 判定結果へ影響しません。当たり判定はデバッグのヒットマーカー表示の
+     * ためだけに維持します。
      */
     private fun evaluateGaze(session: Session, owner: Player, motionName: String, displacement: Double): GazeDebugSnapshot {
         val gazeRay = ray(owner)
         val hit = targetHit(session, owner, margin = 0.06)
-        val envelopeApplicable = session.screens.size != 1
-        val envelopeInside = if (!envelopeApplicable) {
-            true
-        } else {
-            GestureGuiGeometry.containsScreenEnvelope(
-                gazeRay.direction,
-                session.retainedYaw.toDouble(),
-                session.screens.size,
-                session.screens.map { it.view.panel.width to it.view.panel.height },
-                session.layout,
-                session.verticalSlots,
-                session.tiltScale,
-                session.screenDistance,
-            )
-        }
-        val angularInside = if (!envelopeApplicable) {
-            hit != null
-        } else {
-            envelopeInside && hit != null
-        }
         val range = operableRange(owner)
-        val nearest = session.screens.minOfOrNull { screen ->
-            (screen.pose.center - gazeRay.origin).length()
+        var coneAngle: Double? = null
+        var nearest: Double? = null
+        session.screens.forEach { screen ->
+            val offset = gazeRay.origin - screen.pose.center
+            val distance = offset.length()
+            if (nearest == null || distance < nearest) nearest = distance
+            // normalは視点から画面へ向く定義のため、操作者側の軸は反転します。
+            val axis = screen.pose.normal * -1.0
+            val angle = GestureGuiFollowPolicy.coneAngleDegrees(
+                offset.x, offset.y, offset.z, axis.x, axis.y, axis.z,
+            )
+            if (coneAngle == null || angle < coneAngle) coneAngle = angle
         }
-        val inside = angularInside && nearest != null && nearest <= range
+        val inside = coneAngle != null &&
+            coneAngle <= GestureGuiFollowPolicy.CONE_HALF_ANGLE_DEGREES &&
+            nearest != null && nearest <= range
         return GazeDebugSnapshot(
             inside = inside,
-            envelopeApplicable = envelopeApplicable,
-            envelopeInside = envelopeInside,
+            coneAngle = coneAngle,
             hitDistance = hit?.hit?.distance,
             hitElementId = hit?.hit?.elementId,
             hitScreenIndex = hit?.hit?.screenIndex,

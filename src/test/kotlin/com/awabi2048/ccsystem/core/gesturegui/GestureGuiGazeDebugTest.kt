@@ -10,13 +10,11 @@ import org.junit.jupiter.api.Test
 class GestureGuiGazeDebugTest {
     private fun snapshot(
         inside: Boolean = true,
-        envelopeApplicable: Boolean = true,
-        envelopeInside: Boolean = true,
+        coneAngle: Double? = 12.0,
         hitDistance: Double? = 1.8,
     ) = GazeDebugSnapshot(
         inside = inside,
-        envelopeApplicable = envelopeApplicable,
-        envelopeInside = envelopeInside,
+        coneAngle = coneAngle,
         hitDistance = hitDistance,
         hitElementId = hitDistance?.let { "viewport-empty" },
         hitScreenIndex = hitDistance?.let { 0 },
@@ -70,7 +68,7 @@ class GestureGuiGazeDebugTest {
         assertEquals(1.8, insidePlan.markerPoint?.z ?: 0.0, 1.0e-9)
 
         val outsidePlan = GestureGuiGazeDebug.particlePlan(
-            snapshot(inside = false, envelopeInside = false, hitDistance = 1.8),
+            snapshot(inside = false, coneAngle = 75.0, hitDistance = 1.8),
         )
         assertEquals(Particle.SMOKE, outsidePlan.rayParticle)
         assertEquals(Particle.CRIT, outsidePlan.markerParticle)
@@ -86,7 +84,7 @@ class GestureGuiGazeDebugTest {
     fun `subtitle placeholders round values for display`() {
         val placeholders = GestureGuiGazeDebug.subtitlePlaceholders(snapshot())
         assertEquals("内", placeholders["inside"])
-        assertEquals("○", placeholders["envelope"])
+        assertEquals("12/60", placeholders["cone"])
         assertEquals("○1.80", placeholders["hit"])
         assertEquals("1.90", placeholders["dist"])
         assertEquals("3.00", placeholders["range"])
@@ -97,11 +95,11 @@ class GestureGuiGazeDebugTest {
     }
 
     @Test
-    fun `subtitle placeholders cover single screen and miss cases`() {
-        val single = GestureGuiGazeDebug.subtitlePlaceholders(
-            snapshot(envelopeApplicable = false, envelopeInside = true, hitDistance = null),
+    fun `subtitle placeholders cover missing cone angle and miss cases`() {
+        val missing = GestureGuiGazeDebug.subtitlePlaceholders(
+            snapshot(coneAngle = null, hitDistance = null),
         )
-        assertEquals("―", single["envelope"])
-        assertEquals("×", single["hit"])
+        assertEquals("--", missing["cone"])
+        assertEquals("×", missing["hit"])
     }
 }

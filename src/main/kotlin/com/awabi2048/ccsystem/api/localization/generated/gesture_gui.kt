@@ -30,7 +30,7 @@ object GestureGuiKeys {
     @JvmField val GESTURE_GUI_EXIT_GUIDANCE = LocalizationKey.text("gesture_gui.exit_guidance")
     @JvmField val GESTURE_GUI_DEBUG_SUBTITLE = LocalizationKey.text(
         "gesture_gui.debug.subtitle",
-        setOf("inside", "envelope", "hit", "dist", "range", "motion", "dirty", "dummy", "displacement"),
+        setOf("inside", "cone", "hit", "dist", "range", "motion", "dirty", "dummy", "displacement"),
     )
     @JvmField val GESTURE_GUI_DEBUG_RESUMMON = LocalizationKey.text(
         "gesture_gui.debug.resummon",

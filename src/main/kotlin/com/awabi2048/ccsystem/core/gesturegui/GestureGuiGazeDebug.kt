@@ -21,10 +21,8 @@ import java.time.Duration
 internal data class GazeDebugSnapshot(
     /** 最終的な画面内外判定です。 */
     val inside: Boolean,
-    /** 複数画面時のみ包絡判定を使います。単画面では包絡を評価しません。 */
-    val envelopeApplicable: Boolean,
-    /** 包絡判定の結果です。単画面では常に真です。 */
-    val envelopeInside: Boolean,
+    /** 最も小さい円錐角です（度）。画面なしはnullです。 */
+    val coneAngle: Double?,
     /** 当たり判定の距離です。ヒットなし・ダミー表示中はnullです。 */
     val hitDistance: Double?,
     /** 当たった要素IDです。要素なし・ヒットなしはnullです。 */
@@ -130,7 +128,7 @@ internal object GestureGuiGazeDebug {
     /** 字幕テンプレートへの差し込み値を組み立てます。数値は小数2桁へ丸めます。 */
     fun subtitlePlaceholders(snapshot: GazeDebugSnapshot): Map<String, Any> = mapOf<String, Any>(
         "inside" to if (snapshot.inside) "内" else "外",
-        "envelope" to if (!snapshot.envelopeApplicable) "―" else if (snapshot.envelopeInside) "○" else "×",
+        "cone" to (snapshot.coneAngle?.let { "%.0f/60".format(it) } ?: "--"),
         "hit" to (snapshot.hitDistance?.let { "○%.2f".format(it) } ?: "×"),
         "dist" to (snapshot.nearestCenterDistance?.let { "%.2f".format(it) } ?: "--"),
         "range" to "%.2f".format(snapshot.range),
