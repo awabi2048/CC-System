@@ -770,18 +770,22 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_ADMIN_MUTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_admin_mutation", setOf("action"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_log_success", setOf("attempt", "command"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_FAILURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_log_failure", setOf("attempt", "command"))
-    /** テスト実行の所要時間へ待機内訳を付した値です。ラベルは duration を使用します。 */
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DURATION_VALUE_WITH_WAIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.duration_value_with_wait", setOf("total", "wait"))
     /** デバッグ遅延を差し引いた実処理時間の項目名です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REAL_DURATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.real_duration", setOf())
+    /** 待機コマンドによる待機時間の項目名です。所要時間とは別行で表示します。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_WAIT_DURATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.wait_duration", setOf())
+    /** 開始拒否のバリア表示へ出す短縮理由です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.short_empty", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_ERRORS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.short_errors", setOf("count"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_BUSY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.short_busy", setOf())
+    /** テストログのホバーへ出す実行位置の見出しです。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.log_position", setOf())
     /** 実行可能なコマンドが0件の場合にバリア表示へ出す理由です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_NO_COMMANDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.no_commands", setOf())
     /** テストログのホバー見出しです。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_COMMAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.log_command", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_RESULT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.log_result", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_DETAIL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.log_detail", setOf())
-    /** バリア表示で先頭以外の検証エラーを件数へまとめる行です。 */
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_MORE_ERRORS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.more_errors", setOf("count"))
     /** テスト実行の失敗理由コードに対応する表示文です。不明な理由は原文表示へ退避します。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_COMMAND_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.command_failed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_NODE_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.node_failed", setOf())
@@ -1576,13 +1580,16 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_ADMIN_MUTATION,
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_FAILURE,
-        KANTAN_COMMANDER_CLEAN_GUI_TEST_DURATION_VALUE_WITH_WAIT,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REAL_DURATION,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_WAIT_DURATION,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_EMPTY,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_ERRORS,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_SHORT_BUSY,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_NO_COMMANDS,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_COMMAND,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_RESULT,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_LOG_DETAIL,
-        KANTAN_COMMANDER_CLEAN_GUI_TEST_MORE_ERRORS,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_COMMAND_FAILED,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_NODE_FAILED,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_INVALID_WAIT_SECONDS,
