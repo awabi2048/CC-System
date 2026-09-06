@@ -33,13 +33,6 @@ internal object EnUsGestureGuiCatalog {
         entry("gesture_gui.demo.choice.trader", "Trader"),
         entry("gesture_gui.demo.choice.guardian", "Guardian"),
         entry("gesture_gui.exit_guidance", "Shift + jump to close"),
-        entry("gesture_gui.debug.subtitle", "§7Pos:{inside} Cone:{cone} hit:{hit} Dist:{dist}/{range} {motion}{dirty}{dummy} Delta:{displacement}"),
-        entry("gesture_gui.debug.resummon", "§e[Gaze] Resummoned screens (delta:{displacement}m, outside sector)"),
-        entry("gesture_gui.debug.resummon_failed", "§c[Gaze] Failed to resummon: {detail}"),
-        entry("gesture_gui.debug.dummy_started", "§e[Gaze] Started dummy follow (delta:{displacement}m, outside sector)"),
-        entry("gesture_gui.debug.dummy_restored", "§e[Gaze] Restored main screens (resummon skipped, delta:{displacement}m)"),
-        entry("gesture_gui.debug.main_restored_for_update", "§e[Gaze] Restored main screens for content update (view jumps back to frozen pose)"),
-        entry("gesture_gui.debug.unpinned", "§e[Gaze] Repositioned to current position (unpinned)"),
     )
 
     private fun entry(key: String, value: String) =
