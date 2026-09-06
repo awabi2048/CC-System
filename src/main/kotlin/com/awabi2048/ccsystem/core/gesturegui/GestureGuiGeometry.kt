@@ -58,12 +58,13 @@ object GestureGuiGeometry {
         val rayPitch = Math.toDegrees(-asin(direction.y.coerceIn(-1.0, 1.0)))
         return when (layout) {
             GestureGuiScreenLayout.VERTICAL -> {
-                val horizontalHalfAngle = sizes.maxOf { Math.toDegrees(atan((it.first / 2.0) / screenDistance)) }
-                // 包絡は解き直し後の中心角で評価し、表示と判定の範囲を一致させます。
-                // 上下端は角度和の近似ではなく、傾き確定後の実辺端角そのもので求めます。
-                // 位置と向きを分離した配置では atan((h/2)/D) が実辺とずれるため、
-                // ヒンジ結合と同じ辺点角を使い、描画・当たり・包絡を一致させます。
+                // 水平方向は画面別の実辺yawの和集合で評価します。単一の最大幅近似では、
+                // ヒンジ結合で奥行きが寄った・傾いた画面（例：上部ワイド画面）の側端yawを
+                // 過小評価し、左右端の注視が包絡外になります。上下端と同様に描画配置と
+                // 同一のarrangementを基準にします。
                 val arrangement = verticalStripArrangement(sizes, verticalSlots, tiltScale, screenDistance)
+                val horizontalHalfAngle = verticalHorizontalHalfAngle(sizes, arrangement)
+                // 上下端は角度和の近似ではなく、傾き確定後の実辺端角そのもので求めます。
                 val top = arrangement.indices.minOf { index ->
                     edgePitchAngle(
                         arrangement[index].centerOffset,
@@ -316,6 +317,31 @@ object GestureGuiGeometry {
         } else {
             // view順へ戻します。各viewはverticalSlots[viewIndex]のスロットに属します。
             verticalSlots.map { slot -> bySlot.getValue(slot.ordinal) }
+        }
+    }
+
+    /**
+     * 縦配置の各画面について、左右端へのyaw半角の最大値を返します。
+     *
+     * 中心は yaw=0・目原点系の3Dオフセットで受け、球面拘束を仮定しません。
+     * 側辺はright方向（水平）のため辺中点の奥行きは中心と同じですが、傾きにより
+     * 上下コーナーが手前へ引き込まれると端yawが広がります。各画面の最小コーナー
+     * 奥行きを分母に使い、描画・当たり・包絡を一致させます。
+     * 包絡判定と単体テストから同じ辺定義を参照するため internal とします。
+     */
+    internal fun verticalHorizontalHalfAngle(
+        sizes: List<Pair<Double, Double>>,
+        arrangement: List<VerticalStripAngles>,
+    ): Double {
+        require(sizes.size == arrangement.size) { "gesture GUI screen size count must match arrangement count" }
+        return arrangement.indices.maxOf { index ->
+            val halfWidth = sizes[index].first / 2.0
+            val height = sizes[index].second
+            val tilt = Math.toRadians(arrangement[index].tiltPitchDegrees)
+            val cornerDepth = arrangement[index].centerOffset.z -
+                kotlin.math.abs(kotlin.math.sin(tilt)) * (height / 2.0)
+            val depth = cornerDepth.coerceAtLeast(1.0e-6)
+            Math.toDegrees(atan(halfWidth / depth))
         }
     }
 

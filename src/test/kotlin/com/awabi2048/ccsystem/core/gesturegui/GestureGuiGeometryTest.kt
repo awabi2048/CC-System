@@ -163,7 +163,10 @@ class GestureGuiGeometryTest {
 
         assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 0.0), 0.0, 2))
         assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 15.0), 0.0, 3))
-        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(50.0, 0.0), 0.0, 3))
+        // 水平境界は画面別の実辺yawに従います。3画面・傾き1.0では外側画面の実辺が
+        // 約55.6度まで広がるため、50度は包絡内です。十分外側の65度で除外を検証します。
+        assertTrue(GestureGuiGeometry.containsScreenEnvelope(direction(50.0, 0.0), 0.0, 3))
+        assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(65.0, 0.0), 0.0, 3))
         assertFalse(GestureGuiGeometry.containsScreenEnvelope(direction(0.0, 62.0), 0.0, 3))
     }
 
@@ -306,5 +309,64 @@ class GestureGuiGeometryTest {
             assertEquals(expectedTop, scannedTop, 0.1, "tilt=$tilt")
             assertEquals(expectedBottom, scannedBottom, 0.1, "tilt=$tilt")
         }
+    }
+
+    @Test
+    fun `wide upper screen side edges stay inside the envelope`() {
+        // かんたんコマンダー想定：上部ワイド2.90／下部標準2.12、TOP/MIDDLE、tilt0.5、距離1.875。
+        // 旧来の単一最大幅近似では上部側端yawを過小評価し、左右端注視が包絡外になりました。
+        val sizes = listOf(
+            2.90 to GestureGuiGeometry.SCREEN_HEIGHT,
+            GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
+        )
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        val tiltScale = 0.5
+        val distance = 1.875
+        val poses = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            2,
+            sizes,
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+            slots,
+            tiltScale,
+            distance,
+        )
+        val upper = poses[0]
+        fun direction(yaw: Double, pitch: Double): GestureGuiVector3 {
+            val yawRadians = Math.toRadians(yaw)
+            val pitchRadians = Math.toRadians(pitch)
+            return GestureGuiVector3(
+                -kotlin.math.sin(yawRadians) * kotlin.math.cos(pitchRadians),
+                -kotlin.math.sin(pitchRadians),
+                kotlin.math.cos(yawRadians) * kotlin.math.cos(pitchRadians),
+            )
+        }
+        fun yawOf(vector: GestureGuiVector3): Double =
+            Math.toDegrees(kotlin.math.atan2(-vector.x, vector.z))
+        fun pitchOf(vector: GestureGuiVector3): Double =
+            Math.toDegrees(-kotlin.math.asin(vector.y.coerceIn(-1.0, 1.0)))
+        fun inside(yaw: Double, pitch: Double): Boolean = GestureGuiGeometry.containsScreenEnvelope(
+            direction(yaw, pitch),
+            0.0,
+            2,
+            sizes,
+            com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+            slots,
+            tiltScale,
+            distance,
+        )
+        // 上部側端中点への視線は画面内です。旧近似（約37.7度）を超えるyawでも内側になります。
+        val edgeMid = (upper.center + upper.right * (upper.width / 2.0)).normalized()
+        val edgeYaw = yawOf(edgeMid)
+        val edgePitch = pitchOf(edgeMid)
+        assertTrue(edgeYaw > 38.0, "wide upper edge yaw should exceed the old approximation: $edgeYaw")
+        assertTrue(inside(edgeYaw, edgePitch))
+        // さらに外側は外側のままです。
+        assertFalse(inside(edgeYaw + 5.0, edgePitch))
+        // 下部中央は従来通り内側です。
+        val lower = poses[1]
+        val lowerCenter = lower.center.normalized()
+        assertTrue(inside(yawOf(lowerCenter), pitchOf(lowerCenter)))
     }
 }
