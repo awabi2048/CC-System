@@ -21,16 +21,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ADD_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.add_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.insert", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.insert_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.activation", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.activation_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_MODE_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.activation_mode_label", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.activation_action", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_TIMER_REQUIRED: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.activation_timer_required", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.timer", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.timer_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.timer_action", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_STATE_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.state_label", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.interval_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center", setOf())
     /** ジェスチャーGUIの「先頭へ移動」ブロックに表示する短い記号です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_glyph", setOf())
@@ -49,8 +40,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_outside_value", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_omitted_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_omitted_value", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NAVIGATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.navigate", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NAVIGATE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.navigate_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_LEFT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.move_left", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_RIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.move_right", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_UP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.move_up", setOf())
@@ -59,7 +48,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SETTING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.setting", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SETTINGS_SUMMARY_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.settings_summary_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_EDIT_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.edit_action", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.delete_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_SECONDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.interval_seconds", setOf("value"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DISABLED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.disabled", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ENABLED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.enabled", setOf())
@@ -72,17 +60,15 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WRITE_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.write_cancel", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TARGET_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.target_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_POSITION_DESTINATION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.position_destination_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_FACING_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.facing_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CONDITION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.condition_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_TYPE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.variable_type_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_OPERATION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.variable_operation_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DISPLAY_MODE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.display_mode_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.delete_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CANCEL_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.cancel_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_COMMAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.delete_command", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CONDITION_DETAIL_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.condition_detail_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TARGET_FILTER_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.target_filter_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_VALUE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.variable_value_title", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.simple_locked_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.simple_locked_action", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_MESSAGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.simple_locked_message", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_FORM_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.simple_form_unavailable", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_BLOCK_REQUIRED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.held_block_required", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.save_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.save_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_PROCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_process", setOf())
@@ -91,10 +77,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_control_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_external_disk", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_external_disk_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.selected", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NOT_SELECTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.not_selected", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SHOW_CATEGORY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.show_category", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CHOICE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.choice_description", setOf("value"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECT_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.select_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_PLAYER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.nearest_player", setOf())
@@ -235,10 +218,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.back", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.cancel", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_DETAILS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.show_details", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.interval", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ENABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.enable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.variable_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.variable_body", setOf())
@@ -261,13 +242,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_TICK_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.duration_tick_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.position_variable_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.position_variable_body", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.rotation_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.rotation_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.rotation_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_COORDINATES_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.coordinates_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_COORDINATES_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.coordinates_invalid", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DESTINATION_COORDINATES_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.destination_coordinates_title", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FACING_COORDINATES_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.facing_coordinates_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_count", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_COUNT_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_count_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TICKS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.field_ticks", setOf())
@@ -502,11 +480,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_NAME_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.name_disk", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.program_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_OWNER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.owner", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.trigger", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_edit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_WRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_write", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_ACTIVATION_NEEDS_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.activation.needs_redstone", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_ACTIVATION_ALWAYS_ACTIVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.activation.always_active", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.teleport_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.give_item", setOf())
@@ -824,16 +799,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ADD_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_MODE_LABEL,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_ACTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ACTIVATION_TIMER_REQUIRED,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER_ACTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_STATE_LABEL,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_DESCRIPTION,
@@ -851,8 +817,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_VALUE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NAVIGATE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NAVIGATE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_LEFT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_RIGHT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_MOVE_UP,
@@ -861,7 +825,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SETTING,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SETTINGS_SUMMARY_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_EDIT_ACTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INTERVAL_SECONDS,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DISABLED,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ENABLED,
@@ -874,17 +837,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WRITE_CANCEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TARGET_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_POSITION_DESTINATION_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_FACING_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CONDITION_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_TYPE_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_OPERATION_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DISPLAY_MODE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CANCEL_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_DELETE_COMMAND,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CONDITION_DETAIL_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TARGET_FILTER_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_VARIABLE_VALUE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_PROCESS,
@@ -893,10 +849,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECTED,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NOT_SELECTED,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SHOW_CATEGORY,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CHOICE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECT_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NEAREST_PLAYER,
@@ -1040,10 +993,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_DETAILS,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ENABLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_BODY,
@@ -1066,13 +1017,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DURATION_TICK_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_POSITION_VARIABLE_BODY,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ROTATION_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_COORDINATES_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_COORDINATES_INVALID,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_DESTINATION_COORDINATES_TITLE,
-        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FACING_COORDINATES_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_COUNT,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_COUNT_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIELD_TICKS,
@@ -1313,11 +1261,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_ITEM_NAME_DISK,
         KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME,
         KANTAN_COMMANDER_CLEAN_ITEM_OWNER,
-        KANTAN_COMMANDER_CLEAN_ITEM_TRIGGER,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_WRITE,
-        KANTAN_COMMANDER_CLEAN_ACTIVATION_NEEDS_REDSTONE,
-        KANTAN_COMMANDER_CLEAN_ACTIVATION_ALWAYS_ACTIVE,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM,
@@ -1608,5 +1553,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_ADMIN_MUTATION,
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_LOG_FAILURE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_ACTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_MESSAGE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_FORM_UNAVAILABLE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_BLOCK_REQUIRED,
     )
 }
