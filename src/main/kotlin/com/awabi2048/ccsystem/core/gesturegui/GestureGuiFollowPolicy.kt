@@ -110,4 +110,19 @@ internal object GestureGuiFollowPolicy {
         val distSq = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
         return distSq >= RESUMMON_MIN_DISTANCE * RESUMMON_MIN_DISTANCE
     }
+
+    /**
+     * 移動中に本体をダミーパネルへ切り替えてよいかを返します。
+     *
+     * 停止時再召喚と同一のゲート（視線外かつ閾値以上の変位）の通過を要求します。
+     * 小さな揺れや視線が画面内にある間はダミーを開始せず、従来どおり凍結を維持します。
+     * ゲートを維持することで、停止時に再召喚が見送られる移動ではダミー自体が
+     * 開始されず、本体復帰の不整合が生じません。
+     */
+    fun shouldStartDummyFollow(
+        insideScreenArea: Boolean,
+        deltaX: Double,
+        deltaY: Double,
+        deltaZ: Double,
+    ): Boolean = !insideScreenArea && shouldResummonOnStop(deltaX, deltaY, deltaZ)
 }

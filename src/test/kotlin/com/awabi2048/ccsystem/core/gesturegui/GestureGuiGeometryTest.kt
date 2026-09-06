@@ -64,7 +64,9 @@ class GestureGuiGeometryTest {
         fun pitchOf(normal: GestureGuiVector3): Double =
             Math.toDegrees(kotlin.math.asin((-normal.y).coerceIn(-1.0, 1.0)))
         assertEquals(pitchOf(normal[0].normal) * 0.5, pitchOf(halved[0].normal), 1.0e-9)
-        // Upper-bottom vs lower-top elevation gap stays a small slit: no overlap, no drift.
+        // ヒンジ結合により共有辺は仮想ヒンジ軸へ向き合い、余白だけ離れます。
+        // 上画面の下辺と下画面の上辺の方向角差が、わずかな負の隙間として残ることを検証します。
+        // 単位はラジアンです。正なら重なり、負の絶対値が余白の見かけ角です。
         fun edgePitch(
             pose: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose,
             topEdge: Boolean,
@@ -74,11 +76,11 @@ class GestureGuiGeometryTest {
             val py = pose.center.y + sign * (pose.height / 2.0) * pose.up.y
             val pz = pose.center.z + sign * (pose.height / 2.0) * pose.up.z
             val length = kotlin.math.sqrt(px * px + py * py + pz * pz)
-            return Math.toDegrees(kotlin.math.asin((py / length).coerceIn(-1.0, 1.0)))
+            return kotlin.math.asin((py / length).coerceIn(-1.0, 1.0))
         }
         val gap = edgePitch(halved[1], topEdge = true) - edgePitch(halved[0], topEdge = false)
-        assertTrue(gap <= 0.5, "screens overlap: gap=$gap")
-        assertTrue(gap >= -5.0, "screens drift apart: gap=$gap")
+        assertTrue(gap <= 0.0, "screens overlap: gap=$gap")
+        assertTrue(gap >= -0.06, "screens drift apart: gap=$gap")
     }
 
     @Test
@@ -211,5 +213,98 @@ class GestureGuiGeometryTest {
         )
 
         assertEquals(1, hit?.screenIndex)
+    }
+
+    @Test
+    fun `hinge joint keeps a slight uniform clearance`() {
+        // ヒンジ結合では上画面の下辺中点と下画面の上辺中点が、仮想ヒンジ軸を挟んで
+        // 余白（HINGE_EDGE_CLEARANCE）だけ離れます。完全接触による深度競合を避けつつ、
+        // 空間的な段差がわずかに収まることを、中点間距離で検証します。
+        val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+        val poses = GestureGuiGeometry.poses(
+            GestureGuiVector3(0.0, 0.0, 0.0),
+            0.0,
+            screenCount = 2,
+            verticalSlots = slots,
+        )
+        fun edgeMidpoint(
+            pose: com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenPose,
+            topEdge: Boolean,
+        ): GestureGuiVector3 {
+            val sign = if (topEdge) 1.0 else -1.0
+            return pose.center + pose.up * (sign * pose.height / 2.0)
+        }
+        val upperBottom = edgeMidpoint(poses[0], topEdge = false)
+        val lowerTop = edgeMidpoint(poses[1], topEdge = true)
+        val distance = (upperBottom - lowerTop).length()
+        assertEquals(0.06, distance, 1.0e-9)
+    }
+
+    @Test
+    fun `screen distance moves the whole arrangement away from the eye`() {
+        // 追従画面距離の指定は、配置全体を目から遠ざけます。
+        // 標準 1.5 の50%増しである 2.25 で中心距離が一致することを検証します。
+        val eye = GestureGuiVector3(0.0, 64.0, 0.0)
+        val near = GestureGuiGeometry.poses(eye, 0.0, 1).single()
+        val far = GestureGuiGeometry.poses(eye, 0.0, 1, screenDistance = 2.25).single()
+        assertEquals(1.5, (near.center - eye).length(), 1.0e-9)
+        assertEquals(2.25, (far.center - eye).length(), 1.0e-9)
+    }
+
+    @Test
+    fun `vertical screen envelope matches the tilted edge angles`() {
+        // ヒンジ結合では隣接画面が同一3D直線を共有するため、包絡の上下端は
+        // 実辺点の方向角そのものに一致しなければなりません。
+        // tiltScale=0.5 の傾き確定後でも一致することを検証します。
+        listOf(1.0, 0.5).forEach { tilt ->
+            val sizes = listOf(
+                GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
+                GestureGuiGeometry.SCREEN_WIDTH to GestureGuiGeometry.SCREEN_HEIGHT,
+            )
+            val slots = listOf(GestureGuiVerticalSlot.TOP, GestureGuiVerticalSlot.MIDDLE)
+            val arrangement = GestureGuiGeometry.verticalStripArrangement(sizes, slots, tilt)
+            val expectedTop = arrangement.indices.minOf { index ->
+                GestureGuiGeometry.edgePitchAngle(
+                    arrangement[index].centerOffset,
+                    sizes[index].second,
+                    arrangement[index].tiltPitchDegrees,
+                    topEdge = true,
+                )
+            }
+            val expectedBottom = arrangement.indices.maxOf { index ->
+                GestureGuiGeometry.edgePitchAngle(
+                    arrangement[index].centerOffset,
+                    sizes[index].second,
+                    arrangement[index].tiltPitchDegrees,
+                    topEdge = false,
+                )
+            }
+            fun direction(pitch: Double): GestureGuiVector3 {
+                val pitchRadians = Math.toRadians(pitch)
+                return GestureGuiVector3(0.0, -kotlin.math.sin(pitchRadians), kotlin.math.cos(pitchRadians))
+            }
+            fun inside(pitch: Double): Boolean = GestureGuiGeometry.containsScreenEnvelope(
+                direction(pitch),
+                0.0,
+                2,
+                sizes,
+                com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenLayout.VERTICAL,
+                slots,
+                tilt,
+            )
+            // 走査で求めた包絡境界が実辺端と一致します。
+            var scannedTop = Double.MAX_VALUE
+            var scannedBottom = -Double.MAX_VALUE
+            var pitch = -89.0
+            while (pitch <= 89.0) {
+                if (inside(pitch)) {
+                    if (pitch < scannedTop) scannedTop = pitch
+                    if (pitch > scannedBottom) scannedBottom = pitch
+                }
+                pitch += 0.05
+            }
+            assertEquals(expectedTop, scannedTop, 0.1, "tilt=$tilt")
+            assertEquals(expectedBottom, scannedBottom, 0.1, "tilt=$tilt")
+        }
     }
 }
