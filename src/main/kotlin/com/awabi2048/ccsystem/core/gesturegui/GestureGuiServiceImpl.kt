@@ -224,17 +224,21 @@ class GestureGuiServiceImpl(
         val revision = nextRevision++
         val id = UUID.randomUUID()
         val anchor = options.anchor
+        // 内容更新時のpose維持と合わせ、再生成でも旧poseを引き継げるようにします。
+        // 移動はtick再召喚だけが担い、明示操作・更新で画面が逃げないようにします。
+        val poseOverride = fixedPoseOverride
+            ?.takeIf { it.size == views.size }
+            ?.mapIndexed { index, pose ->
+                // 更新後のパネル寸法だけは新しいviewへ反映し、world上の中心・向きは
+                // 引き継ぎ元のposeから維持します。
+                pose.copy(width = views[index].panel.width, height = views[index].panel.height)
+            }
         val poses = if (anchor != null) {
-            fixedPoseOverride
-                ?.takeIf { it.size == views.size }
-                ?.mapIndexed { index, pose ->
-                    // 更新後のパネル寸法だけは新しいviewへ反映し、world上の中心・向きは
-                    // クリップ時点のposeから引き継ぎます。
-                    pose.copy(width = views[index].panel.width, height = views[index].panel.height)
-                }
+            poseOverride
                 ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale, options.screenDistance)
+            poseOverride
+                ?: poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale, options.screenDistance)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -299,7 +303,7 @@ class GestureGuiServiceImpl(
 
     override fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean {
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
-        val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
         // ダミー表示中の内容変更は本体へ戻してから適用し、ダミー形状との不整合を残しません。
         // 移動が継続していれば次tickのゲート判定で必要に応じてダミーへ戻ります。
         if (session.dummyActive) restoreMainFromDummy(session)
@@ -307,7 +311,13 @@ class GestureGuiServiceImpl(
         if (targetIndex >= 0) {
             val oldScreens = session.screens
             val newViews = oldScreens.mapIndexed { index, screen -> if (index == targetIndex) view else screen.view }
-            val newPoses = parentPoses(session, owner, newViews)
+            // 内容更新ではposeを動かしません。移動はtick再召喚だけに一本化し、
+            // 画面内注視＋接近後のクリックで画面が逃げる挙動を防ぎます。
+            // 画面外クリック時も即時再配置せず、停止確定後のtickに委ねます。
+            // 寸法変更時は中心・向きを維持したまま幅・高さだけ反映します。
+            val newPoses = oldScreens.mapIndexed { index, screen ->
+                screen.pose.copy(width = newViews[index].panel.width, height = newViews[index].panel.height)
+            }
             session.revision = nextRevision++
             session.screens = oldScreens.mapIndexed { index, screen ->
                 val newView = newViews[index]
@@ -701,9 +711,10 @@ class GestureGuiServiceImpl(
             owner,
             views,
             options,
+            // 追従中も旧poseを引き継ぎます。移動はtick再召喚に委ねます。
             fixedPoseOverride = old.fixedAnchor?.let {
                 old.fixedPoseSnapshot ?: old.screens.map(ScreenRuntime::pose)
-            },
+            } ?: old.screens.map(ScreenRuntime::pose),
         )
         val current = sessions[ownerId] ?: return false
         actors.asSequence()
