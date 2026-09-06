@@ -21,6 +21,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaim
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.localization.generated.GestureGuiKeys
 import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
@@ -158,6 +159,19 @@ class GestureGuiServiceImpl(
         val verticalOffset: Double = 0.0,
         /** 画面の上下傾き倍率です。1.0で従来配置、小さくするほど垂直に近づきます。 */
         val tiltScale: Double = 1.0,
+        /** 追従表示で目位置から画面中心までの距離です(ブロック単位)。 */
+        val screenDistance: Double,
+        /**
+         * 移動中に本体を隠してダミーパネルで追従しているかです。
+         * 本体の view・pose は保持したまま実体だけを隠し、停止確定後に
+         * 再召喚またはそのまま復帰させます。
+         */
+        var dummyActive: Boolean = false,
+        /**
+         * ダミー表示中の背景ボード群です。本体の ScreenRuntime とは別管理にし、
+         * 入力・ホバー・子画面の対象には含めません。
+         */
+        var dummyRenders: List<GestureGuiEntityRenderer.ScreenHandle> = emptyList(),
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
@@ -211,17 +225,21 @@ class GestureGuiServiceImpl(
         val revision = nextRevision++
         val id = UUID.randomUUID()
         val anchor = options.anchor
+        // 内容更新時のpose維持と合わせ、再生成でも旧poseを引き継げるようにします。
+        // 移動はtick再召喚だけが担い、明示操作・更新で画面が逃げないようにします。
+        val poseOverride = fixedPoseOverride
+            ?.takeIf { it.size == views.size }
+            ?.mapIndexed { index, pose ->
+                // 更新後のパネル寸法だけは新しいviewへ反映し、world上の中心・向きは
+                // 引き継ぎ元のposeから維持します。
+                pose.copy(width = views[index].panel.width, height = views[index].panel.height)
+            }
         val poses = if (anchor != null) {
-            fixedPoseOverride
-                ?.takeIf { it.size == views.size }
-                ?.mapIndexed { index, pose ->
-                    // 更新後のパネル寸法だけは新しいviewへ反映し、world上の中心・向きは
-                    // クリップ時点のposeから引き継ぎます。
-                    pose.copy(width = views[index].panel.width, height = views[index].panel.height)
-                }
+            poseOverride
                 ?: fixedPoses(anchor, owner.eyeLocation, views, options.layout, options.verticalSlots)
         } else {
-            poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale)
+            poseOverride
+                ?: poses(owner, owner.location.yaw, views, options.layout, options.verticalSlots, options.verticalOffset, options.tiltScale, options.screenDistance)
         }
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
@@ -258,6 +276,7 @@ class GestureGuiServiceImpl(
                 suppressWorldClicks = options.suppressWorldClicks,
                 verticalOffset = options.verticalOffset,
                 tiltScale = options.tiltScale,
+                screenDistance = options.screenDistance,
             )
             session.actors[owner.uniqueId] = createActor(session, owner)
             sessions[owner.uniqueId] = session
@@ -286,11 +305,28 @@ class GestureGuiServiceImpl(
     override fun updateScreen(ownerId: UUID, view: GestureGuiView): Boolean {
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        // ダミー表示中の内容変更は本体へ戻してから適用し、ダミー形状との不整合を残しません。
+        // 移動が継続していれば次tickのゲート判定で必要に応じてダミーへ戻ります。
+        // 本体復帰では見た目が凍結位置へ戻るため、理由をチャットへ出力します。
+        val wasDummyForUpdate = session.dummyActive
+        if (wasDummyForUpdate) restoreMainFromDummy(session)
+        if (wasDummyForUpdate) {
+            GestureGuiGazeDebugRenderer.notify(
+                owner,
+                GestureGuiKeys.GESTURE_GUI_DEBUG_MAIN_RESTORED_FOR_UPDATE,
+            )
+        }
         val targetIndex = session.screens.indexOfFirst { it.view.definition.screenId == view.definition.screenId }
         if (targetIndex >= 0) {
             val oldScreens = session.screens
             val newViews = oldScreens.mapIndexed { index, screen -> if (index == targetIndex) view else screen.view }
-            val newPoses = parentPoses(session, owner, newViews)
+            // 内容更新ではposeを動かしません。移動はtick再召喚だけに一本化し、
+            // 画面内注視＋接近後のクリックで画面が逃げる挙動を防ぎます。
+            // 画面外クリック時も即時再配置せず、停止確定後のtickに委ねます。
+            // 寸法変更時は中心・向きを維持したまま幅・高さだけ反映します。
+            val newPoses = oldScreens.mapIndexed { index, screen ->
+                screen.pose.copy(width = newViews[index].panel.width, height = newViews[index].panel.height)
+            }
             session.revision = nextRevision++
             session.screens = oldScreens.mapIndexed { index, screen ->
                 val newView = newViews[index]
@@ -331,6 +367,8 @@ class GestureGuiServiceImpl(
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
         if (!GestureGuiClipTogglePolicy.canPin(session.state, session.fixedAnchor)) return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        // ダミー表示中の固定は本体へ戻してから行い、固定poseがダミーを指さないようにします。
+        if (session.dummyActive) restoreMainFromDummy(session)
         // 既存のscreen.poseを変更せず、次のtickから追従分岐だけを止めます。
         // fixedPoses()で再計算しないため、ボタンを押した瞬間の表示位置を正確に保持できます。
         session.fixedAnchor = owner.eyeLocation.clone()
@@ -369,6 +407,7 @@ class GestureGuiServiceImpl(
         // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
         session.lastMotionTick = tickIndex
         session.followDirty = false
+        GestureGuiGazeDebugRenderer.notify(owner, GestureGuiKeys.GESTURE_GUI_DEBUG_UNPINNED)
         return true
     }
 
@@ -386,11 +425,30 @@ class GestureGuiServiceImpl(
         session.targetYaw = null
         session.gazeOutsideTicks = 0
         session.revision = nextRevision++
+        // ダミー表示中の再召喚では、ダミーを先に破棄して本体の作り直しへ一本化します。
+        val wasDummy = session.dummyActive
+        if (wasDummy) {
+            session.dummyRenders.forEach(renderer::remove)
+            session.dummyRenders = emptyList()
+            session.dummyActive = false
+        }
         val eye = owner.eyeLocation
+        // デバッグ通知用に追従基準からの変位を保持します。成功時は基準が更新されるため、
+        // 分岐前の値を理由通知で使います。
+        val debugDisplacement = kotlin.math.sqrt(
+            (eye.x - session.lastAppliedX) * (eye.x - session.lastAppliedX) +
+                (eye.y - session.lastAppliedY) * (eye.y - session.lastAppliedY) +
+                (eye.z - session.lastAppliedZ) * (eye.z - session.lastAppliedZ),
+        )
         val newPoses = try {
             parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚のpose計算に失敗しました", failure)
+            GestureGuiGazeDebugRenderer.notify(
+                owner,
+                GestureGuiKeys.GESTURE_GUI_DEBUG_RESUMMON_FAILED,
+                mapOf("detail" to (failure.message?.take(120) ?: "unknown")),
+            )
             return false
         }
         data class SwappedScreen(
@@ -490,6 +548,12 @@ class GestureGuiServiceImpl(
             GestureGuiFollowMetrics.recordStopResummon(
                 newScreens.sumOf { it.render.all.size } + newChildren.sumOf { it.render.all.size },
             )
+            if (wasDummy) GestureGuiFollowMetrics.recordDummyResummon()
+            GestureGuiGazeDebugRenderer.notify(
+                owner,
+                GestureGuiKeys.GESTURE_GUI_DEBUG_RESUMMON,
+                mapOf("displacement" to "%.2f".format(debugDisplacement)),
+            )
             Bukkit.getScheduler().runTask(plugin, Runnable {
                 if (sessions[session.ownerId] !== session) {
                     // セッションが閉じられた場合は古い実体だけ確実に除去します。
@@ -514,7 +578,158 @@ class GestureGuiServiceImpl(
             return true
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚に失敗しました", failure)
+            GestureGuiGazeDebugRenderer.notify(
+                owner,
+                GestureGuiKeys.GESTURE_GUI_DEBUG_RESUMMON_FAILED,
+                mapOf("detail" to (failure.message?.take(120) ?: "unknown")),
+            )
             return false
+        }
+    }
+
+    /**
+     * 移動中に本体をダミーパネルへ切り替えます。
+     *
+     * 本体の view・pose は保持したまま実体だけを全員から隠し、同じ外形の空の
+     * 背景ボードを現在の目位置・向きへ生成します。以降の移動中はダミーだけが
+     * 補間付きで追従し、本体への入力は targetHit 関門で無効化されます。
+     * 開始には停止時再召喚と同一のゲート通過を要求し、小さな揺れや視線内では
+     * 従来どおり凍結を維持します。
+     */
+    private fun maybeStartDummyFollow(session: Session, owner: Player, eye: Location) {
+        if (session.dummyActive) return
+        if (session.state != GestureGuiSessionState.ACTIVE || session.fixedAnchor != null) return
+        if (session.screens.isEmpty()) return
+        if (!GestureGuiFollowPolicy.shouldStartDummyFollow(
+                isGazeInsideScreen(session, owner),
+                eye.x - session.lastAppliedX,
+                eye.y - session.lastAppliedY,
+                eye.z - session.lastAppliedZ,
+            )
+        ) return
+        val views = session.screens.map(ScreenRuntime::view)
+        val livePoses = try {
+            poses(
+                owner,
+                owner.location.yaw,
+                views,
+                session.layout,
+                session.verticalSlots,
+                session.verticalOffset,
+                session.tiltScale,
+                session.screenDistance,
+            )
+        } catch (failure: Throwable) {
+            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルのpose計算に失敗しました", failure)
+            return
+        }
+        try {
+            val online = Bukkit.getOnlinePlayers().toList()
+            val dummies = session.screens.mapIndexed { index, screen ->
+                val definition = screen.view.definition
+                val dummy = renderer.spawnDummyPanel(
+                    owner,
+                    session.id,
+                    session.revision,
+                    livePoses[index],
+                    screen.view.panel.width,
+                    screen.view.panel.height,
+                    definition.access,
+                    definition.allowlist,
+                    definition.accessPolicy,
+                    definition.visibilityPolicy,
+                )
+                online.forEach { renderer.hideFrom(screen.render, it) }
+                dummy
+            }
+            session.children.forEach { child ->
+                online.forEach { player ->
+                    renderer.hideFrom(child.render, player)
+                    child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
+                }
+            }
+            // ホバー実体は古いposeに残るため破棄します。入力自体はダミー表示中に
+            // targetHit 関門で無効化され、同tickの入力分岐で actor が除去されます。
+            session.actors.values.forEach { actor ->
+                actor.hover?.let(renderer::removeHover)
+                actor.hover = null
+                actor.hoverIdentity = null
+                actor.hoverReplacement = null
+            }
+            session.dummyRenders = dummies
+            session.dummyActive = true
+            GestureGuiFollowMetrics.recordDummyStart()
+            GestureGuiGazeDebugRenderer.notify(
+                owner,
+                GestureGuiKeys.GESTURE_GUI_DEBUG_DUMMY_STARTED,
+                mapOf(
+                    "displacement" to "%.2f".format(
+                        kotlin.math.sqrt(
+                            (eye.x - session.lastAppliedX) * (eye.x - session.lastAppliedX) +
+                                (eye.y - session.lastAppliedY) * (eye.y - session.lastAppliedY) +
+                                (eye.z - session.lastAppliedZ) * (eye.z - session.lastAppliedZ),
+                        ),
+                    ),
+                ),
+            )
+        } catch (failure: Throwable) {
+            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの生成に失敗しました", failure)
+        }
+    }
+
+    /**
+     * 移動中のダミーパネルを現在の目位置・向きへ追従させます。
+     *
+     * 本体の updatePose と異なり背景1体だけの teleport のため、補間を残したまま
+     * 毎tick呼んでも面内ティアを招きません。向きも現在のyawへ合わせることで、
+     * 停止時の再召喚（現在yawへ正対）との段差をなくします。
+     */
+    private fun updateDummyFollow(session: Session, owner: Player) {
+        if (!session.dummyActive || session.fixedAnchor != null) return
+        val views = session.screens.map(ScreenRuntime::view)
+        if (views.isEmpty() || session.dummyRenders.size != views.size) return
+        val livePoses = try {
+            poses(
+                owner,
+                owner.location.yaw,
+                views,
+                session.layout,
+                session.verticalSlots,
+                session.verticalOffset,
+                session.tiltScale,
+                session.screenDistance,
+            )
+        } catch (failure: Throwable) {
+            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの追従計算に失敗しました", failure)
+            return
+        }
+        session.dummyRenders.zip(livePoses).forEach { (dummy, pose) ->
+            renderer.moveDummy(dummy, pose)
+        }
+    }
+
+    /**
+     * ダミーを破棄して本体の表示を復帰させます。
+     *
+     * 本体は隠しただけで破棄していないため、凍結時の pose のまま再表示します。
+     * 再召喚を見送る場合と、本体への操作（updateScreen等）へ戻る場合の共通経路です。
+     */
+    private fun restoreMainFromDummy(session: Session) {
+        if (!session.dummyActive) return
+        session.dummyRenders.forEach(renderer::remove)
+        session.dummyRenders = emptyList()
+        session.dummyActive = false
+        Bukkit.getOnlinePlayers().forEach { player ->
+            session.screens.forEach { renderer.showTo(it.render, player) }
+            session.children.forEach { child ->
+                if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
+                    renderer.showTo(child.render, player)
+                    child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
+                } else {
+                    renderer.hideFrom(child.render, player)
+                    child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
+                }
+            }
         }
     }
 
@@ -532,6 +747,7 @@ class GestureGuiServiceImpl(
             suppressWorldClicks = old.suppressWorldClicks,
             verticalOffset = old.verticalOffset,
             tiltScale = old.tiltScale,
+            screenDistance = old.screenDistance,
         )
         notifyClosed(old)
         if (sessions[ownerId] === old) sessions.remove(ownerId)
@@ -540,9 +756,10 @@ class GestureGuiServiceImpl(
             owner,
             views,
             options,
+            // 追従中も旧poseを引き継ぎます。移動はtick再召喚に委ねます。
             fixedPoseOverride = old.fixedAnchor?.let {
                 old.fixedPoseSnapshot ?: old.screens.map(ScreenRuntime::pose)
-            },
+            } ?: old.screens.map(ScreenRuntime::pose),
         )
         val current = sessions[ownerId] ?: return false
         actors.asSequence()
@@ -562,6 +779,8 @@ class GestureGuiServiceImpl(
     override fun openChild(ownerId: UUID, view: GestureGuiView, options: GestureGuiChildOptions): Boolean {
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        // ダミー表示中の子画面追加は本体へ戻してから行い、親pose基準のずれを防ぎます。
+        if (session.dummyActive) restoreMainFromDummy(session)
         if (session.children.size >= MAX_CHILD_DEPTH) return false
         val parent = parentRuntime(session, options.parentScreenId) ?: return false
         require(session.screens.none { it.view.definition.screenId == view.definition.screenId } &&
@@ -632,6 +851,15 @@ class GestureGuiServiceImpl(
 
     override fun close(ownerId: UUID, mode: GestureGuiCloseMode): Boolean {
         val session = sessions[ownerId] ?: return false
+        // デバッグ字幕が残らないよう、終了時に消します。
+        Bukkit.getPlayer(ownerId)?.let(GestureGuiGazeDebugRenderer::clear)
+        // ダミー表示中の終了では、ダミーを先に破棄して本体の終了経路へ一本化します。
+        // アニメーション付き終了でダミーが宙に残ることを防ぎます。
+        if (session.dummyActive) {
+            session.dummyRenders.forEach(renderer::remove)
+            session.dummyRenders = emptyList()
+            session.dummyActive = false
+        }
         if (mode == GestureGuiCloseMode.IMMEDIATE) {
             notifyClosed(session)
             if (sessions[ownerId] === session) sessions.remove(ownerId)
@@ -766,6 +994,7 @@ class GestureGuiServiceImpl(
         tickTask?.cancel()
         tickTask = null
         sessions.values.toList().forEach { session ->
+            Bukkit.getPlayer(session.ownerId)?.let(GestureGuiGazeDebugRenderer::clear)
             notifyClosed(session)
             if (sessions[session.ownerId] === session) sessions.remove(session.ownerId)
             destroy(session)
@@ -1007,6 +1236,10 @@ class GestureGuiServiceImpl(
                 close(session.ownerId, GestureGuiCloseMode.IMMEDIATE)
                 return@forEach
             }
+            // デバッグ表示用の運動状態と変位です。判定・描画へ影響しない観測専用の値です。
+            // 固定位置モードでは追従分岐に入らないため PINNED のままにします。
+            var debugMotion = "PINNED"
+            var debugDisplacement = 0.0
             // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
             if (session.fixedAnchor == null) {
                 // 視線再調整は停止時再召喚へ統合したため無効化しています。
@@ -1014,6 +1247,13 @@ class GestureGuiServiceImpl(
                 // 移動中の毎tick teleportが背景と内容物の適用時刻差でティアを招くため、
                 // 追従の滑らかさより停止時の位置正確さを優先します。
                 val eye = owner.eyeLocation
+                // デバッグ表示用に追従基準からの変位を保持します。再召喚後は基準が
+                // 更新されるため、分岐前の値をスナップショットと理由通知で共有します。
+                debugDisplacement = kotlin.math.sqrt(
+                    (eye.x - session.lastAppliedX) * (eye.x - session.lastAppliedX) +
+                        (eye.y - session.lastAppliedY) * (eye.y - session.lastAppliedY) +
+                        (eye.z - session.lastAppliedZ) * (eye.z - session.lastAppliedZ),
+                )
                 // 移動判定はPosition専用です。前tick観測値との差で求め、
                 // 適用済み位置を基準にすると静止後も差が残り続けるため使いません。
                 // 再召喚時にはその時の目線へ正対させるため、向きは別途扱います。
@@ -1028,14 +1268,21 @@ class GestureGuiServiceImpl(
                 GestureGuiFollowMetrics.recordEvaluation()
                 when (GestureGuiFollowPolicy.decideFollowMotion(tickIndex, session.lastMotionTick, moved)) {
                     GestureGuiFollowPolicy.FollowMotionState.MOVING -> {
+                        debugMotion = "MOVING"
                         session.lastMotionTick = tickIndex
                         session.followDirty = true
                         GestureGuiFollowMetrics.recordFrozenSkipped()
+                        // ゲートを通過した場合だけ本体をダミーへ切り替えます。
+                        // 小さな揺れや視線内の間は従来どおり凍結を維持します。
+                        maybeStartDummyFollow(session, owner, eye)
+                        if (session.dummyActive) updateDummyFollow(session, owner)
                     }
                     GestureGuiFollowPolicy.FollowMotionState.SETTLING -> {
+                        debugMotion = "SETTLING"
                         // 停止確定前は何もしません。次tickへ判定を持ち越します。
                     }
                     GestureGuiFollowPolicy.FollowMotionState.STOPPED -> {
+                        debugMotion = "STOPPED"
                         if (session.followDirty && session.state == GestureGuiSessionState.ACTIVE) {
                             // 視線が画面内に入っている間は一切の再描画を行わず、
                             // 位置を固定します。dirtyは維持するため、視線が外れた
@@ -1053,6 +1300,16 @@ class GestureGuiServiceImpl(
                             } else {
                                 // 前回確定位置からの変位が閾値未満の場合は実体を
                                 // 作り直さず、基準位置だけを更新して確定済みにします。
+                                // ダミー表示中（一旦遠ざかって戻った場合）は本体へ戻します。
+                                if (session.dummyActive) {
+                                    restoreMainFromDummy(session)
+                                    GestureGuiFollowMetrics.recordDummyRestore()
+                                    GestureGuiGazeDebugRenderer.notify(
+                                        owner,
+                                        GestureGuiKeys.GESTURE_GUI_DEBUG_DUMMY_RESTORED,
+                                        mapOf("displacement" to "%.2f".format(debugDisplacement)),
+                                    )
+                                }
                                 session.lastAppliedX = eye.x
                                 session.lastAppliedY = eye.y
                                 session.lastAppliedZ = eye.z
@@ -1064,19 +1321,26 @@ class GestureGuiServiceImpl(
                 }
             }
             if (session.state == GestureGuiSessionState.ACTIVE) {
-                // 視線・距離・遮蔽のいずれかで操作対象でなくなった間はInteraction自体を
-                // 削除します。残したまま視点だけを追従させると、画面を見ていない、または
-                // 遠すぎるクリックまでEntity操作として扱われ、外部エンティティの操作経路と
-                // 競合します。条件が戻ったtickで再生成します。画面の表示可否は別途
-                // GestureGuiVisibilityPolicyで判定するため、遠距離でも画面自体は残ります。
-                val ownerHit = accessibleTarget(session, owner)
-                if (ownerHit == null) {
+                if (session.dummyActive) {
+                    // ダミー表示中は本体の古いposeへの誤操作を防ぐため、入力を
+                    // 無効化します。targetHit 関門でも遮断するため、ここでは
+                    // 所有者の catcher を確実に除去するだけに留めます。
                     removeActor(session, session.ownerId)
                 } else {
-                    val actor = getOrCreateActor(session, owner)
-                    actor?.let {
-                        renderer.moveCatcher(it.catcher, catcherLocation(owner))
-                        updateHover(session, it, owner, ownerHit)
+                    // 視線・距離・遮蔽のいずれかで操作対象でなくなった間はInteraction自体を
+                    // 削除します。残したまま視点だけを追従させると、画面を見ていない、または
+                    // 遠すぎるクリックまでEntity操作として扱われ、外部エンティティの操作経路と
+                    // 競合します。条件が戻ったtickで再生成します。画面の表示可否は別途
+                    // GestureGuiVisibilityPolicyで判定するため、遠距離でも画面自体は残ります。
+                    val ownerHit = accessibleTarget(session, owner)
+                    if (ownerHit == null) {
+                        removeActor(session, session.ownerId)
+                    } else {
+                        val actor = getOrCreateActor(session, owner)
+                        actor?.let {
+                            renderer.moveCatcher(it.catcher, catcherLocation(owner))
+                            updateHover(session, it, owner, ownerHit)
+                        }
                     }
                 }
             } else {
@@ -1086,6 +1350,11 @@ class GestureGuiServiceImpl(
                     updateHover(session, actor, owner, null)
                 }
             }
+            // 視線デバッグ表示（常時・所有者のみ・毎tick）。判定・描画へ影響しません。
+            GestureGuiGazeDebugRenderer.renderTick(
+                owner,
+                evaluateGaze(session, owner, debugMotion, debugDisplacement),
+            )
         }
         reconcileExternalActors()
         GestureGuiFollowMetrics.maybeLog(plugin, tickIndex)
@@ -1107,15 +1376,24 @@ class GestureGuiServiceImpl(
                 // 動的権限を失ったプレイヤーは、既にEntityを受信済みでも同じtickで
                 // 非表示にします。入力claimだけを解放すると、表示だけが残って
                 // 「操作できそうに見える」状態になるためです。
+                // ダミー表示中は本体を隠してダミーだけを配布し、本体への再表示を抑止します。
                 session.screens.forEach { screen ->
-                    if (screen.view.definition.canView(session.ownerId, player.uniqueId)) {
+                    if (session.dummyActive) {
+                        renderer.hideFrom(screen.render, player)
+                    } else if (screen.view.definition.canView(session.ownerId, player.uniqueId)) {
                         renderer.showTo(screen.render, player)
                     } else {
                         renderer.hideFrom(screen.render, player)
                     }
                 }
+                if (session.dummyActive) {
+                    session.dummyRenders.forEach { renderer.showTo(it, player) }
+                }
                 session.children.forEach { child ->
-                    if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
+                    if (session.dummyActive) {
+                        renderer.hideFrom(child.render, player)
+                        child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
+                    } else if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
                         renderer.showTo(child.render, player)
                         child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
                     } else {
@@ -1129,7 +1407,9 @@ class GestureGuiServiceImpl(
             // 画面の可視性は上で個別に反映済みです。
             if (player.uniqueId in sessions) return@forEach
             val desired = activeSessions.mapNotNull { session ->
-                accessibleTarget(session, player)?.let { session to it }
+                // ダミー表示中のセッションは入力を受け付けないため、claim 対象から外します。
+                if (session.dummyActive) null
+                else accessibleTarget(session, player)?.let { session to it }
             }.minByOrNull { (_, hit) -> hit.hit.distance }
             activeSessions.forEach { session ->
                 if (session !== desired?.first && player.uniqueId in session.actors) removeActor(session, player.uniqueId)
@@ -1356,6 +1636,9 @@ class GestureGuiServiceImpl(
 
     private fun destroy(session: Session) {
         session.actors.keys.toList().forEach { removeActor(session, it) }
+        session.dummyRenders.forEach(renderer::remove)
+        session.dummyRenders = emptyList()
+        session.dummyActive = false
         session.screens.forEach { renderer.remove(it.render) }
         session.children.forEach(::destroyChild)
         // Actor登録漏れや旧版から残ったホバーを含め、セッションID単位で最後に掃除します。
@@ -1391,24 +1674,73 @@ class GestureGuiServiceImpl(
      *
      * 停止確定後の再召喚ゲート専用です。単画面は当たり判定、複数画面は
      * 画面包絡で判定し、いずれも表示姿勢基準(retainedYaw)で評価します。
+     * 包絡は視線方向だけを見るため、複数画面では凍結poseとの3D交差も合わせて
+     * 要求します。視線を動かさずに横移動した場合でも、画面から外れれば
+     * 画面外として扱えます。溝内の視線は余白付き当たり判定が吸収します。
+     * 視線が画面へ向いていても、操作可能距離より離れている場合は画面外として扱い、
+     * 置き去りになった画面へ追従が戻らなくなる状態を防ぎます。
      * ホバー・キャッチャー・明示操作の判定には影響しません。
      */
     private fun isGazeInsideScreen(session: Session, owner: Player): Boolean =
-        if (session.screens.size == 1) {
-            targetHit(session, owner, margin = 0.06) != null
+        evaluateGaze(session, owner, motionName = "", displacement = 0.0).inside
+
+    /**
+     * 所有者の視線判定を内訳付きで評価します。
+     *
+     * 判定式は [isGazeInsideScreen] と同一であり、デバッグ表示と tick 判定で
+     * 共有します。`motionName` と `displacement` は観測専用の付帯情報であり、
+     * 判定結果へ影響しません。
+     */
+    private fun evaluateGaze(session: Session, owner: Player, motionName: String, displacement: Double): GazeDebugSnapshot {
+        val gazeRay = ray(owner)
+        val hit = targetHit(session, owner, margin = 0.06)
+        val envelopeApplicable = session.screens.size != 1
+        val envelopeInside = if (!envelopeApplicable) {
+            true
         } else {
             GestureGuiGeometry.containsScreenEnvelope(
-                ray(owner).direction,
+                gazeRay.direction,
                 session.retainedYaw.toDouble(),
                 session.screens.size,
                 session.screens.map { it.view.panel.width to it.view.panel.height },
                 session.layout,
                 session.verticalSlots,
                 session.tiltScale,
+                session.screenDistance,
             )
         }
+        val angularInside = if (!envelopeApplicable) {
+            hit != null
+        } else {
+            envelopeInside && hit != null
+        }
+        val range = operableRange(owner)
+        val nearest = session.screens.minOfOrNull { screen ->
+            (screen.pose.center - gazeRay.origin).length()
+        }
+        val inside = angularInside && nearest != null && nearest <= range
+        return GazeDebugSnapshot(
+            inside = inside,
+            envelopeApplicable = envelopeApplicable,
+            envelopeInside = envelopeInside,
+            hitDistance = hit?.hit?.distance,
+            hitElementId = hit?.hit?.elementId,
+            hitScreenIndex = hit?.hit?.screenIndex,
+            nearestCenterDistance = nearest,
+            range = range,
+            motionName = motionName,
+            followDirty = session.followDirty,
+            dummyActive = session.dummyActive,
+            displacement = displacement,
+            origin = gazeRay.origin,
+            direction = gazeRay.direction,
+        )
+    }
 
     private fun targetHit(session: Session, player: Player, margin: Double = 0.0): TargetHit? {
+        // ダミー表示中は本体の古いposeへの入力を無効化します。dispatch・視線・
+        // 距離の全経路がこの関門を通るため、操作・ホバー・catcher を一括で止められます。
+        if (session.dummyActive) return null
         val ray = ray(player)
         fun childHit(child: ChildRuntime): TargetHit? = child.takeIf {
             it.state == GestureGuiSessionState.ACTIVE
@@ -1453,7 +1785,7 @@ class GestureGuiServiceImpl(
     }
 
     private fun validateReach(session: Session, player: Player, target: TargetHit): TargetHit? {
-        val maximum = (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
+        val maximum = operableRange(player)
         if (target.hit.distance > maximum) return null
         val eye = player.eyeLocation
         val block = player.world.rayTraceBlocks(
@@ -1467,8 +1799,15 @@ class GestureGuiServiceImpl(
         return target.takeIf { blockDistance == null || blockDistance + 0.01 >= target.hit.distance }
     }
 
-    private fun ray(player: Player): GestureGuiRay {
-        val eye = player.eyeLocation
+    /**
+     * プレイヤーが画面を操作できる距離です(ブロック単位)。
+     * 入力到達判定と視線ゲートで同じ ENTITY_INTERACTION_RANGE 基準を使い、
+     * 表示と入力の距離条件を一致させます。
+     */
+    private fun operableRange(player: Player): Double =
+        (player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)?.value ?: 3.0).coerceAtLeast(1.0)
+
+    private fun ray(player: Player): GestureGuiRay {        val eye = player.eyeLocation
         val direction = eye.direction
         return GestureGuiRay(
             GestureGuiVector3(eye.x, eye.y, eye.z),
@@ -1484,6 +1823,7 @@ class GestureGuiServiceImpl(
         verticalSlots: List<GestureGuiVerticalSlot>? = null,
         verticalOffset: Double = 0.0,
         tiltScale: Double = 1.0,
+        screenDistance: Double = GestureGuiOpenOptions.DEFAULT_SCREEN_DISTANCE,
     ) = GestureGuiGeometry.poses(
         GestureGuiVector3(player.eyeLocation.x, player.eyeLocation.y, player.eyeLocation.z),
         yaw.toDouble(),
@@ -1492,6 +1832,7 @@ class GestureGuiServiceImpl(
         layout,
         verticalSlots,
         tiltScale,
+        screenDistance,
     ).map { pose ->
         if (verticalOffset == 0.0) pose
         else pose.copy(center = pose.center + GestureGuiVector3(0.0, verticalOffset, 0.0))
@@ -1524,6 +1865,7 @@ class GestureGuiServiceImpl(
             session.verticalSlots,
             session.verticalOffset,
             session.tiltScale,
+            session.screenDistance,
         )
     } else {
         // 固定位置画面はワールド向きの正面向中心を保持し、パネル寸法変更のみ反映します。

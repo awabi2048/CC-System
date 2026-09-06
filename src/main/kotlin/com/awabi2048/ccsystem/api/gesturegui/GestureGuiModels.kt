@@ -108,6 +108,12 @@ data class GestureGuiOpenOptions(
      * 固定位置モードの初期配置には影響せず、追従中の再計算にだけ適用します。
      */
     val tiltScale: Double = 1.0,
+    /**
+     * 追従表示で目位置から画面中心までの距離です(ブロック単位)。
+     * 既定値は標準の画面距離と同じ 1.5 で、大きくするほど画面全体が遠ざかります。
+     * 固定位置モードの初期配置には影響せず、追従中の再計算にだけ適用します。
+     */
+    val screenDistance: Double = DEFAULT_SCREEN_DISTANCE,
 ) {
     init {
         require(anchor == null || (anchor.x.isFinite() && anchor.y.isFinite() && anchor.z.isFinite())) {
@@ -124,6 +130,17 @@ data class GestureGuiOpenOptions(
                 "gesture GUI vertical slots must be unique"
             }
         }
+        require(screenDistance.isFinite() && screenDistance > 0.0) {
+            "gesture GUI screen distance must be positive and finite"
+        }
+    }
+
+    companion object {
+        /**
+         * 追従表示の標準画面距離です(ブロック単位)。
+         * 基盤側の標準画面距離と同じ値に保ちます。
+         */
+        const val DEFAULT_SCREEN_DISTANCE: Double = 1.5
     }
 }
 

@@ -566,7 +566,12 @@ data class InventoryMenuView(
     init {
         require(size > 0 && size % 9 == 0) { "inventory menu size must be a positive multiple of 9" }
         require(elements.all { it.slot < size }) { "menu element slot is outside the inventory" }
-        require(elements.map { it.slot }.distinct().size == elements.size) { "menu element slots must be unique" }
+        // 重複 slot が運用ログだけでは特定できず調査が長期化したため、例外文面に重複内容を含める。
+        // 検証自体は従来どおり一意性を要求し、描画の部分的な上書きは行わない。
+        val duplicateSlots = elements.groupingBy { it.slot }.eachCount().filter { it.value > 1 }.keys.sorted()
+        require(duplicateSlots.isEmpty()) {
+            "menu element slots must be unique: size=$size duplicates=$duplicateSlots slots=${elements.map { it.slot }.sorted()}"
+        }
         require(inputSlots.all { it in 0 until size }) { "input slot is outside the inventory" }
         require(elements.none { it.slot in inputSlots }) { "input slots cannot contain rendered menu elements" }
         require(inputItems.keys.all { it in inputSlots }) { "input items must be placed in declared input slots" }
