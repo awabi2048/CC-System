@@ -1591,6 +1591,9 @@ class GestureGuiServiceImpl(
      *
      * 停止確定後の再召喚ゲート専用です。単画面は当たり判定、複数画面は
      * 画面包絡で判定し、いずれも表示姿勢基準(retainedYaw)で評価します。
+     * 包絡は視線方向だけを見るため、複数画面では凍結poseとの3D交差も合わせて
+     * 要求します。視線を動かさずに横移動した場合でも、画面から外れれば
+     * 画面外として扱えます。溝内の視線は余白付き当たり判定が吸収します。
      * 視線が画面へ向いていても、操作可能距離より離れている場合は画面外として扱い、
      * 置き去りになった画面へ追従が戻らなくなる状態を防ぎます。
      * ホバー・キャッチャー・明示操作の判定には影響しません。
@@ -1608,7 +1611,7 @@ class GestureGuiServiceImpl(
                 session.verticalSlots,
                 session.tiltScale,
                 session.screenDistance,
-            )
+            ) && targetHit(session, owner, margin = 0.06) != null
         }
         if (!angularInside) return false
         val eye = ray(owner).origin
