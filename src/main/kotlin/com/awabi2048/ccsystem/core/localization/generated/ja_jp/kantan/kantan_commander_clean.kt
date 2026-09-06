@@ -755,7 +755,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.test_execution_glyph", value = EmbeddedLocalizedValue.Text("♪"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.confirm_title", value = EmbeddedLocalizedValue.Text("テスト実行の確認"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.debug_mode", value = EmbeddedLocalizedValue.Text("デバッグモード"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.debug_mode_description", value = EmbeddedLocalizedValue.Text("ノードごとに実行後20tick待機します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.debug_mode_description", value = EmbeddedLocalizedValue.Text("ノードごとに実行後40tick待機します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.log_output", value = EmbeddedLocalizedValue.Text("ログ出力"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.on", value = EmbeddedLocalizedValue.Text("ON"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.off", value = EmbeddedLocalizedValue.Text("OFF"), domain = DOMAIN),
