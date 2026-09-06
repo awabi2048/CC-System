@@ -797,6 +797,11 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_OUTSIDE_MYWORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.reason.outside_myworld", setOf())
     /** テスト実行を手動中断したときに操作者と共有者へ送る通知です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_INTERRUPTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_interrupted", setOf())
+    /** テスト実行の開始時に操作者へ送る通知です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_STARTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_started", setOf())
+    /** テスト実行の終了時に操作者へ送る通知です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_finished_success", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_FAILURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_finished_failure", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
@@ -1599,6 +1604,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_TEST_START_REJECTED,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_REASON_OUTSIDE_MYWORLD,
         KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_INTERRUPTED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_STARTED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_SUCCESS,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_FAILURE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_MESSAGE,
