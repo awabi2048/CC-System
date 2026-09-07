@@ -17,9 +17,10 @@ class KantanLocalizationContractTest {
         // テスト実行調整で所要時間内訳・実処理時間・ログ見出し・失敗理由・中断通知の16件を追加し、
         // 続く調整で内訳値と件数行を除去して短縮理由3件・待機時間・位置見出しの5件を追加し、
         // 開始・終了通知の3件を追加しました。
-        assertEquals(780, keys.size)
+        // ナビゲーション調整で表示倍率リセットの1件を廃止しました。
+        assertEquals(779, keys.size)
         assertEquals(
-            "4d53f637e9185506eb90ff1e57b34ddcc59dcb4837aac25e35e20529b47a943e",
+            "a88eec219c64d69433db16f8baf4b3e23c2b96267d19823fe8189365b9a7a82c",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

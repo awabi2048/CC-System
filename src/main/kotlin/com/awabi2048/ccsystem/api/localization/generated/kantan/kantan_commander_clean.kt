@@ -29,7 +29,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_IN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.zoom_in", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_OUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.zoom_out", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_RESET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.zoom_reset", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CLIP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.clip", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CLIP_FIXED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.clip_fixed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info", setOf())
@@ -838,7 +837,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_IN,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_OUT,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_ZOOM_RESET,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CLIP,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CLIP_FIXED,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO,
