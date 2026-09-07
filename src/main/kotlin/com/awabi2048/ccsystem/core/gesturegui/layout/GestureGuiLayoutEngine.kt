@@ -410,6 +410,7 @@ object GestureGuiLayoutEngine {
             interactionBounds = interaction,
             nodeId = node.id,
             actionId = node.actionId,
+            source = node,
             children = children,
         )
     }

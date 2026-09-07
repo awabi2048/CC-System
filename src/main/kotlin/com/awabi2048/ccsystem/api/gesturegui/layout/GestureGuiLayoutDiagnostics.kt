@@ -36,6 +36,9 @@ enum class GestureGuiLayoutErrorCode {
 
     /** 未対応の CSS プロパティ・値です（HTML frontend 用に予約）。 */
     UNSUPPORTED_PROPERTY,
+
+    /** Custom renderer が未登録です。 */
+    CUSTOM_RENDERER_MISSING,
 }
 
 /**

@@ -1,0 +1,61 @@
+package com.awabi2048.ccsystem.api.gesturegui.layout
+
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+
+/**
+ * Custom ノード用 renderer が返す操作面です。
+ *
+ * elementId は Custom スコープ内で一意にし、compiler がノード ID 接頭辞を付けて
+ * 画面全体の一意性を保証します。bounds は画面中央原点の Low-level 座標です。
+ */
+data class GestureGuiCustomElement(
+    val elementId: String,
+    val bounds: GestureGuiBounds,
+    val acceptedGestures: Set<GestureGuiGesture> = setOf(GestureGuiGesture.PRIMARY),
+    /**
+     * この操作面に対応する action ID です。
+     * null の場合は Custom ノード自体の actionId へフォールバックします。
+     */
+    val actionId: String? = null,
+    val targetVisualId: String? = null,
+    val hoverText: GestureGuiHoverText? = null,
+) {
+    init {
+        require(elementId.isNotBlank()) { "custom elementId must not be blank" }
+        require(actionId == null || actionId.isNotBlank()) { "custom action id must not be blank" }
+        require(targetVisualId == null || targetVisualId.isNotBlank()) {
+            "custom targetVisualId must not be blank"
+        }
+    }
+}
+
+/**
+ * Custom ノード用 renderer の出力です。
+ *
+ * visuals の visualId は Custom スコープ内で一意にし、compiler が接頭辞を付けて
+ * 画面全体の一意性を保証します。viewport / clip は CC-System が担うため、
+ * renderer は渡された解決 bounds（[ResolvedGestureGuiNode.contentBounds] 基準の
+ * 絶対座標で描画できるよう、bounds 換算は renderer 側で行います。
+ */
+data class GestureGuiCustomRenderResult(
+    val visuals: List<GestureGuiVisual>,
+    val elements: List<GestureGuiCustomElement> = emptyList(),
+)
+
+/**
+ * 特殊描画（Graph 等）向けの escape hatch です。
+ *
+ * 責務分担は以下です。
+ * - viewport / clip: CC-System（解決済み clip を渡します）
+ * - graph semantics / 配置: 呼び出し側 renderer
+ * - Display Entity 描画: CC-System（返された Low-level visual を描画します）
+ *
+ * layout 引数には解決済みノード（border / content / effectiveClip 付き）を渡すため、
+ * renderer は Kantan 側の独自 clipping を再実装せずに済みます。
+ */
+fun interface GestureGuiCustomRenderer {
+    fun render(node: GestureGuiCustom, layout: ResolvedGestureGuiNode): GestureGuiCustomRenderResult
+}

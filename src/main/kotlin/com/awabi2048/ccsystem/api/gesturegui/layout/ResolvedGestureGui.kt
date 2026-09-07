@@ -22,6 +22,11 @@ data class ResolvedGestureGuiNode(
     val interactionBounds: GestureGuiBounds?,
     val nodeId: String?,
     val actionId: String?,
+    /**
+     * 解決元の宣言ノードです。compiler が見た目（文言・素材等）を取得します。
+     * Resolved 層自体はこの参照を読まず、bounds のみで検証します。
+     */
+    val source: GestureGuiNode,
     val children: List<ResolvedGestureGuiNode> = emptyList(),
 ) {
     init {
