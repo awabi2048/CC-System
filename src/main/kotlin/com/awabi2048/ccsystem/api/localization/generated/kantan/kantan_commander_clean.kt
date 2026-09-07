@@ -294,6 +294,15 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_PARAMETERS_CONSTRAINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.particle_parameters_constraint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DATA_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.particle_data_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DATA_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.particle_data_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_GEOMETRY_NUMBERS_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.geometry_numbers_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DENSITY_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.particle_density_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BURST_HEIGHT_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.burst_height_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STOP_SOUND_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.stop_sound_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STOP_SOUND_CATEGORY_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.stop_sound_category_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DENSITY_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.particle_density_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BURST_HEIGHT_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.burst_height_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_GEOMETRY_NUMBER_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.geometry_number_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIREWORK_PREVIEW_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.firework_preview_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.destination", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION_FACING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.destination_facing", setOf())
@@ -1142,6 +1151,15 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_PARAMETERS_CONSTRAINT,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DATA_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DATA_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_GEOMETRY_NUMBERS_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DENSITY_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BURST_HEIGHT_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STOP_SOUND_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_STOP_SOUND_CATEGORY_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_PARTICLE_DENSITY_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BURST_HEIGHT_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_GEOMETRY_NUMBER_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_FIREWORK_PREVIEW_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESTINATION_FACING,
