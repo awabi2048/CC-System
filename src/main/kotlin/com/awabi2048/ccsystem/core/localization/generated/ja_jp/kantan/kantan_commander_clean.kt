@@ -717,6 +717,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.geometry_box", value = EmbeddedLocalizedValue.Text("箱"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.geometry_sphere", value = EmbeddedLocalizedValue.Text("球"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.geometry_helix", value = EmbeddedLocalizedValue.Text("らせん"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.all", value = EmbeddedLocalizedValue.Text("すべて"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.geometry_radius", value = EmbeddedLocalizedValue.Text("半径"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.geometry_height", value = EmbeddedLocalizedValue.Text("高さ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.geometry_turns", value = EmbeddedLocalizedValue.Text("巻き数"), domain = DOMAIN),

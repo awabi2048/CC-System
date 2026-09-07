@@ -740,6 +740,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_box", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_sphere", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_helix", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ALL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.all", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_RADIUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_radius", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_HEIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_height", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TURNS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_turns", setOf())
@@ -1598,6 +1599,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_ALL,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_RADIUS,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_HEIGHT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TURNS,
