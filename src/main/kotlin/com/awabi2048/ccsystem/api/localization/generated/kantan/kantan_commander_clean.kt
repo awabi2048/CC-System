@@ -351,6 +351,15 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_parameters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DATA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_data", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sound_operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_TARGET_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sound_target_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_SETTING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sound_setting", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DISPLAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_display", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_SETTINGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_settings", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DENSITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_density", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_FIREWORK_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.firework_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_FIREWORK_CONTENTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.firework_contents", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_BURST_HEIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.burst_height", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_SPREAD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_spread", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SPEED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.speed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.effect", setOf())
@@ -516,6 +525,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PLAY_SOUND_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.play_sound_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.particle_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.firework_launch", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.firework_launch_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.apply_effect", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.apply_effect_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_CAMERA_SHAKE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.camera_shake", setOf())
@@ -656,6 +667,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.particle_parameters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_DATA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.particle_data", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_TARGET_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.sound_target_position", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_SETTING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.sound_setting", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_DISPLAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.particle_display", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GEOMETRY_SETTINGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.geometry_settings", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FIREWORK_CONTENTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.firework_contents", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BURST_HEIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.burst_height", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.effect", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_LEVEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.level", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SECONDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.seconds", setOf())
@@ -713,6 +730,16 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_BLOCK_TO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.block_to", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BLOCK_SETBLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.block_setblock", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BLOCK_FILL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.block_fill", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SOUND_PLAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sound_play", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SOUND_STOP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sound_stop", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARTICLE_POINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.particle_point", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARTICLE_GEOMETRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.particle_geometry", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_LINE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_line", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_CIRCLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_circle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_ARC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_arc", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_box", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_sphere", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_helix", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.block_operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.block_operation_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.entity_delete", setOf())
@@ -1163,6 +1190,15 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_PARAMETERS,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DATA,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_OPERATION,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_TARGET_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_SOUND_SETTING,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DISPLAY,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_SETTINGS,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DENSITY,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_FIREWORK_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_FIREWORK_CONTENTS,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_BURST_HEIGHT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_SPREAD,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_SPEED,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EFFECT,
@@ -1331,6 +1367,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_COMMAND_PLAY_SOUND_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE,
         KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH,
+        KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT,
         KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_CAMERA_SHAKE,
@@ -1474,6 +1512,12 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_PARAMETERS,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_DATA,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_TARGET_POSITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SOUND_SETTING,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PARTICLE_DISPLAY,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_GEOMETRY_SETTINGS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FIREWORK_CONTENTS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BURST_HEIGHT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EFFECT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_LEVEL,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SECONDS,
@@ -1533,6 +1577,16 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_BLOCK_TO,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_BLOCK_SETBLOCK,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_BLOCK_FILL,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_SOUND_PLAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_SOUND_STOP,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARTICLE_POINT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARTICLE_GEOMETRY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_LINE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_CIRCLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_ARC,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE,
