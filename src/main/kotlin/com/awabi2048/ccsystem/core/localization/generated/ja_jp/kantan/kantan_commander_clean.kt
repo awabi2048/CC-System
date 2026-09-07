@@ -740,6 +740,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.particle", value = EmbeddedLocalizedValue.Text("パーティクルの種類"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.particle_parameters", value = EmbeddedLocalizedValue.Text("表示設定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.particle_data", value = EmbeddedLocalizedValue.Text("詳細設定"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.particle_spread", value = EmbeddedLocalizedValue.Text("分散範囲"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.speed", value = EmbeddedLocalizedValue.Text("速度"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_description.particle", value = EmbeddedLocalizedValue.TextList(listOf("表示するパーティクルの種類を選びます")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_description.particle_parameters", value = EmbeddedLocalizedValue.TextList(listOf("散布範囲・速度・1回の表示個数を設定します")), domain = DOMAIN),

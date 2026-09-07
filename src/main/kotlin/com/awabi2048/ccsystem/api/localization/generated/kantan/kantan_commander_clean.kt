@@ -351,6 +351,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_parameters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DATA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_data", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_SPREAD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.particle_spread", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SPEED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.speed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.effect", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_LEVEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.level", setOf())
@@ -1162,6 +1163,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_PARAMETERS,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_DATA,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PARTICLE_SPREAD,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_SPEED,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EFFECT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_LEVEL,
