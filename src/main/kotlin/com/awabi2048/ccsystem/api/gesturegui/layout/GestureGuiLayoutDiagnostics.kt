@@ -39,6 +39,9 @@ enum class GestureGuiLayoutErrorCode {
 
     /** Custom renderer が未登録です。 */
     CUSTOM_RENDERER_MISSING,
+
+    /** HTML の構文異常です（対応する範囲で復旧し、診断します）。 */
+    HTML_PARSE_ERROR,
 }
 
 /**
