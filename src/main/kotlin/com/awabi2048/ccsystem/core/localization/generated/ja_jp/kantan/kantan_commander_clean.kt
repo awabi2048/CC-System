@@ -540,6 +540,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.reload_failed", value = EmbeddedLocalizedValue.Text("設定が不正なため、再読み込みできませんでした。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.max_commands", value = EmbeddedLocalizedValue.Text("コマンド数の上限です。最大: {max}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.no_placement_access", value = EmbeddedLocalizedValue.Text("このかんたんコマンダー制御ブロックを操作する権限がありません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placement_outside_myworld", value = EmbeddedLocalizedValue.Text("マイワールドの外では使用できません"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.placement_no_tool_permission", value = EmbeddedLocalizedValue.Text("このマイワールドで使用する権限がありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_output", value = EmbeddedLocalizedValue.Text("プログラムディスクを出力しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックへ書き込みました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_success", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックを1個付与しました。"), domain = DOMAIN),

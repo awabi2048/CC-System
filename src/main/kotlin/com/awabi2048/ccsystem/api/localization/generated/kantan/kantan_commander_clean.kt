@@ -543,6 +543,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_RELOAD_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.reload_failed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_MAX_COMMANDS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.max_commands", setOf("max"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PLACEMENT_ACCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.no_placement_access", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENT_OUTSIDE_MYWORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.placement_outside_myworld", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENT_NO_TOOL_PERMISSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.placement_no_tool_permission", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_OUTPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_output", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_success", setOf())
@@ -1355,6 +1357,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_RELOAD_FAILED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_MAX_COMMANDS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_NO_PLACEMENT_ACCESS,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENT_OUTSIDE_MYWORLD,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_PLACEMENT_NO_TOOL_PERMISSION,
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_OUTPUT,
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS,
