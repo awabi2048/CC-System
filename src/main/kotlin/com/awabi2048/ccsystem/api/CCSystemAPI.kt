@@ -44,6 +44,20 @@ interface CCSystemAPI {
     val gestureGuiContractVersion: Int
         get() = GESTURE_GUI_CONTRACT_VERSION
 
+    /**
+     * 宣言的レイアウト基盤は既存Gesture GUI契約と分離して版管理します。
+     * consumerは利用前に要求版との完全一致を確認してください。
+     */
+    val gestureGuiLayoutContractVersion: Int
+        get() = GESTURE_GUI_LAYOUT_CONTRACT_VERSION
+
+    /**
+     * 制限付きHTML/CSS frontendの対応プロファイルを表す版です。
+     * consumerは利用前に要求版との完全一致を確認してください。
+     */
+    val gestureHtmlProfileVersion: Int
+        get() = GESTURE_HTML_PROFILE_VERSION
+
     companion object {
         /** MenuDialogRequestなどGUIランタイム公開ABIを表す契約版です。公開ABI変更時は必ず更新します。 */
         const val GUI_RUNTIME_CONTRACT_VERSION: Int = 10
@@ -51,6 +65,10 @@ interface CCSystemAPI {
         // 旧APIへ接続しないよう契約版を更新します。
         // 追従画面距離の指定を追加したため、契約版を更新します。
         const val GESTURE_GUI_CONTRACT_VERSION: Int = 18
+        /** 宣言的レイアウト基盤（Document/Layout/Resolved/compiler）の初版です。 */
+        const val GESTURE_GUI_LAYOUT_CONTRACT_VERSION: Int = 1
+        /** 制限付きHTML/CSS frontend Profile 1の初版です。 */
+        const val GESTURE_HTML_PROFILE_VERSION: Int = 1
     }
     /**
      * プレイヤーの言語設定を取得します
