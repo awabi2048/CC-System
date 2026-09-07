@@ -846,6 +846,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.simple_locked_message", value = EmbeddedLocalizedValue.Text("このコマンドは簡易GUIでは編集できません。Java版のフルGUIで編集してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.simple_form_unavailable", value = EmbeddedLocalizedValue.Text("入力フォームを開けませんでした。開き直してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.held_block_required", value = EmbeddedLocalizedValue.Text("メインハンドにブロックを持ってください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.held_firework_required", value = EmbeddedLocalizedValue.Text("メインハンドに花火を持ってください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.firework_preview", value = EmbeddedLocalizedValue.Text("設定中の花火をその場で打ち上げる"), domain = DOMAIN),
     )
 
 }

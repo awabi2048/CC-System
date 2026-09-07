@@ -68,6 +68,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_MESSAGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.simple_locked_message", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_FORM_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.simple_form_unavailable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_BLOCK_REQUIRED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.held_block_required", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_FIREWORK_REQUIRED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.held_firework_required", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_FIREWORK_PREVIEW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.firework_preview", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.save_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.save_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_PROCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_process", setOf())
@@ -1694,5 +1696,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_LOCKED_MESSAGE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_FORM_UNAVAILABLE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_BLOCK_REQUIRED,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_FIREWORK_REQUIRED,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_FIREWORK_PREVIEW,
     )
 }

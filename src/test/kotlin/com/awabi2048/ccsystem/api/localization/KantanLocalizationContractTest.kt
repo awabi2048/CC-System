@@ -20,9 +20,9 @@ class KantanLocalizationContractTest {
         // ナビゲーション調整で表示倍率リセットの1件を廃止しました。
         // 粒子表示設定の分散範囲ラベル1件と制御ブロック権限フローの拒否理由2件を追加しました。
         // 旧汎用拒否文言1件を廃止し、クリエイティブ限定の拒否理由1件を追加しました。
-        assertEquals(821, keys.size)
+        assertEquals(823, keys.size)
         assertEquals(
-            "76e4c513712efb1ce230d43d499a4f163231982a76ad5d16547538f6d44adc0d",
+            "fb7dd4040394f946c8fbe442c58563e093288cd43163c22fbe11f1fa8117be17",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

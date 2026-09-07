@@ -846,6 +846,8 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.simple_locked_message", value = EmbeddedLocalizedValue.Text("This command cannot be edited in the simple GUI. Use the full GUI (Java Edition)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.simple_form_unavailable", value = EmbeddedLocalizedValue.Text("Could not open the input form. Please try again."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.held_block_required", value = EmbeddedLocalizedValue.Text("Hold a block in your main hand."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.held_firework_required", value = EmbeddedLocalizedValue.Text("Hold a firework rocket in your main hand."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.firework_preview", value = EmbeddedLocalizedValue.Text("Launch the configured firework here"), domain = DOMAIN),
     )
 
 }
