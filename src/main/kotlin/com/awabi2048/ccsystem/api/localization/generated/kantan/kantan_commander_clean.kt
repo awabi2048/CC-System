@@ -740,6 +740,17 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_box", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_sphere", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.geometry_helix", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_RADIUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_radius", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_HEIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_height", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TURNS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_turns", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_START_ANGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_start_angle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_END_ANGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_end_angle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_ROTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_rotation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_AXIS_YAW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_axis_yaw", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_AXIS_PITCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_axis_pitch", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_STEP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_step", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_ticks", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.block_operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.block_operation_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.entity_delete", setOf())
@@ -1587,6 +1598,17 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_BOX,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_SPHERE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_GEOMETRY_HELIX,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_RADIUS,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_HEIGHT,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TURNS,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_START_ANGLE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_END_ANGLE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_ROTATION,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_AXIS_YAW,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_AXIS_PITCH,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_STEP,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE,
