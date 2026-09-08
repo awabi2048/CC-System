@@ -30,6 +30,10 @@ KantanCommanderの[issue #25](https://github.com/awabi2048/KantanCommander/issue
 - Custom要素にも`gestureGuard`・`consumeInput`を追加し、通常ノードと同じ規則で生成します。
 - compilerは表示確定と操作面・ホバー生成を2走査に分け、ホバーの前方ノード参照を解決します。Custom rendererの実行は1回です。
 
+### 26.908.7の修正範囲
+
+- 同一層の文言・品目と背景のz-fightingを、層ではなくrenderer側の微小持上げ（`TEXT_ITEM_SURFACE_LIFT`＝0.0005ブロック）で解消します。層順序は不変のため、既存画面の前後関係に影響しません。
+
 ### 見た目と操作の維持方針
 
 参照元は既存の宣言APIとKantanCommanderの`clipMapVisual`／`clipMapElement`です。呼び出し側が指定する素材・文言・寸法・情報順・操作の意味は維持します。背景追加による幅の縮小や絶対位置の二重適用、領域外に残る描画・操作だけを修正します。新しい画面やナビゲーション導線は追加しません。

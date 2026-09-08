@@ -129,16 +129,6 @@ object GestureGuiLayoutCompiler {
 
     private fun layerOf(resolvedZ: Int): Int = resolvedZ.coerceAtLeast(0).coerceAtMost(MAX_LAYER - 1) + 1
 
-    /**
-     * 同一要素内の文言・品目を背景より少し浮かせます。
-     *
-     * 解決深度が同じ兄弟は同一層になるため、Block背景とText・Itemが同一面で
-     * z-fightingを起こします。旧来の層分離（背景4・文言20等）相当として、
-     * 非Block系リーフだけ1層前面へ置きます。枠線（背景＋1）と面が重なるのは
-     * 縁のみで、中央の文言・品目とは干渉しません。
-     */
-    private fun floatLayer(resolvedZ: Int): Int = (layerOf(resolvedZ) + 1).coerceAtMost(MAX_LAYER)
-
     private fun centerX(bounds: GestureGuiBounds): Double = (bounds.minX + bounds.maxX) / 2.0
 
     private fun centerY(bounds: GestureGuiBounds): Double = (bounds.minY + bounds.maxY) / 2.0
@@ -156,7 +146,7 @@ object GestureGuiLayoutCompiler {
         val visual = when (declared) {
             is GestureGuiText -> GestureGuiVisual.Text(
                 visualId, centerX(bounds), centerY(bounds), declared.text,
-                declared.size, declared.lineWidth, floatLayer(node.resolvedZ),
+                declared.size, declared.lineWidth, layerOf(node.resolvedZ),
                 declared.seeThrough, declared.alignment,
             )
             is GestureGuiBlock -> GestureGuiVisual.Block(
@@ -166,7 +156,7 @@ object GestureGuiLayoutCompiler {
             )
             is GestureGuiItem -> GestureGuiVisual.Item(
                 visualId, centerX(bounds), centerY(bounds), declared.item.clone(),
-                declared.scale, floatLayer(node.resolvedZ), declared.glowColor,
+                declared.scale, layerOf(node.resolvedZ), declared.glowColor,
             )
             else -> null
         }

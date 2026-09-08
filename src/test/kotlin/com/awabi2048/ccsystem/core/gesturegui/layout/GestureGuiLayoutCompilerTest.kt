@@ -6,6 +6,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiEntityRenderer
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiColumn
@@ -198,12 +199,14 @@ class GestureGuiLayoutCompilerTest {
     }
 
     @Test
-    fun `text floats above sibling block to avoid z-fighting`() {
+    fun `sibling text shares the block layer and renderer lifts it`() {
+        // z-fighting 対策の持上げは renderer 側の微調整（TEXT_ITEM_SURFACE_LIFT）で行い、
+        // compiler は解決深度どおりの層を保ちます。
         val blockData = Proxy.newProxyInstance(
             BlockData::class.java.classLoader,
             arrayOf(BlockData::class.java),
         ) { _, _, _ -> null } as BlockData
-        // 同階層に重ねた背景と文言は解決深度が等しく、層分離がなければ同一面になる。
+        // 同階層に重ねた背景と文言は解決深度が等しく、同一層になります。
         val atOrigin = GestureGuiAbsoluteOffsets(left = 0.0, top = 0.0)
         val document = GestureGuiDocument(
             GestureGuiBox(
@@ -236,7 +239,12 @@ class GestureGuiLayoutCompilerTest {
         assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
         val block = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Block>().single()
         val text = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Text>().single()
-        assertEquals(block.layer + 1, text.layer)
+        assertEquals(block.layer, text.layer)
         assertTrue(text.layer in 1..40)
+    }
+
+    @Test
+    fun `text item surface lift is half a millimeter`() {
+        assertEquals(0.0005, GestureGuiEntityRenderer.TEXT_ITEM_SURFACE_LIFT, 0.0)
     }
 }
