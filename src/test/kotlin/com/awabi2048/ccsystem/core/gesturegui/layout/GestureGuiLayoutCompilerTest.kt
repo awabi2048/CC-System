@@ -5,7 +5,9 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiColumn
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustom
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomElement
@@ -13,6 +15,7 @@ import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomRenderer
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomRenderResult
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiDocument
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutErrorCode
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiOverlay
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiRow
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiSizeSpec
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiText
@@ -175,8 +178,7 @@ class GestureGuiLayoutCompilerTest {
     }
 
     @Test
-    fun `missing custom renderer is reported`() {
-        val document = GestureGuiDocument(
+    fun `missing custom renderer is reported`() {        val document = GestureGuiDocument(
             GestureGuiCustom(
                 rendererId = "graph",
                 width = GestureGuiSizeSpec.Percent(1.0),
@@ -193,5 +195,48 @@ class GestureGuiLayoutCompilerTest {
             compiled.diagnostics.any { it.code == GestureGuiLayoutErrorCode.CUSTOM_RENDERER_MISSING },
             "diagnostics: ${compiled.diagnostics}",
         )
+    }
+
+    @Test
+    fun `text floats above sibling block to avoid z-fighting`() {
+        val blockData = Proxy.newProxyInstance(
+            BlockData::class.java.classLoader,
+            arrayOf(BlockData::class.java),
+        ) { _, _, _ -> null } as BlockData
+        // 同階層に重ねた背景と文言は解決深度が等しく、層分離がなければ同一面になる。
+        val atOrigin = GestureGuiAbsoluteOffsets(left = 0.0, top = 0.0)
+        val document = GestureGuiDocument(
+            GestureGuiBox(
+                children = listOf(
+                    GestureGuiBlock(
+                        blockData = blockData,
+                        width = GestureGuiSizeSpec.Fixed(0.48),
+                        height = GestureGuiSizeSpec.Fixed(0.12),
+                        id = "bg",
+                        absolute = atOrigin,
+                    ),
+                    GestureGuiText(
+                        text = Component.text("label"),
+                        width = GestureGuiSizeSpec.Fixed(0.48),
+                        height = GestureGuiSizeSpec.Fixed(0.12),
+                        id = "label",
+                        absolute = atOrigin,
+                    ),
+                ),
+                id = "button",
+                width = GestureGuiSizeSpec.Fixed(0.48),
+                height = GestureGuiSizeSpec.Fixed(0.12),
+            ),
+            panel,
+        )
+        val compiled = GestureGuiLayoutCompiler.compile(
+            GestureGuiLayoutEngine.layout(document),
+            screenId = "s",
+        )
+        assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
+        val block = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Block>().single()
+        val text = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Text>().single()
+        assertEquals(block.layer + 1, text.layer)
+        assertTrue(text.layer in 1..40)
     }
 }
