@@ -25,13 +25,15 @@ import com.awabi2048.ccsystem.api.gesturegui.layout.ResolvedGestureGui
 import com.awabi2048.ccsystem.api.gesturegui.layout.ResolvedGestureGuiNode
 
 /**
- * 宣言的文書を解決済みレイアウトへ変換する純粋エンジンです。
+ * 宣言的文書を解決済みレイアウトへ変換する純粋エンジンの実装です。
  *
+ * モジュール外からは公開入口の [com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutFacade]
+ * を用い、この実装は直接参照しません。
  * Bukkit / Display Entity へ依存せず、座標計算と検証だけを行います。
  * 既知の制限（Profile 1）として、完全な intrinsic text sizing は行わず、
  * Text の Auto 高さは `lines * size * TEXT_LINE_HEIGHT_FACTOR` で概算します。
  */
-object GestureGuiLayoutEngine {
+internal object GestureGuiLayoutEngine {
     /** 退化 bound を避ける最小寸法です（ブロック単位）。 */
     const val MIN_EXTENT: Double = 1.0e-6
 
