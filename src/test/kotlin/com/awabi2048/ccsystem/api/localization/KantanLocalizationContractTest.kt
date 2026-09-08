@@ -21,9 +21,10 @@ class KantanLocalizationContractTest {
         // 粒子表示設定の分散範囲ラベル1件と制御ブロック権限フローの拒否理由2件を追加しました。
         // 旧汎用拒否文言1件を廃止し、クリエイティブ限定の拒否理由1件を追加しました。
         // 折りたたみ操作案内（FORの折畳み・展開、IFの折畳み・展開）の4件を追加しました。
-        assertEquals(836, keys.size)
+        // 破壊時の制御ブロック取得通知1件と未選択時下部のディスク取得ボタン1件を追加しました。
+        assertEquals(838, keys.size)
         assertEquals(
-            "b2995b82e9920c0b1a51d00a1cda33543efb53eddcd198fbc54faaa202792c75",
+            "0f2946b8bdc99f9d44e6ceff9a57bc08e0762f7ac233a6d8b9f911211e474fdd",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
