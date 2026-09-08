@@ -322,7 +322,11 @@ class GestureGuiServiceImpl(
             session.screens = oldScreens.mapIndexed { index, screen ->
                 val newView = newViews[index]
                 val newPose = newPoses[index]
-                renderer.updatePose(screen.render, newPose, newView)
+                // 内容更新ではposeが変わらないため、同一poseへの再teleportを省きます。
+                // 寸法変更時はcopyで幅・高さだけが変わり、等価にならないため通常通り移動します。
+                if (newPose != screen.pose) {
+                    renderer.updatePose(screen.render, newPose, newView)
+                }
                 renderer.updateScreenDiff(screen.render, session.id, session.revision, newPose, screen.view, newView)
                 renderer.updateAccess(screen.render, newView)
                 renderer.showImmediately(screen.render, newView.panel)
@@ -339,7 +343,9 @@ class GestureGuiServiceImpl(
         if (targetChild != null) {
             session.revision = nextRevision++
             val pose = targetChild.pose.copy(width = view.panel.width, height = view.panel.height)
-            renderer.updatePose(targetChild.render, pose, view)
+            if (pose != targetChild.pose) {
+                renderer.updatePose(targetChild.render, pose, view)
+            }
             renderer.updateScreenDiff(targetChild.render, session.id, session.revision, pose, targetChild.view, view)
             renderer.updateAccess(targetChild.render, view)
             renderer.showImmediately(targetChild.render, view.panel)

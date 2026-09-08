@@ -238,7 +238,14 @@ internal class GestureGuiEntityRenderer(
             val location = if (visual is GestureGuiVisual.Text) {
                 textLocation(entity.world, pose, visual.x, visual.y, visual.layer)
             } else {
-                visualLocation(entity.world, pose, visual.x, visual.y, visual.layer)
+                visualLocation(
+                    entity.world,
+                    pose,
+                    visual.x,
+                    visual.y,
+                    visual.layer,
+                    lift = if (visual is GestureGuiVisual.Item) TEXT_ITEM_SURFACE_LIFT else 0.0,
+                )
             }
             entity.teleport(location)
             teleported++
@@ -471,7 +478,14 @@ internal class GestureGuiEntityRenderer(
 
     private fun applyVisual(entity: Entity, pose: GestureGuiScreenPose, visual: GestureGuiVisual) {
         entity.teleport(if (visual is GestureGuiVisual.Text) textLocation(entity.world, pose, visual.x, visual.y, visual.layer)
-        else visualLocation(entity.world, pose, visual.x, visual.y, visual.layer))
+        else visualLocation(
+            entity.world,
+            pose,
+            visual.x,
+            visual.y,
+            visual.layer,
+            lift = if (visual is GestureGuiVisual.Item) TEXT_ITEM_SURFACE_LIFT else 0.0,
+        ))
         when {
             entity is BlockDisplay && visual is GestureGuiVisual.Block -> {
                 entity.block = visual.blockData
@@ -1016,7 +1030,10 @@ internal class GestureGuiEntityRenderer(
         visual: GestureGuiVisual.Item,
         visibleByDefault: Boolean = true,
     ): ItemDisplay =
-        world.spawn(visualLocation(world, pose, visual.x, visual.y, visual.layer), ItemDisplay::class.java) {
+        world.spawn(
+            visualLocation(world, pose, visual.x, visual.y, visual.layer, lift = TEXT_ITEM_SURFACE_LIFT),
+            ItemDisplay::class.java,
+        ) {
             prepareDisplay(it, pose)
             it.isVisibleByDefault = visibleByDefault
             it.setItemStack(visual.item.clone())
@@ -1145,7 +1162,8 @@ internal class GestureGuiEntityRenderer(
         x: Double,
         y: Double,
         layer: Int,
-    ): Location = visualLocation(world, pose, x, y, layer.toDouble())
+        lift: Double = 0.0,
+    ): Location = visualLocation(world, pose, x, y, layer.toDouble(), lift)
 
     private fun visualLocation(
         world: World,
@@ -1153,9 +1171,11 @@ internal class GestureGuiEntityRenderer(
         x: Double,
         y: Double,
         layer: Double,
+        lift: Double = 0.0,
     ): Location {
         // 背景の厚みや斜め視点の深度精度に負けない距離を確保し、前景ほどプレイヤー側へ出します。
-        val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * LAYER_DEPTH)
+        // lift は同一層の文言・品目を背景より僅かに浮かせる微調整です（層順序は不変）。
+        val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * LAYER_DEPTH - lift)
         return Location(
             world,
             point.x,
@@ -1178,15 +1198,22 @@ internal class GestureGuiEntityRenderer(
         x,
         y - TEXT_BASELINE_OFFSET,
         GestureGuiTextDepth.effectiveLayer(layer),
+        TEXT_ITEM_SURFACE_LIFT,
     ).apply {
         yaw = GestureGuiGeometry.textDisplayYaw(pose)
         pitch = GestureGuiGeometry.textDisplayPitch(pose)
     }
 
-    private companion object {
+    // 単体テストから持上げ量を検証できるよう、定数群はモジュール内へ公開します。
+    internal companion object {
         const val PANEL_FRAME_PREFIX = "__panel_frame_"
         // 斜め視点の深度量子化でも隣接レイヤーが重ならないよう、従来値の5/3倍を確保します。
         const val LAYER_DEPTH = 0.005
+        /**
+         * 同一層の文言・品目を背景より浮かせる微調整です（ブロック単位）。
+         * 層順序は変えず、z-fightingだけを解消します。
+         */
+        const val TEXT_ITEM_SURFACE_LIFT = 0.0005
         /**
          * ホバー置換が置換対象より前面へ浮く論理層数です。
          * TextDisplayの層間距離を元の25%へ縮めた後も、置換対象の前面を確保するため

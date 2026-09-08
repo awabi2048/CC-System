@@ -281,6 +281,23 @@ class GestureGuiModelsTest {
         }
     }
 
+    @Test
+    fun `pose copy with unchanged dimensions stays equal for teleport skipping`() {
+        // 内容更新時の同一pose判定（teleport省略）の前提です。
+        val pose = GestureGuiScreenPose(
+            screenIndex = 0,
+            centerPitchDegrees = 0.0,
+            center = GestureGuiVector3(0.0, 0.0, 1.5),
+            right = GestureGuiVector3(-1.0, 0.0, 0.0),
+            up = GestureGuiVector3(0.0, 1.0, 0.0),
+            normal = GestureGuiVector3(0.0, 0.0, 1.0),
+            width = 2.0,
+            height = 1.0,
+        )
+        assertEquals(pose, pose.copy(width = 2.0, height = 1.0))
+        assertFalse(pose == pose.copy(width = 3.0, height = 1.0))
+    }
+
     private fun screen(
         access: GestureGuiAccess,
         allowlist: Set<UUID> = emptySet(),
