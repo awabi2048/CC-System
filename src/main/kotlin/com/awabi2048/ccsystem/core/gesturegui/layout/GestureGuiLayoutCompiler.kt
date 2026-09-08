@@ -9,15 +9,22 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustom
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomElement
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiClip
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHover
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverBlock
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverPosition
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverTarget
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiOutlineGeometry
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomRenderer
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiItem
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutDiagnostic
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutErrorCode
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiText
+import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.layout.ResolvedGestureGui
 import com.awabi2048.ccsystem.api.gesturegui.layout.ResolvedGestureGuiNode
+import java.util.IdentityHashMap
 import java.util.UUID
 
 /**
@@ -50,7 +57,10 @@ object GestureGuiLayoutCompiler {
         require(screenId.isNotBlank()) { "compiled screenId must not be blank" }
         val ctx = Context(actionHandlers, customRenderers, source)
         ctx.diagnostics += resolved.diagnostics
-        visit(resolved.root, ctx)
+        // 第1走査で表示を確定し、第2走査で操作面・ホバーを作ります。
+        // ホバーの Node 参照が前方ノードを指せるよう、visual ID 対応を先に完成させます。
+        visitVisuals(resolved.root, ctx)
+        visitElements(resolved.root, ctx)
         val definition = GestureGuiScreenDefinition(
             screenId = screenId,
             elements = ctx.elements.toList(),
@@ -81,6 +91,16 @@ object GestureGuiLayoutCompiler {
         val diagnostics = mutableListOf<GestureGuiLayoutDiagnostic>()
         val usedIds = mutableSetOf<String>()
         var autoCounter = 0
+        /** 生成・可視化された visual の対応です（ノード同一性基準、前方参照の解決用）。 */
+        val nodeVisuals = IdentityHashMap<ResolvedGestureGuiNode, String>()
+        val nodeVisualObjs = IdentityHashMap<ResolvedGestureGuiNode, GestureGuiVisual>()
+        val nodeVisible = IdentityHashMap<ResolvedGestureGuiNode, Boolean>()
+        /** 宣言ノード ID から visual ID への対応です（ホバー置換の解決用、先勝ち）。 */
+        val nodeIdVisuals = mutableMapOf<String, String>()
+        /** Custom スコープの visual ID 対応です（ホバー参照の名前空間化用）。 */
+        val customVisualMaps = IdentityHashMap<ResolvedGestureGuiNode, Map<String, String>>()
+        /** 第1走査で実行した Custom renderer の出力です（第2走査の再実行を避けます）。 */
+        val customOutputs = IdentityHashMap<ResolvedGestureGuiNode, CustomOutput>()
 
         /** 画面内一意の ID を払い出します。重複時は接尾辞を付けて衝突を回避します。 */
         fun uniqueId(base: String?): String {
@@ -100,17 +120,28 @@ object GestureGuiLayoutCompiler {
         }
     }
 
+    /** 第1走査で確定した Custom renderer の出力です。 */
+    private data class CustomOutput(
+        val visualIdMap: Map<String, String>,
+        val declaredIds: Set<String>,
+        val elements: List<GestureGuiCustomElement>,
+    )
+
     private fun layerOf(resolvedZ: Int): Int = resolvedZ.coerceAtLeast(0).coerceAtMost(MAX_LAYER - 1) + 1
 
     private fun centerX(bounds: GestureGuiBounds): Double = (bounds.minX + bounds.maxX) / 2.0
 
     private fun centerY(bounds: GestureGuiBounds): Double = (bounds.minY + bounds.maxY) / 2.0
 
-    private fun visit(node: ResolvedGestureGuiNode, ctx: Context): Boolean {
-        if (node.effectiveClip == GestureGuiClip.Empty) return false
+    /** 第1走査で表示を確定します。操作面・ホバーは第2走査で作ります。 */
+    private fun visitVisuals(node: ResolvedGestureGuiNode, ctx: Context): Boolean {
+        if (node.effectiveClip == GestureGuiClip.Empty) {
+            nodeVisible(node, false, ctx)
+            return false
+        }
         val bounds = node.borderBounds
         val declared = node.source
-        if (declared is GestureGuiCustom) return visitCustom(node, declared, ctx)
+        if (declared is GestureGuiCustom) return visitCustomVisuals(node, declared, ctx)
         val visualId = ctx.uniqueId(node.nodeId?.let { "visual-$it" })
         val visual = when (declared) {
             is GestureGuiText -> GestureGuiVisual.Text(
@@ -131,15 +162,41 @@ object GestureGuiLayoutCompiler {
         }
         if (visual != null) {
             val visible = emitVisual(visual, bounds, node.effectiveClip, ctx)
-            if (visible) addElement(node, visualId, ctx)
-            else clippedInteraction(node, ctx)
+            nodeVisible(node, visible, ctx)
+            if (visible) {
+                ctx.nodeVisuals[node] = visualId
+                ctx.nodeVisualObjs[node] = visual
+                node.nodeId?.let { ctx.nodeIdVisuals.putIfAbsent(it, visualId) }
+            }
             return visible
         }
         // 全ての子の表示が消えた複合部品に、透明な操作面だけを残さないようにします。
-        val visible = node.children.map { visit(it, ctx) }.any { it }
-        if (visible || node.children.isEmpty()) addElement(node, targetVisualId = null, ctx = ctx)
-        else clippedInteraction(node, ctx)
-        return visible
+        val visible = node.children.map { visitVisuals(it, ctx) }.any { it }
+        nodeVisible(node, visible || node.children.isEmpty(), ctx)
+        return visible || node.children.isEmpty()
+    }
+
+    private fun nodeVisible(node: ResolvedGestureGuiNode, visible: Boolean, ctx: Context) {
+        ctx.nodeVisible[node] = visible
+    }
+
+    /** 第2走査で操作面・ホバーを作ります。 */
+    private fun visitElements(node: ResolvedGestureGuiNode, ctx: Context) {
+        val declared = node.source
+        if (declared is GestureGuiCustom) {
+            visitCustomElements(node, declared, ctx)
+            return
+        }
+        val targetVisualId = ctx.nodeVisuals[node]
+        if (targetVisualId != null || node.children.isEmpty()) {
+            if (ctx.nodeVisible[node] == false) clippedInteraction(node, ctx)
+            else addElement(node, targetVisualId, ctx)
+        } else if (node.children.isNotEmpty()) {
+            // 子が全て消えた容器には操作面を作りません（第1走査の可視性に従います）。
+            if (ctx.nodeVisible[node] == false) clippedInteraction(node, ctx)
+            else addElement(node, targetVisualId = null, ctx = ctx)
+        }
+        node.children.forEach { visitElements(it, ctx) }
     }
 
     private fun clippedInteraction(node: ResolvedGestureGuiNode, ctx: Context) {
@@ -199,37 +256,133 @@ object GestureGuiLayoutCompiler {
 
     /**
      * 宣言ノード由来の操作面を追加します。
+     *
      * interaction が null（clip 消滅等）の場合は Engine 側の診断に委ねて生成しません。
+     * gestureGuard は入力時再評価のためそのまま受渡し、画面再構築は不要です。
+     * actionId のない consumeInput ノードは、受付 gesture 空の無音消費面を作ります。
      */
     private fun addElement(node: ResolvedGestureGuiNode, targetVisualId: String?, ctx: Context) {
-        val actionId = node.actionId ?: return
+        val declared = node.source
+        val actionId = node.actionId
+        // 消費面は action なしの入力管理（余白解除・バリア等）に用います。
+        val consumeOnly = actionId == null && declared.consumeInput
+        if (actionId == null && !consumeOnly) return
         val interaction = node.interactionBounds ?: return
-        val gestures = node.source.acceptedGestures
-        if (gestures.isEmpty()) return
-        if (actionId !in ctx.actionHandlers) {
-            ctx.add(
-                GestureGuiLayoutErrorCode.UNKNOWN_ACTION,
-                node.nodeId,
-                null,
-                "unknown action reference: $actionId",
-            )
-            return
+        val gestures = declared.acceptedGestures
+        if (actionId != null) {
+            if (gestures.isEmpty()) return
+            if (actionId !in ctx.actionHandlers) {
+                ctx.add(
+                    GestureGuiLayoutErrorCode.UNKNOWN_ACTION,
+                    node.nodeId,
+                    null,
+                    "unknown action reference: $actionId",
+                )
+                return
+            }
         }
         val elementId = ctx.uniqueId(node.nodeId ?: "element")
+        val hover = buildHover(node, targetVisualId, ctx)
         ctx.elements += GestureGuiElement(
             elementId = elementId,
             bounds = interaction,
-            acceptedGestures = gestures,
+            acceptedGestures = if (consumeOnly) emptySet() else gestures,
+            hoverText = hover,
             targetVisualId = targetVisualId,
+            gestureGuard = declared.gestureGuard,
         )
-        ctx.elementActions[elementId] = actionId
+        if (actionId != null) ctx.elementActions[elementId] = actionId
     }
 
-    private fun visitCustom(node: ResolvedGestureGuiNode, declared: GestureGuiCustom, ctx: Context): Boolean {
+    /**
+     * 宣言ホバーを低レベル hoverText へ変換します。
+     *
+     * 自動位置は解決済み border bounds 基準、固定位置は画面中央原点のまま用います。
+     * tooltip は意図的な逸脱として扱い、元ノードの clip では切りません。
+     */
+    private fun buildHover(
+        node: ResolvedGestureGuiNode,
+        ownVisualId: String?,
+        ctx: Context,
+    ): GestureGuiHoverText? {
+        val spec: GestureGuiHover = node.source.hover ?: return null
+        val border = node.borderBounds
+        val (x, y) = when (val position = spec.position) {
+            is GestureGuiHoverPosition.Fixed -> position.x to position.y
+            is GestureGuiHoverPosition.Auto -> {
+                val center = centerX(border) to centerY(border)
+                when (position.anchor) {
+                    GestureGuiHoverPosition.Anchor.ABOVE -> centerX(border) to border.maxY + position.gap
+                    GestureGuiHoverPosition.Anchor.BELOW -> centerX(border) to border.minY - position.gap
+                    GestureGuiHoverPosition.Anchor.CENTER -> center
+                }
+            }
+        }
+        val replaces = when (val target = spec.replacement) {
+            is GestureGuiHoverTarget.None -> null
+            is GestureGuiHoverTarget.Self -> ownVisualId ?: run {
+                ctx.add(
+                    GestureGuiLayoutErrorCode.UNKNOWN_VISUAL,
+                    node.nodeId,
+                    null,
+                    "hover replacement has no visual: ${node.nodeId ?: "<anonymous>"}",
+                )
+                null
+            }
+            is GestureGuiHoverTarget.Node -> ctx.nodeIdVisuals[target.nodeId] ?: run {
+                ctx.add(
+                    GestureGuiLayoutErrorCode.UNKNOWN_VISUAL,
+                    node.nodeId,
+                    null,
+                    "unknown hover replacement node: ${target.nodeId}",
+                )
+                null
+            }
+        }
+        var hoverBlockId: String? = null
+        var hoverBlockData: org.bukkit.block.data.BlockData? = null
+        spec.blockReplacement?.let { replacement ->
+            val targetId = when (val target = replacement.target) {
+                is GestureGuiHoverTarget.None -> null
+                is GestureGuiHoverTarget.Self -> ownVisualId
+                is GestureGuiHoverTarget.Node -> ctx.nodeIdVisuals[target.nodeId]
+            }
+            val targetVisual = targetId?.let { id ->
+                ctx.nodeVisualObjs.entries.firstOrNull { it.value.visualId == id }?.value
+            }
+            if (targetId != null && targetVisual is GestureGuiVisual.Block) {
+                hoverBlockId = targetId
+                hoverBlockData = replacement.blockData
+            } else {
+                ctx.add(
+                    GestureGuiLayoutErrorCode.UNKNOWN_VISUAL,
+                    node.nodeId,
+                    null,
+                    "hover block replacement requires a Block visual",
+                )
+            }
+        }
+        // 置換対象と同じ深さ近傍へ浮かせ、対象なしは既定層へ置きます。
+        val layer = if (ownVisualId != null) (layerOf(node.resolvedZ) + 2).coerceAtMost(MAX_LAYER) else 30
+        return GestureGuiHoverText(
+            text = spec.text,
+            x = x,
+            y = y,
+            size = spec.size,
+            lineWidth = spec.lineWidth,
+            layer = layer,
+            replacesVisualId = replaces,
+            hoverBlockVisualId = hoverBlockId,
+            hoverBlockData = hoverBlockData,
+        )
+    }
+
+    private fun visitCustomVisuals(node: ResolvedGestureGuiNode, declared: GestureGuiCustom, ctx: Context): Boolean {
         val renderer = ctx.customRenderers[declared.rendererId]
         if (renderer == null) {
             ctx.add(GestureGuiLayoutErrorCode.CUSTOM_RENDERER_MISSING, node.nodeId, null,
                 "custom renderer is not registered: ${declared.rendererId}")
+            nodeVisible(node, false, ctx)
             return false
         }
         val prefix = node.nodeId ?: "custom"
@@ -262,13 +415,31 @@ object GestureGuiLayoutCompiler {
                 visualIdMap[visual.visualId] = mappedId
             }
         }
-        result.elements.forEach { custom ->
-            val actionId = custom.actionId ?: declared.actionId ?: return@forEach
-            if (actionId !in ctx.actionHandlers) {
+        ctx.customVisualMaps[node] = visualIdMap
+        ctx.customOutputs[node] = CustomOutput(visualIdMap, declaredIds, result.elements)
+        val visible = visualIdMap.isNotEmpty() || result.visuals.isEmpty()
+        nodeVisible(node, visible, ctx)
+        return visible
+    }
+
+    private fun visitCustomElements(node: ResolvedGestureGuiNode, declared: GestureGuiCustom, ctx: Context) {
+        // 第1走査で renderer を実行済みの場合のみ、操作面を作ります。
+        // 未登録時は第1走査で診断済みのため何もしません。
+        if (declared.rendererId !in ctx.customRenderers) return
+        val prefix = node.nodeId ?: "custom"
+        // 第1走査で確定した出力を用い、renderer の再実行は行いません。
+        val output = ctx.customOutputs[node] ?: return
+        val visualIdMap = output.visualIdMap
+        val declaredIds = output.declaredIds
+        output.elements.forEach { custom ->
+            val actionId = custom.actionId ?: declared.actionId
+            val consumeOnly = actionId == null && custom.consumeInput
+            if (actionId != null && actionId !in ctx.actionHandlers) {
                 ctx.add(GestureGuiLayoutErrorCode.UNKNOWN_ACTION, node.nodeId, null,
                     "unknown action reference: $actionId")
                 return@forEach
             }
+            if (actionId == null && !consumeOnly) return@forEach
             val target = custom.targetVisualId
             val bounds = node.effectiveClip.clip(custom.bounds)
             if (bounds == null || (target != null && target !in visualIdMap)) {
@@ -279,7 +450,7 @@ object GestureGuiLayoutCompiler {
                 )
                 return@forEach
             }
-            if (custom.acceptedGestures.isEmpty()) {
+            if (custom.acceptedGestures.isEmpty() && !consumeOnly) {
                 ctx.add(GestureGuiLayoutErrorCode.EMPTY_HITBOX, node.nodeId, null,
                     "custom interaction has no accepted gestures: ${custom.elementId}")
                 return@forEach
@@ -295,14 +466,17 @@ object GestureGuiLayoutCompiler {
                 )
             }
             ctx.elements += GestureGuiElement(
-                elementId = elementId, bounds = bounds, acceptedGestures = custom.acceptedGestures,
-                hoverText = hover, targetVisualId = target?.let(visualIdMap::get),
+                elementId = elementId,
+                bounds = bounds,
+                acceptedGestures = if (consumeOnly) emptySet() else custom.acceptedGestures,
+                hoverText = hover,
+                targetVisualId = target?.let(visualIdMap::get),
+                gestureGuard = custom.gestureGuard,
             )
-            ctx.elementActions[elementId] = actionId
+            if (actionId != null) ctx.elementActions[elementId] = actionId
         }
-        if (visualIdMap.isNotEmpty() || result.visuals.isEmpty()) addElement(node, targetVisualId = null, ctx = ctx)
-        else clippedInteraction(node, ctx)
-        return visualIdMap.isNotEmpty()
+        if (ctx.nodeVisible[node] == false) clippedInteraction(node, ctx)
+        else addElement(node, targetVisualId = null, ctx = ctx)
     }
 
 }

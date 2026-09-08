@@ -21,6 +21,15 @@ KantanCommanderの[issue #25](https://github.com/awabi2048/KantanCommander/issue
 - 未対応または適用対象外のCSS、不正な数値を診断します。`font-size: 0`等の入力で解析を例外終了させません。
 - compilerの診断にはLayout Engineの診断も含めます。
 
+### 26.908.5の追加範囲
+
+- レイアウト契約版は3です。宣言ノードへ`gestureGuard`・`hover`・`consumeInput`を追加しました。既存の低レベルGesture GUI契約版18、HTMLプロファイル版1は変更しません。
+- `gestureGuard`は入力時再評価のためそのまま低レベル要素へ受渡し、画面再構築は不要です。操作面を伴わないguardは`GUARD_WITHOUT_ACTION`で診断します。
+- `hover`は解決済みbounds基準の自動位置（上・下・中央＋間隔）または固定座標で低レベルhoverTextへ変換します。tooltipは意図的な逸脱として扱い、元ノードのclipでは切りません。置換対象は自visual・指定ノード・なしを選べ、未知参照は`UNKNOWN_VISUAL`で診断します。
+- `consumeInput`はactionなしの無音消費面（余白解除・バリア等）を作ります。受付gestureは空集合へ正規化し、`EMPTY_HITBOX`・`UNKNOWN_ACTION`の対象外です。
+- Custom要素にも`gestureGuard`・`consumeInput`を追加し、通常ノードと同じ規則で生成します。
+- compilerは表示確定と操作面・ホバー生成を2走査に分け、ホバーの前方ノード参照を解決します。Custom rendererの実行は1回です。
+
 ### 見た目と操作の維持方針
 
 参照元は既存の宣言APIとKantanCommanderの`clipMapVisual`／`clipMapElement`です。呼び出し側が指定する素材・文言・寸法・情報順・操作の意味は維持します。背景追加による幅の縮小や絶対位置の二重適用、領域外に残る描画・操作だけを修正します。新しい画面やナビゲーション導線は追加しません。

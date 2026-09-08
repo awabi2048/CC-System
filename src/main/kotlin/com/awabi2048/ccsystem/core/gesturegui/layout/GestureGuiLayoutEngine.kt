@@ -132,6 +132,15 @@ object GestureGuiLayoutEngine {
                 )
             }
         }
+        // guard は操作面の入力時判定にのみ用います。操作面なしでは評価されません。
+        if (node.gestureGuard != null && node.actionId == null) {
+            ctx.add(
+                GestureGuiLayoutErrorCode.GUARD_WITHOUT_ACTION,
+                node.id,
+                parentId,
+                "guard without action is never evaluated: ${node.id ?: "<anonymous>"}",
+            )
+        }
         childrenOf(node).forEach { checkIds(it, node.id ?: parentId, ctx) }
     }
 
@@ -428,8 +437,11 @@ object GestureGuiLayoutEngine {
         parentId: String?,
         ctx: Context,
     ): GestureGuiBounds? {
-        if (node.actionId == null) return null
-        if (node.acceptedGestures.isEmpty()) return null
+        // ホバー面とバリアはactionなしでもhit testへ参加します。
+        // 配置寸法には影響せず、入力管理のための解決済み領域だけを追加します。
+        val inputOnly = node.hover != null || node.consumeInput
+        if (node.actionId == null && !inputOnly) return null
+        if (node.acceptedGestures.isEmpty() && !inputOnly) return null
         val clipped = clip.clip(border) ?: run {
             ctx.add(
                 GestureGuiLayoutErrorCode.CLIPPED_INTERACTION,

@@ -48,6 +48,12 @@ enum class GestureGuiLayoutErrorCode {
 
     /** HTML の構文異常です（対応する範囲で復旧し、診断します）。 */
     HTML_PARSE_ERROR,
+
+    /**
+     * 操作面を伴わない guard です。
+     * guard は操作面の入力時判定にのみ用いるため、action・消費面なしでは評価されません。
+     */
+    GUARD_WITHOUT_ACTION,
 }
 
 /**
