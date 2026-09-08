@@ -177,7 +177,7 @@ class GestureGuiServiceImpl(
     private val registeredOwners = mutableSetOf<UUID>()
     private val sessions = mutableMapOf<UUID, Session>()
     private var nextRevision = 1L
-    /** 追従の約10Hz間引きと計測ログ周期の基準になるサービスtick番号です。 */
+    /** 追従の約10Hz間引きの基準になるサービスtick番号です。 */
     private var tickIndex: Long = 0L
     private var tickTask: BukkitTask? = Bukkit.getScheduler().runTaskTimer(plugin, Runnable(::tick), 1L, 1L)
 
@@ -384,7 +384,6 @@ class GestureGuiServiceImpl(
         // 場合にダミー残留＋dirty解消の組合せを作らないための防御です。
         if (session.dummyActive) {
             restoreMainFromDummy(session)
-            GestureGuiFollowMetrics.recordDummyRestore()
         }
         session.fixedAnchor = null
         session.fixedPoseSnapshot = null
@@ -401,13 +400,11 @@ class GestureGuiServiceImpl(
         session.lastAppliedY = eye.y
         session.lastAppliedZ = eye.z
         val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
-        var teleported = 0
         session.screens.zip(newPoses).forEach { (screen, pose) ->
             screen.pose = pose
-            teleported += renderer.updatePose(screen.render, pose, screen.view)
+            renderer.updatePose(screen.render, pose, screen.view)
         }
-        teleported += repositionChildren(session)
-        GestureGuiFollowMetrics.recordPoseUpdate(teleported)
+        repositionChildren(session)
         // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
         session.lastMotionTick = tickIndex
         session.followDirty = false
@@ -429,8 +426,7 @@ class GestureGuiServiceImpl(
         session.gazeOutsideTicks = 0
         session.revision = nextRevision++
         // ダミー表示中の再召喚では、ダミーを先に破棄して本体の作り直しへ一本化します。
-        val wasDummy = session.dummyActive
-        if (wasDummy) {
+        if (session.dummyActive) {
             session.dummyRenders.forEach(renderer::remove)
             session.dummyRenders = emptyList()
             session.dummyActive = false
@@ -536,10 +532,6 @@ class GestureGuiServiceImpl(
             session.lastAppliedZ = eye.z
             session.lastMotionTick = tickIndex
             session.followDirty = false
-            GestureGuiFollowMetrics.recordStopResummon(
-                newScreens.sumOf { it.render.all.size } + newChildren.sumOf { it.render.all.size },
-            )
-            if (wasDummy) GestureGuiFollowMetrics.recordDummyResummon()
             Bukkit.getScheduler().runTask(plugin, Runnable {
                 if (sessions[session.ownerId] !== session) {
                     // セッションが閉じられた場合は古い実体だけ確実に除去します。
@@ -639,7 +631,6 @@ class GestureGuiServiceImpl(
             }
             session.dummyRenders = dummies
             session.dummyActive = true
-            GestureGuiFollowMetrics.recordDummyStart()
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの生成に失敗しました", failure)
         }
@@ -1207,7 +1198,6 @@ class GestureGuiServiceImpl(
             if (session.fixedAnchor != null) {
                 if (session.dummyActive) {
                     restoreMainFromDummy(session)
-                    GestureGuiFollowMetrics.recordDummyRestore()
                 }
             } else {
                 // 視線再調整は停止時再召喚へ統合したため無効化しています。
@@ -1226,12 +1216,10 @@ class GestureGuiServiceImpl(
                 session.lastEyeX = eye.x
                 session.lastEyeY = eye.y
                 session.lastEyeZ = eye.z
-                GestureGuiFollowMetrics.recordEvaluation()
                 when (GestureGuiFollowPolicy.decideFollowMotion(tickIndex, session.lastMotionTick, moved)) {
                     GestureGuiFollowPolicy.FollowMotionState.MOVING -> {
                         session.lastMotionTick = tickIndex
                         session.followDirty = true
-                        GestureGuiFollowMetrics.recordFrozenSkipped()
                         // ゲートを通過した場合だけ本体をダミーへ切り替えます。
                         // 小さな揺れやセクタ内の間は従来どおり凍結を維持します。
                         maybeStartDummyFollow(session, owner, eye)
@@ -1260,7 +1248,6 @@ class GestureGuiServiceImpl(
                                     // 操作者が球面セクタ内にいる間は一切の再描画を行わず、
                                     // 位置を固定します。dirtyは維持するため、セクタ外へ出た
                                     // 時点で再召喚が走ります。
-                                    GestureGuiFollowMetrics.recordGazeFrozenSkipped()
                                 }
                                 GestureGuiFollowPolicy.StopAction.RESUMMON -> {
                                     resummonFollowScreens(session, owner)
@@ -1271,13 +1258,11 @@ class GestureGuiServiceImpl(
                                     // ダミー表示中（一旦遠ざかって戻った場合を含む）は本体へ戻します。
                                     if (session.dummyActive) {
                                         restoreMainFromDummy(session)
-                                        GestureGuiFollowMetrics.recordDummyRestore()
                                     }
                                     session.lastAppliedX = eye.x
                                     session.lastAppliedY = eye.y
                                     session.lastAppliedZ = eye.z
                                     session.followDirty = false
-                                    GestureGuiFollowMetrics.recordResummonSkippedBelowThreshold()
                                 }
                             }
                         }
@@ -1316,7 +1301,6 @@ class GestureGuiServiceImpl(
             }
         }
         reconcileExternalActors()
-        GestureGuiFollowMetrics.maybeLog(plugin, tickIndex)
     }
 
     /**
@@ -1790,18 +1774,15 @@ class GestureGuiServiceImpl(
         }
     }
 
-    private fun repositionChildren(session: Session): Int {
-        var teleported = 0
+    private fun repositionChildren(session: Session) {
         session.children.forEachIndexed { index, child ->
             val parent = parentRuntime(session, child.options.parentScreenId) ?: return@forEachIndexed
             child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
-            teleported += renderer.updatePose(child.render, child.pose, child.view)
+            renderer.updatePose(child.render, child.pose, child.view)
             child.overlay?.let {
                 renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index))
-                teleported++
             }
         }
-        return teleported
     }
 
     /**

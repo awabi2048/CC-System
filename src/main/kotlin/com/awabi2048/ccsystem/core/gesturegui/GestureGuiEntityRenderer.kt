@@ -202,22 +202,19 @@ internal class GestureGuiEntityRenderer(
     }
 
     /**
-     * 追従・パン・子画面再配置時に画面全体を新poseへ移動し、teleportした体数を返します。
+     * 追従・パン・子画面再配置時に画面全体を新poseへ移動します。
      *
      * 背景の実寸確定は寸法変化時のみ行い、追従中の冗長メタデータで背景だけが
-     * 先行適用されるティアを抑えます。戻り値は追従計測の teleport 母数に使います。
+     * 先行適用されるティアを抑えます。
      */
-    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView): Int {
+    fun updatePose(handle: ScreenHandle, pose: GestureGuiScreenPose, view: GestureGuiView) {
         val panel = view.panel
         // パネル寸法の変更を座標移動だけで済ませると、旧サイズの背景が残り、
         // 子画面やズーム更新時に入力面と見た目がずれます。変化時のみ実寸へ確定します。
         if (handle.lastPanelWidth != panel.width || handle.lastPanelHeight != panel.height) {
             setBackgroundSize(handle, panel.width.toFloat(), panel.height.toFloat(), interpolationTicks = 0)
-        } else {
-            GestureGuiFollowMetrics.recordBackgroundResizeSkipped()
         }
         handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
-        var teleported = handle.background.size
         val innerHeight = panel.height - panel.frameWidth * 2.0
         val frameParts = listOf(
             PanelPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
@@ -230,7 +227,6 @@ internal class GestureGuiEntityRenderer(
                 it.teleport(
                     visualLocation(handle.background.first().world, pose, part.x, part.y, PANEL_FRAME_LAYER),
                 )
-                teleported++
             }
         }
         view.visuals.forEach { visual ->
@@ -248,12 +244,9 @@ internal class GestureGuiEntityRenderer(
                 )
             }
             entity.teleport(location)
-            teleported++
-            // 枠も主Visualと同じposeへ移動するため、teleport母数へ含めます。
-            teleported += handle.visualOutlineEntities[visual.visualId]?.size ?: 0
+            // 枠も主Visualと同じposeへ移動します。
             updateOutlinePose(handle, pose, visual)
         }
-        return teleported
     }
 
     fun setBackgroundSize(handle: ScreenHandle, width: Float, height: Float, interpolationTicks: Int) {
@@ -807,12 +800,10 @@ internal class GestureGuiEntityRenderer(
      * ダミーパネルを新しい追従 pose へ移動します。
      *
      * 本体の updatePose と異なり背景1体だけの teleport のため、補間を残したまま
-     * 毎 tick 呼んでも背景と内容物の適用時刻差が生じません。戻り値は計測用の
-     * teleport 体数です。
+     * 毎 tick 呼んでも背景と内容物の適用時刻差が生じません。
      */
-    fun moveDummy(handle: ScreenHandle, pose: GestureGuiScreenPose): Int {
+    fun moveDummy(handle: ScreenHandle, pose: GestureGuiScreenPose) {
         handle.background.forEach { it.teleport(visualLocation(it.world, pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)) }
-        return handle.background.size
     }
 
     fun spawnCatcher(
