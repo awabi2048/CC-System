@@ -8,6 +8,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiScreenDefinition
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiView
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCompiledScreen
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustom
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomElement
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiClip
@@ -28,13 +29,15 @@ import java.util.IdentityHashMap
 import java.util.UUID
 
 /**
- * 解決済みレイアウトを既存 Low-level API へ変換します。
+ * 解決済みレイアウトを既存 Low-level API へ変換する実装です。
  *
+ * モジュール外からは公開入口の [com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutFacade]
+ * を用い、この実装は直接参照しません。
  * 既存 `GestureGuiView` / `GestureGuiVisual` / `GestureGuiElement` は
  * renderer IR / Low-level API として維持し、この compiler の出力先とします。
  * interaction bounds は解決結果から自動生成し、visual と hitbox の二重管理を避けます。
  */
-object GestureGuiLayoutCompiler {
+internal object GestureGuiLayoutCompiler {
     const val MAX_LAYER: Int = 40
 
     /**
@@ -480,9 +483,3 @@ object GestureGuiLayoutCompiler {
     }
 
 }
-
-/** compiler の出力である1画面と診断の一覧です。 */
-data class GestureGuiCompiledScreen(
-    val view: GestureGuiView,
-    val diagnostics: List<GestureGuiLayoutDiagnostic>,
-)

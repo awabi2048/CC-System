@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiOutline
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiTextAlignment
 import com.awabi2048.ccsystem.api.gesturegui.html.GestureGuiHtmlEnvironment
+import com.awabi2048.ccsystem.api.gesturegui.html.GestureGuiHtmlResult
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
@@ -30,19 +31,16 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
 /**
- * 制限付き HTML/CSS frontend です（自前実装・Profile 1）。
+ * 制限付き HTML/CSS frontend の実装です（自前実装・Profile 2）。
  *
+ * モジュール外からは公開入口の [com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutFacade]
+ * を用い、この実装は直接参照しません。
  * HTML/CSS 自体は内部モデルにせず、この frontend が [GestureGuiDocument] へ変換します。
- * 対応範囲は issue #25 の Profile 1 に限定し、範囲外は診断します。
+ * 対応範囲は Profile 2 に限定し、範囲外は診断します。
  * 対応タグ: div / section / header / footer / nav / span / p / button /
  * mc-item / mc-block / gesture-viewport / custom / style。
  */
-object GestureGuiHtml {
-    /** frontend の出力である文書と診断の一覧です。 */
-    data class HtmlResult(
-        val document: GestureGuiDocument,
-        val diagnostics: List<GestureGuiLayoutDiagnostic>,
-    )
+internal object GestureGuiHtml {
 
     /**
      * HTML 文字列を文書へ変換します。
@@ -54,7 +52,7 @@ object GestureGuiHtml {
         environment: GestureGuiHtmlEnvironment,
         documentName: String? = null,
         panel: GestureGuiPanel = GestureGuiPanel(),
-    ): HtmlResult {
+    ): GestureGuiHtmlResult {
         val ctx = Context(environment, documentName)
         val roots = DomParser(html, ctx).parse()
         val styleSheet = StyleSheet(ctx)
@@ -69,7 +67,7 @@ object GestureGuiHtml {
             nodes.size == 1 -> nodes.single()
             else -> GestureGuiColumn(children = nodes, id = "root", width = GestureGuiSizeSpec.Percent(1.0))
         }
-        return HtmlResult(GestureGuiDocument(root, panel), ctx.diagnostics.toList())
+        return GestureGuiHtmlResult(GestureGuiDocument(root, panel), ctx.diagnostics.toList())
     }
 
     // ─── 診断収集 ────────────────────────────────────────────
