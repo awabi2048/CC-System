@@ -379,6 +379,13 @@ class GestureGuiServiceImpl(
         val session = sessions[ownerId]?.takeIf { it.state == GestureGuiSessionState.ACTIVE } ?: return false
         if (!GestureGuiClipTogglePolicy.canUnpin(session.state, session.fixedAnchor)) return false
         val owner = Bukkit.getPlayer(ownerId)?.takeIf(Player::isOnline) ?: return false
+        // pin側と対称に、解除前にダミーを本体へ戻します。通常フローでは
+        // 固定中にダミーは開始されないため到達しませんが、不変条件が崩れた
+        // 場合にダミー残留＋dirty解消の組合せを作らないための防御です。
+        if (session.dummyActive) {
+            restoreMainFromDummy(session)
+            GestureGuiFollowMetrics.recordDummyRestore()
+        }
         session.fixedAnchor = null
         session.fixedPoseSnapshot = null
         session.targetYaw = null
@@ -1195,7 +1202,14 @@ class GestureGuiServiceImpl(
                 return@forEach
             }
             // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
-            if (session.fixedAnchor == null) {
+            // 固定中にダミーが残存するはずはありませんが、残っていた場合は
+            // 本体へ戻して表示不整合を自己回復させます。
+            if (session.fixedAnchor != null) {
+                if (session.dummyActive) {
+                    restoreMainFromDummy(session)
+                    GestureGuiFollowMetrics.recordDummyRestore()
+                }
+            } else {
                 // 視線再調整は停止時再召喚へ統合したため無効化しています。
                 // 移動中はposeを一切更新せず凍結し、停止確定後に再召喚で確定させます。
                 // 移動中の毎tick teleportが背景と内容物の適用時刻差でティアを招くため、
@@ -1228,32 +1242,43 @@ class GestureGuiServiceImpl(
                     }
                     GestureGuiFollowPolicy.FollowMotionState.STOPPED -> {
                         if (session.followDirty && session.state == GestureGuiSessionState.ACTIVE) {
-                            // 操作者が球面セクタ内にいる間は一切の再描画を行わず、
-                            // 位置を固定します。dirtyは維持するため、セクタ外へ出た
-                            // 時点で再召喚が走ります。明示操作・内容変更・ホバーは
-                            // この制限の対象外です。
-                            if (isGazeInsideScreen(session, owner)) {
-                                GestureGuiFollowMetrics.recordGazeFrozenSkipped()
-                            } else if (GestureGuiFollowPolicy.shouldResummonOnStop(
+                            // ダミー表示中は旧セクタを破棄し、変位だけで再召喚／復元を
+                            // 決めます。旧セクタは移動前の凍結poseを指すため、戻って
+                            // 停止した際にセクタ内凍結へ吸い込まれるとダミーのまま
+                            // 残留します。非ダミー時のみセクタ内凍結を維持します。
+                            // 明示操作・内容変更・ホバーはこの制限の対象外です。
+                            when (
+                                GestureGuiFollowPolicy.decideStopAction(
+                                    session.dummyActive,
+                                    isGazeInsideScreen(session, owner),
                                     eye.x - session.lastAppliedX,
                                     eye.y - session.lastAppliedY,
                                     eye.z - session.lastAppliedZ,
                                 )
                             ) {
-                                resummonFollowScreens(session, owner)
-                            } else {
-                                // 前回確定位置からの変位が閾値未満の場合は実体を
-                                // 作り直さず、基準位置だけを更新して確定済みにします。
-                                // ダミー表示中（一旦遠ざかって戻った場合）は本体へ戻します。
-                                if (session.dummyActive) {
-                                    restoreMainFromDummy(session)
-                                    GestureGuiFollowMetrics.recordDummyRestore()
+                                GestureGuiFollowPolicy.StopAction.FREEZE -> {
+                                    // 操作者が球面セクタ内にいる間は一切の再描画を行わず、
+                                    // 位置を固定します。dirtyは維持するため、セクタ外へ出た
+                                    // 時点で再召喚が走ります。
+                                    GestureGuiFollowMetrics.recordGazeFrozenSkipped()
                                 }
-                                session.lastAppliedX = eye.x
-                                session.lastAppliedY = eye.y
-                                session.lastAppliedZ = eye.z
-                                session.followDirty = false
-                                GestureGuiFollowMetrics.recordResummonSkippedBelowThreshold()
+                                GestureGuiFollowPolicy.StopAction.RESUMMON -> {
+                                    resummonFollowScreens(session, owner)
+                                }
+                                GestureGuiFollowPolicy.StopAction.RESTORE -> {
+                                    // 前回確定位置からの変位が閾値未満の場合は実体を
+                                    // 作り直さず、基準位置だけを更新して確定済みにします。
+                                    // ダミー表示中（一旦遠ざかって戻った場合を含む）は本体へ戻します。
+                                    if (session.dummyActive) {
+                                        restoreMainFromDummy(session)
+                                        GestureGuiFollowMetrics.recordDummyRestore()
+                                    }
+                                    session.lastAppliedX = eye.x
+                                    session.lastAppliedY = eye.y
+                                    session.lastAppliedZ = eye.z
+                                    session.followDirty = false
+                                    GestureGuiFollowMetrics.recordResummonSkippedBelowThreshold()
+                                }
                             }
                         }
                     }

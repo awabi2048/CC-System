@@ -92,6 +92,57 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
+    fun `stop with dummy discards the old sector`() {
+        // ダミー表示後は旧セクタに意味がないため、セクタ内へ戻って停止しても
+        // 凍結へ吸い込まれず、変位だけで再召喚／復元を決めます。
+        // セクタ内＋大変位でも再召喚します（旧不具合ではFREEZEに残留）。
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESUMMON,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = true, insideScreenArea = true, 2.0, 0.0, 0.0),
+        )
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESUMMON,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = true, insideScreenArea = true, 0.5, 0.0, 0.0),
+        )
+        // セクタ内＋小変位は本体へ復元します。
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESTORE,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = true, insideScreenArea = true, 0.2, 0.0, 0.0),
+        )
+        // セクタ外のダミー停止も変位だけで決まります。
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESUMMON,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = true, insideScreenArea = false, 0.0, 0.0, -2.5),
+        )
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESTORE,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = true, insideScreenArea = false, 0.0, 0.4, 0.0),
+        )
+    }
+
+    @Test
+    fun `stop without dummy keeps sector freeze`() {
+        // 非ダミー時は従来どおり、セクタ内では変位にかかわらず凍結を維持します。
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.FREEZE,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = false, insideScreenArea = true, 2.0, 0.0, 0.0),
+        )
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.FREEZE,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = false, insideScreenArea = true, 0.1, 0.0, 0.0),
+        )
+        // セクタ外では変位で再召喚／復元を決めます。
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESUMMON,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = false, insideScreenArea = false, 0.3, 0.4, 0.0),
+        )
+        assertEquals(
+            GestureGuiFollowPolicy.StopAction.RESTORE,
+            GestureGuiFollowPolicy.decideStopAction(dummyActive = false, insideScreenArea = false, 0.2, 0.0, 0.0),
+        )
+    }
+
+    @Test
     fun `cone angle measures the operator direction from the screen center`() {
         // 画面正面の軸上は0度です。軸は操作者側（−normal）を渡します。
         assertEquals(

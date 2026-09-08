@@ -49,6 +49,16 @@ internal object GestureGuiFollowPolicy {
         STOPPED,
     }
 
+    /** 停止確定時の復帰動作です。tick側の分岐を純粋化し、単体検証可能にします。 */
+    internal enum class StopAction {
+        /** 本体を再召喚して現在位置へ確定させます。 */
+        RESUMMON,
+        /** 実体を作り直さず、本体表示へ戻して基準位置だけ更新します。 */
+        RESTORE,
+        /** セクタ内のため一切の再描画を行わず、確定待ちを維持します。 */
+        FREEZE,
+    }
+
     /** 現在の視線状態を観測した後の連続画面外tick数を返します。 */
     fun nextOutsideTicks(previousTicks: Int, insideScreenArea: Boolean): Int {
         if (insideScreenArea) return 0
@@ -170,4 +180,28 @@ internal object GestureGuiFollowPolicy {
         deltaY: Double,
         deltaZ: Double,
     ): Boolean = !insideScreenArea && shouldResummonOnStop(deltaX, deltaY, deltaZ)
+
+    /**
+     * 停止確定時の復帰動作を判定します。
+     *
+     * ダミー表示中は旧セクタを破棄し、セクタ内外にかかわらず変位だけで
+     * 再召喚／復元を決めます。ダミー開始後に旧凍結中心へ戻って停止しても、
+     * セクタ内凍結へ吸い込まれてダミーのまま残留しないようにします。
+     * 非ダミー時は従来どおり、セクタ内では再描画せず確定待ちを維持します。
+     */
+    fun decideStopAction(
+        dummyActive: Boolean,
+        insideScreenArea: Boolean,
+        deltaX: Double,
+        deltaY: Double,
+        deltaZ: Double,
+    ): StopAction {
+        if (dummyActive) {
+            // 旧セクタは移動前の凍結poseを指すため、ダミー切替後は無効です。
+            // セクタ内へ戻った停止も再召喚／復元のいずれかへ必ず寄せます。
+            return if (shouldResummonOnStop(deltaX, deltaY, deltaZ)) StopAction.RESUMMON else StopAction.RESTORE
+        }
+        if (insideScreenArea) return StopAction.FREEZE
+        return if (shouldResummonOnStop(deltaX, deltaY, deltaZ)) StopAction.RESUMMON else StopAction.RESTORE
+    }
 }
