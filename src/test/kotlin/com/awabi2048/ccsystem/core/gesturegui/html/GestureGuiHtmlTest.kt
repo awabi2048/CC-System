@@ -153,4 +153,89 @@ class GestureGuiHtmlTest {
             "diagnostics: ${parsed.diagnostics}",
         )
     }
+
+    @Test
+    fun `gestures attribute controls accepted gestures`() {
+        val html = """
+            <div id="row" style="display: flex;">
+              <button id="a" action="a" gestures="click">A</button>
+              <button id="b" action="b" gestures="primary shift_secondary">B</button>
+              <button id="c" action="c">C</button>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "gestures.html", panel)
+        assertTrue(parsed.diagnostics.isEmpty(), "diagnostics: ${parsed.diagnostics}")
+        val compiled = GestureGuiLayoutCompiler.compile(
+            GestureGuiLayoutEngine.layout(parsed.document, knownActionIds = setOf("a", "b", "c")),
+            screenId = "s",
+            actionHandlers = mapOf("a" to {}, "b" to {}, "c" to {}),
+        )
+        assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
+        // 宣言順に対応します（a: click略記、b: 明示列挙、c: 既定PRIMARY）。
+        val gestures = compiled.view.definition.elements.map { it.acceptedGestures }
+        assertEquals(
+            setOf(GestureGuiGesture.PRIMARY, GestureGuiGesture.SHIFT_PRIMARY),
+            gestures[0],
+        )
+        assertEquals(
+            setOf(GestureGuiGesture.PRIMARY, GestureGuiGesture.SHIFT_SECONDARY),
+            gestures[1],
+        )
+        assertEquals(setOf(GestureGuiGesture.PRIMARY), gestures[2])
+    }
+
+    @Test
+    fun `color and line-width apply to text`() {
+        val html = """
+            <div id="root">
+              <p id="gray" style="color: gray; line-width: 200;">Gray</p>
+              <p id="plain">Plain</p>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "color.html", panel)
+        assertTrue(parsed.diagnostics.isEmpty(), "diagnostics: ${parsed.diagnostics}")
+        val compiled = GestureGuiLayoutCompiler.compile(
+            GestureGuiLayoutEngine.layout(parsed.document),
+            screenId = "s",
+        )
+        assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
+        val texts = compiled.view.visuals.filterIsInstance<com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual.Text>()
+        assertEquals(200, texts.single { it.visualId.contains("gray") }.lineWidth)
+        assertEquals(
+            net.kyori.adventure.text.format.NamedTextColor.GRAY,
+            texts.single { it.visualId.contains("gray") }.text.color(),
+        )
+        assertEquals(160, texts.single { it.visualId.contains("plain") }.lineWidth)
+    }
+
+    @Test
+    fun `unknown gestures token and color are reported`() {
+        val html = """
+            <div id="root">
+              <button id="a" action="a" gestures="warp">A</button>
+              <p id="t" style="color: blurple;">T</p>
+              <p id="w" style="line-width: 0;">W</p>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "bad-values.html", panel)
+        assertTrue(
+            parsed.diagnostics.any {
+                it.code == GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY && it.message.contains("warp")
+            },
+            "diagnostics: ${parsed.diagnostics}",
+        )
+        assertTrue(
+            parsed.diagnostics.any {
+                it.code == GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY && it.message.contains("blurple")
+            },
+            "diagnostics: ${parsed.diagnostics}",
+        )
+        assertTrue(
+            parsed.diagnostics.any {
+                it.code == GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY && it.message.contains("line-width")
+            },
+            "diagnostics: ${parsed.diagnostics}",
+        )
+        assertEquals("bad-values.html", parsed.diagnostics.first().source)
+    }
 }

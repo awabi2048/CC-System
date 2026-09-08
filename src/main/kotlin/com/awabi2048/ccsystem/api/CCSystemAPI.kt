@@ -67,8 +67,8 @@ interface CCSystemAPI {
         const val GESTURE_GUI_CONTRACT_VERSION: Int = 18
         /** 空のclipを区別する型とCustom表示矩形の契約を追加した版です。 */
         const val GESTURE_GUI_LAYOUT_CONTRACT_VERSION: Int = 3
-        /** 制限付きHTML/CSS frontend Profile 1の初版です。 */
-        const val GESTURE_HTML_PROFILE_VERSION: Int = 1
+        /** gestures属性・color・line-widthを追加した制限付きHTML/CSS frontendの版です。 */
+        const val GESTURE_HTML_PROFILE_VERSION: Int = 2
     }
     /**
      * プレイヤーの言語設定を取得します

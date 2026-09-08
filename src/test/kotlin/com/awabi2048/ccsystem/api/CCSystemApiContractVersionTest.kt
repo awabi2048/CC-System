@@ -12,7 +12,7 @@ class CCSystemApiContractVersionTest {
         assertEquals(10, CCSystemAPI.GUI_RUNTIME_CONTRACT_VERSION)
         assertEquals(18, CCSystemAPI.GESTURE_GUI_CONTRACT_VERSION)
         assertEquals(3, CCSystemAPI.GESTURE_GUI_LAYOUT_CONTRACT_VERSION)
-        assertEquals(1, CCSystemAPI.GESTURE_HTML_PROFILE_VERSION)
+        assertEquals(2, CCSystemAPI.GESTURE_HTML_PROFILE_VERSION)
         assertEquals(Int::class.javaPrimitiveType, CCSystemAPI::class.java.getMethod("getGuiRuntimeContractVersion").returnType)
         assertEquals(Int::class.javaPrimitiveType, CCSystemAPI::class.java.getMethod("getGestureGuiContractVersion").returnType)
         assertEquals(Int::class.javaPrimitiveType, CCSystemAPI::class.java.getMethod("getGestureGuiLayoutContractVersion").returnType)

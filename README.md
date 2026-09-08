@@ -34,6 +34,10 @@ KantanCommanderの[issue #25](https://github.com/awabi2048/KantanCommander/issue
 
 - 同一層の文言・品目と背景のz-fightingを、層ではなくrenderer側の微小持上げ（`TEXT_ITEM_SURFACE_LIFT`＝0.0005ブロック）で解消します。層順序は不変のため、既存画面の前後関係に影響しません。
 
+### 26.908.8の追加範囲
+
+- HTMLプロファイル版は2です。`gestures`属性（明示列挙＋`click`・`main_hand`略記）、CSS `color`（限定色名）、CSS `line-width`（正整数）を追加します。未指定時の既定は変えず、不正値は診断します。
+
 ### 見た目と操作の維持方針
 
 参照元は既存の宣言APIとKantanCommanderの`clipMapVisual`／`clipMapElement`です。呼び出し側が指定する素材・文言・寸法・情報順・操作の意味は維持します。背景追加による幅の縮小や絶対位置の二重適用、領域外に残る描画・操作だけを修正します。新しい画面やナビゲーション導線は追加しません。

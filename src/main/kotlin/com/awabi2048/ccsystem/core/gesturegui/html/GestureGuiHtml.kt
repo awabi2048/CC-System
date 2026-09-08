@@ -27,6 +27,7 @@ import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiSizeSpec
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiText
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiViewport
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
 /**
  * 制限付き HTML/CSS frontend です（自前実装・Profile 1）。
@@ -462,9 +463,11 @@ object GestureGuiHtml {
         ctx: Context,
     ): GestureGuiNode {
         val absolute = absoluteOf(style, element, ctx)
+        val color = textColorOr(style, element, ctx)
         return GestureGuiText(
-            text = Component.text(directText(element)),
+            text = Component.text(directText(element)).let { if (color == null) it else it.color(color) },
             size = positiveNumberOr(style["font-size"], ctx.environment.textSize(element.tag, element.classes, element.id), element, ctx),
+            lineWidth = lineWidthOr(style, element, ctx),
             alignment = when (style["text-align"]?.lowercase()) {
                 "left" -> GestureGuiTextAlignment.LEFT
                 "right" -> GestureGuiTextAlignment.RIGHT
@@ -476,11 +479,89 @@ object GestureGuiHtml {
             },
             id = element.id,
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
+            acceptedGestures = actionGestures(
+                element.attributes["action"]?.takeIf(String::isNotBlank),
+                gesturesOr(element, ctx),
+            ),
             width = sizeOr(style["width"], fill = true, element, ctx),
             height = sizeOr(style["height"], fill = false, element, ctx),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absolute,
         )
+    }
+
+    /**
+     * gestures属性の解釈です。未指定時はnullを返し、呼出し側の既定を維持します。
+     * `click`は左右・スニーク両対応、`main_hand`は4種同時受付の略記です。
+     */
+    private fun gesturesOr(element: DomElement, ctx: Context): Set<GestureGuiGesture>? {
+        val raw = element.attributes["gestures"]?.takeIf(String::isNotBlank) ?: return null
+        when (raw.trim().lowercase().replace("-", "_").replace(" ", "")) {
+            "click" -> return setOf(GestureGuiGesture.PRIMARY, GestureGuiGesture.SHIFT_PRIMARY)
+            "main_hand", "mainhand" ->
+                return setOf(
+                    GestureGuiGesture.PRIMARY,
+                    GestureGuiGesture.SECONDARY,
+                    GestureGuiGesture.SHIFT_PRIMARY,
+                    GestureGuiGesture.SHIFT_SECONDARY,
+                )
+        }
+        val parsed = raw.trim().split(Regex("\\s+")).mapNotNull { token ->
+            when (token.lowercase().replace("-", "_")) {
+                "primary" -> GestureGuiGesture.PRIMARY
+                "secondary" -> GestureGuiGesture.SECONDARY
+                "shift_primary" -> GestureGuiGesture.SHIFT_PRIMARY
+                "shift_secondary" -> GestureGuiGesture.SHIFT_SECONDARY
+                "swap_hand" -> GestureGuiGesture.SWAP_HAND
+                else -> {
+                    unsupported(element, "gestures", token, ctx)
+                    null
+                }
+            }
+        }.toSet()
+        return parsed.ifEmpty { setOf(GestureGuiGesture.PRIMARY) }
+    }
+
+    /** actionなし既定（PRIMARY）を再現する受付集合です。 */
+    private fun actionGestures(actionId: String?, parsed: Set<GestureGuiGesture>?): Set<GestureGuiGesture> =
+        parsed ?: if (actionId != null) setOf(GestureGuiGesture.PRIMARY) else emptySet()
+
+    /** CSS colorの解釈です。未指定時はnullを返し、無色のままにします。 */
+    private fun textColorOr(style: Map<String, String>, element: DomElement, ctx: Context): NamedTextColor? {
+        val raw = style["color"]?.takeIf(String::isNotBlank) ?: return null
+        return when (raw.trim().lowercase().replace("-", "_").replace(" ", "")) {
+            "white" -> NamedTextColor.WHITE
+            "gray", "grey" -> NamedTextColor.GRAY
+            "dark_gray", "dark_grey" -> NamedTextColor.DARK_GRAY
+            "black" -> NamedTextColor.BLACK
+            "red" -> NamedTextColor.RED
+            "dark_red" -> NamedTextColor.DARK_RED
+            "green" -> NamedTextColor.GREEN
+            "dark_green" -> NamedTextColor.DARK_GREEN
+            "gold" -> NamedTextColor.GOLD
+            "yellow" -> NamedTextColor.YELLOW
+            "aqua" -> NamedTextColor.AQUA
+            "dark_aqua" -> NamedTextColor.DARK_AQUA
+            "blue" -> NamedTextColor.BLUE
+            "dark_blue" -> NamedTextColor.DARK_BLUE
+            "light_purple" -> NamedTextColor.LIGHT_PURPLE
+            "dark_purple" -> NamedTextColor.DARK_PURPLE
+            else -> {
+                unsupported(element, "color", raw, ctx)
+                null
+            }
+        }
+    }
+
+    /** CSS line-widthの解釈です。既定160を維持します。 */
+    private fun lineWidthOr(style: Map<String, String>, element: DomElement, ctx: Context): Int {
+        val raw = style["line-width"]?.takeIf(String::isNotBlank) ?: return 160
+        val value = raw.trim().toIntOrNull()
+        if (value == null || value <= 0) {
+            unsupported(element, "line-width", raw, ctx)
+            return 160
+        }
+        return value
     }
 
     private fun buildButton(
@@ -514,7 +595,10 @@ object GestureGuiHtml {
         }
         return GestureGuiComponents.button(
             id = element.id ?: "button",
-            label = Component.text(directText(element)),
+            label = Component.text(directText(element)).let {
+                val color = textColorOr(style, element, ctx)
+                if (color == null) it else it.color(color)
+            },
             actionId = action ?: "missing-action",
             background = background,
             width = sizeOr(style["width"], fill = true, element, ctx),
@@ -523,6 +607,7 @@ object GestureGuiHtml {
             textSize = positiveNumberOr(style["font-size"], 0.0055, element, ctx),
             outline = outline,
             margin = insetsOr(style["margin"], element, ctx),
+            acceptedGestures = actionGestures(action, gesturesOr(element, ctx)),
         ).let { node ->
             val absolute = absoluteOf(style, element, ctx)
             if (absolute == null) node else (node as GestureGuiOverlay).copy(absolute = absolute)
@@ -553,6 +638,10 @@ object GestureGuiHtml {
                 .takeUnless { it is GestureGuiSizeSpec.Auto } ?: GestureGuiSizeSpec.Fixed(0.16),
             id = element.id,
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
+            acceptedGestures = actionGestures(
+                element.attributes["action"]?.takeIf(String::isNotBlank),
+                gesturesOr(element, ctx),
+            ),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -582,6 +671,10 @@ object GestureGuiHtml {
                 .takeUnless { it is GestureGuiSizeSpec.Auto } ?: GestureGuiSizeSpec.Fixed(0.2),
             id = element.id,
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
+            acceptedGestures = actionGestures(
+                element.attributes["action"]?.takeIf(String::isNotBlank),
+                gesturesOr(element, ctx),
+            ),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -604,6 +697,8 @@ object GestureGuiHtml {
             content = content,
             id = element.id,
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
+            // Viewport の既定（空集合）を維持します。明示指定だけが上書きします。
+            acceptedGestures = gesturesOr(element, ctx) ?: emptySet(),
             width = sizeOr(style["width"], fill = true, element, ctx),
             height = sizeOr(style["height"], fill = true, element, ctx),
             margin = insetsOr(style["margin"], element, ctx),
@@ -635,6 +730,8 @@ object GestureGuiHtml {
             height = sizeOr(style["height"], fill = true, element, ctx),
             id = element.id,
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
+            // Custom の既定（空集合）を維持します。明示指定だけが上書きします。
+            acceptedGestures = gesturesOr(element, ctx) ?: emptySet(),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -679,6 +776,7 @@ object GestureGuiHtml {
                     columns = columns,
                     id = innerId,
                     actionId = innerAction,
+                    acceptedGestures = actionGestures(innerAction, gesturesOr(element, ctx)),
                     width = innerWidth,
                     height = innerHeight,
                     margin = innerMargin,
@@ -792,8 +890,8 @@ object GestureGuiHtml {
         val common = setOf("width", "height", "margin", "position", "top", "right", "bottom", "left")
         val containers = setOf("div", "section", "header", "footer", "nav")
         val supported = common + when (element.tag) {
-            "p", "span" -> setOf("font-size", "text-align")
-            "button" -> setOf("font-size", "background", "border")
+            "p", "span" -> setOf("font-size", "text-align", "color", "line-width")
+            "button" -> setOf("font-size", "background", "border", "color")
             "gesture-viewport" -> setOf("overflow", "padding")
             in containers -> setOf(
                 "display", "flex-direction", "justify-content", "align-items", "gap",

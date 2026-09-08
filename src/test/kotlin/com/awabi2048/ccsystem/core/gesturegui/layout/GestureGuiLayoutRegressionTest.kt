@@ -174,7 +174,11 @@ class GestureGuiLayoutRegressionTest {
             "<style>p { color: red; animation: spin 1s; padding: 0.1; }</style><p>文字</p>",
         )) {
             val parsed = parse(html)
-            for (property in listOf("color", "animation", "padding")) {
+            // color はプロファイル2で対応済みのため診断対象外です。
+            assertTrue(parsed.diagnostics.none {
+                it.code == GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY && it.message.contains("color")
+            })
+            for (property in listOf("animation", "padding")) {
                 assertTrue(parsed.diagnostics.any { it.code == GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY && it.message.contains(property) })
             }
         }
