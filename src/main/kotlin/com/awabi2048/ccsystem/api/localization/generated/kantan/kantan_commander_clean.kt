@@ -711,6 +711,14 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_reopen_hint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_add", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_insert", setOf())
+    /** for構造の開始へマウスを合わせたときに表示する折りたたみ操作の案内です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_FOLD_FOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_fold_for", setOf())
+    /** 折りたたんだfor構造へマウスを合わせたときに表示する展開操作の案内です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_UNFOLD_FOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_unfold_for", setOf())
+    /** 条件分岐へマウスを合わせたときに表示する折りたたみ操作の案内です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_FOLD_IF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_fold_if", setOf())
+    /** 折りたたんだ条件分岐へマウスを合わせたときに表示する展開操作の案内です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_UNFOLD_IF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_unfold_if", setOf())
     /** for戻り経路へマウスを合わせたときに表示する処理の説明です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_LOOP_RETURN_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.loop_return_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.mainhand_save_get_hover", setOf())
@@ -1577,6 +1585,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_INSERT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_FOLD_FOR,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_UNFOLD_FOR,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_FOLD_IF,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_UNFOLD_IF,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_LOOP_RETURN_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_GET_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SETTINGS_FIELD_FALLBACK,
