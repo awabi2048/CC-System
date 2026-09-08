@@ -122,7 +122,12 @@ enum class GestureGuiCrossAlignment {
  * 見た目（素材・文言・寸法）は呼び出し側指定とし、CC-System 側で補完しません。
  */
 sealed interface GestureGuiNode {
-    /** 診断・lint 用の安定IDです。null 可ですが、指定時は同一文書内で一意にしてください。 */
+    /**
+     * 診断・lint 用の安定IDです。null 可ですが、指定時は同一文書内で一意にしてください。
+     *
+     * action を持つノードでは、この ID がコンパイル後の操作面の要素 ID になります。
+     * 操作振分けは要素 ID で照合するため、表示物用の別 ID をここへ指定しないでください。
+     */
     val id: String?
 
     /**
