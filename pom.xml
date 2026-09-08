@@ -7,7 +7,7 @@
 
     <groupId>com.awabi2048</groupId>
     <artifactId>CC-System</artifactId>
-    <version>26.908.2</version>
+    <version>26.908.4</version>
     <packaging>jar</packaging>
 
     <name>CC-System</name>
@@ -96,8 +96,8 @@
             <version>2.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Axiom‚Í”CˆÓ˜AŒg‚Å‚·BJAR‚Ö“¯«‚¹‚¸AAPI‚ª‘¶Ý‚·‚éƒT[ƒo[‚¾‚¯‚Å
-             Display Gizmo‚ð‰B‚µ‚Ü‚·B -->
+        <!-- Axiomï¿½Í”Cï¿½Ó˜Aï¿½gï¿½Å‚ï¿½ï¿½BJARï¿½Ö“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AAPIï¿½ï¿½ï¿½ï¿½ï¿½Ý‚ï¿½ï¿½ï¿½Tï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+             Display Gizmoï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B -->
         <dependency>
             <groupId>com.moulberry.axiom</groupId>
             <artifactId>AxiomPaper</artifactId>
