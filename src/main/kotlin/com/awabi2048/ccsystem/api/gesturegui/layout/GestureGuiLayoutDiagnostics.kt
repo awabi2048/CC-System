@@ -40,6 +40,12 @@ enum class GestureGuiLayoutErrorCode {
     /** Custom renderer が未登録です。 */
     CUSTOM_RENDERER_MISSING,
 
+    /** 切り抜きに必要な Custom Text / Item の表示矩形がありません。 */
+    CUSTOM_VISUAL_BOUNDS_MISSING,
+
+    /** Custom 操作面の表示参照が renderer の出力に存在しません。 */
+    UNKNOWN_VISUAL,
+
     /** HTML の構文異常です（対応する範囲で復旧し、診断します）。 */
     HTML_PARSE_ERROR,
 }

@@ -398,16 +398,14 @@ object GestureGuiHtml {
         parentId: String?,
         ctx: Context,
     ): GestureGuiNode {
-        val style = styleSheet.styleOf(element)
+        val style = validatedStyle(element, styleSheet.styleOf(element), ctx)
         val id = element.id
-        // float は Profile 1 の対象外です。タグ種別に関わらず診断します。
-        style["float"]?.let { unsupported(element, "float", it, ctx) }
         return when (element.tag) {
             "span", "p" -> buildText(element, style, parentId, ctx)
             "button" -> buildButton(element, style, parentId, ctx)
             "mc-item" -> buildItem(element, style, parentId, ctx)
             "mc-block" -> buildBlock(element, style, parentId, ctx)
-            "gesture-viewport" -> buildViewport(element, styleSheet, parentId, ctx)
+            "gesture-viewport" -> buildViewport(element, style, styleSheet, parentId, ctx)
             "custom" -> buildCustom(element, style, parentId, ctx)
             "div", "section", "header", "footer", "nav" -> buildContainer(element, style, styleSheet, parentId, ctx)
             "style" -> GestureGuiBox(children = emptyList(), id = id)
@@ -466,8 +464,7 @@ object GestureGuiHtml {
         val absolute = absoluteOf(style, element, ctx)
         return GestureGuiText(
             text = Component.text(directText(element)),
-            size = numberOr(style["font-size"], ctx.environment.textSize(element.tag, element.classes, element.id), element, ctx)
-                ?: ctx.environment.textSize(element.tag, element.classes, element.id),
+            size = positiveNumberOr(style["font-size"], ctx.environment.textSize(element.tag, element.classes, element.id), element, ctx),
             alignment = when (style["text-align"]?.lowercase()) {
                 "left" -> GestureGuiTextAlignment.LEFT
                 "right" -> GestureGuiTextAlignment.RIGHT
@@ -523,7 +520,7 @@ object GestureGuiHtml {
             width = sizeOr(style["width"], fill = true, element, ctx),
             height = sizeOr(style["height"], fill = false, element, ctx)
                 .takeUnless { it is GestureGuiSizeSpec.Auto } ?: GestureGuiSizeSpec.Fixed(0.1),
-            textSize = numberOr(style["font-size"], 0.0055, element, ctx) ?: 0.0055,
+            textSize = positiveNumberOr(style["font-size"], 0.0055, element, ctx),
             outline = outline,
             margin = insetsOr(style["margin"], element, ctx),
         ).let { node ->
@@ -592,11 +589,11 @@ object GestureGuiHtml {
 
     private fun buildViewport(
         element: DomElement,
+        style: Map<String, String>,
         styleSheet: StyleSheet,
         parentId: String?,
         ctx: Context,
     ): GestureGuiNode {
-        val style = styleSheet.styleOf(element)
         val children = buildChildren(element, styleSheet, element.id ?: parentId, ctx)
         val content = when {
             children.isEmpty() -> GestureGuiBox(children = emptyList(), id = "${element.id ?: "viewport"}-empty")
@@ -611,7 +608,8 @@ object GestureGuiHtml {
             height = sizeOr(style["height"], fill = true, element, ctx),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
-            overflow = overflowOr(style["overflow"], element.attributes["data-overflow"], element, ctx),
+            padding = insetsOr(style["padding"], element, ctx),
+            overflow = overflowOr(style["overflow"], element.attributes["data-overflow"], element, ctx, GestureGuiOverflow.CLIP),
         )
     }
 
@@ -658,28 +656,33 @@ object GestureGuiHtml {
         val overflow = overflowOr(style["overflow"], element.attributes["data-overflow"], element, ctx)
         val main = arrangementOr(style["justify-content"], element, ctx)
         val cross = alignmentOr(style["align-items"], element, ctx)
-        val zIndex = style["z-index"]?.trim()?.toIntOrNull()
         val width = sizeOr(style["width"], fill = true, element, ctx)
         val height = sizeOr(style["height"], fill = false, element, ctx)
         val minMaxed = applyMinMax(width, height, style, element, ctx)
         val childParentId = element.id ?: parentId
-        // display: grid → Grid、flex → Row/Column（flex-direction 準拠）、
-        // block（既定）→ 縦積み Box です。z-index は Overlay を作らないため全容器で未対応です。
-        if (zIndex != null) {
-            unsupported(element, "z-index", style["z-index"].orEmpty(), ctx)
-        }
+        val background = style["background"]?.takeIf(String::isNotBlank)?.let(::normalizeMaterial)
+        val blockData = background?.let { ctx.environment.containerBackground(it, element.classes, element.id) }
+        val decorated = blockData != null
+        // ID・margin・absolute・割合寸法は外箱だけに属します。内箱へ再適用すると
+        // ID重複、50%の二乗、絶対配置オフセットの二重適用が発生します。
+        val innerId = if (decorated) null else element.id
+        val innerAction = if (decorated) null else element.attributes["action"]?.takeIf(String::isNotBlank)
+        val innerWidth = if (decorated) GestureGuiSizeSpec.Auto else minMaxed.first
+        val innerHeight = if (decorated) GestureGuiSizeSpec.Auto else minMaxed.second
+        val innerMargin = if (decorated) GestureGuiEdgeInsets() else margin
+        val innerAbsolute = if (decorated) null else absolute
         val inner: GestureGuiNode = when {
             display == "grid" -> {
                 val columns = gridColumns(style["grid-template-columns"], element.attributes["data-columns"], element, ctx)
                 GestureGuiGrid(
                     children = buildChildren(element, styleSheet, childParentId, ctx),
                     columns = columns,
-                    id = element.id,
-                    actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
-                    width = minMaxed.first,
-                    height = minMaxed.second,
-                    margin = margin,
-                    absolute = absolute,
+                    id = innerId,
+                    actionId = innerAction,
+                    width = innerWidth,
+                    height = innerHeight,
+                    margin = innerMargin,
+                    absolute = innerAbsolute,
                     padding = padding,
                     gap = gap,
                     overflow = overflow,
@@ -687,12 +690,12 @@ object GestureGuiHtml {
             }
             display == "flex" && direction == "column" -> GestureGuiColumn(
                 children = buildChildren(element, styleSheet, childParentId, ctx),
-                id = element.id,
-                actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
-                width = minMaxed.first,
-                height = minMaxed.second,
-                margin = margin,
-                absolute = absolute,
+                id = innerId,
+                actionId = innerAction,
+                width = innerWidth,
+                height = innerHeight,
+                margin = innerMargin,
+                absolute = innerAbsolute,
                 padding = padding,
                 gap = gap,
                 overflow = overflow,
@@ -701,12 +704,12 @@ object GestureGuiHtml {
             )
             display == "flex" -> GestureGuiRow(
                 children = buildChildren(element, styleSheet, childParentId, ctx),
-                id = element.id,
-                actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
-                width = minMaxed.first,
-                height = minMaxed.second,
-                margin = margin,
-                absolute = absolute,
+                id = innerId,
+                actionId = innerAction,
+                width = innerWidth,
+                height = innerHeight,
+                margin = innerMargin,
+                absolute = innerAbsolute,
                 padding = padding,
                 gap = gap,
                 overflow = overflow,
@@ -715,12 +718,12 @@ object GestureGuiHtml {
             )
             display == "block" -> GestureGuiBox(
                 children = buildChildren(element, styleSheet, childParentId, ctx),
-                id = element.id,
-                actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
-                width = minMaxed.first,
-                height = minMaxed.second,
-                margin = margin,
-                absolute = absolute,
+                id = innerId,
+                actionId = innerAction,
+                width = innerWidth,
+                height = innerHeight,
+                margin = innerMargin,
+                absolute = innerAbsolute,
                 padding = padding,
                 gap = gap,
                 overflow = overflow,
@@ -730,11 +733,11 @@ object GestureGuiHtml {
                 unsupported(element, "display", display, ctx)
                 GestureGuiBox(
                     children = buildChildren(element, styleSheet, childParentId, ctx),
-                    id = element.id,
-                    width = minMaxed.first,
-                    height = minMaxed.second,
-                    margin = margin,
-                    absolute = absolute,
+                    id = innerId,
+                    width = innerWidth,
+                    height = innerHeight,
+                    margin = innerMargin,
+                    absolute = innerAbsolute,
                     padding = padding,
                     gap = gap,
                     overflow = overflow,
@@ -742,10 +745,10 @@ object GestureGuiHtml {
             }
         }
         // CSS background がある容器は背景 Block と内容の重ねに展開します。
-        val background = style["background"]?.takeIf(String::isNotBlank)?.let(::normalizeMaterial)
-        if (background == null) return inner
-        val blockData = ctx.environment.containerBackground(background, element.classes, element.id)
-            ?: return inner
+        if (blockData == null) {
+            if (style["border"] != null) unsupported(element, "border", style["border"].orEmpty(), ctx)
+            return inner
+        }
         val borderRatio = style["border"]?.trim()?.toDoubleOrNull()
         val outline = if (borderRatio != null) {
             if (!borderRatio.isFinite() || borderRatio <= 0.0 || borderRatio >= 0.5) {
@@ -755,6 +758,7 @@ object GestureGuiHtml {
                 ctx.environment.outlineBlock(element.classes, element.id)?.let { GestureGuiOutline(it, borderRatio) }
             }
         } else {
+            if (style["border"] != null) unsupported(element, "border", style["border"].orEmpty(), ctx)
             null
         }
         return GestureGuiOverlay(
@@ -764,11 +768,12 @@ object GestureGuiHtml {
                     width = GestureGuiSizeSpec.Auto,
                     height = GestureGuiSizeSpec.Auto,
                     outline = outline,
-                    id = "${element.id ?: "bg"}-bg",
+                    id = null,
                 ),
                 inner,
             ),
             id = element.id,
+            actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
             width = minMaxed.first,
             height = minMaxed.second,
             margin = margin,
@@ -778,6 +783,54 @@ object GestureGuiHtml {
     }
 
     // ─── 値の解釈 ────────────────────────────────────────────
+
+    /**
+     * 未知の宣言と、既知でもこのタグでは効かない宣言をまとめて検証します。
+     * Profileの対応範囲を限定しつつ、意図しない見た目を診断なしで採用しません。
+     */
+    private fun validatedStyle(element: DomElement, style: Map<String, String>, ctx: Context): Map<String, String> {
+        val common = setOf("width", "height", "margin", "position", "top", "right", "bottom", "left")
+        val containers = setOf("div", "section", "header", "footer", "nav")
+        val supported = common + when (element.tag) {
+            "p", "span" -> setOf("font-size", "text-align")
+            "button" -> setOf("font-size", "background", "border")
+            "gesture-viewport" -> setOf("overflow", "padding")
+            in containers -> setOf(
+                "display", "flex-direction", "justify-content", "align-items", "gap",
+                "padding", "overflow", "background", "border", "grid-template-columns",
+                "min-width", "max-width", "min-height", "max-height",
+            )
+            else -> emptySet()
+        }
+        return style.filter { (property, value) ->
+            val applicable = property in supported && when (property) {
+                "flex-direction", "justify-content" -> style["display"]?.lowercase() == "flex"
+                "align-items" -> style["display"]?.lowercase() != "grid"
+                "grid-template-columns" -> style["display"]?.lowercase() == "grid"
+                else -> true
+            }
+            if (!applicable) unsupported(element, property, value, ctx)
+            applicable
+        }.toMutableMap().also { valid ->
+            valid["flex-direction"]?.let { direction ->
+                if (direction.lowercase() !in setOf("row", "column")) {
+                    unsupported(element, "flex-direction", direction, ctx)
+                    valid.remove("flex-direction")
+                }
+            }
+        }
+    }
+
+    /** font-sizeはgapと異なり0を許可しません。ノード生成前に構造化診断へ変換します。 */
+    private fun positiveNumberOr(raw: String?, fallback: Double, element: DomElement, ctx: Context): Double {
+        if (raw == null) return fallback
+        val value = raw.trim().toDoubleOrNull()
+        if (value == null || !value.isFinite() || value <= 0.0) {
+            unsupported(element, "font-size", raw, ctx)
+            return fallback
+        }
+        return value
+    }
 
     private fun normalizeMaterial(raw: String): String =
         raw.trim().lowercase().replace("-", "_").replace(" ", "_")
@@ -841,8 +894,17 @@ object GestureGuiHtml {
                 return spec
             }
             var value = spec.value
-            minRaw?.trim()?.toDoubleOrNull()?.let { if (it.isFinite() && it > 0.0) value = maxOf(value, it) }
-            maxRaw?.trim()?.toDoubleOrNull()?.let { if (it.isFinite() && it > 0.0) value = minOf(value, it) }
+            fun limit(raw: String?): Double? {
+                if (raw == null) return null
+                val number = raw.trim().toDoubleOrNull()
+                if (number == null || !number.isFinite() || number <= 0.0) {
+                    unsupported(element, "min/max size", raw, ctx)
+                    return null
+                }
+                return number
+            }
+            limit(minRaw)?.let { value = maxOf(value, it) }
+            limit(maxRaw)?.let { value = minOf(value, it) }
             return GestureGuiSizeSpec.Fixed(value)
         }
         return clamp(width, style["min-width"], style["max-width"]) to
@@ -851,8 +913,9 @@ object GestureGuiHtml {
 
     private fun insetsOr(raw: String?, element: DomElement, ctx: Context): GestureGuiEdgeInsets {
         if (raw == null) return GestureGuiEdgeInsets()
-        val parts = raw.trim().split(Regex("\\s+")).mapNotNull { it.toDoubleOrNull() }
-        if (parts.size !in 1..4 || parts.any { !it.isFinite() || it < 0.0 }) {
+        val tokens = raw.trim().split(Regex("\\s+"))
+        val parts = tokens.mapNotNull { it.toDoubleOrNull() }
+        if (parts.size != tokens.size || parts.size !in 1..4 || parts.any { !it.isFinite() || it < 0.0 }) {
             unsupported(element, "insets", raw, ctx)
             return GestureGuiEdgeInsets()
         }
@@ -896,7 +959,7 @@ object GestureGuiHtml {
         )
     }
 
-    private fun overflowOr(css: String?, data: String?, element: DomElement, ctx: Context): GestureGuiOverflow {
+    private fun overflowOr(css: String?, data: String?, element: DomElement, ctx: Context, default: GestureGuiOverflow = GestureGuiOverflow.VISIBLE): GestureGuiOverflow {
         data?.lowercase()?.let {
             return when (it) {
                 "reject" -> GestureGuiOverflow.REJECT
@@ -909,7 +972,8 @@ object GestureGuiHtml {
             }
         }
         return when (css?.lowercase()) {
-            null, "visible" -> GestureGuiOverflow.VISIBLE
+            null -> default
+            "visible" -> GestureGuiOverflow.VISIBLE
             "hidden", "clip" -> GestureGuiOverflow.CLIP
             else -> {
                 unsupported(element, "overflow", css.orEmpty(), ctx)

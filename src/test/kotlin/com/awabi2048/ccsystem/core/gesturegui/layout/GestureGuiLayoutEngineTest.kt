@@ -160,12 +160,12 @@ class GestureGuiLayoutEngineTest {
         )
         val viewport = resolved.root
         assertNotNull(viewport.effectiveClip)
-        assertEquals(contentMinX, viewport.effectiveClip!!.minX, 1.0e-9)
+        assertEquals(contentMinX, (viewport.effectiveClip as com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiClip.Region).bounds.minX, 1.0e-9)
         val inner = viewport.children.single().children.single()
         // interaction は viewport 域で切り抜かれます。
         assertNotNull(inner.interactionBounds)
         assertEquals(contentMinX, inner.interactionBounds!!.minX, 1.0e-9)
-        assertTrue(inner.interactionBounds!!.maxX < inner.borderBounds.maxX)
+        assertTrue(inner.interactionBounds.maxX < inner.borderBounds.maxX)
     }
 
     @Test

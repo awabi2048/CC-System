@@ -1,11 +1,11 @@
 package com.awabi2048.ccsystem.core.gesturegui.layout
 
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
-import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiColumn
+import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiClip
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCrossAlignment
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustom
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiDocument
@@ -75,7 +75,7 @@ object GestureGuiLayoutEngine {
         val root = layoutNode(
             document.root,
             rootBorder,
-            parentClip = null,
+            parentClip = GestureGuiClip.Unbounded,
             parentZ = -1,
             parentId = "<panel>",
             ctx = ctx,
@@ -203,17 +203,6 @@ object GestureGuiLayoutEngine {
         bounds.maxY - top,
     )
 
-    private fun intersect(first: GestureGuiBounds?, second: GestureGuiBounds?): GestureGuiBounds? {
-        if (first == null) return second
-        if (second == null) return first
-        val minX = maxOf(first.minX, second.minX)
-        val minY = maxOf(first.minY, second.minY)
-        val maxX = minOf(first.maxX, second.maxX)
-        val maxY = minOf(first.maxY, second.maxY)
-        if (minX >= maxX || minY >= maxY) return null
-        return GestureGuiBounds(minX, minY, maxX, maxY)
-    }
-
     /** 子の containing 内容域からの逸脱量を方向付きで返します。空なら逸脱なしです。 */
     private fun overflows(child: GestureGuiBounds, containing: GestureGuiBounds): Map<String, Double> =
         buildMap {
@@ -260,8 +249,8 @@ object GestureGuiLayoutEngine {
      * 呼び出しは各ノード1回に限り、診断の重複を避けます。
      */
     private fun measureHeight(node: GestureGuiNode, parentId: String?, ctx: Context): Double {
-        if (node.absolute != null) return 0.0
-        val specHeight = when (val spec = node.height) {
+        // フローからの除外は親が行います。絶対配置ノード自身のAuto寸法は内容を測定します。
+        when (val spec = node.height) {
             is GestureGuiSizeSpec.Fixed -> return spec.value
             is GestureGuiSizeSpec.Percent,
             is GestureGuiSizeSpec.Fraction,
@@ -387,7 +376,7 @@ object GestureGuiLayoutEngine {
     private fun layoutNode(
         node: GestureGuiNode,
         border: GestureGuiBounds,
-        parentClip: GestureGuiBounds?,
+        parentClip: GestureGuiClip,
         parentZ: Int,
         parentId: String?,
         ctx: Context,
@@ -397,7 +386,7 @@ object GestureGuiLayoutEngine {
         val ownClip = if (overflowOf(node) == GestureGuiOverflow.VISIBLE) {
             parentClip
         } else {
-            intersect(parentClip, content)
+            parentClip.intersect(content)
         }
         val z = parentZ + 1
         val children = layoutChildren(node, border, content, ownClip, z, ctx)
@@ -435,13 +424,13 @@ object GestureGuiLayoutEngine {
     private fun interactionBounds(
         node: GestureGuiNode,
         border: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         parentId: String?,
         ctx: Context,
     ): GestureGuiBounds? {
         if (node.actionId == null) return null
         if (node.acceptedGestures.isEmpty()) return null
-        val clipped = intersect(border, clip) ?: run {
+        val clipped = clip.clip(border) ?: run {
             ctx.add(
                 GestureGuiLayoutErrorCode.CLIPPED_INTERACTION,
                 node.id,
@@ -457,7 +446,7 @@ object GestureGuiLayoutEngine {
         node: GestureGuiNode,
         border: GestureGuiBounds,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         ctx: Context,
     ): List<ResolvedGestureGuiNode> {
@@ -494,7 +483,7 @@ object GestureGuiLayoutEngine {
     private fun layoutStack(
         children: List<GestureGuiNode>,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         parentId: String?,
         gap: Double,
@@ -508,8 +497,29 @@ object GestureGuiLayoutEngine {
         if (inFlow.isEmpty()) {
             return absolute.map { layoutAbsolute(it, content, clip, z, parentId, overflow, ctx) }
         }
-        // 主軸（縦）寸法を確定します。Auto は wrap します。
-        val mains = inFlow.map { measureHeight(it, parentId, ctx) + it.margin.vertical }
+        // 測定時と異なり配置時は親の内容高さが確定しています。
+        // Percent は内容高さ基準、Fraction は余白・gap・確定寸法を引いた残りを配分します。
+        val sizes = inFlow.map { child ->
+            when (val spec = child.height) {
+                is GestureGuiSizeSpec.Fixed -> spec.value
+                is GestureGuiSizeSpec.Percent -> spec.ratio * content.height()
+                is GestureGuiSizeSpec.Fraction -> 0.0
+                is GestureGuiSizeSpec.Auto -> measureHeight(child, parentId, ctx)
+            }
+        }.toMutableList()
+        val reserved = sizes.sum() + inFlow.sumOf { it.margin.vertical } +
+            gap * (inFlow.size - 1).coerceAtLeast(0)
+        val remaining = (content.height() - reserved).coerceAtLeast(0.0)
+        val weights = inFlow.map { (it.height as? GestureGuiSizeSpec.Fraction)?.weight ?: 0.0 }
+        // 大きな有限重みでも合計が Infinity にならないよう最大重みで正規化します。
+        val maxWeight = weights.maxOrNull() ?: 0.0
+        if (maxWeight > 0.0) {
+            val totalWeight = weights.sumOf { it / maxWeight }
+            weights.forEachIndexed { index, weight ->
+                if (weight > 0.0) sizes[index] = remaining * (weight / maxWeight) / totalWeight
+            }
+        }
+        val mains = sizes.mapIndexed { index, size -> size + inFlow[index].margin.vertical }
         val total = mains.sum() + gap * (inFlow.size - 1).coerceAtLeast(0)
         var cursorTop = when (main) {
             GestureGuiMainArrangement.START -> content.maxY
@@ -609,7 +619,7 @@ object GestureGuiLayoutEngine {
     private fun layoutRow(
         node: GestureGuiRow,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         ctx: Context,
     ): List<ResolvedGestureGuiNode> {
@@ -735,7 +745,7 @@ object GestureGuiLayoutEngine {
     private fun layoutGrid(
         node: GestureGuiGrid,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         ctx: Context,
     ): List<ResolvedGestureGuiNode> {
@@ -798,7 +808,7 @@ object GestureGuiLayoutEngine {
     private fun layoutOverlay(
         node: GestureGuiOverlay,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         ctx: Context,
     ): List<ResolvedGestureGuiNode> {
@@ -877,7 +887,7 @@ object GestureGuiLayoutEngine {
     private fun layoutAbsolute(
         child: GestureGuiNode,
         content: GestureGuiBounds,
-        clip: GestureGuiBounds?,
+        clip: GestureGuiClip,
         z: Int,
         parentId: String?,
         overflow: GestureGuiOverflow,

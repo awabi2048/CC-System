@@ -14,8 +14,8 @@ data class ResolvedGestureGuiNode(
     val borderBounds: GestureGuiBounds,
     /** 子の containing block となる内側領域です。 */
     val contentBounds: GestureGuiBounds,
-    /** null は無制限（VISIBLE 連鎖）を表します。 */
-    val effectiveClip: GestureGuiBounds?,
+    /** 無制限・矩形・空を区別した、祖先から継承する切り抜き状態です。 */
+    val effectiveClip: GestureGuiClip,
     /** 重なり解決用の深さです。compiler が layer へ写像します。 */
     val resolvedZ: Int,
     /** null は非操作ノードを表します。visual との二重管理は行いません。 */
