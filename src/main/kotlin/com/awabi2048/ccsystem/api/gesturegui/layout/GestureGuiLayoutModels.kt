@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiTextAlignment
 import net.kyori.adventure.text.Component
 import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.ItemStack
+import org.bukkit.entity.Player
 
 /**
  * 宣言的レイアウトのサイズ指定です。
@@ -126,10 +127,15 @@ sealed interface GestureGuiNode {
 
     /**
      * Kotlin 側 registry へ接続する action ID です。
-     * null の場合は非操作ノードとして interaction bounds を生成しません。
+     * nullでもhoverまたはconsumeInputを指定すると入力管理用の領域を生成します。
      */
     val actionId: String?
     val acceptedGestures: Set<GestureGuiGesture>
+    /** 入力時に再評価するguardです。レイアウト・コンパイル時には実行しません。 */
+    val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)?
+    val hover: GestureGuiHover?
+    /** actionなしでも空の受付gestureを持つ入力消費面を生成します。 */
+    val consumeInput: Boolean
     val width: GestureGuiSizeSpec
     val height: GestureGuiSizeSpec
     val margin: GestureGuiEdgeInsets
@@ -162,6 +168,9 @@ data class GestureGuiBox(
     val gap: Double = 0.0,
     val overflow: GestureGuiOverflow = GestureGuiOverflow.VISIBLE,
     val crossAlignment: GestureGuiCrossAlignment = GestureGuiCrossAlignment.STRETCH,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -188,6 +197,9 @@ data class GestureGuiRow(
     val overflow: GestureGuiOverflow = GestureGuiOverflow.VISIBLE,
     val mainArrangement: GestureGuiMainArrangement = GestureGuiMainArrangement.START,
     val crossAlignment: GestureGuiCrossAlignment = GestureGuiCrossAlignment.STRETCH,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -214,6 +226,9 @@ data class GestureGuiColumn(
     val overflow: GestureGuiOverflow = GestureGuiOverflow.VISIBLE,
     val mainArrangement: GestureGuiMainArrangement = GestureGuiMainArrangement.START,
     val crossAlignment: GestureGuiCrossAlignment = GestureGuiCrossAlignment.STRETCH,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -244,6 +259,9 @@ data class GestureGuiGrid(
     val gap: Double = 0.0,
     val crossGap: Double = gap,
     val overflow: GestureGuiOverflow = GestureGuiOverflow.VISIBLE,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -272,6 +290,9 @@ data class GestureGuiOverlay(
     val overflow: GestureGuiOverflow = GestureGuiOverflow.VISIBLE,
     val mainArrangement: GestureGuiMainArrangement = GestureGuiMainArrangement.START,
     val crossAlignment: GestureGuiCrossAlignment = GestureGuiCrossAlignment.START,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -293,6 +314,9 @@ data class GestureGuiViewport(
     override val absolute: GestureGuiAbsoluteOffsets? = null,
     val padding: GestureGuiEdgeInsets = GestureGuiEdgeInsets(),
     val overflow: GestureGuiOverflow = GestureGuiOverflow.CLIP,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -323,6 +347,9 @@ data class GestureGuiText(
     override val height: GestureGuiSizeSpec = GestureGuiSizeSpec.Auto,
     override val margin: GestureGuiEdgeInsets = GestureGuiEdgeInsets(),
     override val absolute: GestureGuiAbsoluteOffsets? = null,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -351,6 +378,9 @@ data class GestureGuiBlock(
     },
     override val margin: GestureGuiEdgeInsets = GestureGuiEdgeInsets(),
     override val absolute: GestureGuiAbsoluteOffsets? = null,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -376,6 +406,9 @@ data class GestureGuiItem(
     },
     override val margin: GestureGuiEdgeInsets = GestureGuiEdgeInsets(),
     override val absolute: GestureGuiAbsoluteOffsets? = null,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -399,6 +432,9 @@ data class GestureGuiCustom(
     override val acceptedGestures: Set<GestureGuiGesture> = emptySet(),
     override val margin: GestureGuiEdgeInsets = GestureGuiEdgeInsets(),
     override val absolute: GestureGuiAbsoluteOffsets? = null,
+    override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    override val hover: GestureGuiHover? = null,
+    override val consumeInput: Boolean = false,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)

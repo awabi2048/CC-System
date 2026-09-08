@@ -4,6 +4,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiHoverText
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
+import org.bukkit.entity.Player
 
 /**
  * Custom ノード用 renderer が返す操作面です。
@@ -22,6 +23,10 @@ data class GestureGuiCustomElement(
     val actionId: String? = null,
     val targetVisualId: String? = null,
     val hoverText: GestureGuiHoverText? = null,
+    /** 通常ノードと同じく、低レベルAPIへ渡して入力時に判定します。 */
+    val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
+    /** actionなしのバリア等を生成します。受付gestureはcompilerで空集合へ正規化します。 */
+    val consumeInput: Boolean = false,
 ) {
     init {
         require(elementId.isNotBlank()) { "custom elementId must not be blank" }
