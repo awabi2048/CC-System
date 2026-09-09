@@ -54,35 +54,25 @@ class GestureGuiServiceImpl(
     private val closeExternalDialog: (Player, String, String) -> Boolean,
     private val systemEntityRegistry: SystemEntityRegistry,
 ) : GestureGuiService {
-    private data class HoverReplacement(
-        val render: GestureGuiEntityRenderer.ScreenHandle,
-        /** 説明文の差し替えに伴い、主Visualと枠をまとめて隠すIDです。 */
-        val visualIds: Set<String>,
-        /** 背景テクスチャだけを差し替え、選択中の枠を残すIDです。 */
-        val visualBodyIds: Set<String>,
-    )
-
     private data class ActorRuntime(
         val playerId: UUID,
         val claims: List<PlayerInteractionClaim>,
         val catcher: GestureGuiEntityRenderer.CatcherHandle,
-        var hover: GestureGuiEntityRenderer.HoverHandle? = null,
         var hoverIdentity: String? = null,
-        var hoverReplacement: HoverReplacement? = null,
+        var hoverScreenKey: String? = null,
     )
 
     private data class ScreenRuntime(
         val view: GestureGuiView,
         var pose: GestureGuiScreenPose,
-        val render: GestureGuiEntityRenderer.ScreenHandle,
     )
 
     private data class ChildRuntime(
         val view: GestureGuiView,
         val options: GestureGuiChildOptions,
         var pose: GestureGuiScreenPose,
-        val render: GestureGuiEntityRenderer.ScreenHandle,
-        val overlay: org.bukkit.entity.BlockDisplay?,
+        /** モーダル遮蔽面の素材。null なら遮蔽面なし。 */
+        val overlayMaterial: Material?,
         var state: GestureGuiSessionState,
     )
 
@@ -162,18 +152,21 @@ class GestureGuiServiceImpl(
         val screenDistance: Double,
         /**
          * 移動中に本体を隠してダミーパネルで追従しているかです。
-         * 本体の view・pose は保持したまま実体だけを隠し、停止確定後に
-         * 再召喚またはそのまま復帰させます。
+         * 本体の view・pose は保持したまま描画だけを差し替え、停止確定後に
+         * 再召喚またはそのまま復帰させます。ダミーは viewer 状態側で管理します。
          */
         var dummyActive: Boolean = false,
-        /**
-         * ダミー表示中の背景ボード群です。本体の ScreenRuntime とは別管理にし、
-         * 入力・ホバー・子画面の対象には含めません。
-         */
-        var dummyRenders: List<GestureGuiEntityRenderer.ScreenHandle> = emptyList(),
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
+    /**
+     * 仮想描画 backend 群です。Bukkit Entity を描画に使わず、viewer ごとに
+     * Spawn/Metadata/Destroy packet だけを送ります。catcher だけは Bukkit のままです。
+     */
+    private val virtualBackend = GestureGuiProtocolLibBackend(plugin)
+    private val virtualScreens = GestureGuiVirtualScreens(virtualBackend)
+    /** (sessionId, viewerId) ごとの描画済み状態です。transition 時のみ packet を送ります。 */
+    private val viewerStates = mutableMapOf<Pair<UUID, UUID>, GestureViewerRenderState>()
     private val registeredOwners = mutableSetOf<UUID>()
     private val sessions = mutableMapOf<UUID, Session>()
     private var nextRevision = 1L
@@ -249,10 +242,10 @@ class GestureGuiServiceImpl(
         val screens = mutableListOf<ScreenRuntime>()
         var session: Session? = null
         try {
+            // 仮想描画では open 時に Bukkit Entity を作りません。論理 view・pose だけを保持し、
+            // 実 packet は次の gaze 通過で viewer 状態ごとに生成します。
             views.zip(poses).forEach { (view, pose) ->
-                // 画面Entityは一つでも生成に失敗すると操作不能になります。生成途中の
-                // 実体を必ず同じtry境界で管理し、背景だけ残る部分生成を防ぎます。
-                screens += ScreenRuntime(view, pose, renderer.spawnScreen(owner, id, revision, pose, view))
+                screens += ScreenRuntime(view, pose)
             }
             session = Session(
                 id = id,
@@ -300,7 +293,7 @@ class GestureGuiServiceImpl(
                 // 再入や将来の利用側変更で通知先が存在しても状態を取りこぼしません。
                 notifyClosed(failedSession)
                 destroy(failedSession)
-            } ?: screens.forEach { renderer.remove(it.render) }
+            }
             throw failure
         }
         val openedSession = requireNotNull(session)
@@ -328,17 +321,7 @@ class GestureGuiServiceImpl(
             }
             session.revision = nextRevision++
             session.screens = oldScreens.mapIndexed { index, screen ->
-                val newView = newViews[index]
-                val newPose = newPoses[index]
-                // 内容更新ではposeが変わらないため、同一poseへの再teleportを省きます。
-                // 寸法変更時はcopyで幅・高さだけが変わり、等価にならないため通常通り移動します。
-                if (newPose != screen.pose) {
-                    renderer.updatePose(screen.render, newPose, newView)
-                }
-                renderer.updateScreenDiff(screen.render, session.id, session.revision, newPose, screen.view, newView)
-                renderer.updateAccess(screen.render, newView)
-                renderer.showImmediately(screen.render, newView.panel)
-                screen.copy(view = newView, pose = newPose)
+                screen.copy(view = newViews[index], pose = newPoses[index])
             }
             if (session.fixedAnchor != null) {
                 // 固定後の画面を更新しても、次回refreshの基準は更新後の現在poseです。
@@ -353,12 +336,6 @@ class GestureGuiServiceImpl(
         if (targetChild != null) {
             session.revision = nextRevision++
             val pose = targetChild.pose.copy(width = view.panel.width, height = view.panel.height)
-            if (pose != targetChild.pose) {
-                renderer.updatePose(targetChild.render, pose, view)
-            }
-            renderer.updateScreenDiff(targetChild.render, session.id, session.revision, pose, targetChild.view, view)
-            renderer.updateAccess(targetChild.render, view)
-            renderer.showImmediately(targetChild.render, view.panel)
             val idx = session.children.indexOf(targetChild)
             session.children[idx] = targetChild.copy(view = view, pose = pose)
             // 子画面自身の寸法が変わると、その前面に積まれた確認子画面や
@@ -415,7 +392,6 @@ class GestureGuiServiceImpl(
         val newPoses = parentPoses(session, owner, session.screens.map(ScreenRuntime::view))
         session.screens.zip(newPoses).forEach { (screen, pose) ->
             screen.pose = pose
-            renderer.updatePose(screen.render, pose, screen.view)
         }
         repositionChildren(session)
         // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
@@ -426,12 +402,11 @@ class GestureGuiServiceImpl(
     }
 
     /**
-     * 停止確定時に、画面実体を除去→再スポーンでその場へ確定させます。
+     * 停止確定時に、論理 pose をその場へ確定させます。
      *
-     * 移動中の毎tick teleportは背景と内容物の適用時刻差でティアを招くため、
-     * 移動中は凍結し、停止してから再召喚で正確な位置へ置きます。再召喚後は
-     * 完全に固定し、次に動くまで一切更新しません。向きは現在の視線yawへ正対
-     * させます。成功時のみtrueを返し、失敗時は凍結を維持して次回へ委ねます。
+     * 仮想描画では実体の作り直しが不要なため、pose オブジェクトの更新だけを行い、
+     * viewer ごとの destroy+spawn は次の gaze 通過の差分検出に委ねます。
+     * 向きは現在の視線yawへ正対させます。成功時のみtrueを返します。
      */
     private fun resummonFollowScreens(session: Session, owner: Player): Boolean {
         // 現在の視線へ正対させ、以降は動くまで完全に固定します。
@@ -441,8 +416,6 @@ class GestureGuiServiceImpl(
         session.revision = nextRevision++
         // ダミー表示中の再召喚では、ダミーを先に破棄して本体の作り直しへ一本化します。
         if (session.dummyActive) {
-            session.dummyRenders.forEach(renderer::remove)
-            session.dummyRenders = emptyList()
             session.dummyActive = false
         }
         val eye = owner.eyeLocation
@@ -452,38 +425,9 @@ class GestureGuiServiceImpl(
             plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚のpose計算に失敗しました", failure)
             return false
         }
-        data class SwappedScreen(
-            val oldRender: GestureGuiEntityRenderer.ScreenHandle,
-            val newRender: GestureGuiEntityRenderer.ScreenHandle,
-        )
-        data class SwappedChild(
-            val oldRender: GestureGuiEntityRenderer.ScreenHandle,
-            val oldOverlay: org.bukkit.entity.BlockDisplay?,
-            val newRender: GestureGuiEntityRenderer.ScreenHandle,
-        )
-        val swappedScreens = mutableListOf<SwappedScreen>()
-        val swappedChildren = mutableListOf<SwappedChild>()
         try {
-            // 古い実体を先に隠し、新実体を隠したまま生成します。同tick表示の
-            // tracking未登録による欠けを避けるため、新実体の配布は次tickへ回します。
-            val online = Bukkit.getOnlinePlayers().toList()
             val newScreens = session.screens.mapIndexed { index, screen ->
-                val newRender = renderer.spawnScreen(owner, session.id, session.revision, newPoses[index], screen.view)
-                renderer.setBackgroundSize(
-                    newRender,
-                    screen.view.panel.width.toFloat(),
-                    screen.view.panel.height.toFloat(),
-                    0,
-                )
-                newRender.hiddenVisualIds.putAll(
-                    screen.render.hiddenVisualIds.mapValues { it.value.toMutableSet() },
-                )
-                newRender.hiddenVisualBodyIds.putAll(
-                    screen.render.hiddenVisualBodyIds.mapValues { it.value.toMutableSet() },
-                )
-                online.forEach { renderer.hideFrom(screen.render, it) }
-                swappedScreens += SwappedScreen(screen.render, newRender)
-                screen.copy(pose = newPoses[index], render = newRender)
+                screen.copy(pose = newPoses[index])
             }
             val newChildren = session.children.mapIndexed { index, child ->
                 // 親が見つからない子は旧来のrepositionChildrenと同様に維持します。
@@ -497,47 +441,16 @@ class GestureGuiServiceImpl(
                     newScreens.size + index,
                     index,
                 )
-                var newOverlay: org.bukkit.entity.BlockDisplay? = null
-                val newRender = renderer.spawnScreen(owner, session.id, session.revision, newPose, child.view)
-                renderer.setBackgroundSize(
-                    newRender,
-                    child.view.panel.width.toFloat(),
-                    child.view.panel.height.toFloat(),
-                    0,
-                )
-                if (!child.options.allowParentInteraction) {
-                    newOverlay = renderer.spawnModalOverlay(
-                        owner,
-                        session.id,
-                        session.revision,
-                        modalOverlayPose(parent.pose, index),
-                        child.options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
-                        child.view.definition,
-                    )
-                }
-                newRender.hiddenVisualIds.putAll(
-                    child.render.hiddenVisualIds.mapValues { it.value.toMutableSet() },
-                )
-                newRender.hiddenVisualBodyIds.putAll(
-                    child.render.hiddenVisualBodyIds.mapValues { it.value.toMutableSet() },
-                )
-                online.forEach { renderer.hideFrom(child.render, it) }
-                child.overlay?.let { overlay ->
-                    online.forEach { it.hideEntity(plugin, overlay) }
-                }
-                swappedChildren += SwappedChild(child.render, child.overlay, newRender)
-                child.copy(pose = newPose, render = newRender, overlay = newOverlay)
+                child.copy(pose = newPose)
             }
             session.screens = newScreens
             newChildren.forEachIndexed { index, child -> session.children[index] = child }
-            // ホバー実体は古いposeに残るため破棄し、次tick以降のupdateHoverで
-            // 新poseへ作り直させます。置換情報は古い実体を指すため復元せず捨てます。
+            // ホバーは古いposeに対応するため捨て、次の gaze 通過で新poseへ作り直させます。
             session.actors.values.forEach { actor ->
-                actor.hover?.let(renderer::removeHover)
-                actor.hover = null
                 actor.hoverIdentity = null
-                actor.hoverReplacement = null
+                actor.hoverScreenKey = null
             }
+            // viewer 状態の hover 除去は gaze 通過の destroyHover 経路へ委ねます。
             session.lastEyeX = eye.x
             session.lastEyeY = eye.y
             session.lastEyeZ = eye.z
@@ -546,27 +459,7 @@ class GestureGuiServiceImpl(
             session.lastAppliedZ = eye.z
             session.lastMotionTick = tickIndex
             session.followDirty = false
-            Bukkit.getScheduler().runTask(plugin, Runnable {
-                if (sessions[session.ownerId] !== session) {
-                    // セッションが閉じられた場合は古い実体だけ確実に除去します。
-                    // 新実体はセッションタグ付きのため終了処理で回収されます。
-                    swappedScreens.forEach { renderer.remove(it.oldRender) }
-                    swappedChildren.forEach {
-                        renderer.remove(it.oldRender)
-                        it.oldOverlay?.remove()
-                    }
-                    return@Runnable
-                }
-                Bukkit.getOnlinePlayers().forEach { player ->
-                    newScreens.forEach { renderer.showTo(it.render, player) }
-                    newChildren.forEach { renderer.showTo(it.render, player) }
-                }
-                swappedScreens.forEach { renderer.remove(it.oldRender) }
-                swappedChildren.forEach {
-                    renderer.remove(it.oldRender)
-                    it.oldOverlay?.remove()
-                }
-            })
+            requestGazeUpdate()
             return true
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚に失敗しました", failure)
@@ -575,11 +468,11 @@ class GestureGuiServiceImpl(
     }
 
     /**
-     * 移動中に本体をダミーパネルへ切り替えます。
+     * 移動中に本体表示をダミーパネルへ切り替えます。
      *
-     * 本体の view・pose は保持したまま実体だけを全員から隠し、同じ外形の空の
-     * 背景ボードを現在の目位置・向きへ生成します。以降の移動中はダミーだけが
-     * 補間付きで追従し、本体への入力は targetHit 関門で無効化されます。
+     * 本体の view・pose は保持したまま描画だけを差し替え、同じ外形の空背景を
+     * 次の gaze 通過で viewer ごとに送ります。以降の移動中はダミーだけが 5Hz で
+     * 追従し、本体への入力は targetHit 関門で無効化されます。
      * 開始には停止時再召喚と同一のゲート通過を要求し、小さな揺れやセクタ内の間は
      * 従来どおり凍結を維持します。
      */
@@ -594,116 +487,36 @@ class GestureGuiServiceImpl(
                 eye.z - session.lastAppliedZ,
             )
         ) return
-        val views = session.screens.map(ScreenRuntime::view)
-        val livePoses = try {
-            poses(
-                owner,
-                owner.location.yaw,
-                views,
-                session.layout,
-                session.verticalSlots,
-                session.verticalOffset,
-                session.tiltScale,
-                session.screenDistance,
-            )
-        } catch (failure: Throwable) {
-            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルのpose計算に失敗しました", failure)
-            return
+        // ホバーは古いposeに対応するため捨て、次の gaze 通過で作り直させます。
+        session.actors.values.forEach { actor ->
+            actor.hoverIdentity = null
+            actor.hoverScreenKey = null
         }
-        try {
-            val online = Bukkit.getOnlinePlayers().toList()
-            val dummies = session.screens.mapIndexed { index, screen ->
-                val definition = screen.view.definition
-                val dummy = renderer.spawnDummyPanel(
-                    owner,
-                    session.id,
-                    session.revision,
-                    livePoses[index],
-                    screen.view.panel.width,
-                    screen.view.panel.height,
-                    definition.access,
-                    definition.allowlist,
-                    definition.accessPolicy,
-                    definition.visibilityPolicy,
-                )
-                online.forEach { renderer.hideFrom(screen.render, it) }
-                dummy
-            }
-            session.children.forEach { child ->
-                online.forEach { player ->
-                    renderer.hideFrom(child.render, player)
-                    child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
-                }
-            }
-            // ホバー実体は古いposeに残るため破棄します。入力自体はダミー表示中に
-            // targetHit 関門で無効化され、同tickの入力分岐で actor が除去されます。
-            session.actors.values.forEach { actor ->
-                actor.hover?.let(renderer::removeHover)
-                actor.hover = null
-                actor.hoverIdentity = null
-                actor.hoverReplacement = null
-            }
-            session.dummyRenders = dummies
-            session.dummyActive = true
-        } catch (failure: Throwable) {
-            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの生成に失敗しました", failure)
-        }
+        session.dummyActive = true
+        requestGazeUpdate()
     }
 
     /**
-     * 移動中のダミーパネルを現在の目位置・向きへ追従させます。
+     * 移動中のダミーパネル追従は gaze 通過の描画同期へ委ねます。
      *
-     * 本体の updatePose と異なり背景1体だけの teleport のため、補間を残したまま
-     * 毎tick呼んでも面内ティアを招きません。向きも現在のyawへ合わせることで、
-     * 停止時の再召喚（現在yawへ正対）との段差をなくします。
+     * 仮想ダミーは viewer 状態の差分検出で 5Hz 更新されるため、ここでは何もしません。
+     * 向きは停止時の再召喚（現在yawへ正対）で確定します。
      */
     private fun updateDummyFollow(session: Session, owner: Player) {
         if (!session.dummyActive || session.fixedAnchor != null) return
-        val views = session.screens.map(ScreenRuntime::view)
-        if (views.isEmpty() || session.dummyRenders.size != views.size) return
-        val livePoses = try {
-            poses(
-                owner,
-                owner.location.yaw,
-                views,
-                session.layout,
-                session.verticalSlots,
-                session.verticalOffset,
-                session.tiltScale,
-                session.screenDistance,
-            )
-        } catch (failure: Throwable) {
-            plugin.logger.log(Level.WARNING, "Gesture GUIダミーパネルの追従計算に失敗しました", failure)
-            return
-        }
-        session.dummyRenders.zip(livePoses).forEach { (dummy, pose) ->
-            renderer.moveDummy(dummy, pose)
-        }
+        // pose は gaze 通過時に求め直すため、ここでは保持しません。
     }
 
     /**
      * ダミーを破棄して本体の表示を復帰させます。
      *
-     * 本体は隠しただけで破棄していないため、凍結時の pose のまま再表示します。
-     * 再召喚を見送る場合と、本体への操作（updateScreen等）へ戻る場合の共通経路です。
+     * 本体は view・pose を保持したままのため、フラグを戻すだけで復帰します。
+     * viewer 側のダミー破棄・本体再送は次の gaze 通過の差分検出に委ねます。
      */
     private fun restoreMainFromDummy(session: Session) {
         if (!session.dummyActive) return
-        session.dummyRenders.forEach(renderer::remove)
-        session.dummyRenders = emptyList()
         session.dummyActive = false
-        Bukkit.getOnlinePlayers().forEach { player ->
-            session.screens.forEach { renderer.showTo(it.render, player) }
-            session.children.forEach { child ->
-                if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
-                    renderer.showTo(child.render, player)
-                    child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
-                } else {
-                    renderer.hideFrom(child.render, player)
-                    child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
-                }
-            }
-        }
+        requestGazeUpdate()
     }
 
     override fun refresh(ownerId: UUID, views: List<GestureGuiView>): Boolean {
@@ -766,42 +579,16 @@ class GestureGuiServiceImpl(
         val childIndex = session.children.size
         session.revision = nextRevision++
         val pose = childPose(parent.pose, view, options, session.screens.size + childIndex, childIndex)
-        var overlay: org.bukkit.entity.BlockDisplay? = null
-        val render = try {
-            if (!options.allowParentInteraction) {
-                overlay = renderer.spawnModalOverlay(
-                    owner,
-                    session.id,
-                    session.revision,
-                    modalOverlayPose(parent.pose, childIndex),
-                    options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
-                    view.definition,
-                )
-            }
-            renderer.spawnScreen(owner, session.id, session.revision, pose, view)
-        } catch (failure: Throwable) {
-            overlay?.remove()
-            throw failure
-        }
+        // 仮想描画では子画面も論理 view・pose だけを保持し、遮蔽面の素材だけ記録します。
+        // 実 packet は次の gaze 通過で viewer ごとに生成します。
         val child = ChildRuntime(
-            view, options, pose, render, overlay,
+            view, options, pose,
+            if (!options.allowParentInteraction) options.overlayMaterial ?: Material.GRAY_STAINED_GLASS else null,
             if (options.animated) GestureGuiSessionState.OPENING else GestureGuiSessionState.ACTIVE,
         )
         session.children += child
         if (options.animated) {
             animateChildOpen(session, child)
-        } else {
-            renderer.setBackgroundSize(render, view.panel.width.toFloat(), view.panel.height.toFloat(), 0)
-            renderer.showContents(render)
-            // spawnと同tickのshowEntityはクライアントのentity tracking登録前に
-            // 落ちて内容だけ表示されないことがあるため、翌tickに再送します。
-            // revision条件を付けないのは、openChild直後のupdateScreen等でrevisionが
-            // 進んでも再送が欠けると表示が確定しないためです。
-            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-                if (sessions[session.ownerId] === session && session.children.contains(child)) {
-                    renderer.showContents(render)
-                }
-            }, 1L)
         }
         requestGazeUpdate()
         return true
@@ -820,7 +607,7 @@ class GestureGuiServiceImpl(
             if (child.options.animated) animateChildClose(session, child)
             else {
                 session.children.remove(child)
-                destroyChild(child)
+                destroyChild(session, child)
             }
         }
         requestGazeUpdate()
@@ -829,69 +616,16 @@ class GestureGuiServiceImpl(
 
     override fun close(ownerId: UUID, mode: GestureGuiCloseMode): Boolean {
         val session = sessions[ownerId] ?: return false
-        // ダミー表示中の終了では、ダミーを先に破棄して本体の終了経路へ一本化します。
-        // アニメーション付き終了でダミーが宙に残ることを防ぎます。
+        // 仮想描画では閉じるアニメーションを行わず、即時に破棄します。
+        // viewer 側の virtual entity 破棄は destroy 経路で行い、残留させません。
+        // mode 引数は API 互換のために残し、動作は統一します。
         if (session.dummyActive) {
-            session.dummyRenders.forEach(renderer::remove)
-            session.dummyRenders = emptyList()
             session.dummyActive = false
         }
-        if (mode == GestureGuiCloseMode.IMMEDIATE) {
-            notifyClosed(session)
-            if (sessions[ownerId] === session) sessions.remove(ownerId)
-            destroy(session)
-            requestGazeUpdate()
-            return true
-        }
-        if (session.state == GestureGuiSessionState.CLOSING) return true
-        session.state = GestureGuiSessionState.CLOSING
-        session.revision = nextRevision++
-        // 見た目のアニメーション完了ではなく、入力受付を止めた時点で利用側へ通知します。
-        // 通知先が同じセッションを閉じ直しても、状態がCLOSINGなので再入しません。
         notifyClosed(session)
-        // 見た目の閉じるアニメーション中も入力claimを保持すると、Fキー・
-        // チャット等の外部入力が終了済み画面へ届きます。Entityは残しても、
-        // 操作主体だけは直ちに無効化します。
-        session.actors.keys.toList().forEach { removeActor(session, it) }
-        Bukkit.getPlayer(ownerId)?.let { playTransitionSound(it, opening = false) }
-        session.children.toList().forEach { child ->
-            if (child.options.animated) animateChildClose(session, child)
-            else {
-                session.children.remove(child)
-                destroyChild(child)
-            }
-        }
-        session.screens.forEach { renderer.hideContents(it.render) }
-        val expected = session.revision
-        session.screens.forEach { screen ->
-            renderer.setBackgroundSize(
-                screen.render,
-                screen.view.panel.width.toFloat(),
-                0.1f,
-                GestureGuiAnimationTimeline.TRANSITION_TICKS,
-            )
-        }
-        later(GestureGuiAnimationTimeline.CLOSE_TO_POINT_DELAY, session, expected) {
-            it.screens.forEach { screen ->
-                renderer.setBackgroundSize(
-                    screen.render,
-                    0.1f,
-                    0.1f,
-                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
-                )
-            }
-        }
-        later(GestureGuiAnimationTimeline.CLOSE_TO_ZERO_DELAY, session, expected) {
-            it.screens.forEach { screen ->
-                renderer.setBackgroundScaleZero(screen.render, GestureGuiAnimationTimeline.TRANSITION_TICKS)
-            }
-        }
-        later(GestureGuiAnimationTimeline.CLOSE_COMPLETE_DELAY, session, expected) {
-            // 閉じる処理の途中で同じ所有者が再オープンされても、旧セッションの
-            // 遅延処理が新セッションを削除しないよう、実体を照合してから除去します。
-            if (sessions[it.ownerId] === it) sessions.remove(it.ownerId)
-            destroy(it)
-        }
+        if (sessions[ownerId] === session) sessions.remove(ownerId)
+        destroy(session)
+        requestGazeUpdate()
         return true
     }
 
@@ -962,6 +696,8 @@ class GestureGuiServiceImpl(
         view.onAction(
             GestureGuiActionContext(session.ownerId, actor.uniqueId, view.definition.screenId, element.elementId, gesture, revision)
         )
+        // Action 実行で内容が変わるため、次 tick で gaze（hover・差分）を即時更新します。
+        requestGazeUpdate()
         return GestureGuiDispatchResult.ACTION_HANDLED
     }
 
@@ -1097,90 +833,34 @@ class GestureGuiServiceImpl(
             }
             .any { session -> accessibleTarget(session, player) != null }
 
+    /**
+     * 開幕状態を ACTIVE へ遷移させます。
+     *
+     * 仮想描画では scale アニメーションを行わず、gaze 通過で実寸のまま送ります。
+     * 入力入口の維持期間だけ OPENING 状態を保ちます。
+     */
     private fun animateOpen(session: Session) {
         val revision = session.revision
-        // scale 0をクライアントへ送ってから点へ展開し、点を3 tick保持した後に横・縦の順で広げます。
-        later(GestureGuiAnimationTimeline.OPEN_TO_POINT_DELAY, session, revision) {
-            it.screens.forEach { screen ->
-                renderer.setBackgroundSize(
-                    screen.render,
-                    0.1f,
-                    0.1f,
-                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
-                )
-            }
-        }
-        later(GestureGuiAnimationTimeline.OPEN_TO_LINE_DELAY, session, revision) {
-            it.screens.forEach { screen ->
-                renderer.setBackgroundSize(
-                    screen.render,
-                    screen.view.panel.width.toFloat(),
-                    0.1f,
-                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
-                )
-            }
-        }
-        later(GestureGuiAnimationTimeline.OPEN_TO_FULL_DELAY, session, revision) {
-            it.screens.forEach { screen ->
-                renderer.setBackgroundSize(
-                    screen.render,
-                    screen.view.panel.width.toFloat(),
-                    screen.view.panel.height.toFloat(),
-                    GestureGuiAnimationTimeline.TRANSITION_TICKS,
-                )
-            }
-        }
         later(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, revision) {
-            it.screens.forEach { screen -> renderer.showContents(screen.render) }
             it.state = GestureGuiSessionState.ACTIVE
+            requestGazeUpdate()
         }
     }
 
     private fun animateChildOpen(session: Session, child: ChildRuntime) {
-        laterChild(GestureGuiAnimationTimeline.OPEN_TO_POINT_DELAY, session, child, GestureGuiSessionState.OPENING) {
-            renderer.setBackgroundSize(it.render, 0.1f, 0.1f, GestureGuiAnimationTimeline.TRANSITION_TICKS)
-        }
-        laterChild(GestureGuiAnimationTimeline.OPEN_TO_LINE_DELAY, session, child, GestureGuiSessionState.OPENING) {
-            renderer.setBackgroundSize(
-                it.render,
-                it.view.panel.width.toFloat(),
-                0.1f,
-                GestureGuiAnimationTimeline.TRANSITION_TICKS,
-            )
-        }
-        laterChild(GestureGuiAnimationTimeline.OPEN_TO_FULL_DELAY, session, child, GestureGuiSessionState.OPENING) {
-            renderer.setBackgroundSize(
-                it.render,
-                it.view.panel.width.toFloat(),
-                it.view.panel.height.toFloat(),
-                GestureGuiAnimationTimeline.TRANSITION_TICKS,
-            )
-        }
         laterChild(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, child, GestureGuiSessionState.OPENING) {
-            renderer.showContents(it.render)
             it.state = GestureGuiSessionState.ACTIVE
+            requestGazeUpdate()
         }
     }
 
     private fun animateChildClose(session: Session, child: ChildRuntime) {
         if (child.state == GestureGuiSessionState.CLOSING) return
         child.state = GestureGuiSessionState.CLOSING
-        renderer.hideContents(child.render)
-        renderer.setBackgroundSize(
-            child.render,
-            child.view.panel.width.toFloat(),
-            0.1f,
-            GestureGuiAnimationTimeline.TRANSITION_TICKS,
-        )
-        laterChild(GestureGuiAnimationTimeline.CLOSE_TO_POINT_DELAY, session, child, GestureGuiSessionState.CLOSING) {
-            renderer.setBackgroundSize(it.render, 0.1f, 0.1f, GestureGuiAnimationTimeline.TRANSITION_TICKS)
-        }
-        laterChild(GestureGuiAnimationTimeline.CLOSE_TO_ZERO_DELAY, session, child, GestureGuiSessionState.CLOSING) {
-            renderer.setBackgroundScaleZero(it.render, GestureGuiAnimationTimeline.TRANSITION_TICKS)
-        }
         laterChild(GestureGuiAnimationTimeline.CLOSE_COMPLETE_DELAY, session, child, GestureGuiSessionState.CLOSING) {
             session.children.remove(it)
-            destroyChild(it)
+            destroyChild(session, it)
+            requestGazeUpdate()
         }
     }
 
@@ -1365,46 +1045,18 @@ class GestureGuiServiceImpl(
     /**
      * PUBLIC/ALLOWLIST画面は最初のクリックより前にInteractionを用意します。
      * 複数画面が重なる場合も、一人の入力は最寄りの一セッションだけが所有します。
+     *
+     * 描画の可視性は入力対象の有無から独立させ、(session, viewer) の LOD 状態で
+     * transition 時のみ packet を送ります。hit-test は actor 解決に限定し、
+     * 全 session の無条件走査は行いません。
      */
     private fun reconcileExternalActors() {
         val activeSessions = sessions.values.filter { it.state == GestureGuiSessionState.ACTIVE }
         Bukkit.getOnlinePlayers().forEach { player ->
-            // 描画の可視性は入力対象の有無から独立させます。従来は視線が画面に
-            // 当たったときだけshowToしていたため、PUBLIC画面でも視界へ戻った際に
-            // 内容が欠けたり、アクセス変更後の可視状態がtrackingに戻されました。
-            // 毎tickのshowToはPaper側で既表示Entityを再送せず、参加・再追跡時だけを
-            // 補完するための冪等操作です。
             activeSessions.forEach { session ->
                 // 候補評価数を計測し、player×session の走査規模を可視化します。
                 GestureGuiRenderMetrics.candidateEvaluations.incrementAndGet()
-                // 動的権限を失ったプレイヤーは、既にEntityを受信済みでも同じtickで
-                // 非表示にします。入力claimだけを解放すると、表示だけが残って
-                // 「操作できそうに見える」状態になるためです。
-                // ダミー表示中は本体を隠してダミーだけを配布し、本体への再表示を抑止します。
-                session.screens.forEach { screen ->
-                    if (session.dummyActive) {
-                        renderer.hideFrom(screen.render, player)
-                    } else if (screen.view.definition.canView(session.ownerId, player.uniqueId)) {
-                        renderer.showTo(screen.render, player)
-                    } else {
-                        renderer.hideFrom(screen.render, player)
-                    }
-                }
-                if (session.dummyActive) {
-                    session.dummyRenders.forEach { renderer.showTo(it, player) }
-                }
-                session.children.forEach { child ->
-                    if (session.dummyActive) {
-                        renderer.hideFrom(child.render, player)
-                        child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
-                    } else if (child.view.definition.canView(session.ownerId, player.uniqueId)) {
-                        renderer.showTo(child.render, player)
-                        child.overlay?.let { overlay -> player.showEntity(plugin, overlay) }
-                    } else {
-                        renderer.hideFrom(child.render, player)
-                        child.overlay?.let { overlay -> player.hideEntity(plugin, overlay) }
-                    }
-                }
+                syncSessionForViewer(session, player)
             }
             // 自分が別のGestureセッションを所有している場合は、同じ入力claimを
             // 二つのセッションへ同時に渡さず、ここから先のactor選択だけを省略します。
@@ -1420,13 +1072,8 @@ class GestureGuiServiceImpl(
             }
             val (session, hit) = desired ?: return@forEach
             val actor = getOrCreateActor(session, player) ?: return@forEach
-            session.screens.filter {
-                it.view.definition.canView(session.ownerId, player.uniqueId)
-            }.forEach { renderer.showTo(it.render, player) }
-            session.children.filter {
-                it.view.definition.canView(session.ownerId, player.uniqueId)
-            }.forEach { renderer.showTo(it.render, player) }
             renderer.moveCatcher(actor.catcher, catcherLocation(player))
+            GestureGuiRenderMetrics.catcherMoves.incrementAndGet()
             updateHover(session, actor, player, hit)
         }
         activeSessions.forEach { session ->
@@ -1434,6 +1081,144 @@ class GestureGuiServiceImpl(
                 actorId != session.ownerId && Bukkit.getPlayer(actorId)?.isOnline != true
             }.forEach { removeActor(session, it) }
         }
+        // 切断済み viewer の追跡は捨てます。client 側は切断で破棄されるため送信不要です。
+        viewerStates.keys.filter { (_, viewerId) ->
+            Bukkit.getPlayer(viewerId)?.isOnline != true
+        }.forEach { viewerStates.remove(it) }
+    }
+
+    /**
+     * 1 セッション分の viewer 表示を LOD に合わせて同期します。
+     *
+     * LOD は (session, viewer) 単位で、最近画面までの距離二乗・操作可否・可視性から求めます。
+     * 無変化では packet を送らず、遷移時は不足分・過剰分だけを spawn/destroy します。
+     */
+    private fun syncSessionForViewer(session: Session, player: Player) {
+        val state = viewerStates.getOrPut(session.id to player.uniqueId) { GestureViewerRenderState() }
+        val owner = Bukkit.getPlayer(session.ownerId)
+        if (owner == null || !owner.isOnline || player.world.uid != owner.world.uid) {
+            if (state.visibilityLevel != GestureViewerLod.HIDDEN) {
+                GestureGuiRenderMetrics.lodTransitions.incrementAndGet()
+            }
+            state.visibilityLevel = GestureViewerLod.HIDDEN
+            destroySessionScreens(player, state, session)
+            return
+        }
+        val eye = ray(player).origin
+        var minDistanceSquared = Double.POSITIVE_INFINITY
+        var anyVisible = false
+        var anyOperable = false
+        session.screens.forEach { screen ->
+            minDistanceSquared = minOf(minDistanceSquared, distanceSquared(eye, screen.pose.center))
+            if (screen.view.definition.canView(session.ownerId, player.uniqueId)) anyVisible = true
+            if (screen.view.definition.canOperate(session.ownerId, player.uniqueId)) anyOperable = true
+        }
+        session.children.forEach { child ->
+            minDistanceSquared = minOf(minDistanceSquared, distanceSquared(eye, child.pose.center))
+            if (child.view.definition.canView(session.ownerId, player.uniqueId)) anyVisible = true
+            if (child.view.definition.canOperate(session.ownerId, player.uniqueId)) anyOperable = true
+        }
+        val lod = GestureViewerLodPolicy.resolve(state.visibilityLevel, minDistanceSquared, anyOperable, anyVisible)
+        if (lod != state.visibilityLevel) {
+            GestureGuiRenderMetrics.lodTransitions.incrementAndGet()
+            state.visibilityLevel = lod
+        }
+        if (lod == GestureViewerLod.HIDDEN) {
+            destroySessionScreens(player, state, session)
+            return
+        }
+        if (session.dummyActive) {
+            // ダミー追従中は本体を送らず、現在位置の背景だけ送ります。子画面は隠します。
+            val dummyPoses = livePoses(session, owner) ?: return
+            session.screens.forEachIndexed { index, screen ->
+                val pose = dummyPoses.getOrNull(index) ?: screen.pose
+                virtualScreens.syncScreen(
+                    player, session.id, state, screenKey(screen), screen.view, pose, lod, null,
+                    GestureGuiVirtualScreens.DummyRequest(screen.view.panel.width, screen.view.panel.height),
+                )
+            }
+            session.children.forEach { child ->
+                val key = screenKey(child)
+                virtualScreens.destroyScreenKeys(player, state, key)
+                virtualScreens.destroyHover(player, state, key)
+                destroyOverlayBlock(player, state, key)
+            }
+        } else {
+            session.screens.forEach { screen ->
+                virtualScreens.syncScreen(
+                    player, session.id, state, screenKey(screen), screen.view, screen.pose, lod, null, null,
+                )
+            }
+            session.children.forEachIndexed { index, child ->
+                val overlayMaterial = child.overlayMaterial?.takeIf { !child.options.allowParentInteraction }
+                if (overlayMaterial != null) {
+                    val parent = parentRuntime(session, child.options.parentScreenId)
+                    val overlayPose = if (parent != null) modalOverlayPose(parent.pose, index) else child.pose
+                    syncOverlayBlock(player, state, screenKey(child), overlayMaterial, overlayPose)
+                } else {
+                    destroyOverlayBlock(player, state, screenKey(child))
+                }
+                virtualScreens.syncScreen(
+                    player, session.id, state, screenKey(child), child.view, child.pose, lod, null, null,
+                )
+            }
+        }
+        state.screenRevision = session.revision
+    }
+
+    /** セッション配下の全画面キー・hover を viewer から破棄します。 */
+    private fun destroySessionScreens(player: Player, state: GestureViewerRenderState, session: Session) {
+        session.screens.forEach { screen ->
+            val key = screenKey(screen)
+            virtualScreens.destroyScreenKeys(player, state, key)
+            virtualScreens.destroyHover(player, state, key)
+        }
+        session.children.forEach { child ->
+            val key = screenKey(child)
+            virtualScreens.destroyScreenKeys(player, state, key)
+            virtualScreens.destroyHover(player, state, key)
+            destroyOverlayBlock(player, state, key)
+        }
+    }
+
+    /** モーダル遮蔽面の単一 Block を同期します。画面キーとは別キーで追跡します。 */
+    private fun syncOverlayBlock(
+        player: Player,
+        state: GestureViewerRenderState,
+        childKey: String,
+        material: Material,
+        pose: GestureGuiScreenPose,
+    ) {
+        virtualScreens.syncSingleBlock(
+            player, state, "$childKey/overlay", pose,
+            0.0, 0.0, GestureGuiVirtualScreens.MODAL_OVERLAY_LAYER,
+            pose.width, pose.height, material,
+        )
+    }
+
+    private fun destroyOverlayBlock(player: Player, state: GestureViewerRenderState, childKey: String) {
+        virtualScreens.destroySingleBlock(player, state, "$childKey/overlay")
+    }
+
+    /** ダミー追従用の現在 pose 群です。計算失敗時は null を返し、凍結を維持します。 */
+    private fun livePoses(session: Session, owner: Player): List<GestureGuiScreenPose>? {
+        val views = session.screens.map(ScreenRuntime::view)
+        if (views.isEmpty()) return null
+        return runCatching {
+            poses(
+                owner, owner.location.yaw, views, session.layout, session.verticalSlots,
+                session.verticalOffset, session.tiltScale, session.screenDistance,
+            )
+        }.onFailure { failure ->
+            plugin.logger.log(Level.WARNING, "Gesture GUIダミーposeの計算に失敗しました", failure)
+        }.getOrNull()
+    }
+
+    private fun distanceSquared(a: GestureGuiVector3, b: GestureGuiVector3): Double {
+        val dx = a.x - b.x
+        val dy = a.y - b.y
+        val dz = a.z - b.z
+        return dx * dx + dy * dy + dz * dz
     }
 
     private fun createActor(session: Session, player: Player): ActorRuntime {
@@ -1516,18 +1301,22 @@ class GestureGuiServiceImpl(
     private fun removeActor(session: Session, actorId: UUID) {
         val actor = session.actors.remove(actorId) ?: return
         actor.claims.forEach(PlayerInteractionClaim::close)
-        actor.hoverReplacement?.let { replacement ->
-            Bukkit.getPlayer(actorId)?.let { player ->
-                replacement.visualIds.forEach { visualId ->
-                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
+        // hover 表示の除去と置換非表示の復元は viewer 状態側で行います。
+        // 公開画面の閲覧だけが残る場合、次 gaze 通過で隠れていた内容を再送します。
+        Bukkit.getPlayer(actorId)?.let { player ->
+            viewerStates[session.id to actorId]?.let { state ->
+                session.screens.forEach { screen ->
+                    virtualScreens.destroyHover(player, state, screenKey(screen))
                 }
-                replacement.visualBodyIds.forEach { visualId ->
-                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
+                session.children.forEach { child ->
+                    virtualScreens.destroyHover(player, state, screenKey(child))
                 }
+                state.hiddenVisualIds.clear()
+                state.hiddenVisualBodyIds.clear()
             }
         }
-        actor.hover?.let(renderer::removeHover)
         renderer.removeCatcher(actor.catcher)
+        requestGazeUpdate()
     }
 
     private fun updateHover(
@@ -1536,6 +1325,7 @@ class GestureGuiServiceImpl(
         player: Player,
         target: TargetHit?,
     ) {
+        val state = viewerStates.getOrPut(session.id to player.uniqueId) { GestureViewerRenderState() }
         val view = target?.view
         val pose = target?.pose
         val element = view?.definition?.elements?.firstOrNull { it.elementId == target.hit.elementId }
@@ -1543,109 +1333,75 @@ class GestureGuiServiceImpl(
         val identity = if (view != null && element != null && hoverText != null) {
             "${view.definition.screenId}:${element.elementId}"
         } else null
-        if (identity == null) {
-            actor.hoverReplacement?.let { replacement ->
-                replacement.visualIds.forEach { visualId ->
-                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
-                }
-                replacement.visualBodyIds.forEach { visualId ->
-                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
-                }
+        val screenKey = target?.child?.let(::screenKey) ?: target?.screen?.let(::screenKey)
+        if (identity == null || screenKey == null || pose == null) {
+            // hover 対象なし：前回の hover 表示を捨て、置換非表示を復元します。
+            // 内容の再送は次 gaze 通過の画面同期に委ねます。
+            actor.hoverScreenKey?.let { virtualScreens.destroyHover(player, state, it) }
+            if (state.hiddenVisualIds.isNotEmpty() || state.hiddenVisualBodyIds.isNotEmpty()) {
+                state.hiddenVisualIds.clear()
+                state.hiddenVisualBodyIds.clear()
+                requestGazeUpdate()
             }
-            actor.hoverReplacement = null
-            actor.hover?.let(renderer::removeHover)
-            actor.hover = null
             actor.hoverIdentity = null
+            actor.hoverScreenKey = null
             return
         }
-        val render = target?.child?.render ?: target?.screen?.render
-        val hoverVisual = hoverText?.hoverBlockVisualId?.let { visualId ->
-            view.visuals.firstOrNull { it.visualId == visualId } as? GestureGuiVisual.Block
+        if (actor.hoverScreenKey != null && actor.hoverScreenKey != screenKey) {
+            virtualScreens.destroyHover(player, state, actor.hoverScreenKey!!)
         }
+        // identity が非 null の場合、hoverText も非 null が確定しています。
+        val confirmedHover = requireNotNull(hoverText)
         val descriptionVisualIds = buildSet<String> {
-            hoverText?.replacesVisualId?.let(::add)
+            confirmedHover.replacesVisualId?.let(::add)
         }
         val bodyVisualIds = buildSet<String> {
-            hoverText?.hoverBlockVisualId?.let(::add)
+            confirmedHover.hoverBlockVisualId?.let(::add)
         } - descriptionVisualIds
-        val desiredReplacement = render?.let { currentRender ->
-            if (descriptionVisualIds.isEmpty() && bodyVisualIds.isEmpty()) {
-                null
-            } else {
-                HoverReplacement(currentRender, descriptionVisualIds, bodyVisualIds)
-            }
-        }
-        if (actor.hoverReplacement != desiredReplacement) {
-            actor.hoverReplacement?.let { replacement ->
-                replacement.visualIds.forEach { visualId ->
-                    renderer.setVisualVisible(replacement.render, visualId, player, visible = true)
-                }
-                replacement.visualBodyIds.forEach { visualId ->
-                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = true)
-                }
-            }
-            actor.hoverReplacement = null
-            desiredReplacement?.let { replacement ->
-                val hiddenVisualIds = replacement.visualIds.filterTo(linkedSetOf()) { visualId ->
-                    renderer.setVisualVisible(replacement.render, visualId, player, visible = false)
-                }
-                val hiddenVisualBodyIds = replacement.visualBodyIds.filterTo(linkedSetOf()) { visualId ->
-                    renderer.setVisualBodyVisible(replacement.render, visualId, player, visible = false)
-                }
-                if (hiddenVisualIds.isNotEmpty() || hiddenVisualBodyIds.isNotEmpty()) {
-                    actor.hoverReplacement = replacement.copy(
-                        visualIds = hiddenVisualIds,
-                        visualBodyIds = hiddenVisualBodyIds,
-                    )
-                }
-            }
+        // 置換対象の変化は画面同期の desired 集合を変えるため、次通過で差分配信します。
+        if (state.hiddenVisualIds != descriptionVisualIds || state.hiddenVisualBodyIds != bodyVisualIds) {
+            state.hiddenVisualIds.clear()
+            state.hiddenVisualIds += descriptionVisualIds
+            state.hiddenVisualBodyIds.clear()
+            state.hiddenVisualBodyIds += bodyVisualIds
+            requestGazeUpdate()
         }
         // 置換対象の通常visualと深さを揃えます。対象を操作者へ隠したうえで
         // 0.02ブロックだけ前面へ浮かせることで、ホバー中の法線方向の跳ねを最小化し、
         // 層の重なり規則（前面に浮く）も維持します。対象を解決できない場合は
         // 従来どおりhover.layerを使います。
-        val effectiveHover = hoverText?.let { currentHover ->
+        val effectiveHover = confirmedHover.let { currentHover ->
             val descriptionVisualId = currentHover.replacesVisualId
-            if (descriptionVisualId != null && render != null) {
-                renderer.visualLayer(render, descriptionVisualId)
-                    ?.let { base -> currentHover.copy(layer = renderer.hoverReplaceLayer(base)) }
+            if (descriptionVisualId != null) {
+                view.visuals.firstOrNull { it.visualId == descriptionVisualId }
+                    ?.let { base -> currentHover.copy(layer = GestureGuiVirtualScreens.hoverReplaceLayer(base.layer)) }
                     ?: currentHover
             } else {
                 currentHover
             }
         }
-        if (actor.hoverIdentity != identity || actor.hover == null) {
-            actor.hover?.let(renderer::removeHover)
-            actor.hover = renderer.spawnHover(
-                player,
-                session.id,
-                session.revision,
-                pose!!,
-                effectiveHover!!,
-                hoverVisual,
-            )
-            actor.hoverIdentity = identity
-        } else {
-            renderer.updateHover(
-                player,
-                actor.hover!!,
-                session.id,
-                session.revision,
-                pose!!,
-                effectiveHover!!,
-                hoverVisual,
-            )
+        val hoverVisual = confirmedHover.hoverBlockVisualId?.let { visualId ->
+            view.visuals.firstOrNull { it.visualId == visualId } as? GestureGuiVisual.Block
         }
+        val hoverBlockData = confirmedHover.hoverBlockData
+        val hoverBlock = if (hoverVisual != null && hoverBlockData != null) hoverVisual to hoverBlockData else null
+        virtualScreens.syncHover(player, state, screenKey, pose, effectiveHover, hoverBlock, identity)
+        actor.hoverIdentity = identity
+        actor.hoverScreenKey = screenKey
     }
 
     private fun destroy(session: Session) {
         session.actors.keys.toList().forEach { removeActor(session, it) }
-        session.dummyRenders.forEach(renderer::remove)
-        session.dummyRenders = emptyList()
         session.dummyActive = false
-        session.screens.forEach { renderer.remove(it.render) }
-        session.children.forEach(::destroyChild)
-        // Actor登録漏れや旧版から残ったホバーを含め、セッションID単位で最後に掃除します。
+        // viewer 状態に残る virtual entity を破棄し、追跡も捨てます。
+        // 切断済み viewer の client 側は破棄済みのため、online のみ送信します。
+        viewerStates.keys.filter { it.first == session.id }.toList().forEach { key ->
+            Bukkit.getPlayer(key.second)?.let { player ->
+                viewerStates[key]?.let { virtualScreens.destroyAll(player, it) }
+            }
+            viewerStates.remove(key)
+        }
+        // catcher の登録漏れ等があっても、セッションID単位で最後に掃除します。
         renderer.removeSessionEntities(session.id)
     }
 
@@ -1668,9 +1424,20 @@ class GestureGuiServiceImpl(
         }
     }
 
-    private fun destroyChild(child: ChildRuntime) {
-        renderer.remove(child.render)
-        child.overlay?.remove()
+    /**
+     * 子画面の viewer 側表示を破棄します。
+     *
+     * 論理リストからの除去は呼び出し側で行い、ここでは全 viewer の
+     * 当該画面キー・hover を破棄します。
+     */
+    private fun destroyChild(session: Session, child: ChildRuntime) {
+        val key = screenKey(child)
+        viewerStates.filter { it.key.first == session.id }.forEach { (viewerKey, state) ->
+            Bukkit.getPlayer(viewerKey.second)?.let { player ->
+                virtualScreens.destroyScreenKeys(player, state, key)
+                virtualScreens.destroyHover(player, state, key)
+            }
+        }
     }
 
     /**
@@ -1840,12 +1607,14 @@ class GestureGuiServiceImpl(
         session.children.forEachIndexed { index, child ->
             val parent = parentRuntime(session, child.options.parentScreenId) ?: return@forEachIndexed
             child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
-            renderer.updatePose(child.render, child.pose, child.view)
-            child.overlay?.let {
-                renderer.updateModalOverlay(it, modalOverlayPose(parent.pose, index))
-            }
         }
     }
+
+    /** 画面の安定キーです。viewer 状態の virtual ID 追跡に使います。 */
+    private fun screenKey(screen: ScreenRuntime): String = "s:${screen.view.definition.screenId}"
+
+    /** 子画面の安定キーです。viewer 状態の virtual ID 追跡に使います。 */
+    private fun screenKey(child: ChildRuntime): String = "c:${child.view.definition.screenId}"
 
     /**
      * 固定アンカーから画面poseを生成します。

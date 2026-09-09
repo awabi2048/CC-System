@@ -59,11 +59,13 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     private val blockStateHandles = HashMap<String, Any>()
 
     private val serializers by lazy {
+        // get(Class) は forRemoval のため、get(Type, boolean) で解決します。
+        // NMS 実体（org.joml.Vector3f・Byte・Integer・Float）の serializer を直接引きます。
         VirtualSerializers(
-            vector = WrappedDataWatcher.Registry.get(Vector3f::class.java),
-            byteValue = WrappedDataWatcher.Registry.get(Byte::class.javaObjectType),
-            intValue = WrappedDataWatcher.Registry.get(Int::class.javaObjectType),
-            floatValue = WrappedDataWatcher.Registry.get(Float::class.javaObjectType),
+            vector = WrappedDataWatcher.Registry.get(Vector3f::class.java as java.lang.reflect.Type, false),
+            byteValue = WrappedDataWatcher.Registry.get(Byte::class.javaObjectType as java.lang.reflect.Type, false),
+            intValue = WrappedDataWatcher.Registry.get(Int::class.javaObjectType as java.lang.reflect.Type, false),
+            floatValue = WrappedDataWatcher.Registry.get(Float::class.javaObjectType as java.lang.reflect.Type, false),
             chat = WrappedDataWatcher.Registry.getChatComponentSerializer(),
             blockState = WrappedDataWatcher.Registry.getBlockDataSerializer(false),
             itemStack = WrappedDataWatcher.Registry.getItemStackSerializer(false),
