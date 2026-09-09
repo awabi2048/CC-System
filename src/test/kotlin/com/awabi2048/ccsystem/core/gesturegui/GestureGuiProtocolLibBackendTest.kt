@@ -66,27 +66,8 @@ class GestureGuiProtocolLibBackendTest {
     }
 
     @Test
-    fun `補間期間は旧Bukkit経路と同値である`() {
-        assertEquals(3, GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS)
+    fun `補間期間は追従の応答性を優先する`() {
+        assertEquals(2, GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS)
         assertEquals(1, GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS)
-    }
-
-    @Test
-    fun `相対移動は微差分を量子化する`() {
-        assertEquals(4096, GestureGuiProtocolLibBackend.relativeShort(1.0))
-        assertEquals(-2048, GestureGuiProtocolLibBackend.relativeShort(-0.5))
-        assertEquals(0, GestureGuiProtocolLibBackend.relativeShort(0.0))
-    }
-
-    @Test
-    fun `相対移動の範囲外は再同期のためnullである`() {
-        assertEquals(null, GestureGuiProtocolLibBackend.relativeShort(8.0))
-        assertEquals(null, GestureGuiProtocolLibBackend.relativeShort(-9.0))
-    }
-
-    @Test
-    fun `drift超過だけ再同期する`() {
-        assertFalse(GestureGuiProtocolLibBackend.exceedsDrift(1.0, 1.003))
-        assertTrue(GestureGuiProtocolLibBackend.exceedsDrift(1.0, 1.005))
     }
 }

@@ -333,7 +333,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 ListenerPriority.NORMAL,
                 PacketType.Play.Server.SPAWN_ENTITY,
                 PacketType.Play.Server.ENTITY_METADATA,
-                PacketType.Play.Server.ENTITY_TELEPORT,
             ) {
                 override fun onPacketSending(event: PacketEvent) {
                     runCatching { dumpReferencePacket(event) }
@@ -367,18 +366,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         sampleViewer.showEntity(plugin, block)
         sampleViewer.showEntity(plugin, text)
         plugin.logger.info(
-            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（teleport 後に破棄）",
+            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（8tick後に破棄）",
         )
-        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-            runCatching {
-                // 正規 teleport packet を捕捉するため、Bukkit 経路で再配置します。
-                val dest = loc.clone().add(1.5, -0.25, 2.5)
-                dest.yaw = 30.5f
-                dest.pitch = -7.25f
-                block.teleport(dest)
-                text.teleport(dest)
-            }
-        }, 3L)
         org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             runCatching {
                 sampleViewer.hideEntity(plugin, block)
@@ -409,20 +398,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 plugin.logger.info(
                     "[GestureGuiIntercept] meta id=$id " +
                         values.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" },
-                )
-            }
-            PacketType.Play.Server.ENTITY_TELEPORT -> {
-                val id = packet.integers.read(0)
-                if (id !in referenceIds) return
-                val structures = packet.structures
-                val inner = if (structures.size() == 1) {
-                    val move = structures.read(0)
-                    "doubles=${move.doubles.values} floats=${move.float.values}"
-                } else {
-                    "legacy doubles=${packet.doubles.values} bytes=${packet.bytes.values}"
-                }
-                plugin.logger.info(
-                    "[GestureGuiIntercept] teleport id=$id $inner bools=${packet.booleans.values}",
                 )
             }
             else -> {}
@@ -488,34 +463,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         GestureGuiRenderMetrics.virtualDestroys.addAndGet(virtualIds.size.toLong())
     }
 
-    /**
-     * 相対移動（＋向き）を送信します。ダミー追従の連続微動用です。
-     *
-     * short 差分は 1/4096 ブロック単位・±8 ブロックのため、呼び出し側で範囲を
-     * 検証してください。範囲外・drift 超過時は destroy+spawn で再同期します。
-     * NMS 宣言順（yRot, xRot）のため bytes 0 が yaw・1 が pitch です。
-     */
-    fun sendRelativeMove(
-        viewer: Player,
-        virtualId: Int,
-        dxShort: Int,
-        dyShort: Int,
-        dzShort: Int,
-        yawDegrees: Float,
-        pitchDegrees: Float,
-    ) {
-        val packet = manager.createPacket(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK)
-        packet.integers.write(0, virtualId)
-        packet.shorts.write(0, dxShort.toShort())
-        packet.shorts.write(1, dyShort.toShort())
-        packet.shorts.write(2, dzShort.toShort())
-        packet.bytes.write(0, toPackedByte(yawDegrees))
-        packet.bytes.write(1, toPackedByte(pitchDegrees))
-        packet.booleans.write(0, false)
-        send(viewer, packet)
-        GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
-    }
-
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)
@@ -571,22 +518,27 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
      * 開閉波・変形を client 側で tween させます。
      * 向きは entity 回転（常に 0）ではなく leftRotation quaternion で与えるため、
      * 角度の byte 量子化・欄割付の影響を受けません。
+     *
+     * @param billboard 向き追従指定。既定は FIXED です。
+     * @param interpTicks 変形補間の期間。hover 等の即時追従は 0 を指定します。
      */
     fun displayBaseValues(
         translation: Vector3f,
         scale: Vector3f,
         rotation: org.joml.Quaternionf,
         glowColorRgb: Int?,
+        billboard: Byte = BILLBOARD_FIXED,
+        interpTicks: Int = TRANSFORM_INTERP_TICKS,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
         val vec = vector()
         add(WrappedDataValue(ID_TRANSLATION, vec, Vector3f(translation)))
         add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
         add(WrappedDataValue(ID_LEFT_ROTATION, quaternion(), org.joml.Quaternionf(rotation)))
-        add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
+        add(WrappedDataValue(ID_BILLBOARD, s.byteValue, billboard))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
-        add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, TRANSFORM_INTERP_TICKS))
+        add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, interpTicks))
         add(WrappedDataValue(ID_POSROT_DURATION, s.intValue, POSROT_INTERP_TICKS))
         add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, if (glowColorRgb != null) FLAG_GLOWING else 0.toByte()))
         add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb?.and(0xFFFFFF) ?: NO_GLOW_COLOR))
@@ -686,28 +638,11 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val NO_GLOW_COLOR: Int = -1
         /** NMS ItemStack のクラス名です。converter 出力の検証に使います。 */
         const val NMS_ITEM_STACK_CLASS: String = "net.minecraft.world.item.ItemStack"
-        /** 相対移動 short の安全域です。NMS 上限（±32767）に余裕を持たせます。 */
-        const val REL_SHORT_LIMIT: Int = 30000
-        /** 量子化 drift の再同期閾値（ブロック）です。視認限界以下にします。 */
-        const val REL_DRIFT_TOLERANCE: Double = 0.004
-        /** 変形補間の期間（tick）です。旧経路の interpolationDuration と同値です。 */
-        const val TRANSFORM_INTERP_TICKS: Int = 3
+        /** 変形補間の期間（tick）です。追従の滑らかさと応答性の均衡点です。 */
+        const val TRANSFORM_INTERP_TICKS: Int = 2
         /** 位置回転補間の期間（tick）です。旧経路の teleportDuration と同値です。 */
         const val POSROT_INTERP_TICKS: Int = 1
         const val ITEM_DISPLAY_GUI: Byte = 6
-
-        /**
-         * 相対移動の 1/4096 量子化です。範囲外（±8 ブロック超）は null を返し、
-         * 呼び出し側で destroy+spawn 再同期します。
-         */
-        fun relativeShort(deltaBlocks: Double): Int? {
-            val quantized = (deltaBlocks * 4096.0).roundToInt()
-            return quantized.takeIf { it in -REL_SHORT_LIMIT..REL_SHORT_LIMIT }
-        }
-
-        /** 量子化 drift が視認閾値を超えたかを返します。超えたら再同期します。 */
-        fun exceedsDrift(trueValue: Double, assumedValue: Double): Boolean =
-            kotlin.math.abs(trueValue - assumedValue) > REL_DRIFT_TOLERANCE
 
         /** text flags の alignment 部分です。Bukkit TextAlignment からの変換に使います。 */
         const val TEXT_ALIGN_LEFT: Byte = 8

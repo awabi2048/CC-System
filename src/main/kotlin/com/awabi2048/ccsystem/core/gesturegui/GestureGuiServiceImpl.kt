@@ -800,9 +800,21 @@ class GestureGuiServiceImpl(
         requestGazeUpdate()
     }
 
-    /** Shift+Jumpでは所有者は画面全体、第三者は自身の操作参加だけを終了します。 */
+    /**
+     * Shift+Jumpでは所有者は画面全体、第三者は自身の操作参加だけを終了します。
+     *
+     * 終了ジェスチャーは即時破棄し、閉じるアニメーションは再生しません。
+     * アニメーションは「閉じる」ボタン等からの明示 close に限定します。
+     * 所有者が閉じた場合のみ終了音を再生します。
+     */
     internal fun leaveOrClose(actorId: UUID): Boolean {
-        if (actorId in sessions) return close(actorId)
+        if (actorId in sessions) {
+            val closed = close(actorId, GestureGuiCloseMode.IMMEDIATE)
+            if (closed) {
+                Bukkit.getPlayer(actorId)?.let { playTransitionSound(it, opening = false) }
+            }
+            return closed
+        }
         val session = sessions.values.firstOrNull { actorId in it.actors } ?: return false
         removeActor(session, actorId)
         requestGazeUpdate()
@@ -914,7 +926,7 @@ class GestureGuiServiceImpl(
     /**
      * 開幕演出（点→線→面）を行います。
      *
-     * 背景だけを scale 波で展開し、完了時に内容物と ACTIVE 化を通常同期へ引き継ぎます。
+     * 背景だけを scale 波で展開し、完了時に ACTIVE 化して内容物を通常同期へ引き継ぎます。
      * 波は背景鍵だけに触れ、内容物・hover には触れません。packet は遷移時のみです。
      */
     private fun animateOpen(session: Session) {
