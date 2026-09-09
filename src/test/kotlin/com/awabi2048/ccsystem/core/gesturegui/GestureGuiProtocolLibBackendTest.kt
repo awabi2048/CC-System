@@ -1,0 +1,53 @@
+package com.awabi2048.ccsystem.core.gesturegui
+
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiProtocolLibBackend.Companion.ID_BACKGROUND_ALIAS_CHECK
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+/**
+ * 仮想描画の packing・flags 変換の回帰試験です。
+ *
+ * 定数は実サーバー（Chiyogami 26.1.2）の NMS 実体で確定しており、
+ * ここではその対応が崩れていないことを固定します。
+ */
+class GestureGuiProtocolLibBackendTest {
+    @Test
+    fun `brightness packはblockとskyを合成する`() {
+        assertEquals(255, GestureGuiProtocolLibBackend.packBrightness(15, 15))
+        assertEquals(0, GestureGuiProtocolLibBackend.packBrightness(0, 0))
+        assertEquals(0x97, GestureGuiProtocolLibBackend.packBrightness(7, 9))
+    }
+
+    @Test
+    fun `text flagsはseeThroughとalignmentを合成する`() {
+        assertEquals(0.toByte(), GestureGuiProtocolLibBackend.textFlags(false, 0))
+        assertEquals(2.toByte(), GestureGuiProtocolLibBackend.textFlags(true, 0))
+        assertEquals(8.toByte(), GestureGuiProtocolLibBackend.textFlags(false, 8))
+        assertEquals(18.toByte(), GestureGuiProtocolLibBackend.textFlags(true, 16))
+    }
+
+    @Test
+    fun `yawはpacket用byteへ変換される`() {
+        assertEquals(0.toByte(), GestureGuiProtocolLibBackend.toPackedByte(0f))
+        assertEquals(64.toByte(), GestureGuiProtocolLibBackend.toPackedByte(90f))
+        assertEquals((-128).toByte(), GestureGuiProtocolLibBackend.toPackedByte(180f))
+    }
+
+    @Test
+    fun `metadata indexはNMS確定値と一致する`() {
+        // Display 8-22・種別固有 23-27 の先頭がずれていないことだけ固定します。
+        assertEquals(11, GestureGuiProtocolLibBackend.ID_TRANSLATION)
+        assertEquals(12, GestureGuiProtocolLibBackend.ID_SCALE)
+        assertEquals(15, GestureGuiProtocolLibBackend.ID_BILLBOARD)
+        assertEquals(16, GestureGuiProtocolLibBackend.ID_BRIGHTNESS)
+        assertEquals(22, GestureGuiProtocolLibBackend.ID_GLOW_COLOR)
+        assertEquals(23, GestureGuiProtocolLibBackend.ID_BLOCK_STATE)
+        assertEquals(23, GestureGuiProtocolLibBackend.ID_ITEM_STACK)
+        assertEquals(24, GestureGuiProtocolLibBackend.ID_ITEM_DISPLAY_TYPE)
+        assertEquals(23, GestureGuiProtocolLibBackend.ID_TEXT)
+        assertEquals(24, GestureGuiProtocolLibBackend.ID_LINE_WIDTH)
+        assertEquals(27, GestureGuiProtocolLibBackend.ID_TEXT_FLAGS)
+        // 背景色 index も TextDisplay 固有域（25）であることを固定します。
+        assertEquals(25, ID_BACKGROUND_ALIAS_CHECK)
+    }
+}
