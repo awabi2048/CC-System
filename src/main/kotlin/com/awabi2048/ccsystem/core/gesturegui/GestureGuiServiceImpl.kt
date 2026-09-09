@@ -905,7 +905,10 @@ class GestureGuiServiceImpl(
         // 毎 tick 行わないことで、session 数の増加に対する負荷拡大を抑えます。
         if (gazeDirty || tickIndex % GAZE_INTERVAL_TICKS == 0L) {
             gazeDirty = false
-            gazePass()
+            // 1 session の失敗で他 session の gaze を止めないよう分離します。
+            runCatching(::gazePass).onFailure { failure ->
+                plugin.logger.log(Level.WARNING, "Gesture GUI の gaze 通過に失敗しました", failure)
+            }
         }
     }
 
@@ -1094,6 +1097,8 @@ class GestureGuiServiceImpl(
      * 無変化では packet を送らず、遷移時は不足分・過剰分だけを spawn/destroy します。
      */
     private fun syncSessionForViewer(session: Session, player: Player) {
+        // backend 利用不可時は送信を止めます（初回に一度だけ SEVERE を出します）。
+        if (!virtualBackend.checkAvailable(player)) return
         val state = viewerStates.getOrPut(session.id to player.uniqueId) { GestureViewerRenderState() }
         val owner = Bukkit.getPlayer(session.ownerId)
         if (owner == null || !owner.isOnline || player.world.uid != owner.world.uid) {
@@ -1349,6 +1354,12 @@ class GestureGuiServiceImpl(
         }
         if (actor.hoverScreenKey != null && actor.hoverScreenKey != screenKey) {
             virtualScreens.destroyHover(player, state, actor.hoverScreenKey!!)
+        }
+        // backend 利用不可時は hover を出さず、置換も行いません。
+        if (!virtualBackend.checkAvailable(player)) {
+            actor.hoverIdentity = null
+            actor.hoverScreenKey = null
+            return
         }
         // identity が非 null の場合、hoverText も非 null が確定しています。
         val confirmedHover = requireNotNull(hoverText)

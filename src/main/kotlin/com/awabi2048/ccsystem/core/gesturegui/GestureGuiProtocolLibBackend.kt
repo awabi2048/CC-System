@@ -59,10 +59,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     private val blockStateHandles = HashMap<String, Any>()
 
     private val serializers by lazy {
-        // get(Class) は forRemoval のため、get(Type, boolean) で解決します。
-        // NMS 実体（org.joml.Vector3f・Byte・Integer・Float）の serializer を直接引きます。
         VirtualSerializers(
-            vector = WrappedDataWatcher.Registry.get(Vector3f::class.java as java.lang.reflect.Type, false),
             byteValue = WrappedDataWatcher.Registry.get(Byte::class.javaObjectType as java.lang.reflect.Type, false),
             intValue = WrappedDataWatcher.Registry.get(Int::class.javaObjectType as java.lang.reflect.Type, false),
             floatValue = WrappedDataWatcher.Registry.get(Float::class.javaObjectType as java.lang.reflect.Type, false),
@@ -73,7 +70,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     }
 
     private data class VirtualSerializers(
-        val vector: WrappedDataWatcher.Serializer,
         val byteValue: WrappedDataWatcher.Serializer,
         val intValue: WrappedDataWatcher.Serializer,
         val floatValue: WrappedDataWatcher.Serializer,
@@ -81,6 +77,68 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         val blockState: WrappedDataWatcher.Serializer,
         val itemStack: WrappedDataWatcher.Serializer,
     )
+
+    private fun vector(): WrappedDataWatcher.Serializer =
+        vectorSerializer ?: error("vector serializer が未解決です。checkAvailable を先に呼んでください。")
+
+    /**
+     * translation/scale 用の vector serializer です。
+     *
+     * NMS の vector 型は版で揺れる（org.joml.Vector3f / Vector3fc）ため、
+     * 候補クラス順に解決し、駄目なら不可視 template の watcher から実物を抜きます。
+     * 解決不能時は backend 全体を停止し、SEVERE を一度だけ出します。
+     */
+    private var vectorSerializer: WrappedDataWatcher.Serializer? = null
+    private var vectorResolutionDone = false
+    private var backendDisabled = false
+
+    /**
+     * 仮想描画が利用可能かを返します。初回に vector serializer を確定します。
+     * 利用不可の場合は以降の送信を止め、画面は表示されません（縮退停止）。
+     */
+    fun checkAvailable(sampleViewer: Player): Boolean {
+        if (backendDisabled) return false
+        if (vectorResolutionDone) return true
+        vectorResolutionDone = true
+        vectorSerializer = resolveVectorSerializer(sampleViewer)
+        if (vectorSerializer == null) {
+            backendDisabled = true
+            plugin.logger.log(
+                Level.SEVERE,
+                "仮想 GUI の vector serializer を解決できず、Gesture GUI の仮想描画を停止します。",
+            )
+            return false
+        }
+        return true
+    }
+
+    private fun resolveVectorSerializer(sampleViewer: Player): WrappedDataWatcher.Serializer? {
+        // 候補1：登録名の版差を吸収するため、実装・界面の両方を試します。
+        listOf(Vector3f::class.java, org.joml.Vector3fc::class.java).forEach { candidate ->
+            runCatching {
+                WrappedDataWatcher.Registry.get(candidate as java.lang.reflect.Type, false)
+            }.onSuccess { return it }
+        }
+        // 候補2：不可視 template の watcher から index 11 の実 serializer を抜きます。
+        return runCatching { vectorSerializerFromTemplate(sampleViewer) }
+            .onFailure { failure ->
+                plugin.logger.log(Level.WARNING, "vector serializer の template 抽出に失敗しました", failure)
+            }.getOrNull()
+    }
+
+    private fun vectorSerializerFromTemplate(sampleViewer: Player): WrappedDataWatcher.Serializer {
+        val template = sampleViewer.world.spawn(sampleViewer.location, BlockDisplay::class.java) {
+            it.isVisibleByDefault = false
+            it.isPersistent = false
+        }
+        try {
+            val watcher = WrappedDataWatcher.getEntityWatcher(template)
+            return watcher.getWatchableObject(ID_TRANSLATION)?.watcherObject?.serializer
+                ?: error("index $ID_TRANSLATION の serializer が watcher にありません")
+        } finally {
+            template.remove()
+        }
+    }
 
     fun nextVirtualId(): Int = idAllocator.getAndIncrement()
 
@@ -146,8 +204,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         glowColorRgb: Int?,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
-        add(WrappedDataValue(ID_TRANSLATION, s.vector, Vector3f(translation)))
-        add(WrappedDataValue(ID_SCALE, s.vector, Vector3f(scale)))
+        val vec = vector()
+        add(WrappedDataValue(ID_TRANSLATION, vec, Vector3f(translation)))
+        add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
         add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         if (glowColorRgb != null) {
