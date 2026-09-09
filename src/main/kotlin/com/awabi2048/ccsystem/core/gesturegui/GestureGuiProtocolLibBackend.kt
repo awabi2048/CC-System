@@ -516,6 +516,60 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
     }
 
+    /**
+     * 絶対 teleport を送信し、座標を滑らかに追従させます。
+     *
+     * entity 回転は常に 0（向きは変形が担う）のため、角度欄は送りません。
+     * 位置回転補間（期間 1）により client 側で glide します。
+     * 構造は実行時に適応解決し（新式 PositionMoveRotation／旧式 xyz）、
+     * 解決不能時は false を返して destroy+spawn のままにします。
+     */
+    private var teleportUnsupported = false
+
+    fun sendTeleport(
+        viewer: Player,
+        virtualId: Int,
+        x: Double,
+        y: Double,
+        z: Double,
+    ): Boolean {
+        if (teleportUnsupported) return false
+        return runCatching {
+            val packet = manager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT)
+            packet.integers.write(0, virtualId)
+            val structures = packet.structures
+            if (structures.size() == 1) {
+                // 新式：PositionMoveRotation（double xyz＋float yaw/pitch）。
+                val move = structures.read(0)
+                move.doubles.write(0, x)
+                move.doubles.write(1, y)
+                move.doubles.write(2, z)
+                move.float.write(0, 0f)
+                move.float.write(1, 0f)
+                structures.write(0, move)
+            } else {
+                // 旧式：double xyz のみ送り、角度欄には触れません。
+                packet.doubles.write(0, x)
+                packet.doubles.write(1, y)
+                packet.doubles.write(2, z)
+            }
+            packet.booleans.write(0, false)
+            writeEmptyRelatives(packet)
+            send(viewer, packet)
+            GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
+            true
+        }.onFailure { failure ->
+            teleportUnsupported = true
+            plugin.logger.log(Level.WARNING, "絶対 teleport を無効化し、destroy+spawn へ縮退します", failure)
+        }.getOrDefault(false)
+    }
+
+    private fun writeEmptyRelatives(packet: com.comphenix.protocol.events.PacketContainer) {
+        val sets = packet.modifier.withType<Set<*>>(Set::class.java)
+        if (sets.size() == 1) sets.write(0, emptySet<Any>())
+        else error("relatives 欄が1件ではありません: size=${sets.size()}")
+    }
+
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)

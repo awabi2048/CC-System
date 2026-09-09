@@ -800,9 +800,14 @@ class GestureGuiServiceImpl(
         requestGazeUpdate()
     }
 
-    /** Shift+Jumpでは所有者は画面全体、第三者は自身の操作参加だけを終了します。 */
+    /**
+     * Shift+Jumpでは所有者は画面全体、第三者は自身の操作参加だけを終了します。
+     *
+     * 終了ジェスチャーは即時破棄し、閉じるアニメーションは再生しません。
+     * アニメーションは「閉じる」ボタン等からの明示 close に限定します。
+     */
     internal fun leaveOrClose(actorId: UUID): Boolean {
-        if (actorId in sessions) return close(actorId)
+        if (actorId in sessions) return close(actorId, GestureGuiCloseMode.IMMEDIATE)
         val session = sessions.values.firstOrNull { actorId in it.actors } ?: return false
         removeActor(session, actorId)
         requestGazeUpdate()

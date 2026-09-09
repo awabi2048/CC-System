@@ -128,23 +128,19 @@ internal class GestureGuiVirtualScreens(
             .filterNot(::isHoverManagedKey)
             .toSet()
         // 追加・移動・型変更・内容変更だけを送ります。無変化には触れません。
+        // 移動は teleport で追従し、位置回転補間で glide させます。
         desired.forEach { item ->
             val id = state.virtualIdByKey.getOrPut(item.key) { backend.nextVirtualId() }
             val known = state.contentFingerprintByKey[item.key]
             val live = id in state.liveVirtualIds
             val sentPoint = state.pointByKey[item.key]
             val sentType = state.typeByKey[item.key]
-            // 座標・種別は metadata で変えられないため、作り直します。
             // ただしダミー鍵の連続微動は相対移動連鎖で追従し、瞬きをなくします。
             val isDummyKey = dummyContent != null && item.key == "$screenKey/dummy"
-            val needsResync = sentPoint != item.point || sentType != null && sentType != item.type
-            if (!live || needsResync) {
-                if (live && isDummyKey && sentType == item.type && sentPoint != null &&
-                    tryRelativeMove(viewer, state, id, item, sentPoint, blockQuat(pose))
-                ) {
-                    state.contentFingerprintByKey[item.key] = item.fingerprint
-                    return@forEach
-                }
+            val typeChanged = sentType != null && sentType != item.type
+            val pointMoved = sentPoint != item.point
+            if (!live || typeChanged) {
+                // 新規・型変更は作り直します。
                 if (live) backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
                     item.metadata(viewer))
@@ -153,6 +149,23 @@ internal class GestureGuiVirtualScreens(
                 state.pointByKey[item.key] = item.point
                 state.typeByKey[item.key] = item.type
                 if (isDummyKey) state.quatByKey[item.key] = Quaternionf(blockQuat(pose))
+            } else if (pointMoved) {
+                if (isDummyKey && tryRelativeMove(viewer, state, id, item, sentPoint!!, blockQuat(pose))) {
+                    state.contentFingerprintByKey[item.key] = item.fingerprint
+                    return@forEach
+                }
+                // teleport で追従し、補間を効かせます。失敗時は作り直します。
+                if (backend.sendTeleport(viewer, id, item.point.x, item.point.y, item.point.z)) {
+                    state.contentFingerprintByKey[item.key] = item.fingerprint
+                    state.pointByKey[item.key] = item.point
+                } else {
+                    backend.sendDestroy(viewer, listOf(id))
+                    backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
+                        item.metadata(viewer))
+                    state.liveVirtualIds += id
+                    state.contentFingerprintByKey[item.key] = item.fingerprint
+                    state.pointByKey[item.key] = item.point
+                }
             } else if (contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
                 state.contentFingerprintByKey[item.key] = item.fingerprint
@@ -535,10 +548,17 @@ internal class GestureGuiVirtualScreens(
     ) {
         val id = state.virtualIdByKey.getOrPut(key) { backend.nextVirtualId() }
         val live = id in state.liveVirtualIds
-        if (!live || poseChanged) {
-            if (live) backend.sendDestroy(viewer, listOf(id))
+        if (!live) {
             backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
             state.liveVirtualIds += id
+            state.contentFingerprintByKey[key] = fingerprint
+        } else if (poseChanged) {
+            // hover の追従も teleport で行い、補間を効かせます。失敗時は作り直します。
+            if (!backend.sendTeleport(viewer, id, point.x, point.y, point.z)) {
+                backend.sendDestroy(viewer, listOf(id))
+                backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
+                state.liveVirtualIds += id
+            }
             state.contentFingerprintByKey[key] = fingerprint
         } else if (state.contentFingerprintByKey[key] != fingerprint) {
             backend.sendMetadata(viewer, id, metadata(viewer))
