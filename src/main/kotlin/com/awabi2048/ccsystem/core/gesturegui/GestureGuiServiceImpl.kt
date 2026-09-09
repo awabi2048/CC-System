@@ -180,7 +180,7 @@ class GestureGuiServiceImpl(
     }
     /**
      * 視線依存処理（catcher 追従・hover・外部 actor 照合）の実行間隔です。
-     * 毎 tick ではなく 5Hz（4 tick ごと）を基準とし、state transition 時は
+     * 毎 tick ではなく 10Hz（2 tick ごと）を基準とし、state transition 時は
      * [requestGazeUpdate] で待ちなしに即時実行します。
      */
     private var gazeDirty: Boolean = true
@@ -298,7 +298,7 @@ class GestureGuiServiceImpl(
             throw failure
         }
         val openedSession = requireNotNull(session)
-        // 開いた直後の 5Hz 待ちで入力入口が遅れないよう、次 tick で gaze を即時実行します。
+        // 開いた直後の待ちで入力入口が遅れないよう、次 tick で gaze を即時実行します。
         requestGazeUpdate()
         logResummonPose(openedSession, owner, "open")
         return snapshot(openedSession)
@@ -474,7 +474,7 @@ class GestureGuiServiceImpl(
      * 移動中に本体表示をダミーパネルへ切り替えます。
      *
      * 本体の view・pose は保持したまま描画だけを差し替え、同じ外形の空背景を
-     * 次の gaze 通過で viewer ごとに送ります。以降の移動中はダミーだけが 5Hz で
+     * 次の gaze 通過で viewer ごとに送ります。以降の移動中はダミーだけが 10Hz で
      * 追従し、本体への入力は targetHit 関門で無効化されます。
      * 開始には停止時再召喚と同一のゲート通過を要求し、小さな揺れやセクタ内の間は
      * 従来どおり凍結を維持します。
@@ -502,7 +502,7 @@ class GestureGuiServiceImpl(
     /**
      * 移動中のダミーパネルを 20Hz で追従させます。
      *
-     * ダミー鍵だけを毎 tick 再送し、通常差分・hover・照合は 5Hz のままにします。
+     * ダミー鍵だけを毎 tick 再送し、通常差分・hover・照合は 10Hz のままにします。
      * pose 不変では早期終了で 0 packet のため、静止時の負荷は増えません。
      * 向きは停止時の再召喚（現在yawへ正対）で確定します。
      */
@@ -1053,7 +1053,7 @@ class GestureGuiServiceImpl(
      * 次のサービス tick で視線依存処理を即時実行します。
      *
      * session open/close・world 変化・teleport・GUI 有効/無効切替・操作権限喪失等の
-     * 明確な state transition 用であり、通常の視線追跡・hover 更新は 5Hz 周期に従います。
+     * 明確な state transition 用であり、通常の視線追跡・hover 更新は 10Hz 周期に従います。
      */
     private fun requestGazeUpdate() {
         gazeDirty = true
@@ -1063,7 +1063,7 @@ class GestureGuiServiceImpl(
         tickIndex++
         GestureGuiRenderMetrics.tickCount.incrementAndGet()
         sessions.values.toList().forEach { session -> tickFollow(session) }
-        // 視線依存処理は 5Hz（4 tick ごと）を基準とし、transition 時のみ即時実行します。
+        // 視線依存処理は 10Hz（2 tick ごと）を基準とし、transition 時のみ即時実行します。
         // player×session の全量 visibility 照合・catcher/teleport・hover 更新を
         // 毎 tick 行わないことで、session 数の増加に対する負荷拡大を抑えます。
         if (gazeDirty || tickIndex % GAZE_INTERVAL_TICKS == 0L) {
@@ -1162,7 +1162,7 @@ class GestureGuiServiceImpl(
     }
 
     /**
-     * 視線依存処理（所有者 actor・hover・外部 actor 照合）を 5Hz で行います。
+     * 視線依存処理（所有者 actor・hover・外部 actor 照合）を 10Hz で行います。
      *
      * 毎 tick の全量 visibility 照合・catcher teleport・hover 更新をやめ、
      * gaze 周期または state transition 時のみ実行します。hit-test 対象は
@@ -1926,8 +1926,8 @@ class GestureGuiServiceImpl(
         // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
         const val CHILD_STACK_DEPTH = 0.25
         const val MAX_CHILD_DEPTH = 3
-        /** 視線依存処理の実行間隔（tick）です。4 tick = 約5Hz です。 */
-        const val GAZE_INTERVAL_TICKS: Long = 4L
+        /** 視線依存処理の実行間隔（tick）です。2 tick = 約10Hz です。 */
+        const val GAZE_INTERVAL_TICKS: Long = 2L
         /** 固定位置モードで、アンカーから画面中心までの距離 */
         const val FIXED_SCREEN_DISTANCE: Double = 1.2
         /** 固定位置モードで、画面をアンカーからどれだけ持ち上げるか */

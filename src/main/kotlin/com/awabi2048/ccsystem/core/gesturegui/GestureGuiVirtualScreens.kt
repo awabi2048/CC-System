@@ -378,7 +378,7 @@ internal class GestureGuiVirtualScreens(
 
     /**
      * actor 個人向け hover（説明文＋任意の差し替え面）を同期します。
-     * hover 用 Interaction は作らず、5Hz の視線追跡時の ray hit-test 結果だけが入口です。
+     * hover 用 Interaction は作らず、10Hz の視線追跡時の ray hit-test 結果だけが入口です。
      */
     fun syncHover(
         viewer: Player,
