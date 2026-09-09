@@ -196,9 +196,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_NEAREST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sort_nearest", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_FURTHEST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sort_furthest", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_RANDOM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sort_random", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_ABSOLUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.semantics_absolute", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_RELATIVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.semantics_relative", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_LOCAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.semantics_local", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_RIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.ride", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DISMOUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dismount", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.equip", setOf())
@@ -1066,9 +1063,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_NEAREST,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_FURTHEST,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_RANDOM,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_ABSOLUTE,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_RELATIVE,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_SEMANTICS_LOCAL,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_RIDE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DISMOUNT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIP,
