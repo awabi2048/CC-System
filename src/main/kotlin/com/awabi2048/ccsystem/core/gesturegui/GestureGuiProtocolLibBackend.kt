@@ -518,19 +518,23 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
      * 開閉波・変形を client 側で tween させます。
      * 向きは entity 回転（常に 0）ではなく leftRotation quaternion で与えるため、
      * 角度の byte 量子化・欄割付の影響を受けません。
+     *
+     * @param billboard 向き追従指定。テキストの向き特定実験では CENTER を用います
+     * （診断用・原因特定後に方針確定）。
      */
     fun displayBaseValues(
         translation: Vector3f,
         scale: Vector3f,
         rotation: org.joml.Quaternionf,
         glowColorRgb: Int?,
+        billboard: Byte = BILLBOARD_FIXED,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
         val vec = vector()
         add(WrappedDataValue(ID_TRANSLATION, vec, Vector3f(translation)))
         add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
         add(WrappedDataValue(ID_LEFT_ROTATION, quaternion(), org.joml.Quaternionf(rotation)))
-        add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
+        add(WrappedDataValue(ID_BILLBOARD, s.byteValue, billboard))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
         add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, TRANSFORM_INTERP_TICKS))
@@ -628,6 +632,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val ID_BACKGROUND_ALIAS_CHECK: Int = 25
 
         const val BILLBOARD_FIXED: Byte = 0
+        /** 球面自動正対です。テキストの向き特定実験用（診断用）。 */
+        const val BILLBOARD_CENTER: Byte = 3
         const val FLAG_GLOWING: Byte = 0x40
         /** 発光なしを示す glow 色です。vanilla の既定値と同一です。 */
         const val NO_GLOW_COLOR: Int = -1

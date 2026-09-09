@@ -327,7 +327,9 @@ internal class GestureGuiVirtualScreens(
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
                     val quat = textQuat(pose)
                     val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
-                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
+                    // 向き特定実験中は球面自動正対にします（診断用・原因特定後に方針確定）。
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
+                        GestureGuiProtocolLibBackend.BILLBOARD_CENTER) +
                         backend.textValues(
                             GestureGuiProtocolLibBackend.componentJson(visual.text),
                             visual.lineWidth, visual.seeThrough, alignmentFlags(visual.alignment),
@@ -410,7 +412,9 @@ internal class GestureGuiVirtualScreens(
             val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
             val quat = textQuat(pose)
             val translation = resolveTranslation(quat, anchorOf(state, textKey, textPoint), textPoint, Vector3f())
-            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
+            // 向き特定実験中は球面自動正対にします（診断用・原因特定後に方針確定）。
+            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
+                GestureGuiProtocolLibBackend.BILLBOARD_CENTER) +
                 backend.textValues(
                     GestureGuiProtocolLibBackend.componentJson(hover.text),
                     hover.lineWidth, false, 0,
