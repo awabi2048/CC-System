@@ -347,9 +347,10 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         packet.doubles.write(1, y)
         packet.doubles.write(2, z)
         // NMS 宣言順：movement, xRot, yRot, yHeadRot のため 0/1/2 が pitch/yaw/headYaw です。
+        // head は Bukkit 生成時 0 のため合わせます（Display 描画には未使用）。
         packet.bytes.write(0, toPackedByte(pitchDegrees))
         packet.bytes.write(1, toPackedByte(yawDegrees))
-        packet.bytes.write(2, toPackedByte(yawDegrees))
+        packet.bytes.write(2, 0.toByte())
         packet.vectors.write(0, Vector(0, 0, 0))
         verifySpawnRoundTrip(packet, virtualId, type, x, y, z, yawDegrees, pitchDegrees)
         send(viewer, packet)
