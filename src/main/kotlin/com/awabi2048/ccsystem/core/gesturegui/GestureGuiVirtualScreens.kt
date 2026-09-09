@@ -129,8 +129,16 @@ internal class GestureGuiVirtualScreens(
             val sentPoint = state.pointByKey[item.key]
             val sentType = state.typeByKey[item.key]
             // 座標・種別は metadata で変えられないため、作り直します。
+            // ただしダミー鍵の連続微動は相対移動連鎖で追従し、瞬きをなくします。
+            val isDummyKey = dummyContent != null && item.key == "$screenKey/dummy"
             val needsResync = sentPoint != item.point || sentType != null && sentType != item.type
             if (!live || needsResync) {
+                if (live && isDummyKey && sentType == item.type && sentPoint != null &&
+                    tryRelativeMove(viewer, state, id, item, sentPoint)
+                ) {
+                    state.contentFingerprintByKey[item.key] = item.fingerprint
+                    return@forEach
+                }
                 if (live) backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
                     item.point.yawDegrees, item.point.pitchDegrees, item.metadata(viewer))
@@ -455,8 +463,42 @@ internal class GestureGuiVirtualScreens(
             }
     }
 
-    private fun upsertSingle(
+    /**
+     * ダミー鍵の微動を相対移動で送ります。成功時は想定座標を進めて true を返します。
+     *
+     * 範囲外（±8 ブロック超）・drift 超過時は false を返し、呼び出し側で
+     * destroy+spawn 再同期します。送信失敗時は想定がずれるため、次回 drift 検出で
+     * 自動的に再同期されます。
+     */
+    private fun tryRelativeMove(
         viewer: Player,
+        state: GestureViewerRenderState,
+        id: Int,
+        item: DesiredVisual,
+        assumed: PlacedPoint,
+    ): Boolean {
+        val dx = GestureGuiProtocolLibBackend.relativeShort(item.point.x - assumed.x) ?: return false
+        val dy = GestureGuiProtocolLibBackend.relativeShort(item.point.y - assumed.y) ?: return false
+        val dz = GestureGuiProtocolLibBackend.relativeShort(item.point.z - assumed.z) ?: return false
+        val assumedAfter = PlacedPoint(
+            assumed.x + dx / 4096.0,
+            assumed.y + dy / 4096.0,
+            assumed.z + dz / 4096.0,
+            item.point.yawDegrees,
+            item.point.pitchDegrees,
+        )
+        if (GestureGuiProtocolLibBackend.exceedsDrift(item.point.x, assumedAfter.x) ||
+            GestureGuiProtocolLibBackend.exceedsDrift(item.point.y, assumedAfter.y) ||
+            GestureGuiProtocolLibBackend.exceedsDrift(item.point.z, assumedAfter.z)
+        ) {
+            return false
+        }
+        backend.sendRelativeMove(viewer, id, dx, dy, dz, item.point.yawDegrees, item.point.pitchDegrees)
+        state.pointByKey[item.key] = assumedAfter
+        return true
+    }
+
+    private fun upsertSingle(        viewer: Player,
         state: GestureViewerRenderState,
         key: String,
         type: EntityType,

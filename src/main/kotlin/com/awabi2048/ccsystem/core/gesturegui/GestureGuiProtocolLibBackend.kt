@@ -21,6 +21,7 @@ import org.joml.Vector3f
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
+import kotlin.math.roundToInt
 
 /**
  * ProtocolLib による client-only virtual entity 描画 backend です。
@@ -189,6 +190,34 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         GestureGuiRenderMetrics.virtualDestroys.addAndGet(virtualIds.size.toLong())
     }
 
+    /**
+     * 相対移動（＋向き）を送信します。ダミー追従の連続微動用です。
+     *
+     * short 差分は 1/4096 ブロック単位・±8 ブロックのため、呼び出し側で範囲を
+     * 検証してください。範囲外・drift 超過時は destroy+spawn で再同期します。
+     * NMS 宣言順（yRot, xRot）のため bytes 0 が yaw・1 が pitch です。
+     */
+    fun sendRelativeMove(
+        viewer: Player,
+        virtualId: Int,
+        dxShort: Int,
+        dyShort: Int,
+        dzShort: Int,
+        yawDegrees: Float,
+        pitchDegrees: Float,
+    ) {
+        val packet = manager.createPacket(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK)
+        packet.integers.write(0, virtualId)
+        packet.shorts.write(0, dxShort.toShort())
+        packet.shorts.write(1, dyShort.toShort())
+        packet.shorts.write(2, dzShort.toShort())
+        packet.bytes.write(0, toPackedByte(yawDegrees))
+        packet.bytes.write(1, toPackedByte(pitchDegrees))
+        packet.booleans.write(0, false)
+        send(viewer, packet)
+        GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
+    }
+
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)
@@ -202,6 +231,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
      *
      * 発光の有無にかかわらず flags・glow 色を常時送ります。null（解除）時に
      * 送らないと、以前の発光が client 側に残り続けるためです。
+     * 補間（開始差分 0・変形期間 3・位置回転期間 1）は旧 Bukkit 経路の
+     * prepareDisplay（teleportDuration=1・delay=0・duration=3）と同値であり、
+     * 開閉波・変形を client 側で tween させます。
      */
     fun displayBaseValues(
         translation: Vector3f,
@@ -214,6 +246,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
         add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
+        add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
+        add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, TRANSFORM_INTERP_TICKS))
+        add(WrappedDataValue(ID_POSROT_DURATION, s.intValue, POSROT_INTERP_TICKS))
         add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, if (glowColorRgb != null) FLAG_GLOWING else 0.toByte()))
         add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb?.and(0xFFFFFF) ?: NO_GLOW_COLOR))
     }
@@ -274,6 +309,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
 
         // NMS 実体で確定した metadata index です（Entity 基底 0-7・Display 8-22）。
         const val ID_SHARED_FLAGS: Int = 0
+        const val ID_TRANSFORM_START: Int = 8
+        const val ID_TRANSFORM_DURATION: Int = 9
+        const val ID_POSROT_DURATION: Int = 10
         const val ID_TRANSLATION: Int = 11
         const val ID_SCALE: Int = 12
         const val ID_BILLBOARD: Int = 15
@@ -296,7 +334,28 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val FLAG_GLOWING: Byte = 0x40
         /** 発光なしを示す glow 色です。vanilla の既定値と同一です。 */
         const val NO_GLOW_COLOR: Int = -1
+        /** 相対移動 short の安全域です。NMS 上限（±32767）に余裕を持たせます。 */
+        const val REL_SHORT_LIMIT: Int = 30000
+        /** 量子化 drift の再同期閾値（ブロック）です。視認限界以下にします。 */
+        const val REL_DRIFT_TOLERANCE: Double = 0.004
+        /** 変形補間の期間（tick）です。旧経路の interpolationDuration と同値です。 */
+        const val TRANSFORM_INTERP_TICKS: Int = 3
+        /** 位置回転補間の期間（tick）です。旧経路の teleportDuration と同値です。 */
+        const val POSROT_INTERP_TICKS: Int = 1
         const val ITEM_DISPLAY_GUI: Byte = 6
+
+        /**
+         * 相対移動の 1/4096 量子化です。範囲外（±8 ブロック超）は null を返し、
+         * 呼び出し側で destroy+spawn 再同期します。
+         */
+        fun relativeShort(deltaBlocks: Double): Int? {
+            val quantized = (deltaBlocks * 4096.0).roundToInt()
+            return quantized.takeIf { it in -REL_SHORT_LIMIT..REL_SHORT_LIMIT }
+        }
+
+        /** 量子化 drift が視認閾値を超えたかを返します。超えたら再同期します。 */
+        fun exceedsDrift(trueValue: Double, assumedValue: Double): Boolean =
+            kotlin.math.abs(trueValue - assumedValue) > REL_DRIFT_TOLERANCE
 
         /** text flags の alignment 部分です。Bukkit TextAlignment からの変換に使います。 */
         const val TEXT_ALIGN_LEFT: Byte = 8

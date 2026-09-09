@@ -2,6 +2,8 @@ package com.awabi2048.ccsystem.core.gesturegui
 
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiProtocolLibBackend.Companion.ID_BACKGROUND_ALIAS_CHECK
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -34,8 +36,7 @@ class GestureGuiProtocolLibBackendTest {
     }
 
     @Test
-    fun `metadata indexはNMS確定値と一致する`() {
-        // Display 8-22・種別固有 23-27 の先頭がずれていないことだけ固定します。
+    fun `metadata indexはNMS確定値と一致する`() {        // Display 8-22・種別固有 23-27 の先頭がずれていないことだけ固定します。
         assertEquals(11, GestureGuiProtocolLibBackend.ID_TRANSLATION)
         assertEquals(12, GestureGuiProtocolLibBackend.ID_SCALE)
         assertEquals(15, GestureGuiProtocolLibBackend.ID_BILLBOARD)
@@ -49,5 +50,34 @@ class GestureGuiProtocolLibBackendTest {
         assertEquals(27, GestureGuiProtocolLibBackend.ID_TEXT_FLAGS)
         // 背景色 index も TextDisplay 固有域（25）であることを固定します。
         assertEquals(25, ID_BACKGROUND_ALIAS_CHECK)
+        // 補間 index は Display 域（8-10）であることを固定します。
+        assertEquals(8, GestureGuiProtocolLibBackend.ID_TRANSFORM_START)
+        assertEquals(9, GestureGuiProtocolLibBackend.ID_TRANSFORM_DURATION)
+        assertEquals(10, GestureGuiProtocolLibBackend.ID_POSROT_DURATION)
+    }
+
+    @Test
+    fun `補間期間は旧Bukkit経路と同値である`() {
+        assertEquals(3, GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS)
+        assertEquals(1, GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS)
+    }
+
+    @Test
+    fun `相対移動は微差分を量子化する`() {
+        assertEquals(4096, GestureGuiProtocolLibBackend.relativeShort(1.0))
+        assertEquals(-2048, GestureGuiProtocolLibBackend.relativeShort(-0.5))
+        assertEquals(0, GestureGuiProtocolLibBackend.relativeShort(0.0))
+    }
+
+    @Test
+    fun `相対移動の範囲外は再同期のためnullである`() {
+        assertEquals(null, GestureGuiProtocolLibBackend.relativeShort(8.0))
+        assertEquals(null, GestureGuiProtocolLibBackend.relativeShort(-9.0))
+    }
+
+    @Test
+    fun `drift超過だけ再同期する`() {
+        assertFalse(GestureGuiProtocolLibBackend.exceedsDrift(1.0, 1.003))
+        assertTrue(GestureGuiProtocolLibBackend.exceedsDrift(1.0, 1.005))
     }
 }
