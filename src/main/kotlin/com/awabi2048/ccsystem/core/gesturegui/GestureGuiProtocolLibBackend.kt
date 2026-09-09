@@ -39,12 +39,11 @@ import kotlin.math.roundToInt
  * metadata index・packing は実サーバー（Chiyogami 26.1.2）の NMS 実体で確定しています。
  * 取得元：Display 8-22・BlockDisplay 23・ItemDisplay 23/24・TextDisplay 23-27、
  * billboard FIXED=0、text flags shadow=1/seeThrough=2/defaultBg=4/left=8/right=16、
- * brightness pack(block, sky)=(block)|(sky<<4)、ItemDisplayContext GUI=6。
+ * brightness pack(block, sky)=(block<<4)|(sky<<20)、ItemDisplayContext GUI=6。
  *
- * pose 移動は teleport packet を使わず destroy+spawn で行います。
- * 26.1.2 の teleport packet 構造（PositionMoveRotation）がコンパイル依存（5.4.0）と
- * 実行時（5.5.0-SNAPSHOT）で異なるため、構造差異の影響を受けない経路に限定します。
- * pose 変化は再召喚・固定/解除等の遷移時に限られるため、packet 増は無視できます。
+ * pose 移動は destroy+spawn を基本としますが、spawn 直後に絶対 teleport を送り、
+ * float 精度の yaw/pitch へ収束させます（旧 Bukkit 経路の teleport 補正と同等）。
+ * teleport 構造は実行時に適応解決し、版差では縮退します。
  */
 internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     private val manager by lazy {
@@ -254,6 +253,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 ListenerPriority.NORMAL,
                 PacketType.Play.Server.SPAWN_ENTITY,
                 PacketType.Play.Server.ENTITY_METADATA,
+                PacketType.Play.Server.ENTITY_TELEPORT,
             ) {
                 override fun onPacketSending(event: PacketEvent) {
                     runCatching { dumpReferencePacket(event) }
@@ -287,8 +287,18 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         sampleViewer.showEntity(plugin, block)
         sampleViewer.showEntity(plugin, text)
         plugin.logger.info(
-            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（5tick後に破棄）",
+            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（teleport 後に破棄）",
         )
+        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+            runCatching {
+                // 正規 teleport packet を捕捉するため、Bukkit 経路で再配置します。
+                val dest = loc.clone().add(1.5, -0.25, 2.5)
+                dest.yaw = 30.5f
+                dest.pitch = -7.25f
+                block.teleport(dest)
+                text.teleport(dest)
+            }
+        }, 3L)
         org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             runCatching {
                 sampleViewer.hideEntity(plugin, block)
@@ -296,7 +306,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
             }
             block.remove()
             text.remove()
-        }, 5L)
+        }, 8L)
     }
 
     private fun dumpReferencePacket(event: PacketEvent) {
@@ -319,6 +329,20 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 plugin.logger.info(
                     "[GestureGuiIntercept] meta id=$id " +
                         values.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" },
+                )
+            }
+            PacketType.Play.Server.ENTITY_TELEPORT -> {
+                val id = packet.integers.read(0)
+                if (id !in referenceIds) return
+                val structures = packet.structures
+                val inner = if (structures.size() == 1) {
+                    val move = structures.read(0)
+                    "doubles=${move.doubles.values} floats=${move.float.values}"
+                } else {
+                    "legacy doubles=${packet.doubles.values} bytes=${packet.bytes.values}"
+                }
+                plugin.logger.info(
+                    "[GestureGuiIntercept] teleport id=$id $inner bools=${packet.booleans.values}",
                 )
             }
             else -> {}
@@ -355,6 +379,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         verifySpawnRoundTrip(packet, virtualId, type, x, y, z, yawDegrees, pitchDegrees)
         send(viewer, packet)
         if (initialMetadata.isNotEmpty()) sendMetadata(viewer, virtualId, initialMetadata)
+        // spawn の byte 量子化を絶対 teleport で補正します（旧 Bukkit 経路相当）。
+        sendTeleport(viewer, virtualId, x, y, z, yawDegrees, pitchDegrees)
         GestureGuiRenderMetrics.virtualSpawns.incrementAndGet()
         // 生成明細ログ（診断用・原因特定後に除去）。向き・寸法の突合に使います。
         plugin.logger.info(
@@ -409,6 +435,64 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         packet.booleans.write(0, false)
         send(viewer, packet)
         GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
+    }
+
+    /**
+     * 絶対 teleport を送信し、float 精度の座標・向きへ収束させます。
+     *
+     * spawn の byte 量子化を補正する旧 Bukkit 経路相当の処理です。
+     * 構造は実行時に適応解決し（新式 PositionMoveRotation／旧式 xyz+bytes）、
+     * 解決不能時は false を返して destroy+spawn のままにします。
+     * spawn ごとに +1 packet ですが、遷移時に限られるため無視できます。
+     */
+    private var teleportUnsupported = false
+
+    fun sendTeleport(
+        viewer: Player,
+        virtualId: Int,
+        x: Double,
+        y: Double,
+        z: Double,
+        yawDegrees: Float,
+        pitchDegrees: Float,
+    ): Boolean {
+        if (teleportUnsupported) return false
+        return runCatching {
+            val packet = manager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT)
+            packet.integers.write(0, virtualId)
+            val structures = packet.structures
+            if (structures.size() == 1) {
+                // 新式：PositionMoveRotation（double xyz＋float yaw/pitch）。
+                val move = structures.read(0)
+                move.doubles.write(0, x)
+                move.doubles.write(1, y)
+                move.doubles.write(2, z)
+                move.float.write(0, yawDegrees)
+                move.float.write(1, pitchDegrees)
+                structures.write(0, move)
+            } else {
+                // 旧式：double xyz＋byte yaw/pitch。
+                packet.doubles.write(0, x)
+                packet.doubles.write(1, y)
+                packet.doubles.write(2, z)
+                packet.bytes.write(0, toPackedByte(yawDegrees))
+                packet.bytes.write(1, toPackedByte(pitchDegrees))
+            }
+            packet.booleans.write(0, false)
+            writeEmptyRelatives(packet)
+            send(viewer, packet)
+            GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
+            true
+        }.onFailure { failure ->
+            teleportUnsupported = true
+            plugin.logger.log(Level.WARNING, "絶対 teleport を無効化し、destroy+spawn へ縮退します", failure)
+        }.getOrDefault(false)
+    }
+
+    private fun writeEmptyRelatives(packet: com.comphenix.protocol.events.PacketContainer) {
+        val sets = packet.modifier.withType<Set<*>>(Set::class.java)
+        if (sets.size() == 1) sets.write(0, emptySet<Any>())
+        else error("relatives 欄が1件ではありません: size=${sets.size()}")
     }
 
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
