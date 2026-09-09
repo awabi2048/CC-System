@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiEntityRenderer
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiVirtualScreens
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiColumn
@@ -245,6 +246,6 @@ class GestureGuiLayoutCompilerTest {
 
     @Test
     fun `text item surface lift is half a millimeter`() {
-        assertEquals(0.0005, GestureGuiEntityRenderer.TEXT_ITEM_SURFACE_LIFT, 0.0)
+        assertEquals(0.0005, GestureGuiVirtualScreens.TEXT_ITEM_SURFACE_LIFT, 0.0)
     }
 }

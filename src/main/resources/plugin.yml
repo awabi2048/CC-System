@@ -4,6 +4,8 @@ author: awabi2048
 main: com.awabi2048.ccsystem.CCSystem
 api-version: 26.1.2
 description: CrafterCrossingMiscとResourceWorldManagerを統合したプラグイン
+depend:
+  - ProtocolLib
 softdepend:
   - CMI
   - LuckPerms
