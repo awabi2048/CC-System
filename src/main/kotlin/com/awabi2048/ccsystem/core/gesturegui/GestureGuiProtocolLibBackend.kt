@@ -197,7 +197,12 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
 
     // -- metadata 構築 -------------------------------------------------------
 
-    /** Display 共通の初期 metadata です。translation/scale は呼び出し側が指定します。 */
+    /**
+     * Display 共通の初期 metadata です。translation/scale は呼び出し側が指定します。
+     *
+     * 発光の有無にかかわらず flags・glow 色を常時送ります。null（解除）時に
+     * 送らないと、以前の発光が client 側に残り続けるためです。
+     */
     fun displayBaseValues(
         translation: Vector3f,
         scale: Vector3f,
@@ -209,10 +214,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
         add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
-        if (glowColorRgb != null) {
-            add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, FLAG_GLOWING))
-            add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb and 0xFFFFFF))
-        }
+        add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, if (glowColorRgb != null) FLAG_GLOWING else 0.toByte()))
+        add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb?.and(0xFFFFFF) ?: NO_GLOW_COLOR))
     }
 
     fun blockStateValue(blockData: BlockData, world: World, sampleAt: Location): WrappedDataValue =
@@ -291,6 +294,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
 
         const val BILLBOARD_FIXED: Byte = 0
         const val FLAG_GLOWING: Byte = 0x40
+        /** 発光なしを示す glow 色です。vanilla の既定値と同一です。 */
+        const val NO_GLOW_COLOR: Int = -1
         const val ITEM_DISPLAY_GUI: Byte = 6
 
         /** text flags の alignment 部分です。Bukkit TextAlignment からの変換に使います。 */

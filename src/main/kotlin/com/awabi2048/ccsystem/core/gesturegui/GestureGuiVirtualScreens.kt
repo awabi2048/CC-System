@@ -83,6 +83,15 @@ internal class GestureGuiVirtualScreens(
      * @param overlay  モーダル遮蔽面（子画面用、なければ null）
      * @param dummyContent ダミー追従中は本体の代わりに単一背景だけ送ります
      */
+    /**
+     * 1 画面分の viewer 状態を LOD に合わせて同期します。
+     *
+     * 無変化（LOD・内容・pose・hover 置換が不変）では何も送らず戻ります。
+     * 移動・型変更は destroy+spawn、内容のみは metadata 更新にします。
+     * hover 系キー（/hover・/hoverBlock）は掃除対象から外し、hover 経路が専有します。
+     *
+     * @param contentStale 内容 revision が変化し、fingerprint 再評価が必要な場合 true
+     */
     fun syncScreen(
         viewer: Player,
         sessionId: java.util.UUID,
@@ -93,27 +102,43 @@ internal class GestureGuiVirtualScreens(
         lod: GestureViewerLod,
         overlay: OverlayRequest?,
         dummyContent: DummyRequest?,
+        contentStale: Boolean,
     ) {
         if (lod == GestureViewerLod.HIDDEN) {
             destroyScreenKeys(viewer, state, screenKey)
+            state.lodByScreenKey[screenKey] = GestureViewerLod.HIDDEN
             return
         }
+        val storedLod = state.lodByScreenKey[screenKey]
         val sentPose = state.poseByScreenKey[screenKey]
         val poseChanged = sentPose != pose
-        val desired = buildDesired(screenKey, view, pose, overlay, dummyContent, lod, state)
-        val liveKeys = state.virtualIdByKey.keys.filter { it == screenKey || it.startsWith("$screenKey/") }.toSet()
-        // 追加・移動・変更だけを送ります。無変化には触れません。
+        // 早期終了：遷移も内容変化も pose 変化も hover 置換変化もなければ 0 work です。
+        if (!contentStale && !poseChanged && storedLod == lod && state.hoverEpoch == state.syncedHoverEpoch) {
+            return
+        }
+        val desired = buildDesired(screenKey, view, pose, overlay, dummyContent, lod, state, contentStale)
+        val liveKeys = state.virtualIdByKey.keys
+            .filter { it == screenKey || it.startsWith("$screenKey/") }
+            .filterNot(::isHoverManagedKey)
+            .toSet()
+        // 追加・移動・型変更・内容変更だけを送ります。無変化には触れません。
         desired.forEach { item ->
             val id = state.virtualIdByKey.getOrPut(item.key) { backend.nextVirtualId() }
             val known = state.contentFingerprintByKey[item.key]
             val live = id in state.liveVirtualIds
-            if (!live || poseChanged) {
+            val sentPoint = state.pointByKey[item.key]
+            val sentType = state.typeByKey[item.key]
+            // 座標・種別は metadata で変えられないため、作り直します。
+            val needsResync = sentPoint != item.point || sentType != null && sentType != item.type
+            if (!live || needsResync) {
                 if (live) backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
                     item.point.yawDegrees, item.point.pitchDegrees, item.metadata(viewer))
                 state.liveVirtualIds += id
                 state.contentFingerprintByKey[item.key] = item.fingerprint
-            } else if (known != item.fingerprint) {
+                state.pointByKey[item.key] = item.point
+                state.typeByKey[item.key] = item.type
+            } else if (contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
                 state.contentFingerprintByKey[item.key] = item.fingerprint
             }
@@ -125,8 +150,12 @@ internal class GestureGuiVirtualScreens(
                 state.liveVirtualIds -= id
             }
             state.contentFingerprintByKey.remove(key)
+            state.pointByKey.remove(key)
+            state.typeByKey.remove(key)
         }
         state.poseByScreenKey[screenKey] = pose
+        state.lodByScreenKey[screenKey] = lod
+        state.syncedHoverEpoch = state.hoverEpoch
     }
 
     fun destroyScreenKeys(viewer: Player, state: GestureViewerRenderState, screenKey: String) {
@@ -136,8 +165,11 @@ internal class GestureGuiVirtualScreens(
                 state.liveVirtualIds -= id
             }
             state.contentFingerprintByKey.remove(key)
+            state.pointByKey.remove(key)
+            state.typeByKey.remove(key)
         }
         state.poseByScreenKey.remove(screenKey)
+        state.lodByScreenKey.remove(screenKey)
     }
 
     fun destroyAll(viewer: Player, state: GestureViewerRenderState) {
@@ -147,12 +179,20 @@ internal class GestureGuiVirtualScreens(
         }
         state.virtualIdByKey.clear()
         state.contentFingerprintByKey.clear()
+        state.pointByKey.clear()
+        state.typeByKey.clear()
         state.poseByScreenKey.clear()
+        state.lodByScreenKey.clear()
         state.hiddenVisualIds.clear()
         state.hiddenVisualBodyIds.clear()
     }
 
-    data class OverlayRequest(val material: Material, val width: Double, val height: Double)
+    /**
+     * モーダル遮蔽面の要求です。子画面の描画集合に含め、同じ sweep で管理します。
+     *
+     * @param pose 親 pose から求めた遮蔽面専用の pose（子画面 pose とは異なります）
+     */
+    data class OverlayRequest(val material: Material, val width: Double, val height: Double, val pose: GestureGuiScreenPose)
     data class DummyRequest(val width: Double, val height: Double)
 
     private fun buildDesired(
@@ -163,6 +203,7 @@ internal class GestureGuiVirtualScreens(
         dummy: DummyRequest?,
         lod: GestureViewerLod,
         state: GestureViewerRenderState,
+        contentStale: Boolean,
     ): List<DesiredVisual> {
         if (dummy != null) {
             // ダミー追従中は本体の古い pose への誤操作を防ぐため、背景 1 枚だけ送ります。
@@ -180,8 +221,10 @@ internal class GestureGuiVirtualScreens(
         items += panelBackground(screenKey, panel, pose)
         items += panelFrames(screenKey, panel, pose)
         overlay?.let {
+            // 遮蔽面は子画面の描画集合に含め、同じ sweep で管理します。
+            // 別経路で送ると子画面同期の過剰分削除に巻き込まれるためです。
             val key = "$screenKey/overlay"
-            val point = visualPoint(pose, 0.0, 0.0, MODAL_OVERLAY_LAYER)
+            val point = visualPoint(it.pose, 0.0, 0.0, MODAL_OVERLAY_LAYER)
             items += DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "O|${it.material}|${it.width}|${it.height}") { viewer ->
                 blockMetadata(viewer, point, it.width, it.height, Bukkit.createBlockData(it.material), null)
             }
@@ -191,11 +234,11 @@ internal class GestureGuiVirtualScreens(
                 if (visual.visualId in state.hiddenVisualIds) return@forEach
                 val bodyHidden = visual.visualId in state.hiddenVisualBodyIds
                 if (!bodyHidden || visual !is GestureGuiVisual.Block) {
-                    items += contentVisual(screenKey, visual, pose)
+                    items += contentVisual(screenKey, visual, pose, state, contentStale)
                 }
                 // 枠は本体の表示抑制と連動せず、主 visual が見える間は維持します。
                 if (visual is GestureGuiVisual.Block && visual.outline != null) {
-                    items += outlineVisuals(screenKey, visual, pose)
+                    items += outlineVisuals(screenKey, visual, pose, state, contentStale)
                 }
             }
         }
@@ -229,9 +272,21 @@ internal class GestureGuiVirtualScreens(
         }
     }
 
-    private fun contentVisual(screenKey: String, visual: GestureGuiVisual, pose: GestureGuiScreenPose): DesiredVisual {
+    private fun contentVisual(
+        screenKey: String,
+        visual: GestureGuiVisual,
+        pose: GestureGuiScreenPose,
+        state: GestureViewerRenderState,
+        contentStale: Boolean,
+    ): DesiredVisual {
         val key = "$screenKey/v/${visual.visualId}"
-        val fingerprint = visualFingerprint(visual)
+        // 内容不変時は高コストな fingerprint 再計算（Component JSON 化等）を省きます。
+        // 新規キーは比較正本がないため必ず構築します。
+        val fingerprint = if (contentStale || state.contentFingerprintByKey[key] == null) {
+            visualFingerprint(visual)
+        } else {
+            state.contentFingerprintByKey.getValue(key)
+        }
         return when (visual) {
             is GestureGuiVisual.Block -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
@@ -261,13 +316,23 @@ internal class GestureGuiVirtualScreens(
         }
     }
 
-    private fun outlineVisuals(screenKey: String, visual: GestureGuiVisual.Block, pose: GestureGuiScreenPose): List<DesiredVisual> {
+    private fun outlineVisuals(
+        screenKey: String,
+        visual: GestureGuiVisual.Block,
+        pose: GestureGuiScreenPose,
+        state: GestureViewerRenderState,
+        contentStale: Boolean,
+    ): List<DesiredVisual> {
         val outline = visual.outline ?: return emptyList()
         return GestureGuiOutlineGeometry.segments(visual.width, visual.height, outline.thicknessRatio).mapIndexed { index, segment ->
             val key = "$screenKey/v/${visual.visualId}/outline/$index"
             val point = visualPoint(pose, visual.x + segment.x, visual.y + segment.y, visual.layer + OUTLINE_LAYER_OFFSET)
-            DesiredVisual(key, EntityType.BLOCK_DISPLAY, point,
-                "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}") { viewer ->
+            val fingerprint = if (contentStale || state.contentFingerprintByKey[key] == null) {
+                "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}"
+            } else {
+                state.contentFingerprintByKey.getValue(key)
+            }
+            DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
                 blockMetadata(viewer, point, segment.width, segment.height, outline.blockData, null)
             }
         }
@@ -336,49 +401,58 @@ internal class GestureGuiVirtualScreens(
     }
 
     /**
-     * モーダル遮蔽面などの単一 Block を同期します。画面キーとは別キーで追跡します。
+     * 背景だけを指定寸法へ変形します。開閉演出用です。
      *
-     * @param blockKey 画面キーとは独立した安定キー
+     * 背景キーがなければ scale 0 扱いで生成し、あれば metadata で変形します。
+     * 内容物・枠・hover には触れません。fingerprint は演出標識にし、
+     * 通常同期が全寸一致へ収束させます。
      */
-    fun syncSingleBlock(
+    fun scaleBackground(
         viewer: Player,
         state: GestureViewerRenderState,
-        blockKey: String,
+        screenKey: String,
+        panel: GestureGuiPanel,
         pose: GestureGuiScreenPose,
-        x: Double,
-        y: Double,
-        layer: Double,
         width: Double,
         height: Double,
-        material: Material,
     ) {
-        val point = visualPoint(pose, x, y, layer)
-        val fingerprint = "SB|$material|$width|$height"
-        val sentPose = state.poseByScreenKey[blockKey]
-        val id = state.virtualIdByKey.getOrPut(blockKey) { backend.nextVirtualId() }
+        val key = "$screenKey/bg"
+        val point = visualPoint(pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
+        val fingerprint = "BGA|$width|$height|${panel.backgroundMaterial}"
+        val id = state.virtualIdByKey.getOrPut(key) { backend.nextVirtualId() }
         val live = id in state.liveVirtualIds
-        if (!live || sentPose != pose) {
-            if (live) backend.sendDestroy(viewer, listOf(id))
-            backend.spawnDisplay(
-                viewer, id, EntityType.BLOCK_DISPLAY, point.x, point.y, point.z,
-                point.yawDegrees, point.pitchDegrees,
-                blockMetadata(viewer, point, width, height, Bukkit.createBlockData(material), null),
-            )
+        val values = blockMetadata(viewer, point, width, height, Bukkit.createBlockData(panel.backgroundMaterial), null)
+        if (!live) {
+            backend.spawnDisplay(viewer, id, EntityType.BLOCK_DISPLAY, point.x, point.y, point.z,
+                point.yawDegrees, point.pitchDegrees, values)
             state.liveVirtualIds += id
-            state.contentFingerprintByKey[blockKey] = fingerprint
-        } else if (state.contentFingerprintByKey[blockKey] != fingerprint) {
-            backend.sendMetadata(
-                viewer, id,
-                blockMetadata(viewer, point, width, height, Bukkit.createBlockData(material), null),
-            )
-            state.contentFingerprintByKey[blockKey] = fingerprint
+        } else {
+            backend.sendMetadata(viewer, id, values)
         }
-        state.poseByScreenKey[blockKey] = pose
+        state.contentFingerprintByKey[key] = fingerprint
+        state.pointByKey[key] = point
+        state.typeByKey[key] = EntityType.BLOCK_DISPLAY
+        state.poseByScreenKey[screenKey] = pose
     }
 
-    fun destroySingleBlock(viewer: Player, state: GestureViewerRenderState, blockKey: String) {
-        removeSingle(viewer, state, blockKey)
-        state.poseByScreenKey.remove(blockKey)
+    /**
+     * 内容物（背景以外）を破棄します。閉じる演出の入口用です。
+     *
+     * 背景キーは残し、縮小波の対象にします。hover は呼び出し側で別途破棄します。
+     */
+    fun destroyContents(viewer: Player, state: GestureViewerRenderState, screenKey: String) {
+        state.virtualIdByKey.keys
+            .filter { it.startsWith("$screenKey/") && it != "$screenKey/bg" }
+            .filterNot(::isHoverManagedKey)
+            .toList().forEach { key ->
+                state.virtualIdByKey.remove(key)?.let { id ->
+                    backend.sendDestroy(viewer, listOf(id))
+                    state.liveVirtualIds -= id
+                }
+                state.contentFingerprintByKey.remove(key)
+                state.pointByKey.remove(key)
+                state.typeByKey.remove(key)
+            }
     }
 
     private fun upsertSingle(
@@ -437,5 +511,13 @@ internal class GestureGuiVirtualScreens(
         const val MAX_LAYER: Int = 40
 
         fun hoverReplaceLayer(baseLayer: Int): Int = (baseLayer + HOVER_FLOAT_LAYERS).coerceAtMost(MAX_LAYER)
+
+        /**
+         * hover 経路が専有するキーかを返します。
+         *
+         * 通常画面の過剰分掃除はこれらを除外し、生成直後の削除を防ぎます。
+         */
+        fun isHoverManagedKey(key: String): Boolean =
+            key.endsWith("/hover") || key.endsWith("/hoverBlock")
     }
 }
