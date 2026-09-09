@@ -123,7 +123,35 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
             )
             return false
         }
+        if (!verifyItemConverter()) {
+            backendDisabled = true
+            plugin.logger.log(
+                Level.SEVERE,
+                "仮想 GUI のアイテム変換が不正であり、Gesture GUI の仮想描画を停止します。",
+            )
+            return false
+        }
         return true
+    }
+
+    /**
+     * アイテム converter の出力形式を1回だけ検証します。
+     *
+     * Bukkit ラッパーが返るとエンコード例外で接続断に至るため、
+     * NMS クラスであることを起動時に確定させます。
+     */
+    private fun verifyItemConverter(): Boolean {
+        val handle = runCatching {
+            BukkitConverters.getItemStackConverter()
+                .getGeneric(org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD))
+        }.getOrElse { failure ->
+            plugin.logger.log(Level.WARNING, "アイテム converter の解決に失敗しました", failure)
+            return false
+        }
+        val className = handle.javaClass.name
+        val valid = className == NMS_ITEM_STACK_CLASS
+        plugin.logger.info("[GestureGuiProbe] item converter=$className valid=$valid")
+        return valid
     }
 
     private fun resolveSerializer(candidates: List<Class<*>>): WrappedDataWatcher.Serializer? {
@@ -274,8 +302,11 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
             verifyProbe("item", failures, stored.toString().contains("diamond_sword", ignoreCase = true)) {
                 "itemstack 内容が不一致です: $stored"
             }
-            val cached = runCatching { nmsItemStack(item, sampleViewer.world, sampleViewer.location) }.getOrNull()
-            verifyProbe("item", failures, cached != null) { "template cache 読取に失敗しました" }
+            // 送信経路（converter）の形式も確定させます。Bukkit 形の混入は切断級のため不可です。
+            val converted = runCatching { nmsItemStack(item) }.getOrNull()
+            verifyProbe("item", failures, converted?.javaClass?.name == NMS_ITEM_STACK_CLASS) {
+                "converter 出力が NMS ではありません: ${converted?.javaClass?.name}"
+            }
             if (failures.isEmpty()) plugin.logger.info("[GestureGuiProbe] item OK")
             else plugin.logger.warning("[GestureGuiProbe] item NG(${failures.size}件)")
         } finally {
@@ -564,50 +595,22 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     fun blockStateValue(blockData: BlockData, world: World, sampleAt: Location): WrappedDataValue =
         WrappedDataValue(ID_BLOCK_STATE, serializers.blockState, nmsBlockState(blockData, world, sampleAt))
 
-    fun itemStackValue(item: ItemStack, world: World, sampleAt: Location): WrappedDataValue =
+    fun itemStackValue(item: ItemStack): WrappedDataValue =
         WrappedDataValue(
             ID_ITEM_STACK,
             serializers.itemStack,
-            nmsItemStack(item, world, sampleAt),
+            nmsItemStack(item),
         )
 
     /**
      * Bukkit ItemStack に対応する NMS ハンドルを返します。
      *
-     * blockstate と同じ template 読取を正本とし、converter は fallback です。
-     * 内容キーごとに覚え、上限超過時は古いものから捨てます。
+     * 形式検証は起動時に1回だけ行い、ここでは変換のみ行います。
+     * template watcher の値は Bukkit ラッパーの場合があり、そのまま送ると
+     * エンコード例外で接続断に至るため使用しません。
      */
-    private val itemStackHandles = LinkedHashMap<String, Any>(64, 0.75f, true)
-
-    fun nmsItemStack(item: ItemStack, world: World, sampleAt: Location): Any {
-        val key = "${item.type}:${item.amount}:${item.itemMeta?.hashCode()}"
-        itemStackHandles[key]?.let { return it }
-        val handle = runCatching { readItemStackHandle(item, world, sampleAt) }.getOrNull()
-            ?: runCatching {
-                plugin.logger.warning("[GestureGuiProbe] アイテム template 読取に失敗し、converter へ縮退します")
-                BukkitConverters.getItemStackConverter().getGeneric(item.clone())
-            }.getOrElse { failure -> error("アイテム変換に失敗しました: $key") }
-        if (itemStackHandles.size >= MAX_ITEM_CACHE) {
-            itemStackHandles.keys.firstOrNull()?.let(itemStackHandles::remove)
-        }
-        itemStackHandles[key] = handle
-        return handle
-    }
-
-    private fun readItemStackHandle(item: ItemStack, world: World, sampleAt: Location): Any {
-        val template = world.spawn(sampleAt, org.bukkit.entity.ItemDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.setItemStack(item.clone())
-        }
-        try {
-            val watcher = WrappedDataWatcher.getEntityWatcher(template)
-            return watcher.getWatchableObject(ID_ITEM_STACK)?.value
-                ?: error("index $ID_ITEM_STACK の読み取りに失敗しました")
-        } finally {
-            template.remove()
-        }
-    }
+    fun nmsItemStack(item: ItemStack): Any =
+        BukkitConverters.getItemStackConverter().getGeneric(item.clone())
 
     fun itemDisplayTypeValue(): WrappedDataValue =
         WrappedDataValue(ID_ITEM_DISPLAY_TYPE, serializers.byteValue, ITEM_DISPLAY_GUI)
@@ -681,8 +684,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val FLAG_GLOWING: Byte = 0x40
         /** 発光なしを示す glow 色です。vanilla の既定値と同一です。 */
         const val NO_GLOW_COLOR: Int = -1
-        /** アイテム変換 cache の上限です。超過時は古いものから捨てます。 */
-        const val MAX_ITEM_CACHE: Int = 128
+        /** NMS ItemStack のクラス名です。converter 出力の検証に使います。 */
+        const val NMS_ITEM_STACK_CLASS: String = "net.minecraft.world.item.ItemStack"
         /** 相対移動 short の安全域です。NMS 上限（±32767）に余裕を持たせます。 */
         const val REL_SHORT_LIMIT: Int = 30000
         /** 量子化 drift の再同期閾値（ブロック）です。視認限界以下にします。 */

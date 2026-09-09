@@ -314,10 +314,10 @@ internal class GestureGuiVirtualScreens(
             }
             is GestureGuiVisual.Item -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble(), TEXT_ITEM_SURFACE_LIFT)
-                DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { viewer ->
+                DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { _ ->
                     val scale = visual.scale.toFloat()
                     backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), blockQuat(pose), visual.glowColor) +
-                        backend.itemStackValue(visual.item, viewer.world, viewer.location) + backend.itemDisplayTypeValue()
+                        backend.itemStackValue(visual.item) + backend.itemDisplayTypeValue()
                 }
             }
             is GestureGuiVisual.Text -> {
@@ -367,7 +367,7 @@ internal class GestureGuiVirtualScreens(
     ): List<WrappedDataValue> {
         val quat = blockQuat(pose)
         return backend.displayBaseValues(
-            centeredTranslation(quat, width, height, BLOCK_NORMAL_DEPTH),
+            facePlaneTranslation(quat, width, height),
             Vector3f(width.toFloat(), height.toFloat(), BLOCK_NORMAL_DEPTH),
             quat,
             glowColor,
@@ -513,8 +513,10 @@ internal class GestureGuiVirtualScreens(
         // 相対移動の向き欄は entity 回転と無関係のため 0 固定です（向きは変形が担います）。
         backend.sendRelativeMove(viewer, id, dx, dy, dz, 0f, 0f)
         state.pointByKey[item.key] = assumedAfter
+        // 向きの変化は metadata で追従します（再生成なし・補間あり）。
+        // 旧追従仕様に合わせ、しきい値なしの完全一致比較とします。静止時は無送信です。
         val oldQuat = state.quatByKey[item.key]
-        if (oldQuat == null || quatAngleDegrees(oldQuat, quat) > DUMMY_QUAT_UPDATE_DEGREES) {
+        if (oldQuat == null || oldQuat != quat) {
             backend.sendMetadata(viewer, id, item.metadata(viewer))
             state.quatByKey[item.key] = Quaternionf(quat)
         }
@@ -585,44 +587,30 @@ internal class GestureGuiVirtualScreens(
         fun isHoverManagedKey(key: String): Boolean =
             key.endsWith("/hover") || key.endsWith("/hoverBlock")
 
-        /** ダミー向きの metadata 追従しきい値（度）です。これ以下は送りません。 */
-        const val DUMMY_QUAT_UPDATE_DEGREES: Double = 0.5
-
         /**
-         * 2 向きのなす角（度）を返します。同一回転の符号違いは 0 になります。
+         * Block・Item 系の向き quaternion です。旧 Bukkit 経路の entity 回転と等価で、
+         * local +Z を +normal 側へ向けます（旧表示と同一の裏面配置を再現）。
          *
-         * ダミー追従の向き変化検出に使い、微動での metadata 連投を防ぎます。
-         */
-        fun quatAngleDegrees(first: Quaternionf, second: Quaternionf): Double {
-            val dot = kotlin.math.abs(first.dot(second)).toDouble().coerceIn(0.0, 1.0)
-            return Math.toDegrees(2.0 * kotlin.math.acos(dot))
-        }
-
-        /**
-         * Block・Item 系の向き quaternion です。local +X→right・+Y→up・+Z→−normal
-         *（閲覧者向き）へ写す適正回転であり、角度を経由しないため byte 量子化を受けません。
+         * 角度を経由しないため byte 量子化を受けません。
          */
         fun blockQuat(pose: GestureGuiScreenPose): Quaternionf =
-            quatFromColumns(pose.right, pose.up, pose.normal * -1.0)
-
-        /**
-         * Text 系の向き quaternion です。文字の可視面（local −Z）が閲覧者向きに
-         * なるよう、Block 系から local yaw 180° 反転させます（旧 textDisplayYaw 相当）。
-         */
-        fun textQuat(pose: GestureGuiScreenPose): Quaternionf =
             quatFromColumns(pose.right * -1.0, pose.up, pose.normal)
 
         /**
-         * 矩形 Block 面の中心合わせ平行移動です。
-         *
-         * entity 回転が 0 のため、local (w/2,h/2,d/2) 中心を quaternion で
-         * 同一回転させた逆向きが中心化ベクトルになります。spawn 座標が
-         * 厳密に面中心へ一致し、向きの慣習に依存しません。
+         * Text 系の向き quaternion です。文字の可視面が閲覧者向きになるよう、
+         * Block 系から local yaw 180° 反転させます（旧 textDisplayYaw 相当）。
          */
-        fun centeredTranslation(quat: Quaternionf, width: Double, height: Double, depth: Float): Vector3f {
-            val half = Vector3f((width / 2.0).toFloat(), (height / 2.0).toFloat(), depth / 2f)
-            return quat.transform(half).negate()
-        }
+        fun textQuat(pose: GestureGuiScreenPose): Quaternionf =
+            quatFromColumns(pose.right, pose.up, pose.normal * -1.0)
+
+        /**
+         * 矩形 Block 面の layer 平面合わせ平行移動です。
+         *
+         * 旧 local 値 (-w/2,-h/2,0) を同一回転させることで、面を layer 平面上へ置き、
+         * テキストの持ち上げ量（約 0.003）との前後関係を旧表示と同一に保ちます。
+         */
+        fun facePlaneTranslation(quat: Quaternionf, width: Double, height: Double): Vector3f =
+            quat.transform(Vector3f((-width / 2.0).toFloat(), (-height / 2.0).toFloat(), 0f))
 
         private fun quatFromColumns(
             xAxis: com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3,
