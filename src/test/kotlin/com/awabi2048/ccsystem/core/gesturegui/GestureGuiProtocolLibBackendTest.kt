@@ -15,9 +15,10 @@ import org.junit.jupiter.api.Test
 class GestureGuiProtocolLibBackendTest {
     @Test
     fun `brightness packはblockとskyを合成する`() {
-        assertEquals(255, GestureGuiProtocolLibBackend.packBrightness(15, 15))
+        // 正式 (block<<4)|(sky<<20)。旧式 (block|sky<<4) は sky を落とすため不可。
+        assertEquals(0xF000F0, GestureGuiProtocolLibBackend.packBrightness(15, 15))
         assertEquals(0, GestureGuiProtocolLibBackend.packBrightness(0, 0))
-        assertEquals(0x97, GestureGuiProtocolLibBackend.packBrightness(7, 9))
+        assertEquals(0x900070, GestureGuiProtocolLibBackend.packBrightness(7, 9))
     }
 
     @Test
@@ -33,6 +34,14 @@ class GestureGuiProtocolLibBackendTest {
         assertEquals(0.toByte(), GestureGuiProtocolLibBackend.toPackedByte(0f))
         assertEquals(64.toByte(), GestureGuiProtocolLibBackend.toPackedByte(90f))
         assertEquals((-128).toByte(), GestureGuiProtocolLibBackend.toPackedByte(180f))
+    }
+
+    @Test
+    fun `負角はNMSと同一のfloorで変換される`() {
+        // -178.16°は切り捨て(toInt)では-126、floor では-127 になる。
+        assertEquals((-127).toByte(), GestureGuiProtocolLibBackend.toPackedByte(-178.16f))
+        assertEquals((-9).toByte(), GestureGuiProtocolLibBackend.toPackedByte(-12.25f))
+        assertEquals(32.toByte(), GestureGuiProtocolLibBackend.toPackedByte(45.5f))
     }
 
     @Test
