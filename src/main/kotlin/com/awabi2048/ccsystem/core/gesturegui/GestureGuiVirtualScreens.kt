@@ -140,7 +140,7 @@ internal class GestureGuiVirtualScreens(
             val needsResync = sentPoint != item.point || sentType != null && sentType != item.type
             if (!live || needsResync) {
                 if (live && isDummyKey && sentType == item.type && sentPoint != null &&
-                    tryRelativeMove(viewer, state, id, item, sentPoint)
+                    tryRelativeMove(viewer, state, id, item, sentPoint, blockQuat(pose))
                 ) {
                     state.contentFingerprintByKey[item.key] = item.fingerprint
                     return@forEach
@@ -152,6 +152,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey[item.key] = item.fingerprint
                 state.pointByKey[item.key] = item.point
                 state.typeByKey[item.key] = item.type
+                if (isDummyKey) state.quatByKey[item.key] = Quaternionf(blockQuat(pose))
             } else if (contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
                 state.contentFingerprintByKey[item.key] = item.fingerprint
@@ -166,6 +167,7 @@ internal class GestureGuiVirtualScreens(
             state.contentFingerprintByKey.remove(key)
             state.pointByKey.remove(key)
             state.typeByKey.remove(key)
+            state.quatByKey.remove(key)
         }
         state.poseByScreenKey[screenKey] = pose
         state.lodByScreenKey[screenKey] = lod
@@ -181,6 +183,7 @@ internal class GestureGuiVirtualScreens(
             state.contentFingerprintByKey.remove(key)
             state.pointByKey.remove(key)
             state.typeByKey.remove(key)
+            state.quatByKey.remove(key)
         }
         state.poseByScreenKey.remove(screenKey)
         state.lodByScreenKey.remove(screenKey)
@@ -195,6 +198,7 @@ internal class GestureGuiVirtualScreens(
         state.contentFingerprintByKey.clear()
         state.pointByKey.clear()
         state.typeByKey.clear()
+        state.quatByKey.clear()
         state.poseByScreenKey.clear()
         state.lodByScreenKey.clear()
         state.hiddenVisualIds.clear()
@@ -310,10 +314,10 @@ internal class GestureGuiVirtualScreens(
             }
             is GestureGuiVisual.Item -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble(), TEXT_ITEM_SURFACE_LIFT)
-                DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { _ ->
+                DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { viewer ->
                     val scale = visual.scale.toFloat()
                     backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), blockQuat(pose), visual.glowColor) +
-                        backend.itemStackValue(visual.item) + backend.itemDisplayTypeValue()
+                        backend.itemStackValue(visual.item, viewer.world, viewer.location) + backend.itemDisplayTypeValue()
                 }
             }
             is GestureGuiVisual.Text -> {
@@ -470,6 +474,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey.remove(key)
                 state.pointByKey.remove(key)
                 state.typeByKey.remove(key)
+                state.quatByKey.remove(key)
             }
     }
 
@@ -479,6 +484,7 @@ internal class GestureGuiVirtualScreens(
      * 範囲外（±8 ブロック超）・drift 超過時は false を返し、呼び出し側で
      * destroy+spawn 再同期します。送信失敗時は想定がずれるため、次回 drift 検出で
      * 自動的に再同期されます。
+     * 向きの変化は metadata で追従します（再生成なし・補間あり）。
      */
     private fun tryRelativeMove(
         viewer: Player,
@@ -486,6 +492,7 @@ internal class GestureGuiVirtualScreens(
         id: Int,
         item: DesiredVisual,
         assumed: PlacedPoint,
+        quat: Quaternionf,
     ): Boolean {
         val dx = GestureGuiProtocolLibBackend.relativeShort(item.point.x - assumed.x) ?: return false
         val dy = GestureGuiProtocolLibBackend.relativeShort(item.point.y - assumed.y) ?: return false
@@ -494,8 +501,8 @@ internal class GestureGuiVirtualScreens(
             assumed.x + dx / 4096.0,
             assumed.y + dy / 4096.0,
             assumed.z + dz / 4096.0,
-            item.point.yawDegrees,
-            item.point.pitchDegrees,
+            0f,
+            0f,
         )
         if (GestureGuiProtocolLibBackend.exceedsDrift(item.point.x, assumedAfter.x) ||
             GestureGuiProtocolLibBackend.exceedsDrift(item.point.y, assumedAfter.y) ||
@@ -506,6 +513,11 @@ internal class GestureGuiVirtualScreens(
         // 相対移動の向き欄は entity 回転と無関係のため 0 固定です（向きは変形が担います）。
         backend.sendRelativeMove(viewer, id, dx, dy, dz, 0f, 0f)
         state.pointByKey[item.key] = assumedAfter
+        val oldQuat = state.quatByKey[item.key]
+        if (oldQuat == null || quatAngleDegrees(oldQuat, quat) > DUMMY_QUAT_UPDATE_DEGREES) {
+            backend.sendMetadata(viewer, id, item.metadata(viewer))
+            state.quatByKey[item.key] = Quaternionf(quat)
+        }
         return true
     }
 
@@ -572,6 +584,19 @@ internal class GestureGuiVirtualScreens(
          */
         fun isHoverManagedKey(key: String): Boolean =
             key.endsWith("/hover") || key.endsWith("/hoverBlock")
+
+        /** ダミー向きの metadata 追従しきい値（度）です。これ以下は送りません。 */
+        const val DUMMY_QUAT_UPDATE_DEGREES: Double = 0.5
+
+        /**
+         * 2 向きのなす角（度）を返します。同一回転の符号違いは 0 になります。
+         *
+         * ダミー追従の向き変化検出に使い、微動での metadata 連投を防ぎます。
+         */
+        fun quatAngleDegrees(first: Quaternionf, second: Quaternionf): Double {
+            val dot = kotlin.math.abs(first.dot(second)).toDouble().coerceIn(0.0, 1.0)
+            return Math.toDegrees(2.0 * kotlin.math.acos(dot))
+        }
 
         /**
          * Block・Item 系の向き quaternion です。local +X→right・+Y→up・+Z→−normal

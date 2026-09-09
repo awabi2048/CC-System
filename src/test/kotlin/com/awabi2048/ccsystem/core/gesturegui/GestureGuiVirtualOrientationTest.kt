@@ -77,8 +77,7 @@ class GestureGuiVirtualOrientationTest {
     }
 
     @Test
-    fun `無傾斜poseでも写像は保たれる`() {
-        // 実 pose と同様に up = right×normal で組み立てます（基底の一貫性が前提）。
+    fun `無傾斜poseでも写像は保たれる`() {        // 実 pose と同様に up = right×normal で組み立てます（基底の一貫性が前提）。
         val right = GestureGuiVector3(-1.0, 0.0, 0.0)
         val normal = GestureGuiVector3(0.0, 0.0, -1.0)
         val up = right.cross(normal).normalized()
@@ -96,5 +95,17 @@ class GestureGuiVirtualOrientationTest {
         assertTrue(quat.appliedTo(1f, 0f, 0f).dotOf(right.x, right.y, right.z) > 0.999)
         assertTrue(quat.appliedTo(0f, 1f, 0f).dotOf(up.x, up.y, up.z) > 0.999)
         assertTrue(quat.appliedTo(0f, 0f, 1f).dotOf(-normal.x, -normal.y, -normal.z) > 0.999)
+    }
+
+    @Test
+    fun `向きのなす角は正しく求まる`() {
+        val pose = tiltedPose()
+        val base = GestureGuiVirtualScreens.blockQuat(pose)
+        // 同一は 0 度、符号違い（同一回転）は 0 度です。
+        assertEquals(0.0, GestureGuiVirtualScreens.quatAngleDegrees(base, Quaternionf(base)), 1.0e-6)
+        assertEquals(0.0, GestureGuiVirtualScreens.quatAngleDegrees(base, Quaternionf(base).mul(-1f)), 1.0e-6)
+        // 90 度回転は 90 度になります。
+        val turned = Quaternionf(base).mul(Quaternionf().rotationY(Math.PI.toFloat() / 2f))
+        assertEquals(90.0, GestureGuiVirtualScreens.quatAngleDegrees(base, turned), 0.5)
     }
 }

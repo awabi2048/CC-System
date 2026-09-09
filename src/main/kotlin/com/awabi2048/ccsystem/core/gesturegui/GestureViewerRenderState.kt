@@ -25,6 +25,8 @@ internal data class GestureViewerRenderState(
     val contentFingerprintByKey: MutableMap<String, String> = mutableMapOf(),
     /** 論理キーごとの送信済み座標です。移動は destroy+spawn で追従します。 */
     val pointByKey: MutableMap<String, GestureGuiVirtualScreens.PlacedPoint> = mutableMapOf(),
+    /** 論理キーごとの送信済み向きです。ダミーの向き追従に使います。 */
+    val quatByKey: MutableMap<String, org.joml.Quaternionf> = mutableMapOf(),
     /** 論理キーごとの送信済み種別です。型変更は destroy+spawn で作り直します。 */
     val typeByKey: MutableMap<String, EntityType> = mutableMapOf(),
     /** 画面キーごとの送信済み pose です。変化時は移動キーのみ再送します。 */
