@@ -519,8 +519,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
      * 向きは entity 回転（常に 0）ではなく leftRotation quaternion で与えるため、
      * 角度の byte 量子化・欄割付の影響を受けません。
      *
-     * @param billboard 向き追従指定。テキストの向き特定実験では CENTER を用います
-     * （診断用・原因特定後に方針確定）。
+     * @param billboard 向き追従指定。既定は FIXED です。
+     * @param interpTicks 変形補間の期間。hover 等の即時追従は 0 を指定します。
      */
     fun displayBaseValues(
         translation: Vector3f,
@@ -528,6 +528,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         rotation: org.joml.Quaternionf,
         glowColorRgb: Int?,
         billboard: Byte = BILLBOARD_FIXED,
+        interpTicks: Int = TRANSFORM_INTERP_TICKS,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
         val vec = vector()
@@ -537,7 +538,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         add(WrappedDataValue(ID_BILLBOARD, s.byteValue, billboard))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
-        add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, TRANSFORM_INTERP_TICKS))
+        add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, interpTicks))
         add(WrappedDataValue(ID_POSROT_DURATION, s.intValue, POSROT_INTERP_TICKS))
         add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, if (glowColorRgb != null) FLAG_GLOWING else 0.toByte()))
         add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb?.and(0xFFFFFF) ?: NO_GLOW_COLOR))
@@ -637,8 +638,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val NO_GLOW_COLOR: Int = -1
         /** NMS ItemStack のクラス名です。converter 出力の検証に使います。 */
         const val NMS_ITEM_STACK_CLASS: String = "net.minecraft.world.item.ItemStack"
-        /** 変形補間の期間（tick）です。旧経路の interpolationDuration と同値です。 */
-        const val TRANSFORM_INTERP_TICKS: Int = 3
+        /** 変形補間の期間（tick）です。追従の滑らかさと応答性の均衡点です。 */
+        const val TRANSFORM_INTERP_TICKS: Int = 2
         /** 位置回転補間の期間（tick）です。旧経路の teleportDuration と同値です。 */
         const val POSROT_INTERP_TICKS: Int = 1
         const val ITEM_DISPLAY_GUI: Byte = 6

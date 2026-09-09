@@ -66,8 +66,8 @@ class GestureGuiProtocolLibBackendTest {
     }
 
     @Test
-    fun `補間期間は旧Bukkit経路と同値である`() {
-        assertEquals(3, GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS)
+    fun `補間期間は追従の応答性を優先する`() {
+        assertEquals(2, GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS)
         assertEquals(1, GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS)
     }
 }

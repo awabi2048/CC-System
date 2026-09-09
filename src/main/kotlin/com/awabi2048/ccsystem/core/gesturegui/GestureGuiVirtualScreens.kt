@@ -368,6 +368,7 @@ internal class GestureGuiVirtualScreens(
         height: Double,
         blockData: org.bukkit.block.data.BlockData,
         glowColor: Int?,
+        interpTicks: Int = GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
     ): List<WrappedDataValue> {
         val quat = blockQuat(pose)
         return backend.displayBaseValues(
@@ -378,8 +379,21 @@ internal class GestureGuiVirtualScreens(
             Vector3f(width.toFloat(), height.toFloat(), BLOCK_NORMAL_DEPTH),
             quat,
             glowColor,
+            interpTicks = interpTicks,
         ) + backend.blockStateValue(blockData, viewer.world, viewer.location)
     }
+
+    /** hover 差し替え面用の即時版です。視線追従の遅延をなくします。 */
+    private fun hoverBlockMetadata(
+        viewer: Player,
+        pose: GestureGuiScreenPose,
+        anchor: PlacedPoint,
+        target: PlacedPoint,
+        visual: GestureGuiVisual.Block,
+        blockData: org.bukkit.block.data.BlockData,
+    ): List<WrappedDataValue> = blockMetadata(
+        viewer, pose, anchor, target, visual.width, visual.height, blockData, null, interpTicks = 0,
+    )
 
     private fun anchorOf(state: GestureViewerRenderState, key: String, target: PlacedPoint): PlacedPoint =
         state.pointByKey[key] ?: target
@@ -410,7 +424,9 @@ internal class GestureGuiVirtualScreens(
             val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
             val quat = textQuat(pose)
             val translation = resolveTranslation(quat, anchorOf(state, textKey, textPoint), textPoint, Vector3f())
-            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
+            // hover は視線へ即時追従させるため、補間なしで送ります。
+            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
+                interpTicks = 0) +
                 backend.textValues(
                     GestureGuiProtocolLibBackend.componentJson(hover.text),
                     hover.lineWidth, false, 0,
@@ -421,7 +437,7 @@ internal class GestureGuiVirtualScreens(
             val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
             upsertSingle(viewer, state, blockKey, EntityType.BLOCK_DISPLAY, point,
                 "HB|$identity|${visual.visualId}|${blockData.asString}", poseChanged) {
-                blockMetadata(it, pose, anchorOf(state, blockKey, point), point, visual.width, visual.height, blockData, null)
+                hoverBlockMetadata(it, pose, anchorOf(state, blockKey, point), point, visual, blockData)
             }
         } else {
             removeSingle(viewer, state, blockKey)
