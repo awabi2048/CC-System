@@ -1408,23 +1408,18 @@ class GestureGuiServiceImpl(
     /**
      * 再生成時の向き情報をログ出力します（診断用・原因特定後に除去）。
      *
-     * 保持 yaw・先頭画面の法線・Bukkit 換算の yaw/pitch 度・packet 用 byte を
-     * 同一行に出し、client の見え方と突き合わせます。
+     * 保持 yaw・先頭画面の法線・基底 quaternion を同一行に出し、
+     * client の見え方と突き合わせます。entity 回転 byte は常に 0 です。
      */
     private fun logResummonPose(session: Session, owner: Player, trigger: String) {
         val first = session.screens.firstOrNull() ?: return
         val pose = first.pose
-        val yaw = GestureGuiGeometry.displayYaw(pose)
-        val pitch = GestureGuiGeometry.displayPitch(pose)
-        val textYaw = GestureGuiGeometry.textDisplayYaw(pose)
-        val textPitch = GestureGuiGeometry.textDisplayPitch(pose)
+        val quat = GestureGuiVirtualScreens.blockQuat(pose)
         plugin.logger.info(
             "[GestureGuiPose] $trigger owner=${owner.name} retainedYaw=${"%.2f".format(session.retainedYaw)} " +
                 "normal=(${"%.3f".format(pose.normal.x)},${"%.3f".format(pose.normal.y)},${"%.3f".format(pose.normal.z)}) " +
-                "displayYaw=${"%.2f".format(yaw)} displayPitch=${"%.2f".format(pitch)} " +
-                "textYaw=${"%.2f".format(textYaw)} textPitch=${"%.2f".format(textPitch)} " +
-                "packedYaw=${GestureGuiProtocolLibBackend.toPackedByte(yaw)} " +
-                "packedPitch=${GestureGuiProtocolLibBackend.toPackedByte(pitch)}",
+                "quat=(${"%.3f".format(quat.x)},${"%.3f".format(quat.y)}," +
+                "${"%.3f".format(quat.z)},${"%.3f".format(quat.w)})",
         )
     }
 

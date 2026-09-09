@@ -86,64 +86,72 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     private fun vector(): WrappedDataWatcher.Serializer =
         vectorSerializer ?: error("vector serializer が未解決です。checkAvailable を先に呼んでください。")
 
+    private fun quaternion(): WrappedDataWatcher.Serializer =
+        quaternionSerializer ?: error("quaternion serializer が未解決です。checkAvailable を先に呼んでください。")
+
     /**
-     * translation/scale 用の vector serializer です。
+     * translation/scale・回転用の serializer 群です。
      *
-     * NMS の vector 型は版で揺れる（org.joml.Vector3f / Vector3fc）ため、
+     * NMS の型名は版で揺れる（org.joml.Vector3f / Vector3fc 等）ため、
      * 候補クラス順に解決し、駄目なら不可視 template の watcher から実物を抜きます。
      * 解決不能時は backend 全体を停止し、SEVERE を一度だけ出します。
      */
     private var vectorSerializer: WrappedDataWatcher.Serializer? = null
+    private var quaternionSerializer: WrappedDataWatcher.Serializer? = null
     private var vectorResolutionDone = false
     private var backendDisabled = false
 
     /**
-     * 仮想描画が利用可能かを返します。初回に vector serializer を確定します。
+     * 仮想描画が利用可能かを返します。初回に serializer 群を確定します。
      * 利用不可の場合は以降の送信を止め、画面は表示されません（縮退停止）。
      */
     fun checkAvailable(sampleViewer: Player): Boolean {
         if (backendDisabled) return false
         if (vectorResolutionDone) return true
         vectorResolutionDone = true
-        vectorSerializer = resolveVectorSerializer(sampleViewer)
-        if (vectorSerializer == null) {
+        vectorSerializer = resolveSerializer(
+            listOf(Vector3f::class.java, org.joml.Vector3fc::class.java),
+        ) ?: serializerFromTemplate(sampleViewer, ID_TRANSLATION)
+        quaternionSerializer = resolveSerializer(
+            listOf(org.joml.Quaternionf::class.java, org.joml.Quaternionfc::class.java),
+        ) ?: serializerFromTemplate(sampleViewer, ID_LEFT_ROTATION)
+        if (vectorSerializer == null || quaternionSerializer == null) {
             backendDisabled = true
             plugin.logger.log(
                 Level.SEVERE,
-                "仮想 GUI の vector serializer を解決できず、Gesture GUI の仮想描画を停止します。",
+                "仮想 GUI の serializer を解決できず、Gesture GUI の仮想描画を停止します。",
             )
             return false
         }
         return true
     }
 
-    private fun resolveVectorSerializer(sampleViewer: Player): WrappedDataWatcher.Serializer? {
-        // 候補1：登録名の版差を吸収するため、実装・界面の両方を試します。
-        listOf(Vector3f::class.java, org.joml.Vector3fc::class.java).forEach { candidate ->
+    private fun resolveSerializer(candidates: List<Class<*>>): WrappedDataWatcher.Serializer? {
+        // 登録名の版差を吸収するため、実装・界面の両方を試します。
+        candidates.forEach { candidate ->
             runCatching {
                 WrappedDataWatcher.Registry.get(candidate as java.lang.reflect.Type, false)
             }.onSuccess { return it }
         }
-        // 候補2：不可視 template の watcher から index 11 の実 serializer を抜きます。
-        return runCatching { vectorSerializerFromTemplate(sampleViewer) }
-            .onFailure { failure ->
-                plugin.logger.log(Level.WARNING, "vector serializer の template 抽出に失敗しました", failure)
-            }.getOrNull()
+        return null
     }
 
-    private fun vectorSerializerFromTemplate(sampleViewer: Player): WrappedDataWatcher.Serializer {
-        val template = sampleViewer.world.spawn(sampleViewer.location, BlockDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-        }
-        try {
-            val watcher = WrappedDataWatcher.getEntityWatcher(template)
-            return watcher.getWatchableObject(ID_TRANSLATION)?.watcherObject?.serializer
-                ?: error("index $ID_TRANSLATION の serializer が watcher にありません")
-        } finally {
-            template.remove()
-        }
-    }
+    private fun serializerFromTemplate(sampleViewer: Player, index: Int): WrappedDataWatcher.Serializer? =
+        runCatching {
+            val template = sampleViewer.world.spawn(sampleViewer.location, BlockDisplay::class.java) {
+                it.isVisibleByDefault = false
+                it.isPersistent = false
+            }
+            try {
+                val watcher = WrappedDataWatcher.getEntityWatcher(template)
+                watcher.getWatchableObject(index)?.watcherObject?.serializer
+                    ?: error("index $index の serializer が watcher にありません")
+            } finally {
+                template.remove()
+            }
+        }.onFailure { failure ->
+            plugin.logger.log(Level.WARNING, "serializer の template 抽出に失敗しました: index=$index", failure)
+        }.getOrNull()
 
     fun nextVirtualId(): Int = idAllocator.getAndIncrement()
 
@@ -349,7 +357,13 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         }
     }
 
-    /** viewer へ virtual Display を生成し、初期 metadata を一括送信します。 */
+    /**
+     * viewer へ virtual Display を生成し、初期 metadata を一括送信します。
+     *
+     * 向きは entity 回転ではなく変形の leftRotation quaternion で与えます。
+     * entity 回転 byte は常に 0 のため、角度の byte 量子化・欄割付の影響を受けません。
+     * translation は quaternion と同一回転へ再構成済みであることが前提です。
+     */
     fun spawnDisplay(
         viewer: Player,
         virtualId: Int,
@@ -357,8 +371,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         x: Double,
         y: Double,
         z: Double,
-        yawDegrees: Float,
-        pitchDegrees: Float,
         initialMetadata: List<WrappedDataValue>,
     ) {
         runOneShotProbe(viewer)
@@ -370,24 +382,19 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         packet.doubles.write(0, x)
         packet.doubles.write(1, y)
         packet.doubles.write(2, z)
-        // NMS 宣言順：movement, xRot, yRot, yHeadRot のため 0/1/2 が pitch/yaw/headYaw です。
-        // head は Bukkit 生成時 0 のため合わせます（Display 描画には未使用）。
-        packet.bytes.write(0, toPackedByte(pitchDegrees))
-        packet.bytes.write(1, toPackedByte(yawDegrees))
+        // 向きは変形 quaternion が担うため、entity 回転は 0 固定です。
+        packet.bytes.write(0, 0.toByte())
+        packet.bytes.write(1, 0.toByte())
         packet.bytes.write(2, 0.toByte())
         packet.vectors.write(0, Vector(0, 0, 0))
-        verifySpawnRoundTrip(packet, virtualId, type, x, y, z, yawDegrees, pitchDegrees)
+        verifySpawnRoundTrip(packet, virtualId, type, x, y, z)
         send(viewer, packet)
         if (initialMetadata.isNotEmpty()) sendMetadata(viewer, virtualId, initialMetadata)
-        // spawn の byte 量子化を絶対 teleport で補正します（旧 Bukkit 経路相当）。
-        sendTeleport(viewer, virtualId, x, y, z, yawDegrees, pitchDegrees)
         GestureGuiRenderMetrics.virtualSpawns.incrementAndGet()
         // 生成明細ログ（診断用・原因特定後に除去）。向き・寸法の突合に使います。
         plugin.logger.info(
             "[GestureGuiSpawnDiag] viewer=${viewer.name} id=$virtualId type=$type " +
                 "pos=(${"%.3f".format(x)},${"%.3f".format(y)},${"%.3f".format(z)}) " +
-                "yaw=${"%.2f".format(yawDegrees)} pitch=${"%.2f".format(pitchDegrees)} " +
-                "packedYaw=${toPackedByte(yawDegrees)} packedPitch=${toPackedByte(pitchDegrees)} " +
                 "meta=${initialMetadata.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" }}",
         )
     }
@@ -437,64 +444,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
     }
 
-    /**
-     * 絶対 teleport を送信し、float 精度の座標・向きへ収束させます。
-     *
-     * spawn の byte 量子化を補正する旧 Bukkit 経路相当の処理です。
-     * 構造は実行時に適応解決し（新式 PositionMoveRotation／旧式 xyz+bytes）、
-     * 解決不能時は false を返して destroy+spawn のままにします。
-     * spawn ごとに +1 packet ですが、遷移時に限られるため無視できます。
-     */
-    private var teleportUnsupported = false
-
-    fun sendTeleport(
-        viewer: Player,
-        virtualId: Int,
-        x: Double,
-        y: Double,
-        z: Double,
-        yawDegrees: Float,
-        pitchDegrees: Float,
-    ): Boolean {
-        if (teleportUnsupported) return false
-        return runCatching {
-            val packet = manager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT)
-            packet.integers.write(0, virtualId)
-            val structures = packet.structures
-            if (structures.size() == 1) {
-                // 新式：PositionMoveRotation（double xyz＋float yaw/pitch）。
-                val move = structures.read(0)
-                move.doubles.write(0, x)
-                move.doubles.write(1, y)
-                move.doubles.write(2, z)
-                move.float.write(0, yawDegrees)
-                move.float.write(1, pitchDegrees)
-                structures.write(0, move)
-            } else {
-                // 旧式：double xyz＋byte yaw/pitch。
-                packet.doubles.write(0, x)
-                packet.doubles.write(1, y)
-                packet.doubles.write(2, z)
-                packet.bytes.write(0, toPackedByte(yawDegrees))
-                packet.bytes.write(1, toPackedByte(pitchDegrees))
-            }
-            packet.booleans.write(0, false)
-            writeEmptyRelatives(packet)
-            send(viewer, packet)
-            GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
-            true
-        }.onFailure { failure ->
-            teleportUnsupported = true
-            plugin.logger.log(Level.WARNING, "絶対 teleport を無効化し、destroy+spawn へ縮退します", failure)
-        }.getOrDefault(false)
-    }
-
-    private fun writeEmptyRelatives(packet: com.comphenix.protocol.events.PacketContainer) {
-        val sets = packet.modifier.withType<Set<*>>(Set::class.java)
-        if (sets.size() == 1) sets.write(0, emptySet<Any>())
-        else error("relatives 欄が1件ではありません: size=${sets.size()}")
-    }
-
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)
@@ -516,8 +465,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         x: Double,
         y: Double,
         z: Double,
-        yawDegrees: Float,
-        pitchDegrees: Float,
     ) {
         if (roundTripWarned) return
         val failures = runCatching {
@@ -528,9 +475,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 if (packet.doubles.read(0) != x) add("x")
                 if (packet.doubles.read(1) != y) add("y")
                 if (packet.doubles.read(2) != z) add("z")
-                if (packet.bytes.read(0) != toPackedByte(pitchDegrees)) add("pitch")
-                if (packet.bytes.read(1) != toPackedByte(yawDegrees)) add("yaw")
-                if (packet.bytes.read(2) != toPackedByte(yawDegrees)) add("headYaw")
+                if (packet.bytes.read(0) != 0.toByte()) add("pitch")
+                if (packet.bytes.read(1) != 0.toByte()) add("yaw")
+                if (packet.bytes.read(2) != 0.toByte()) add("headYaw")
                 if (packet.getUUIDs().read(0) == null) add("uuid")
             }
         }.getOrElse { return }
@@ -543,23 +490,27 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     // -- metadata 構築 -------------------------------------------------------
 
     /**
-     * Display 共通の初期 metadata です。translation/scale は呼び出し側が指定します。
+     * Display 共通の初期 metadata です。translation/scale/回転は呼び出し側が指定します。
      *
      * 発光の有無にかかわらず flags・glow 色を常時送ります。null（解除）時に
      * 送らないと、以前の発光が client 側に残り続けるためです。
      * 補間（開始差分 0・変形期間 3・位置回転期間 1）は旧 Bukkit 経路の
      * prepareDisplay（teleportDuration=1・delay=0・duration=3）と同値であり、
      * 開閉波・変形を client 側で tween させます。
+     * 向きは entity 回転（常に 0）ではなく leftRotation quaternion で与えるため、
+     * 角度の byte 量子化・欄割付の影響を受けません。
      */
     fun displayBaseValues(
         translation: Vector3f,
         scale: Vector3f,
+        rotation: org.joml.Quaternionf,
         glowColorRgb: Int?,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
         val vec = vector()
         add(WrappedDataValue(ID_TRANSLATION, vec, Vector3f(translation)))
         add(WrappedDataValue(ID_SCALE, vec, Vector3f(scale)))
+        add(WrappedDataValue(ID_LEFT_ROTATION, quaternion(), org.joml.Quaternionf(rotation)))
         add(WrappedDataValue(ID_BILLBOARD, s.byteValue, BILLBOARD_FIXED))
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
@@ -630,6 +581,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val ID_POSROT_DURATION: Int = 10
         const val ID_TRANSLATION: Int = 11
         const val ID_SCALE: Int = 12
+        const val ID_LEFT_ROTATION: Int = 13
         const val ID_BILLBOARD: Int = 15
         const val ID_BRIGHTNESS: Int = 16
         const val ID_GLOW_COLOR: Int = 22

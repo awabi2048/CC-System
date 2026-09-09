@@ -14,6 +14,8 @@ import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.joml.Matrix3f
+import org.joml.Quaternionf
 import org.joml.Vector3f
 
 /**
@@ -26,6 +28,9 @@ import org.joml.Vector3f
  * 座標・寸法・層の求め方は Bukkit 描画時と同一（中心＋right*x＋up*y＋normal*(-layer*LATER-DEPTH-lift)、
  * Text は baseline 補正＋有効層、枠は主 visual と同一 pose の 4 分割）であり、
  * 数値 hit-test（[GestureGuiGeometry.hitTest]）と表示位置が一致します。
+ *
+ * 向きは entity 回転（常に 0）ではなく変形の leftRotation quaternion で与えます。
+ * 角度の byte 量子化・欄割付の影響を受けず、float 精度で向きが決まります。
  */
 internal class GestureGuiVirtualScreens(
     private val backend: GestureGuiProtocolLibBackend,
@@ -48,13 +53,14 @@ internal class GestureGuiVirtualScreens(
 
     fun visualPoint(pose: GestureGuiScreenPose, x: Double, y: Double, layer: Double, lift: Double = 0.0): PlacedPoint {
         val point = pose.center + pose.right * x + pose.up * y + pose.normal * (-layer * LAYER_DEPTH - lift)
-        return PlacedPoint(point.x, point.y, point.z, GestureGuiGeometry.displayYaw(pose), GestureGuiGeometry.displayPitch(pose))
+        // 向きは変形 quaternion が担うため、entity 回転は 0 固定です。
+        return PlacedPoint(point.x, point.y, point.z, 0f, 0f)
     }
 
     fun textPoint(pose: GestureGuiScreenPose, x: Double, y: Double, layer: Int): PlacedPoint {
         val point = pose.center + pose.right * x + pose.up * (y - TEXT_BASELINE_OFFSET) +
             pose.normal * (-GestureGuiTextDepth.effectiveLayer(layer) * LAYER_DEPTH - TEXT_ITEM_SURFACE_LIFT)
-        return PlacedPoint(point.x, point.y, point.z, GestureGuiGeometry.textDisplayYaw(pose), GestureGuiGeometry.textDisplayPitch(pose))
+        return PlacedPoint(point.x, point.y, point.z, 0f, 0f)
     }
 
     // -- fingerprint（純粋・単体試験可能） ------------------------------------
@@ -141,7 +147,7 @@ internal class GestureGuiVirtualScreens(
                 }
                 if (live) backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
-                    item.point.yawDegrees, item.point.pitchDegrees, item.metadata(viewer))
+                    item.metadata(viewer))
                 state.liveVirtualIds += id
                 state.contentFingerprintByKey[item.key] = item.fingerprint
                 state.pointByKey[item.key] = item.point
@@ -219,7 +225,7 @@ internal class GestureGuiVirtualScreens(
             val point = visualPoint(pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
             val material = DUMMY_PANEL_MATERIAL
             return listOf(DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "D|${dummy.width}|${dummy.height}") {
-                blockMetadata(it, point, dummy.width, dummy.height, Bukkit.createBlockData(material), null)
+                blockMetadata(it, pose, point, dummy.width, dummy.height, Bukkit.createBlockData(material), null)
             })
         }
         val currentView = requireNotNull(view) { "通常同期には view が必要です" }
@@ -234,7 +240,7 @@ internal class GestureGuiVirtualScreens(
             val key = "$screenKey/overlay"
             val point = visualPoint(it.pose, 0.0, 0.0, MODAL_OVERLAY_LAYER)
             items += DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "O|${it.material}|${it.width}|${it.height}") { viewer ->
-                blockMetadata(viewer, point, it.width, it.height, Bukkit.createBlockData(it.material), null)
+                blockMetadata(viewer, it.pose, point, it.width, it.height, Bukkit.createBlockData(it.material), null)
             }
         }
         if (lod == GestureViewerLod.FULL) {
@@ -258,7 +264,7 @@ internal class GestureGuiVirtualScreens(
         val point = visualPoint(pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
         val fingerprint = "BG|${panelFingerprint(panel)}"
         return DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-            blockMetadata(viewer, point, panel.width, panel.height, Bukkit.createBlockData(panel.backgroundMaterial), null)
+            blockMetadata(viewer, pose, point, panel.width, panel.height, Bukkit.createBlockData(panel.backgroundMaterial), null)
         }
     }
 
@@ -275,7 +281,7 @@ internal class GestureGuiVirtualScreens(
             val key = "$screenKey/frame/$index"
             val point = visualPoint(pose, part.x, part.y, PANEL_FRAME_LAYER)
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "F|$index|${part.width}|${part.height}|${panel.frameMaterial}") { viewer ->
-                blockMetadata(viewer, point, part.width, part.height, frameData, null)
+                blockMetadata(viewer, pose, point, part.width, part.height, frameData, null)
             }
         }
     }
@@ -299,14 +305,14 @@ internal class GestureGuiVirtualScreens(
             is GestureGuiVisual.Block -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
                 DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                    blockMetadata(viewer, point, visual.width, visual.height, visual.blockData, visual.glowColor)
+                    blockMetadata(viewer, pose, point, visual.width, visual.height, visual.blockData, visual.glowColor)
                 }
             }
             is GestureGuiVisual.Item -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble(), TEXT_ITEM_SURFACE_LIFT)
                 DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { _ ->
                     val scale = visual.scale.toFloat()
-                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), visual.glowColor) +
+                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), blockQuat(pose), visual.glowColor) +
                         backend.itemStackValue(visual.item) + backend.itemDisplayTypeValue()
                 }
             }
@@ -314,7 +320,7 @@ internal class GestureGuiVirtualScreens(
                 val point = textPoint(pose, visual.x, visual.y, visual.layer)
                 DesiredVisual(key, EntityType.TEXT_DISPLAY, point, fingerprint) { _ ->
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
-                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), null) +
+                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), textQuat(pose), null) +
                         backend.textValues(
                             GestureGuiProtocolLibBackend.componentJson(visual.text),
                             visual.lineWidth, visual.seeThrough, alignmentFlags(visual.alignment),
@@ -341,23 +347,28 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey.getValue(key)
             }
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                blockMetadata(viewer, point, segment.width, segment.height, outline.blockData, null)
+                blockMetadata(viewer, pose, point, segment.width, segment.height, outline.blockData, null)
             }
         }
     }
 
     private fun blockMetadata(
         viewer: Player,
+        pose: GestureGuiScreenPose,
         point: PlacedPoint,
         width: Double,
         height: Double,
         blockData: org.bukkit.block.data.BlockData,
         glowColor: Int?,
-    ): List<WrappedDataValue> = backend.displayBaseValues(
-        Vector3f((-width / 2.0).toFloat(), (-height / 2.0).toFloat(), 0f),
-        Vector3f(width.toFloat(), height.toFloat(), BLOCK_NORMAL_DEPTH),
-        glowColor,
-    ) + backend.blockStateValue(blockData, viewer.world, viewer.location)
+    ): List<WrappedDataValue> {
+        val quat = blockQuat(pose)
+        return backend.displayBaseValues(
+            centeredTranslation(quat, width, height, BLOCK_NORMAL_DEPTH),
+            Vector3f(width.toFloat(), height.toFloat(), BLOCK_NORMAL_DEPTH),
+            quat,
+            glowColor,
+        ) + backend.blockStateValue(blockData, viewer.world, viewer.location)
+    }
 
     // -- hover ---------------------------------------------------------------
 
@@ -383,7 +394,7 @@ internal class GestureGuiVirtualScreens(
         val textPoint = textPoint(pose, hover.x, hover.y, hover.layer)
         upsertSingle(viewer, state, textKey, EntityType.TEXT_DISPLAY, textPoint, fingerprint, poseChanged) {
             val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
-            backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), null) +
+            backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), textQuat(pose), null) +
                 backend.textValues(
                     GestureGuiProtocolLibBackend.componentJson(hover.text),
                     hover.lineWidth, false, 0,
@@ -394,7 +405,7 @@ internal class GestureGuiVirtualScreens(
             val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
             upsertSingle(viewer, state, blockKey, EntityType.BLOCK_DISPLAY, point,
                 "HB|$identity|${visual.visualId}|${blockData.asString}", poseChanged) {
-                blockMetadata(it, point, visual.width, visual.height, blockData, null)
+                blockMetadata(it, pose, point, visual.width, visual.height, blockData, null)
             }
         } else {
             removeSingle(viewer, state, blockKey)
@@ -429,10 +440,9 @@ internal class GestureGuiVirtualScreens(
         val fingerprint = "BGA|$width|$height|${panel.backgroundMaterial}"
         val id = state.virtualIdByKey.getOrPut(key) { backend.nextVirtualId() }
         val live = id in state.liveVirtualIds
-        val values = blockMetadata(viewer, point, width, height, Bukkit.createBlockData(panel.backgroundMaterial), null)
+        val values = blockMetadata(viewer, pose, point, width, height, Bukkit.createBlockData(panel.backgroundMaterial), null)
         if (!live) {
-            backend.spawnDisplay(viewer, id, EntityType.BLOCK_DISPLAY, point.x, point.y, point.z,
-                point.yawDegrees, point.pitchDegrees, values)
+            backend.spawnDisplay(viewer, id, EntityType.BLOCK_DISPLAY, point.x, point.y, point.z, values)
             state.liveVirtualIds += id
         } else {
             backend.sendMetadata(viewer, id, values)
@@ -493,12 +503,14 @@ internal class GestureGuiVirtualScreens(
         ) {
             return false
         }
-        backend.sendRelativeMove(viewer, id, dx, dy, dz, item.point.yawDegrees, item.point.pitchDegrees)
+        // 相対移動の向き欄は entity 回転と無関係のため 0 固定です（向きは変形が担います）。
+        backend.sendRelativeMove(viewer, id, dx, dy, dz, 0f, 0f)
         state.pointByKey[item.key] = assumedAfter
         return true
     }
 
-    private fun upsertSingle(        viewer: Player,
+    private fun upsertSingle(
+        viewer: Player,
         state: GestureViewerRenderState,
         key: String,
         type: EntityType,
@@ -511,8 +523,7 @@ internal class GestureGuiVirtualScreens(
         val live = id in state.liveVirtualIds
         if (!live || poseChanged) {
             if (live) backend.sendDestroy(viewer, listOf(id))
-            backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z,
-                point.yawDegrees, point.pitchDegrees, metadata(viewer))
+            backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
             state.liveVirtualIds += id
             state.contentFingerprintByKey[key] = fingerprint
         } else if (state.contentFingerprintByKey[key] != fingerprint) {
@@ -561,5 +572,45 @@ internal class GestureGuiVirtualScreens(
          */
         fun isHoverManagedKey(key: String): Boolean =
             key.endsWith("/hover") || key.endsWith("/hoverBlock")
+
+        /**
+         * Block・Item 系の向き quaternion です。local +X→right・+Y→up・+Z→−normal
+         *（閲覧者向き）へ写す適正回転であり、角度を経由しないため byte 量子化を受けません。
+         */
+        fun blockQuat(pose: GestureGuiScreenPose): Quaternionf =
+            quatFromColumns(pose.right, pose.up, pose.normal * -1.0)
+
+        /**
+         * Text 系の向き quaternion です。文字の可視面（local −Z）が閲覧者向きに
+         * なるよう、Block 系から local yaw 180° 反転させます（旧 textDisplayYaw 相当）。
+         */
+        fun textQuat(pose: GestureGuiScreenPose): Quaternionf =
+            quatFromColumns(pose.right * -1.0, pose.up, pose.normal)
+
+        /**
+         * 矩形 Block 面の中心合わせ平行移動です。
+         *
+         * entity 回転が 0 のため、local (w/2,h/2,d/2) 中心を quaternion で
+         * 同一回転させた逆向きが中心化ベクトルになります。spawn 座標が
+         * 厳密に面中心へ一致し、向きの慣習に依存しません。
+         */
+        fun centeredTranslation(quat: Quaternionf, width: Double, height: Double, depth: Float): Vector3f {
+            val half = Vector3f((width / 2.0).toFloat(), (height / 2.0).toFloat(), depth / 2f)
+            return quat.transform(half).negate()
+        }
+
+        private fun quatFromColumns(
+            xAxis: com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3,
+            yAxis: com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3,
+            zAxis: com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3,
+        ): Quaternionf {
+            // 列ベクトル指定であり、順序の解釈余地はありません。
+            val matrix = Matrix3f(
+                Vector3f(xAxis.x.toFloat(), xAxis.y.toFloat(), xAxis.z.toFloat()),
+                Vector3f(yAxis.x.toFloat(), yAxis.y.toFloat(), yAxis.z.toFloat()),
+                Vector3f(zAxis.x.toFloat(), zAxis.y.toFloat(), zAxis.z.toFloat()),
+            )
+            return Quaternionf().setFromUnnormalized(matrix).normalize()
+        }
     }
 }
