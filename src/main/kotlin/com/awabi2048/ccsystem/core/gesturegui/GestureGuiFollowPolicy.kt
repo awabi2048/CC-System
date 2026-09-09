@@ -26,10 +26,11 @@ internal object GestureGuiFollowPolicy {
     const val FOLLOW_POSITION_DEADBAND: Double = 0.002
 
     /**
-     * 無移動が何tick続けば停止確定とするかです。20TPS前提で3tick=約0.15秒です。
+     * 無移動が何tick続けば停止確定とするかです。20TPS前提で20tick=約1秒です。
      * 確定したらその場へ再召喚し、完全に固定します。
+     * 短い静止での再召喚の繰り返しと向きのちらつきを抑えるため、長めに取ります。
      */
-    const val STOP_SETTLE_TICKS: Long = 3L
+    const val STOP_SETTLE_TICKS: Long = 20L
 
     /**
      * 停止確定時に再召喚を行う最小移動量です(ブロック単位の距離)。

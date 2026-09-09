@@ -44,7 +44,7 @@ class GestureGuiFollowPolicyTest {
     }
 
     @Test
-    fun `stop is confirmed only after three still ticks following motion`() {
+    fun `stop is confirmed only after twenty still ticks following motion`() {
         // 移動中はMOVINGを返します。
         assertEquals(
             GestureGuiFollowPolicy.FollowMotionState.MOVING,
@@ -55,15 +55,15 @@ class GestureGuiFollowPolicyTest {
             GestureGuiFollowPolicy.FollowMotionState.SETTLING,
             GestureGuiFollowPolicy.decideFollowMotion(nowTick = 100L, lastMotionTick = -1L, moved = false),
         )
-        // 停止2tickまでは確定しません。
+        // 停止19tickまでは確定しません。
         assertEquals(
             GestureGuiFollowPolicy.FollowMotionState.SETTLING,
-            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 102L, lastMotionTick = 100L, moved = false),
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 119L, lastMotionTick = 100L, moved = false),
         )
-        // 停止3tickで確定します。
+        // 停止20tickで確定します。
         assertEquals(
             GestureGuiFollowPolicy.FollowMotionState.STOPPED,
-            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 103L, lastMotionTick = 100L, moved = false),
+            GestureGuiFollowPolicy.decideFollowMotion(nowTick = 120L, lastMotionTick = 100L, moved = false),
         )
     }
 
