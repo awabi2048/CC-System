@@ -134,6 +134,8 @@ internal class GestureGuiVirtualScreens(
         // 追加・移動・型変更・内容変更だけを送ります。無変化には触れません。
         // 移動・向きは spawn し直さず metadata で追従し、補間で滑らかにします。
         // spawn 座標（アンカー）は不変であり、差分は変形側へ載せます。
+        // 平坦化の遷移は末尾の集合更新より前で判定するため、正確に検出できます。
+        val flattenChanged = flattenDepth != (screenKey in state.flatScreens)
         desired.forEach { item ->
             val id = state.virtualIdByKey.getOrPut(item.key) { backend.nextVirtualId() }
             val known = state.contentFingerprintByKey[item.key]
@@ -149,7 +151,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey[item.key] = item.fingerprint
                 state.pointByKey[item.key] = item.point
                 state.typeByKey[item.key] = item.type
-            } else if (poseChanged || contentStale && known != item.fingerprint) {
+            } else if (poseChanged || flattenChanged || contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
                 state.contentFingerprintByKey[item.key] = item.fingerprint
             }

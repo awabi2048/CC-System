@@ -36,7 +36,7 @@ class GestureGuiVirtualOrientationTest {
     }
 
     private fun Vector3f.dotOf(x: Double, y: Double, z: Double): Double =
-        (this.x * x + this.y * y + this.z * z).toDouble()
+        this.x * x + this.y * y + this.z * z
 
     @Test
     fun `block quatは旧ブロック向きに一致する`() {
