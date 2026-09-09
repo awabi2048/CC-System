@@ -184,6 +184,12 @@ class GestureGuiServiceImpl(
     override fun registerOwner(ownerId: UUID) {
         registeredOwners += ownerId
     }
+    /**
+     * 視線依存処理（catcher 追従・hover・外部 actor 照合）の実行間隔です。
+     * 毎 tick ではなく 5Hz（4 tick ごと）を基準とし、state transition 時は
+     * [requestGazeUpdate] で待ちなしに即時実行します。
+     */
+    private var gazeDirty: Boolean = true
 
     override fun unregisterOwner(ownerId: UUID) {
         registeredOwners -= ownerId
@@ -298,6 +304,8 @@ class GestureGuiServiceImpl(
             throw failure
         }
         val openedSession = requireNotNull(session)
+        // 開いた直後の 5Hz 待ちで入力入口が遅れないよう、次 tick で gaze を即時実行します。
+        requestGazeUpdate()
         return snapshot(openedSession)
     }
 
@@ -337,6 +345,8 @@ class GestureGuiServiceImpl(
                 session.fixedPoseSnapshot = session.screens.map(ScreenRuntime::pose)
             }
             repositionChildren(session)
+            GestureGuiRenderMetrics.logicalViewUpdates.incrementAndGet()
+            requestGazeUpdate()
             return true
         }
         val targetChild = session.children.firstOrNull { it.view.definition.screenId == view.definition.screenId }
@@ -355,6 +365,8 @@ class GestureGuiServiceImpl(
             // モーダルオーバーレイの基準位置も変わります。親画面更新時と同じ
             // 再配置経路を通し、孫画面まで古いposeを残さないようにします。
             repositionChildren(session)
+            GestureGuiRenderMetrics.logicalViewUpdates.incrementAndGet()
+            requestGazeUpdate()
             return true
         }
         return false
@@ -372,6 +384,7 @@ class GestureGuiServiceImpl(
         session.fixedPoseSnapshot = session.screens.map(ScreenRuntime::pose)
         session.targetYaw = null
         session.gazeOutsideTicks = 0
+        requestGazeUpdate()
         return true
     }
 
@@ -408,6 +421,7 @@ class GestureGuiServiceImpl(
         // 解除直後の追従状態を確定済みとして扱い、次tickの停止判定へ引き継ぎます。
         session.lastMotionTick = tickIndex
         session.followDirty = false
+        requestGazeUpdate()
         return true
     }
 
@@ -732,6 +746,9 @@ class GestureGuiServiceImpl(
                     current.knownActorIds += actor.uniqueId
                 }
         }
+        // refresh は openInternal 経由で gaze 更新を予約済みですが、actor 再生成後も
+        // 次 tick で照合が走るよう明示します。
+        requestGazeUpdate()
         return opened.ownerId == ownerId
     }
 
@@ -786,6 +803,7 @@ class GestureGuiServiceImpl(
                 }
             }, 1L)
         }
+        requestGazeUpdate()
         return true
     }
 
@@ -805,6 +823,7 @@ class GestureGuiServiceImpl(
                 destroyChild(child)
             }
         }
+        requestGazeUpdate()
         return true
     }
 
@@ -821,6 +840,7 @@ class GestureGuiServiceImpl(
             notifyClosed(session)
             if (sessions[ownerId] === session) sessions.remove(ownerId)
             destroy(session)
+            requestGazeUpdate()
             return true
         }
         if (session.state == GestureGuiSessionState.CLOSING) return true
@@ -963,6 +983,7 @@ class GestureGuiServiceImpl(
     internal fun leaveImmediately(actorId: UUID) {
         if (close(actorId, GestureGuiCloseMode.IMMEDIATE)) return
         sessions.values.filter { actorId in it.actors }.forEach { removeActor(it, actorId) }
+        requestGazeUpdate()
     }
 
     /** Shift+Jumpでは所有者は画面全体、第三者は自身の操作参加だけを終了します。 */
@@ -970,6 +991,7 @@ class GestureGuiServiceImpl(
         if (actorId in sessions) return close(actorId)
         val session = sessions.values.firstOrNull { actorId in it.actors } ?: return false
         removeActor(session, actorId)
+        requestGazeUpdate()
         return true
     }
 
@@ -1184,14 +1206,36 @@ class GestureGuiServiceImpl(
         }, delay)
     }
 
+    /**
+     * 次のサービス tick で視線依存処理を即時実行します。
+     *
+     * session open/close・world 変化・teleport・GUI 有効/無効切替・操作権限喪失等の
+     * 明確な state transition 用であり、通常の視線追跡・hover 更新は 5Hz 周期に従います。
+     */
+    private fun requestGazeUpdate() {
+        gazeDirty = true
+    }
+
     private fun tick() {
         tickIndex++
-        sessions.values.toList().forEach { session ->
-            val owner = Bukkit.getPlayer(session.ownerId)
-            if (owner == null || !owner.isOnline) {
-                close(session.ownerId, GestureGuiCloseMode.IMMEDIATE)
-                return@forEach
-            }
+        GestureGuiRenderMetrics.tickCount.incrementAndGet()
+        sessions.values.toList().forEach { session -> tickFollow(session) }
+        // 視線依存処理は 5Hz（4 tick ごと）を基準とし、transition 時のみ即時実行します。
+        // player×session の全量 visibility 照合・catcher/teleport・hover 更新を
+        // 毎 tick 行わないことで、session 数の増加に対する負荷拡大を抑えます。
+        if (gazeDirty || tickIndex % GAZE_INTERVAL_TICKS == 0L) {
+            gazeDirty = false
+            gazePass()
+        }
+    }
+
+    /** 追従判定だけを毎 tick 行います。描画・入力の entity 操作は含みません。 */
+    private fun tickFollow(session: Session) {
+        val owner = Bukkit.getPlayer(session.ownerId)
+        if (owner == null || !owner.isOnline) {
+            close(session.ownerId, GestureGuiCloseMode.IMMEDIATE)
+            return
+        }
             // 固定位置モードではプレイヤー追従せず、open時のposeを維持します。
             // 固定中にダミーが残存するはずはありませんが、残っていた場合は
             // 本体へ戻して表示不整合を自己回復させます。
@@ -1269,6 +1313,19 @@ class GestureGuiServiceImpl(
                     }
                 }
             }
+    }
+
+    /**
+     * 視線依存処理（所有者 actor・hover・外部 actor 照合）を 5Hz で行います。
+     *
+     * 毎 tick の全量 visibility 照合・catcher teleport・hover 更新をやめ、
+     * gaze 周期または state transition 時のみ実行します。hit-test 対象は
+     * この pass 内に限定し、tick 駆動の無条件走査を行いません。
+     */
+    private fun gazePass() {
+        sessions.values.toList().forEach { session ->
+            val owner = Bukkit.getPlayer(session.ownerId) ?: return@forEach
+            if (!owner.isOnline) return@forEach
             if (session.state == GestureGuiSessionState.ACTIVE) {
                 if (session.dummyActive) {
                     // ダミー表示中は本体の古いposeへの誤操作を防ぐため、入力を
@@ -1288,6 +1345,7 @@ class GestureGuiServiceImpl(
                         val actor = getOrCreateActor(session, owner)
                         actor?.let {
                             renderer.moveCatcher(it.catcher, catcherLocation(owner))
+                            GestureGuiRenderMetrics.catcherMoves.incrementAndGet()
                             updateHover(session, it, owner, ownerHit)
                         }
                     }
@@ -1296,6 +1354,7 @@ class GestureGuiServiceImpl(
                 // 開閉アニメーション中は入口を維持し、ワールド操作が漏れないようにします。
                 session.actors[session.ownerId]?.let { actor ->
                     renderer.moveCatcher(actor.catcher, catcherLocation(owner))
+                    GestureGuiRenderMetrics.catcherMoves.incrementAndGet()
                     updateHover(session, actor, owner, null)
                 }
             }
@@ -1316,6 +1375,8 @@ class GestureGuiServiceImpl(
             // 毎tickのshowToはPaper側で既表示Entityを再送せず、参加・再追跡時だけを
             // 補完するための冪等操作です。
             activeSessions.forEach { session ->
+                // 候補評価数を計測し、player×session の走査規模を可視化します。
+                GestureGuiRenderMetrics.candidateEvaluations.incrementAndGet()
                 // 動的権限を失ったプレイヤーは、既にEntityを受信済みでも同じtickで
                 // 非表示にします。入力claimだけを解放すると、表示だけが残って
                 // 「操作できそうに見える」状態になるためです。
@@ -1641,6 +1702,7 @@ class GestureGuiServiceImpl(
         // ダミー表示中は本体の古いposeへの入力を無効化します。dispatch・視線・
         // 距離の全経路がこの関門を通るため、操作・ホバー・catcher を一括で止められます。
         if (session.dummyActive) return null
+        GestureGuiRenderMetrics.hitTests.incrementAndGet()
         val ray = ray(player)
         fun childHit(child: ChildRuntime): TargetHit? = child.takeIf {
             it.state == GestureGuiSessionState.ACTIVE
@@ -1878,6 +1940,8 @@ class GestureGuiServiceImpl(
         // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
         const val CHILD_STACK_DEPTH = 0.25
         const val MAX_CHILD_DEPTH = 3
+        /** 視線依存処理の実行間隔（tick）です。4 tick = 約5Hz です。 */
+        const val GAZE_INTERVAL_TICKS: Long = 4L
         /** 固定位置モードで、アンカーから画面中心までの距離 */
         const val FIXED_SCREEN_DISTANCE: Double = 1.2
         /** 固定位置モードで、画面をアンカーからどれだけ持ち上げるか */
