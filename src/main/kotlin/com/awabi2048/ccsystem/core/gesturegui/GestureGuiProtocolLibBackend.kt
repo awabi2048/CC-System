@@ -143,6 +143,72 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
 
     fun nextVirtualId(): Int = idAllocator.getAndIncrement()
 
+    /**
+     * 初回 spawn 時に基準 template との突合を行います（診断用・原因特定後に除去）。
+     *
+     * 不可視 Bukkit Display を同一 tick で生成・破棄し、watcher の実 index・値を
+     * 本 backend の想定と突き合わせます。不一致は向き・寸法ずれの直接原因になります。
+     */
+    private var probeDone = false
+
+    private fun runOneShotProbe(sampleViewer: Player) {
+        if (probeDone) return
+        probeDone = true
+        runCatching { probeBlock(sampleViewer); probeText(sampleViewer) }.onFailure { failure ->
+            plugin.logger.log(Level.WARNING, "[GestureGuiProbe] 突合に失敗しました", failure)
+        }
+    }
+
+    private fun probeBlock(sampleViewer: Player) {
+        val template = sampleViewer.world.spawn(sampleViewer.location, BlockDisplay::class.java) {
+            it.isVisibleByDefault = false
+            it.isPersistent = false
+            it.billboard = org.bukkit.entity.Display.Billboard.CENTER
+            it.brightness = org.bukkit.entity.Display.Brightness(7, 9)
+            it.isGlowing = true
+            it.setGlowColorOverride(org.bukkit.Color.fromRGB(1, 2, 3))
+            it.block = org.bukkit.Bukkit.createBlockData(org.bukkit.Material.STONE)
+        }
+        try {
+            val watcher = WrappedDataWatcher.getEntityWatcher(template)
+            val at = { index: Int -> watcher.getWatchableObject(index)?.value }
+            plugin.logger.info(
+                "[GestureGuiProbe] block translation[11]=${at(11)} scale[12]=${at(12)} " +
+                    "billboard[15]=${at(15)} brightness[16]=${at(16)} glowFlags[0]=${at(0)} " +
+                    "glowColor[22]=${at(22)} blockState[23]=${at(23)?.javaClass?.name}",
+            )
+            check((at(15) as? Byte) == 3.toByte()) { "billboard CENTER が 3 ではありません: ${at(15)}" }
+            check(at(16) == packBrightness(7, 9)) { "brightness pack が不一致です: ${at(16)}" }
+            check((at(0) as? Byte)?.toInt()?.and(0x40) != 0) { "glow bit が立っていません: ${at(0)}" }
+            plugin.logger.info("[GestureGuiProbe] block OK")
+        } finally {
+            template.remove()
+        }
+    }
+
+    private fun probeText(sampleViewer: Player) {
+        val template = sampleViewer.world.spawn(sampleViewer.location, org.bukkit.entity.TextDisplay::class.java) {
+            it.isVisibleByDefault = false
+            it.isPersistent = false
+            it.text(net.kyori.adventure.text.Component.text("PROBE-12345"))
+            it.lineWidth = 123
+            it.isSeeThrough = true
+            it.alignment = org.bukkit.entity.TextDisplay.TextAlignment.RIGHT
+        }
+        try {
+            val watcher = WrappedDataWatcher.getEntityWatcher(template)
+            val at = { index: Int -> watcher.getWatchableObject(index)?.value }
+            plugin.logger.info(
+                "[GestureGuiProbe] text[23]=${at(23)} lineWidth[24]=${at(24)} flags[27]=${at(27)}",
+            )
+            check(at(24) == 123) { "lineWidth が不一致です: ${at(24)}" }
+            check((at(27) as? Byte) == (2 or 16).toByte()) { "text flags が不一致です: ${at(27)}" }
+            plugin.logger.info("[GestureGuiProbe] text OK")
+        } finally {
+            template.remove()
+        }
+    }
+
     /** viewer へ virtual Display を生成し、初期 metadata を一括送信します。 */
     fun spawnDisplay(
         viewer: Player,
@@ -155,6 +221,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         pitchDegrees: Float,
         initialMetadata: List<WrappedDataValue>,
     ) {
+        runOneShotProbe(viewer)
         val packet = manager.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
         packet.integers.write(0, virtualId)
         packet.integers.write(1, 0)
@@ -171,6 +238,14 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         send(viewer, packet)
         if (initialMetadata.isNotEmpty()) sendMetadata(viewer, virtualId, initialMetadata)
         GestureGuiRenderMetrics.virtualSpawns.incrementAndGet()
+        // 生成明細ログ（診断用・原因特定後に除去）。向き・寸法の突合に使います。
+        plugin.logger.info(
+            "[GestureGuiSpawnDiag] viewer=${viewer.name} id=$virtualId type=$type " +
+                "pos=(${"%.3f".format(x)},${"%.3f".format(y)},${"%.3f".format(z)}) " +
+                "yaw=${"%.2f".format(yawDegrees)} pitch=${"%.2f".format(pitchDegrees)} " +
+                "packedYaw=${toPackedByte(yawDegrees)} packedPitch=${toPackedByte(pitchDegrees)} " +
+                "meta=${initialMetadata.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" }}",
+        )
     }
 
     fun sendMetadata(viewer: Player, virtualId: Int, values: List<WrappedDataValue>) {
@@ -373,6 +448,12 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
 
         /** Bukkit yaw/pitch（度）を packet 用 byte へ変換します。 */
         fun toPackedByte(degrees: Float): Byte = (degrees * 256.0f / 360.0f).toInt().toByte()
+
+        /** 診断ログ用の値要約です。長大な NMS 文字列を抑えます。 */
+        fun summarizeValue(value: Any?): String {
+            val text = value.toString()
+            return if (text.length <= 120) text else text.take(120) + "…(${text.length})"
+        }
 
         /** adventure Component を packet 用 JSON へ変換します。 */
         fun componentJson(text: net.kyori.adventure.text.Component): String =
