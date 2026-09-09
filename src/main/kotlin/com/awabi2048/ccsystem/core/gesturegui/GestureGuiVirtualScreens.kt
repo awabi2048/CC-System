@@ -128,19 +128,16 @@ internal class GestureGuiVirtualScreens(
             .filterNot(::isHoverManagedKey)
             .toSet()
         // 追加・移動・型変更・内容変更だけを送ります。無変化には触れません。
-        // 移動は teleport で追従し、位置回転補間で glide させます。
+        // 移動・向きは spawn し直さず metadata で追従し、補間で滑らかにします。
+        // spawn 座標（アンカー）は不変であり、差分は変形側へ載せます。
         desired.forEach { item ->
             val id = state.virtualIdByKey.getOrPut(item.key) { backend.nextVirtualId() }
             val known = state.contentFingerprintByKey[item.key]
             val live = id in state.liveVirtualIds
-            val sentPoint = state.pointByKey[item.key]
             val sentType = state.typeByKey[item.key]
-            // ただしダミー鍵の連続微動は相対移動連鎖で追従し、瞬きをなくします。
-            val isDummyKey = dummyContent != null && item.key == "$screenKey/dummy"
             val typeChanged = sentType != null && sentType != item.type
-            val pointMoved = sentPoint != item.point
             if (!live || typeChanged) {
-                // 新規・型変更は作り直します。
+                // 新規・型変更だけ作り直します。
                 if (live) backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
                     item.metadata(viewer))
@@ -148,28 +145,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey[item.key] = item.fingerprint
                 state.pointByKey[item.key] = item.point
                 state.typeByKey[item.key] = item.type
-                if (isDummyKey) state.quatByKey[item.key] = Quaternionf(blockQuat(pose))
-            } else if (pointMoved) {
-                // 位置と変形は排他にせず、それぞれ必要に応じて送ります。
-                // 移動と内容変更の同時発生でも、内容差分を取りこぼしません。
-                if (isDummyKey && tryRelativeMove(viewer, state, id, item, sentPoint!!, blockQuat(pose))) {
-                    // 相対移動で追従しました。内容判定は下へ進みます。
-                } else if (backend.sendTeleport(viewer, id, item.point.x, item.point.y, item.point.z)) {
-                    state.pointByKey[item.key] = item.point
-                } else {
-                    // teleport 失敗時は作り直します。
-                    backend.sendDestroy(viewer, listOf(id))
-                    backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
-                        item.metadata(viewer))
-                    state.liveVirtualIds += id
-                    state.contentFingerprintByKey[item.key] = item.fingerprint
-                    state.pointByKey[item.key] = item.point
-                }
-                if (contentStale && state.contentFingerprintByKey[item.key] != item.fingerprint) {
-                    backend.sendMetadata(viewer, id, item.metadata(viewer))
-                    state.contentFingerprintByKey[item.key] = item.fingerprint
-                }
-            } else if (contentStale && known != item.fingerprint) {
+            } else if (poseChanged || contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
                 state.contentFingerprintByKey[item.key] = item.fingerprint
             }
@@ -183,7 +159,6 @@ internal class GestureGuiVirtualScreens(
             state.contentFingerprintByKey.remove(key)
             state.pointByKey.remove(key)
             state.typeByKey.remove(key)
-            state.quatByKey.remove(key)
         }
         state.poseByScreenKey[screenKey] = pose
         state.lodByScreenKey[screenKey] = lod
@@ -199,7 +174,6 @@ internal class GestureGuiVirtualScreens(
             state.contentFingerprintByKey.remove(key)
             state.pointByKey.remove(key)
             state.typeByKey.remove(key)
-            state.quatByKey.remove(key)
         }
         state.poseByScreenKey.remove(screenKey)
         state.lodByScreenKey.remove(screenKey)
@@ -214,7 +188,6 @@ internal class GestureGuiVirtualScreens(
         state.contentFingerprintByKey.clear()
         state.pointByKey.clear()
         state.typeByKey.clear()
-        state.quatByKey.clear()
         state.poseByScreenKey.clear()
         state.lodByScreenKey.clear()
         state.hiddenVisualIds.clear()
@@ -245,22 +218,22 @@ internal class GestureGuiVirtualScreens(
             val point = visualPoint(pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
             val material = DUMMY_PANEL_MATERIAL
             return listOf(DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "D|${dummy.width}|${dummy.height}") {
-                blockMetadata(it, pose, point, dummy.width, dummy.height, Bukkit.createBlockData(material), null)
+                blockMetadata(it, pose, anchorOf(state, key, point), point, dummy.width, dummy.height, Bukkit.createBlockData(material), null)
             })
         }
         val currentView = requireNotNull(view) { "通常同期には view が必要です" }
         val panel = currentView.panel
         val items = mutableListOf<DesiredVisual>()
         // 背景＋枠は BACKGROUND_ONLY でも送ります（上下背景パネルのみ）。
-        items += panelBackground(screenKey, panel, pose)
-        items += panelFrames(screenKey, panel, pose)
+        items += panelBackground(screenKey, panel, pose, state)
+        items += panelFrames(screenKey, panel, pose, state)
         overlay?.let {
             // 遮蔽面は子画面の描画集合に含め、同じ sweep で管理します。
             // 別経路で送ると子画面同期の過剰分削除に巻き込まれるためです。
             val key = "$screenKey/overlay"
             val point = visualPoint(it.pose, 0.0, 0.0, MODAL_OVERLAY_LAYER)
             items += DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "O|${it.material}|${it.width}|${it.height}") { viewer ->
-                blockMetadata(viewer, it.pose, point, it.width, it.height, Bukkit.createBlockData(it.material), null)
+                blockMetadata(viewer, it.pose, anchorOf(state, key, point), point, it.width, it.height, Bukkit.createBlockData(it.material), null)
             }
         }
         if (lod == GestureViewerLod.FULL) {
@@ -279,16 +252,26 @@ internal class GestureGuiVirtualScreens(
         return items
     }
 
-    private fun panelBackground(screenKey: String, panel: GestureGuiPanel, pose: GestureGuiScreenPose): DesiredVisual {
+    private fun panelBackground(
+        screenKey: String,
+        panel: GestureGuiPanel,
+        pose: GestureGuiScreenPose,
+        state: GestureViewerRenderState,
+    ): DesiredVisual {
         val key = "$screenKey/bg"
         val point = visualPoint(pose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
         val fingerprint = "BG|${panelFingerprint(panel)}"
         return DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-            blockMetadata(viewer, pose, point, panel.width, panel.height, Bukkit.createBlockData(panel.backgroundMaterial), null)
+            blockMetadata(viewer, pose, anchorOf(state, key, point), point, panel.width, panel.height, Bukkit.createBlockData(panel.backgroundMaterial), null)
         }
     }
 
-    private fun panelFrames(screenKey: String, panel: GestureGuiPanel, pose: GestureGuiScreenPose): List<DesiredVisual> {
+    private fun panelFrames(
+        screenKey: String,
+        panel: GestureGuiPanel,
+        pose: GestureGuiScreenPose,
+        state: GestureViewerRenderState,
+    ): List<DesiredVisual> {
         val innerHeight = panel.height - panel.frameWidth * 2.0
         val parts = listOf(
             QuadPart(0.0, (panel.height - panel.frameWidth) / 2.0, panel.width, panel.frameWidth),
@@ -301,7 +284,7 @@ internal class GestureGuiVirtualScreens(
             val key = "$screenKey/frame/$index"
             val point = visualPoint(pose, part.x, part.y, PANEL_FRAME_LAYER)
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "F|$index|${part.width}|${part.height}|${panel.frameMaterial}") { viewer ->
-                blockMetadata(viewer, pose, point, part.width, part.height, frameData, null)
+                blockMetadata(viewer, pose, anchorOf(state, key, point), point, part.width, part.height, frameData, null)
             }
         }
     }
@@ -325,14 +308,16 @@ internal class GestureGuiVirtualScreens(
             is GestureGuiVisual.Block -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
                 DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                    blockMetadata(viewer, pose, point, visual.width, visual.height, visual.blockData, visual.glowColor)
+                    blockMetadata(viewer, pose, anchorOf(state, key, point), point, visual.width, visual.height, visual.blockData, visual.glowColor)
                 }
             }
             is GestureGuiVisual.Item -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble(), TEXT_ITEM_SURFACE_LIFT)
                 DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { _ ->
                     val scale = visual.scale.toFloat()
-                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), blockQuat(pose), visual.glowColor) +
+                    val quat = blockQuat(pose)
+                    val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, visual.glowColor) +
                         backend.itemStackValue(visual.item) + backend.itemDisplayTypeValue()
                 }
             }
@@ -340,7 +325,9 @@ internal class GestureGuiVirtualScreens(
                 val point = textPoint(pose, visual.x, visual.y, visual.layer)
                 DesiredVisual(key, EntityType.TEXT_DISPLAY, point, fingerprint) { _ ->
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
-                    backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), textQuat(pose), null) +
+                    val quat = textQuat(pose)
+                    val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
                         backend.textValues(
                             GestureGuiProtocolLibBackend.componentJson(visual.text),
                             visual.lineWidth, visual.seeThrough, alignmentFlags(visual.alignment),
@@ -367,7 +354,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey.getValue(key)
             }
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                blockMetadata(viewer, pose, point, segment.width, segment.height, outline.blockData, null)
+                blockMetadata(viewer, pose, anchorOf(state, key, point), point, segment.width, segment.height, outline.blockData, null)
             }
         }
     }
@@ -375,7 +362,8 @@ internal class GestureGuiVirtualScreens(
     private fun blockMetadata(
         viewer: Player,
         pose: GestureGuiScreenPose,
-        point: PlacedPoint,
+        anchor: PlacedPoint,
+        target: PlacedPoint,
         width: Double,
         height: Double,
         blockData: org.bukkit.block.data.BlockData,
@@ -383,12 +371,18 @@ internal class GestureGuiVirtualScreens(
     ): List<WrappedDataValue> {
         val quat = blockQuat(pose)
         return backend.displayBaseValues(
-            facePlaneTranslation(quat, width, height),
+            resolveTranslation(
+                quat, anchor, target,
+                Vector3f((-width / 2.0).toFloat(), (-height / 2.0).toFloat(), 0f),
+            ),
             Vector3f(width.toFloat(), height.toFloat(), BLOCK_NORMAL_DEPTH),
             quat,
             glowColor,
         ) + backend.blockStateValue(blockData, viewer.world, viewer.location)
     }
+
+    private fun anchorOf(state: GestureViewerRenderState, key: String, target: PlacedPoint): PlacedPoint =
+        state.pointByKey[key] ?: target
 
     // -- hover ---------------------------------------------------------------
 
@@ -414,7 +408,9 @@ internal class GestureGuiVirtualScreens(
         val textPoint = textPoint(pose, hover.x, hover.y, hover.layer)
         upsertSingle(viewer, state, textKey, EntityType.TEXT_DISPLAY, textPoint, fingerprint, poseChanged) {
             val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
-            backend.displayBaseValues(Vector3f(), Vector3f(scale, scale, scale), textQuat(pose), null) +
+            val quat = textQuat(pose)
+            val translation = resolveTranslation(quat, anchorOf(state, textKey, textPoint), textPoint, Vector3f())
+            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
                 backend.textValues(
                     GestureGuiProtocolLibBackend.componentJson(hover.text),
                     hover.lineWidth, false, 0,
@@ -425,7 +421,7 @@ internal class GestureGuiVirtualScreens(
             val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
             upsertSingle(viewer, state, blockKey, EntityType.BLOCK_DISPLAY, point,
                 "HB|$identity|${visual.visualId}|${blockData.asString}", poseChanged) {
-                blockMetadata(it, pose, point, visual.width, visual.height, blockData, null)
+                blockMetadata(it, pose, anchorOf(state, blockKey, point), point, visual.width, visual.height, blockData, null)
             }
         } else {
             removeSingle(viewer, state, blockKey)
@@ -460,7 +456,7 @@ internal class GestureGuiVirtualScreens(
         val fingerprint = "BGA|$width|$height|${panel.backgroundMaterial}"
         val id = state.virtualIdByKey.getOrPut(key) { backend.nextVirtualId() }
         val live = id in state.liveVirtualIds
-        val values = blockMetadata(viewer, pose, point, width, height, Bukkit.createBlockData(panel.backgroundMaterial), null)
+        val values = blockMetadata(viewer, pose, anchorOf(state, key, point), point, width, height, Bukkit.createBlockData(panel.backgroundMaterial), null)
         if (!live) {
             backend.spawnDisplay(viewer, id, EntityType.BLOCK_DISPLAY, point.x, point.y, point.z, values)
             state.liveVirtualIds += id
@@ -490,53 +486,7 @@ internal class GestureGuiVirtualScreens(
                 state.contentFingerprintByKey.remove(key)
                 state.pointByKey.remove(key)
                 state.typeByKey.remove(key)
-                state.quatByKey.remove(key)
-            }
-    }
-
-    /**
-     * ダミー鍵の微動を相対移動で送ります。成功時は想定座標を進めて true を返します。
-     *
-     * 範囲外（±8 ブロック超）・drift 超過時は false を返し、呼び出し側で
-     * destroy+spawn 再同期します。送信失敗時は想定がずれるため、次回 drift 検出で
-     * 自動的に再同期されます。
-     * 向きの変化は metadata で追従します（再生成なし・補間あり）。
-     */
-    private fun tryRelativeMove(
-        viewer: Player,
-        state: GestureViewerRenderState,
-        id: Int,
-        item: DesiredVisual,
-        assumed: PlacedPoint,
-        quat: Quaternionf,
-    ): Boolean {
-        val dx = GestureGuiProtocolLibBackend.relativeShort(item.point.x - assumed.x) ?: return false
-        val dy = GestureGuiProtocolLibBackend.relativeShort(item.point.y - assumed.y) ?: return false
-        val dz = GestureGuiProtocolLibBackend.relativeShort(item.point.z - assumed.z) ?: return false
-        val assumedAfter = PlacedPoint(
-            assumed.x + dx / 4096.0,
-            assumed.y + dy / 4096.0,
-            assumed.z + dz / 4096.0,
-            0f,
-            0f,
-        )
-        if (GestureGuiProtocolLibBackend.exceedsDrift(item.point.x, assumedAfter.x) ||
-            GestureGuiProtocolLibBackend.exceedsDrift(item.point.y, assumedAfter.y) ||
-            GestureGuiProtocolLibBackend.exceedsDrift(item.point.z, assumedAfter.z)
-        ) {
-            return false
-        }
-        // 相対移動の向き欄は entity 回転と無関係のため 0 固定です（向きは変形が担います）。
-        backend.sendRelativeMove(viewer, id, dx, dy, dz, 0f, 0f)
-        state.pointByKey[item.key] = assumedAfter
-        // 向きの変化は metadata で追従します（再生成なし・補間あり）。
-        // 旧追従仕様に合わせ、しきい値なしの完全一致比較とします。静止時は無送信です。
-        val oldQuat = state.quatByKey[item.key]
-        if (oldQuat == null || oldQuat != quat) {
-            backend.sendMetadata(viewer, id, item.metadata(viewer))
-            state.quatByKey[item.key] = Quaternionf(quat)
-        }
-        return true
+                }
     }
 
     private fun upsertSingle(
@@ -555,19 +505,9 @@ internal class GestureGuiVirtualScreens(
             backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
             state.liveVirtualIds += id
             state.contentFingerprintByKey[key] = fingerprint
-        } else if (poseChanged) {
-            // hover の追従も teleport で行い、補間を効かせます。失敗時は作り直します。
-            // 位置と内容は排他にせず、内容差分があれば続けて送ります。
-            if (!backend.sendTeleport(viewer, id, point.x, point.y, point.z)) {
-                backend.sendDestroy(viewer, listOf(id))
-                backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
-                state.liveVirtualIds += id
-                state.contentFingerprintByKey[key] = fingerprint
-            } else if (state.contentFingerprintByKey[key] != fingerprint) {
-                backend.sendMetadata(viewer, id, metadata(viewer))
-                state.contentFingerprintByKey[key] = fingerprint
-            }
-        } else if (state.contentFingerprintByKey[key] != fingerprint) {
+            state.pointByKey[key] = point
+        } else if (poseChanged || state.contentFingerprintByKey[key] != fingerprint) {
+            // 移動・内容は metadata で追従し、補間で滑らかにします。
             backend.sendMetadata(viewer, id, metadata(viewer))
             state.contentFingerprintByKey[key] = fingerprint
         }
@@ -631,13 +571,25 @@ internal class GestureGuiVirtualScreens(
             quatFromColumns(pose.right, pose.up, pose.normal * -1.0)
 
         /**
-         * 矩形 Block 面の layer 平面合わせ平行移動です。
+         * 目標中心へ届く translation を解きます。
          *
-         * 旧 local 値 (-w/2,-h/2,0) を同一回転させることで、面を layer 平面上へ置き、
-         * テキストの持ち上げ量（約 0.003）との前後関係を旧表示と同一に保ちます。
+         * spawn 座標（アンカー）は不変とし、差分を変形側へ載せます。
+         * anchor 一致時は旧 local 値そのままに戻り、決定論的に安定します。
          */
-        fun facePlaneTranslation(quat: Quaternionf, width: Double, height: Double): Vector3f =
-            quat.transform(Vector3f((-width / 2.0).toFloat(), (-height / 2.0).toFloat(), 0f))
+        fun resolveTranslation(
+            quat: Quaternionf,
+            anchor: PlacedPoint,
+            target: PlacedPoint,
+            oldLocal: Vector3f,
+        ): Vector3f {
+            val delta = Vector3f(
+                (target.x - anchor.x).toFloat(),
+                (target.y - anchor.y).toFloat(),
+                (target.z - anchor.z).toFloat(),
+            )
+            val inverse = Quaternionf(quat).normalize().conjugate()
+            return inverse.transform(delta).add(Vector3f(oldLocal))
+        }
 
         private fun quatFromColumns(
             xAxis: com.awabi2048.ccsystem.api.gesturegui.GestureGuiVector3,

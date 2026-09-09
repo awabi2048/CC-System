@@ -333,7 +333,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 ListenerPriority.NORMAL,
                 PacketType.Play.Server.SPAWN_ENTITY,
                 PacketType.Play.Server.ENTITY_METADATA,
-                PacketType.Play.Server.ENTITY_TELEPORT,
             ) {
                 override fun onPacketSending(event: PacketEvent) {
                     runCatching { dumpReferencePacket(event) }
@@ -367,18 +366,8 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         sampleViewer.showEntity(plugin, block)
         sampleViewer.showEntity(plugin, text)
         plugin.logger.info(
-            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（teleport 後に破棄）",
+            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（8tick後に破棄）",
         )
-        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-            runCatching {
-                // 正規 teleport packet を捕捉するため、Bukkit 経路で再配置します。
-                val dest = loc.clone().add(1.5, -0.25, 2.5)
-                dest.yaw = 30.5f
-                dest.pitch = -7.25f
-                block.teleport(dest)
-                text.teleport(dest)
-            }
-        }, 3L)
         org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             runCatching {
                 sampleViewer.hideEntity(plugin, block)
@@ -409,20 +398,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
                 plugin.logger.info(
                     "[GestureGuiIntercept] meta id=$id " +
                         values.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" },
-                )
-            }
-            PacketType.Play.Server.ENTITY_TELEPORT -> {
-                val id = packet.integers.read(0)
-                if (id !in referenceIds) return
-                val structures = packet.structures
-                val inner = if (structures.size() == 1) {
-                    val move = structures.read(0)
-                    "doubles=${move.doubles.values} floats=${move.float.values}"
-                } else {
-                    "legacy doubles=${packet.doubles.values} bytes=${packet.bytes.values}"
-                }
-                plugin.logger.info(
-                    "[GestureGuiIntercept] teleport id=$id $inner bools=${packet.booleans.values}",
                 )
             }
             else -> {}
@@ -486,88 +461,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         packet.intLists.write(0, virtualIds.toList())
         send(viewer, packet)
         GestureGuiRenderMetrics.virtualDestroys.addAndGet(virtualIds.size.toLong())
-    }
-
-    /**
-     * 相対移動（＋向き）を送信します。ダミー追従の連続微動用です。
-     *
-     * short 差分は 1/4096 ブロック単位・±8 ブロックのため、呼び出し側で範囲を
-     * 検証してください。範囲外・drift 超過時は destroy+spawn で再同期します。
-     * NMS 宣言順（yRot, xRot）のため bytes 0 が yaw・1 が pitch です。
-     */
-    fun sendRelativeMove(
-        viewer: Player,
-        virtualId: Int,
-        dxShort: Int,
-        dyShort: Int,
-        dzShort: Int,
-        yawDegrees: Float,
-        pitchDegrees: Float,
-    ) {
-        val packet = manager.createPacket(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK)
-        packet.integers.write(0, virtualId)
-        packet.shorts.write(0, dxShort.toShort())
-        packet.shorts.write(1, dyShort.toShort())
-        packet.shorts.write(2, dzShort.toShort())
-        packet.bytes.write(0, toPackedByte(yawDegrees))
-        packet.bytes.write(1, toPackedByte(pitchDegrees))
-        packet.booleans.write(0, false)
-        send(viewer, packet)
-        GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
-    }
-
-    /**
-     * 絶対 teleport を送信し、座標を滑らかに追従させます。
-     *
-     * entity 回転は常に 0（向きは変形が担う）のため、角度欄は送りません。
-     * 位置回転補間（期間 1）により client 側で glide します。
-     * 構造は実行時に適応解決し（新式 PositionMoveRotation／旧式 xyz）、
-     * 解決不能時は false を返して destroy+spawn のままにします。
-     */
-    private var teleportUnsupported = false
-
-    fun sendTeleport(
-        viewer: Player,
-        virtualId: Int,
-        x: Double,
-        y: Double,
-        z: Double,
-    ): Boolean {
-        if (teleportUnsupported) return false
-        return runCatching {
-            val packet = manager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT)
-            packet.integers.write(0, virtualId)
-            val structures = packet.structures
-            if (structures.size() == 1) {
-                // 新式：PositionMoveRotation（double xyz＋float yaw/pitch）。
-                val move = structures.read(0)
-                move.doubles.write(0, x)
-                move.doubles.write(1, y)
-                move.doubles.write(2, z)
-                move.float.write(0, 0f)
-                move.float.write(1, 0f)
-                structures.write(0, move)
-            } else {
-                // 旧式：double xyz のみ送り、角度欄には触れません。
-                packet.doubles.write(0, x)
-                packet.doubles.write(1, y)
-                packet.doubles.write(2, z)
-            }
-            packet.booleans.write(0, false)
-            writeEmptyRelatives(packet)
-            send(viewer, packet)
-            GestureGuiRenderMetrics.virtualMoves.incrementAndGet()
-            true
-        }.onFailure { failure ->
-            teleportUnsupported = true
-            plugin.logger.log(Level.WARNING, "絶対 teleport を無効化し、destroy+spawn へ縮退します", failure)
-        }.getOrDefault(false)
-    }
-
-    private fun writeEmptyRelatives(packet: com.comphenix.protocol.events.PacketContainer) {
-        val sets = packet.modifier.withType<Set<*>>(Set::class.java)
-        if (sets.size() == 1) sets.write(0, emptySet<Any>())
-        else error("relatives 欄が1件ではありません: size=${sets.size()}")
     }
 
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
@@ -740,28 +633,11 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val NO_GLOW_COLOR: Int = -1
         /** NMS ItemStack のクラス名です。converter 出力の検証に使います。 */
         const val NMS_ITEM_STACK_CLASS: String = "net.minecraft.world.item.ItemStack"
-        /** 相対移動 short の安全域です。NMS 上限（±32767）に余裕を持たせます。 */
-        const val REL_SHORT_LIMIT: Int = 30000
-        /** 量子化 drift の再同期閾値（ブロック）です。視認限界以下にします。 */
-        const val REL_DRIFT_TOLERANCE: Double = 0.004
         /** 変形補間の期間（tick）です。旧経路の interpolationDuration と同値です。 */
         const val TRANSFORM_INTERP_TICKS: Int = 3
         /** 位置回転補間の期間（tick）です。旧経路の teleportDuration と同値です。 */
         const val POSROT_INTERP_TICKS: Int = 1
         const val ITEM_DISPLAY_GUI: Byte = 6
-
-        /**
-         * 相対移動の 1/4096 量子化です。範囲外（±8 ブロック超）は null を返し、
-         * 呼び出し側で destroy+spawn 再同期します。
-         */
-        fun relativeShort(deltaBlocks: Double): Int? {
-            val quantized = (deltaBlocks * 4096.0).roundToInt()
-            return quantized.takeIf { it in -REL_SHORT_LIMIT..REL_SHORT_LIMIT }
-        }
-
-        /** 量子化 drift が視認閾値を超えたかを返します。超えたら再同期します。 */
-        fun exceedsDrift(trueValue: Double, assumedValue: Double): Boolean =
-            kotlin.math.abs(trueValue - assumedValue) > REL_DRIFT_TOLERANCE
 
         /** text flags の alignment 部分です。Bukkit TextAlignment からの変換に使います。 */
         const val TEXT_ALIGN_LEFT: Byte = 8
