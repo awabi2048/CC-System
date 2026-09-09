@@ -31,6 +31,8 @@ internal data class GestureViewerRenderState(
     val poseByScreenKey: MutableMap<String, GestureGuiScreenPose> = mutableMapOf(),
     /** 画面キーごとの LOD です。画面単位で FULL / BACKGROUND_ONLY / HIDDEN を管理します。 */
     val lodByScreenKey: MutableMap<String, GestureViewerLod> = mutableMapOf(),
+    /** 平坦化中の画面キー群です。開幕 pop 演出で背景面へ重ねて送ります。 */
+    val flatScreens: MutableSet<String> = mutableSetOf(),
     /**
      * hover 置換でこの viewer へ隠している通常 visual の ID 群です。
      * 置換中は対象を描画対象から外し、hover テキストだけを前面に送ります。

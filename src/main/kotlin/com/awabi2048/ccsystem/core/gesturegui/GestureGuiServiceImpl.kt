@@ -75,6 +75,8 @@ class GestureGuiServiceImpl(
         /** モーダル遮蔽面の素材。null なら遮蔽面なし。 */
         val overlayMaterial: Material?,
         var state: GestureGuiSessionState,
+        /** 開幕 pop 演出中です。内容物を背景面へ平坦化して送ります。 */
+        var popActive: Boolean = false,
     )
 
     private data class TargetHit(
@@ -157,6 +159,11 @@ class GestureGuiServiceImpl(
          * 再召喚またはそのまま復帰させます。ダミーは viewer 状態側で管理します。
          */
         var dummyActive: Boolean = false,
+        /**
+         * 開幕 pop 演出中です。内容物を背景面へ平坦化して送り、
+         * 終了時に真深度へ tween させます。
+         */
+        var popActive: Boolean = false,
     )
 
     private val renderer = GestureGuiEntityRenderer(plugin, systemEntityRegistry)
@@ -805,9 +812,16 @@ class GestureGuiServiceImpl(
      *
      * 終了ジェスチャーは即時破棄し、閉じるアニメーションは再生しません。
      * アニメーションは「閉じる」ボタン等からの明示 close に限定します。
+     * 所有者が閉じた場合のみ終了音を再生します。
      */
     internal fun leaveOrClose(actorId: UUID): Boolean {
-        if (actorId in sessions) return close(actorId, GestureGuiCloseMode.IMMEDIATE)
+        if (actorId in sessions) {
+            val closed = close(actorId, GestureGuiCloseMode.IMMEDIATE)
+            if (closed) {
+                Bukkit.getPlayer(actorId)?.let { playTransitionSound(it, opening = false) }
+            }
+            return closed
+        }
         val session = sessions.values.firstOrNull { actorId in it.actors } ?: return false
         removeActor(session, actorId)
         requestGazeUpdate()
@@ -919,8 +933,9 @@ class GestureGuiServiceImpl(
     /**
      * 開幕演出（点→線→面）を行います。
      *
-     * 背景だけを scale 波で展開し、完了時に内容物と ACTIVE 化を通常同期へ引き継ぎます。
-     * 波は背景鍵だけに触れ、内容物・hover には触れません。packet は遷移時のみです。
+     * 背景だけを scale 波で展開し、完了時に内容物を背景面へ平坦化して出し、
+     * 続く pop で正深度へ飛び出させます。波は背景鍵だけに触れ、
+     * 内容物・hover には触れません。packet は遷移時のみです。
      */
     private fun animateOpen(session: Session) {
         val revision = session.revision
@@ -940,7 +955,16 @@ class GestureGuiServiceImpl(
         }
         later(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, revision) {
             it.state = GestureGuiSessionState.ACTIVE
+            it.popActive = true
             requestGazeUpdate()
+            // pop 終了は revision 変化でも取りこぼさないよう、実体照合だけで行います。
+            // 開幕直後の操作で revision が進んでも、平坦化が残留しません。
+            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                if (sessions[it.ownerId] === it) {
+                    it.popActive = false
+                    requestGazeUpdate()
+                }
+            }, GestureGuiAnimationTimeline.TRANSITION_TICKS.toLong())
         }
     }
 
@@ -957,7 +981,15 @@ class GestureGuiServiceImpl(
         }
         laterChild(GestureGuiAnimationTimeline.OPEN_COMPLETE_DELAY, session, child, GestureGuiSessionState.OPENING) {
             it.state = GestureGuiSessionState.ACTIVE
+            it.popActive = true
             requestGazeUpdate()
+            // pop 終了は revision 変化でも取りこぼさないよう、実体照合だけで行います。
+            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                if (sessions[session.ownerId] === session && session.children.contains(it)) {
+                    it.popActive = false
+                    requestGazeUpdate()
+                }
+            }, GestureGuiAnimationTimeline.TRANSITION_TICKS.toLong())
         }
     }
 
@@ -1317,6 +1349,7 @@ class GestureGuiServiceImpl(
                 } else {
                     virtualScreens.syncScreen(
                         player, session.id, state, key, screen.view, screen.pose, lod, null, null, contentStale,
+                        flattenDepth = session.popActive,
                     )
                 }
             }
@@ -1340,6 +1373,7 @@ class GestureGuiServiceImpl(
                         }
                     virtualScreens.syncScreen(
                         player, session.id, state, key, child.view, child.pose, lod, overlay, null, contentStale,
+                        flattenDepth = child.popActive,
                     )
                 }
             }

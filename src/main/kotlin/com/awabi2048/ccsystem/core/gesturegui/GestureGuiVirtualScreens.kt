@@ -92,11 +92,12 @@ internal class GestureGuiVirtualScreens(
     /**
      * 1 画面分の viewer 状態を LOD に合わせて同期します。
      *
-     * 無変化（LOD・内容・pose・hover 置換が不変）では何も送らず戻ります。
+     * 無変化（LOD・内容・pose・hover 置換・平坦化が不変）では何も送らず戻ります。
      * 移動・型変更は destroy+spawn、内容のみは metadata 更新にします。
      * hover 系キー（/hover・/hoverBlock）は掃除対象から外し、hover 経路が専有します。
      *
      * @param contentStale 内容 revision が変化し、fingerprint 再評価が必要な場合 true
+     * @param flattenDepth 開幕 pop 演出中は内容物を背景面へ平坦化します
      */
     fun syncScreen(
         viewer: Player,
@@ -109,6 +110,7 @@ internal class GestureGuiVirtualScreens(
         overlay: OverlayRequest?,
         dummyContent: DummyRequest?,
         contentStale: Boolean,
+        flattenDepth: Boolean = false,
     ) {
         if (lod == GestureViewerLod.HIDDEN) {
             destroyScreenKeys(viewer, state, screenKey)
@@ -118,11 +120,13 @@ internal class GestureGuiVirtualScreens(
         val storedLod = state.lodByScreenKey[screenKey]
         val sentPose = state.poseByScreenKey[screenKey]
         val poseChanged = sentPose != pose
-        // 早期終了：遷移も内容変化も pose 変化も hover 置換変化もなければ 0 work です。
-        if (!contentStale && !poseChanged && storedLod == lod && state.hoverEpoch == state.syncedHoverEpoch) {
+        // 早期終了：遷移も内容変化も pose 変化も hover 置換変化も平坦化変化もなければ 0 work です。
+        if (!contentStale && !poseChanged && storedLod == lod && state.hoverEpoch == state.syncedHoverEpoch &&
+            flattenDepth == (screenKey in state.flatScreens)
+        ) {
             return
         }
-        val desired = buildDesired(screenKey, view, pose, overlay, dummyContent, lod, state, contentStale)
+        val desired = buildDesired(screenKey, view, pose, overlay, dummyContent, lod, state, contentStale, flattenDepth)
         val liveKeys = state.virtualIdByKey.keys
             .filter { it == screenKey || it.startsWith("$screenKey/") }
             .filterNot(::isHoverManagedKey)
@@ -163,10 +167,15 @@ internal class GestureGuiVirtualScreens(
         state.poseByScreenKey[screenKey] = pose
         state.lodByScreenKey[screenKey] = lod
         state.syncedHoverEpoch = state.hoverEpoch
+        if (flattenDepth) state.flatScreens += screenKey else state.flatScreens -= screenKey
     }
 
     fun destroyScreenKeys(viewer: Player, state: GestureViewerRenderState, screenKey: String) {
         state.virtualIdByKey.keys.filter { it == screenKey || it.startsWith("$screenKey/") }.toList().forEach { key ->
+            state.virtualIdByKey.remove(key)?.let { id ->
+                backend.sendDestroy(viewer, listOf(id))
+                state.liveVirtualIds -= id
+            }
             state.virtualIdByKey.remove(key)?.let { id ->
                 backend.sendDestroy(viewer, listOf(id))
                 state.liveVirtualIds -= id
@@ -177,6 +186,7 @@ internal class GestureGuiVirtualScreens(
         }
         state.poseByScreenKey.remove(screenKey)
         state.lodByScreenKey.remove(screenKey)
+        state.flatScreens.remove(screenKey)
     }
 
     fun destroyAll(viewer: Player, state: GestureViewerRenderState) {
@@ -190,6 +200,7 @@ internal class GestureGuiVirtualScreens(
         state.typeByKey.clear()
         state.poseByScreenKey.clear()
         state.lodByScreenKey.clear()
+        state.flatScreens.clear()
         state.hiddenVisualIds.clear()
         state.hiddenVisualBodyIds.clear()
     }
@@ -211,6 +222,7 @@ internal class GestureGuiVirtualScreens(
         lod: GestureViewerLod,
         state: GestureViewerRenderState,
         contentStale: Boolean,
+        flattenDepth: Boolean,
     ): List<DesiredVisual> {
         if (dummy != null) {
             // ダミー追従中は本体の古い pose への誤操作を防ぐため、背景 1 枚だけ送ります。
@@ -241,15 +253,21 @@ internal class GestureGuiVirtualScreens(
                 if (visual.visualId in state.hiddenVisualIds) return@forEach
                 val bodyHidden = visual.visualId in state.hiddenVisualBodyIds
                 if (!bodyHidden || visual !is GestureGuiVisual.Block) {
-                    items += contentVisual(screenKey, visual, pose, state, contentStale)
+                    items += contentVisual(screenKey, visual, pose, state, contentStale, flattenDepth)
                 }
                 // 枠は本体の表示抑制と連動せず、主 visual が見える間は維持します。
                 if (visual is GestureGuiVisual.Block && visual.outline != null) {
-                    items += outlineVisuals(screenKey, visual, pose, state, contentStale)
+                    items += outlineVisuals(screenKey, visual, pose, state, contentStale, flattenDepth)
                 }
             }
         }
         return items
+    }
+
+    /** fingerprint の深度標識を付け替えます。平坦化の遷移検出に使います。 */
+    private fun withDepthSuffix(base: String, flattenDepth: Boolean): String {
+        val stripped = base.removeSuffix("|flat").removeSuffix("|true")
+        return stripped + if (flattenDepth) "|flat" else "|true"
     }
 
     private fun panelBackground(
@@ -295,24 +313,32 @@ internal class GestureGuiVirtualScreens(
         pose: GestureGuiScreenPose,
         state: GestureViewerRenderState,
         contentStale: Boolean,
+        flattenDepth: Boolean,
     ): DesiredVisual {
         val key = "$screenKey/v/${visual.visualId}"
         // 内容不変時は高コストな fingerprint 再計算（Component JSON 化等）を省きます。
         // 新規キーは比較正本がないため必ず構築します。
-        val fingerprint = if (contentStale || state.contentFingerprintByKey[key] == null) {
-            visualFingerprint(visual)
-        } else {
-            state.contentFingerprintByKey.getValue(key)
-        }
+        // 平坦化の遷移は深度標識で検出します。
+        val fingerprint = withDepthSuffix(
+            if (contentStale || state.contentFingerprintByKey[key] == null) {
+                visualFingerprint(visual)
+            } else {
+                state.contentFingerprintByKey.getValue(key)
+            },
+            flattenDepth,
+        )
+        // 平坦化中は深さを背景面へ寄せ、x/y は正位置のままにします。
+        fun depthOf(layer: Double): Double = if (flattenDepth) PANEL_BACKGROUND_LAYER else layer
+        fun depthOf(layer: Int): Int = if (flattenDepth) PANEL_BACKGROUND_LAYER.toInt() else layer
         return when (visual) {
             is GestureGuiVisual.Block -> {
-                val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
+                val point = visualPoint(pose, visual.x, visual.y, depthOf(visual.layer.toDouble()))
                 DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
                     blockMetadata(viewer, pose, anchorOf(state, key, point), point, visual.width, visual.height, visual.blockData, visual.glowColor)
                 }
             }
             is GestureGuiVisual.Item -> {
-                val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble(), TEXT_ITEM_SURFACE_LIFT)
+                val point = visualPoint(pose, visual.x, visual.y, depthOf(visual.layer.toDouble()), TEXT_ITEM_SURFACE_LIFT)
                 DesiredVisual(key, EntityType.ITEM_DISPLAY, point, fingerprint) { _ ->
                     val scale = visual.scale.toFloat()
                     val quat = blockQuat(pose)
@@ -322,7 +348,7 @@ internal class GestureGuiVirtualScreens(
                 }
             }
             is GestureGuiVisual.Text -> {
-                val point = textPoint(pose, visual.x, visual.y, visual.layer)
+                val point = textPoint(pose, visual.x, visual.y, depthOf(visual.layer))
                 DesiredVisual(key, EntityType.TEXT_DISPLAY, point, fingerprint) { _ ->
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
                     val quat = textQuat(pose)
@@ -343,16 +369,21 @@ internal class GestureGuiVirtualScreens(
         pose: GestureGuiScreenPose,
         state: GestureViewerRenderState,
         contentStale: Boolean,
+        flattenDepth: Boolean,
     ): List<DesiredVisual> {
         val outline = visual.outline ?: return emptyList()
         return GestureGuiOutlineGeometry.segments(visual.width, visual.height, outline.thicknessRatio).mapIndexed { index, segment ->
             val key = "$screenKey/v/${visual.visualId}/outline/$index"
-            val point = visualPoint(pose, visual.x + segment.x, visual.y + segment.y, visual.layer + OUTLINE_LAYER_OFFSET)
-            val fingerprint = if (contentStale || state.contentFingerprintByKey[key] == null) {
-                "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}"
-            } else {
-                state.contentFingerprintByKey.getValue(key)
-            }
+            val layer = if (flattenDepth) PANEL_BACKGROUND_LAYER else visual.layer + OUTLINE_LAYER_OFFSET
+            val point = visualPoint(pose, visual.x + segment.x, visual.y + segment.y, layer)
+            val fingerprint = withDepthSuffix(
+                if (contentStale || state.contentFingerprintByKey[key] == null) {
+                    "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}"
+                } else {
+                    state.contentFingerprintByKey.getValue(key)
+                },
+                flattenDepth,
+            )
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
                 blockMetadata(viewer, pose, anchorOf(state, key, point), point, segment.width, segment.height, outline.blockData, null)
             }
