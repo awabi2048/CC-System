@@ -632,8 +632,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         const val ID_BACKGROUND_ALIAS_CHECK: Int = 25
 
         const val BILLBOARD_FIXED: Byte = 0
-        /** 球面自動正対です。テキストの向き特定実験用（診断用）。 */
-        const val BILLBOARD_CENTER: Byte = 3
         const val FLAG_GLOWING: Byte = 0x40
         /** 発光なしを示す glow 色です。vanilla の既定値と同一です。 */
         const val NO_GLOW_COLOR: Int = -1

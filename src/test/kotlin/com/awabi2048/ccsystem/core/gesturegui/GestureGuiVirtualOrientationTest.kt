@@ -63,20 +63,21 @@ class GestureGuiVirtualOrientationTest {
     }
 
     @Test
-    fun `anchor一致時は旧local値そのままに戻る`() {
+    fun `anchor一致時は回転済み旧local値に戻る`() {
         val pose = tiltedPose()
         val quat = GestureGuiVirtualScreens.blockQuat(pose)
         val anchor = GestureGuiVirtualScreens.PlacedPoint(100.0, 64.0, 200.0, 0f, 0f)
         val oldLocal = Vector3f(-1.45f, -0.5f, 0f)
         val translation = GestureGuiVirtualScreens.resolveTranslation(quat, anchor, anchor, oldLocal)
-        assertEquals(oldLocal.x, translation.x, 1.0e-6f)
-        assertEquals(oldLocal.y, translation.y, 1.0e-6f)
-        assertEquals(oldLocal.z, translation.z, 1.0e-6f)
+        val expected = quat.transform(Vector3f(oldLocal.x, oldLocal.y, oldLocal.z), Vector3f())
+        assertEquals(expected.x, translation.x, 1.0e-6f)
+        assertEquals(expected.y, translation.y, 1.0e-6f)
+        assertEquals(expected.z, translation.z, 1.0e-6f)
     }
 
     @Test
-    fun `移動差分は回転済みで載る`() {
-        // anchor 不変で目標だけが動くと、差分が同一回転で載ります。
+    fun `移動差分は非回転で載る`() {
+        // anchor 不変で目標だけが動くと、差分そのままに中心合わせだけ回転します。
         val pose = tiltedPose()
         val quat = GestureGuiVirtualScreens.blockQuat(pose)
         val anchor = GestureGuiVirtualScreens.PlacedPoint(100.0, 64.0, 200.0, 0f, 0f)
@@ -84,13 +85,34 @@ class GestureGuiVirtualOrientationTest {
         val translation = GestureGuiVirtualScreens.resolveTranslation(
             quat, anchor, target, Vector3f(0f, 0f, 0f),
         )
-        // 差分 (1,0.5,0) の長さは回転で保たれます。
-        val expected = Math.sqrt(1.25)
-        assertEquals(expected, translation.length().toDouble(), 1.0e-5)
-        // 逆回転で元の差分へ戻ります。
-        val back = org.joml.Quaternionf(quat).transform(Vector3f(translation))
-        assertEquals(1.0, back.x.toDouble(), 1.0e-5)
-        assertEquals(0.5, back.y.toDouble(), 1.0e-5)
-        assertEquals(0.0, back.z.toDouble(), 1.0e-5)
+        assertEquals(1.0f, translation.x, 1.0e-5f)
+        assertEquals(0.5f, translation.y, 1.0e-5f)
+        assertEquals(0.0f, translation.z, 1.0e-5f)
+    }
+
+    @Test
+    fun `面はlayer平面上に置かれる`() {
+        // 最終中心は目標中心＋向き方向の半厚みであり、操作判定の画面座標と一致します。
+        val pose = tiltedPose()
+        val quat = GestureGuiVirtualScreens.blockQuat(pose)
+        val width = 2.9
+        val height = 1.0
+        val depth = 0.025f
+        val anchor = GestureGuiVirtualScreens.PlacedPoint(100.0, 64.0, 200.0, 0f, 0f)
+        val target = GestureGuiVirtualScreens.PlacedPoint(103.0, 65.0, 201.0, 0f, 0f)
+        val oldLocal = Vector3f((-width / 2.0).toFloat(), (-height / 2.0).toFloat(), 0f)
+        val translation = GestureGuiVirtualScreens.resolveTranslation(quat, anchor, target, oldLocal)
+        // anchor相対の最終中心は、目標差分＋向き方向の半厚みになります。
+        val modelCenter = Vector3f((width / 2.0).toFloat(), (height / 2.0).toFloat(), depth / 2f)
+        val rendered = Vector3f(translation).add(quat.transform(modelCenter, Vector3f()))
+        val facing = quat.transform(Vector3f(0f, 0f, 1f), Vector3f())
+        val expected = Vector3f(
+            (target.x - anchor.x).toFloat(),
+            (target.y - anchor.y).toFloat(),
+            (target.z - anchor.z).toFloat(),
+        ).add(facing.mul(depth / 2f))
+        assertEquals(expected.x, rendered.x, 1.0e-4f)
+        assertEquals(expected.y, rendered.y, 1.0e-4f)
+        assertEquals(expected.z, rendered.z, 1.0e-4f)
     }
 }

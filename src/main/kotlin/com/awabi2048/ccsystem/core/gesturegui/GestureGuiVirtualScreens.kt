@@ -327,9 +327,7 @@ internal class GestureGuiVirtualScreens(
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
                     val quat = textQuat(pose)
                     val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
-                    // 向き特定実験中は球面自動正対にします（診断用・原因特定後に方針確定）。
-                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
-                        GestureGuiProtocolLibBackend.BILLBOARD_CENTER) +
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
                         backend.textValues(
                             GestureGuiProtocolLibBackend.componentJson(visual.text),
                             visual.lineWidth, visual.seeThrough, alignmentFlags(visual.alignment),
@@ -412,9 +410,7 @@ internal class GestureGuiVirtualScreens(
             val scale = GestureGuiTextMetrics.toDisplayScale(hover.size)
             val quat = textQuat(pose)
             val translation = resolveTranslation(quat, anchorOf(state, textKey, textPoint), textPoint, Vector3f())
-            // 向き特定実験中は球面自動正対にします（診断用・原因特定後に方針確定）。
-            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
-                GestureGuiProtocolLibBackend.BILLBOARD_CENTER) +
+            backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
                 backend.textValues(
                     GestureGuiProtocolLibBackend.componentJson(hover.text),
                     hover.lineWidth, false, 0,
@@ -468,7 +464,8 @@ internal class GestureGuiVirtualScreens(
             backend.sendMetadata(viewer, id, values)
         }
         state.contentFingerprintByKey[key] = fingerprint
-        state.pointByKey[key] = point
+        // アンカーは生成時のまま不変に保ちます。追従後の開閉で再計算しません。
+        state.pointByKey.putIfAbsent(key, point)
         state.typeByKey[key] = EntityType.BLOCK_DISPLAY
         state.poseByScreenKey[screenKey] = pose
     }
@@ -523,6 +520,8 @@ internal class GestureGuiVirtualScreens(
             state.liveVirtualIds -= id
         }
         state.contentFingerprintByKey.remove(key)
+        // 基準座標も捨てます。再表示時は新しい生成位置を基準にします。
+        state.pointByKey.remove(key)
     }
 
     private fun alignmentFlags(alignment: GestureGuiTextAlignment): Byte = when (alignment) {
@@ -577,8 +576,10 @@ internal class GestureGuiVirtualScreens(
         /**
          * 目標中心へ届く translation を解きます。
          *
-         * spawn 座標（アンカー）は不変とし、差分を変形側へ載せます。
-         * anchor 一致時は旧 local 値そのままに戻り、決定論的に安定します。
+         * translation 自体は leftRotation で回転されないため、移動差分は
+         * 非回転のまま載せ、中心合わせオフセットだけを同一回転させます。
+         * spawn 座標（アンカー）は不変とします。
+         * anchor 一致時は回転済み旧 local 値に戻り、決定論的に安定します。
          */
         fun resolveTranslation(
             quat: Quaternionf,
@@ -586,13 +587,13 @@ internal class GestureGuiVirtualScreens(
             target: PlacedPoint,
             oldLocal: Vector3f,
         ): Vector3f {
-            val delta = Vector3f(
+            // 引数の別名化に備え、複製してから回転させます。
+            val rotated = quat.transform(Vector3f(oldLocal.x, oldLocal.y, oldLocal.z))
+            return rotated.add(
                 (target.x - anchor.x).toFloat(),
                 (target.y - anchor.y).toFloat(),
                 (target.z - anchor.z).toFloat(),
             )
-            val inverse = Quaternionf(quat).normalize().conjugate()
-            return inverse.transform(delta).add(Vector3f(oldLocal))
         }
 
         private fun quatFromColumns(
