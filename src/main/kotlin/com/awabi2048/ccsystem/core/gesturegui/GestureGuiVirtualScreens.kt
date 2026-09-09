@@ -150,21 +150,24 @@ internal class GestureGuiVirtualScreens(
                 state.typeByKey[item.key] = item.type
                 if (isDummyKey) state.quatByKey[item.key] = Quaternionf(blockQuat(pose))
             } else if (pointMoved) {
+                // 位置と変形は排他にせず、それぞれ必要に応じて送ります。
+                // 移動と内容変更の同時発生でも、内容差分を取りこぼしません。
                 if (isDummyKey && tryRelativeMove(viewer, state, id, item, sentPoint!!, blockQuat(pose))) {
-                    state.contentFingerprintByKey[item.key] = item.fingerprint
-                    return@forEach
-                }
-                // teleport で追従し、補間を効かせます。失敗時は作り直します。
-                if (backend.sendTeleport(viewer, id, item.point.x, item.point.y, item.point.z)) {
-                    state.contentFingerprintByKey[item.key] = item.fingerprint
+                    // 相対移動で追従しました。内容判定は下へ進みます。
+                } else if (backend.sendTeleport(viewer, id, item.point.x, item.point.y, item.point.z)) {
                     state.pointByKey[item.key] = item.point
                 } else {
+                    // teleport 失敗時は作り直します。
                     backend.sendDestroy(viewer, listOf(id))
                     backend.spawnDisplay(viewer, id, item.type, item.point.x, item.point.y, item.point.z,
                         item.metadata(viewer))
                     state.liveVirtualIds += id
                     state.contentFingerprintByKey[item.key] = item.fingerprint
                     state.pointByKey[item.key] = item.point
+                }
+                if (contentStale && state.contentFingerprintByKey[item.key] != item.fingerprint) {
+                    backend.sendMetadata(viewer, id, item.metadata(viewer))
+                    state.contentFingerprintByKey[item.key] = item.fingerprint
                 }
             } else if (contentStale && known != item.fingerprint) {
                 backend.sendMetadata(viewer, id, item.metadata(viewer))
@@ -554,12 +557,16 @@ internal class GestureGuiVirtualScreens(
             state.contentFingerprintByKey[key] = fingerprint
         } else if (poseChanged) {
             // hover の追従も teleport で行い、補間を効かせます。失敗時は作り直します。
+            // 位置と内容は排他にせず、内容差分があれば続けて送ります。
             if (!backend.sendTeleport(viewer, id, point.x, point.y, point.z)) {
                 backend.sendDestroy(viewer, listOf(id))
                 backend.spawnDisplay(viewer, id, type, point.x, point.y, point.z, metadata(viewer))
                 state.liveVirtualIds += id
+                state.contentFingerprintByKey[key] = fingerprint
+            } else if (state.contentFingerprintByKey[key] != fingerprint) {
+                backend.sendMetadata(viewer, id, metadata(viewer))
+                state.contentFingerprintByKey[key] = fingerprint
             }
-            state.contentFingerprintByKey[key] = fingerprint
         } else if (state.contentFingerprintByKey[key] != fingerprint) {
             backend.sendMetadata(viewer, id, metadata(viewer))
             state.contentFingerprintByKey[key] = fingerprint
