@@ -103,6 +103,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_WORLD_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.position_world_variable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_CAPTURED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_captured", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COPY_ORIENTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_copy_orientation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COORDINATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_coordinates", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_MYWORLD_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_myworld_spawn", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_ROTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_rotation", setOf())
@@ -163,6 +164,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TEMPORARY_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.temporary_variable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_FACING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.current_facing", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.face_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_COPY_ORIENTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.face_copy_orientation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_COORDINATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.face_coordinates", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_NUMERIC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.numeric", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TRUE_FALSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.true_false", setOf())
@@ -967,6 +969,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_POSITION_WORLD_VARIABLE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_CAPTURED,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COPY_ORIENTATION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COORDINATES,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_MYWORLD_SPAWN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_ROTATION,
@@ -1027,6 +1030,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_TEMPORARY_VARIABLE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_FACING,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_COPY_ORIENTATION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_FACE_COORDINATES,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_NUMERIC,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_TRUE_FALSE,
