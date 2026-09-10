@@ -36,37 +36,39 @@ class EmbeddedLocalizationCatalogTest {
 
     @Test
     fun `KantanのDialog操作ラベルは確定と候補表示を使う`() {
+        // ボタン文言は§形式で保持し、Component.text直渡しの経路でも発色します。
+        // &形式は利用者入力の検証表示でのみ§へ変換するため、カタログ値には置きません。
         assertEquals(
-            EmbeddedLocalizedValue.Text("&a確定"),
+            EmbeddedLocalizedValue.Text("§a確定"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("&e候補を表示"),
+            EmbeddedLocalizedValue.Text("§e候補を表示"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("&aConfirm"),
+            EmbeddedLocalizedValue.Text("§aConfirm"),
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("&eShow candidates"),
+            EmbeddedLocalizedValue.Text("§eShow candidates"),
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("&cキャンセル"),
+            EmbeddedLocalizedValue.Text("§cキャンセル"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.cancel"),
         )
         assertEquals(
             NamedTextColor.GREEN,
-            LegacyComponentSerializer.legacyAmpersand().deserialize("&a確定").color(),
+            LegacyComponentSerializer.legacySection().deserialize("§a確定").color(),
         )
         assertEquals(
             NamedTextColor.YELLOW,
-            LegacyComponentSerializer.legacyAmpersand().deserialize("&e候補を表示").color(),
+            LegacyComponentSerializer.legacySection().deserialize("§e候補を表示").color(),
         )
         assertEquals(
             NamedTextColor.RED,
-            LegacyComponentSerializer.legacyAmpersand().deserialize("&cキャンセル").color(),
+            LegacyComponentSerializer.legacySection().deserialize("§cキャンセル").color(),
         )
     }
 
