@@ -223,6 +223,7 @@ internal object EnUsChanponBackupCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.backup.confirm.button.cancel_action", value = EmbeddedLocalizedValue.Text("Cancel"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_success", value = EmbeddedLocalizedValue.Text("§aBackup created."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_failed", value = EmbeddedLocalizedValue.Text("§cBackup failed."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_started", value = EmbeddedLocalizedValue.Text("§7Backup creation started. This may take a while."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_success", value = EmbeddedLocalizedValue.Text("§aRollback completed."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_failed", value = EmbeddedLocalizedValue.Text("§cRollback failed."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_recovered", value = EmbeddedLocalizedValue.Text("§eRollback failed; original state was recovered."), domain = DOMAIN),
