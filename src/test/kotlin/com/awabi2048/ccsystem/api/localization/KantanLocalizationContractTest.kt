@@ -22,9 +22,10 @@ class KantanLocalizationContractTest {
         // 旧汎用拒否文言1件を廃止し、クリエイティブ限定の拒否理由1件を追加しました。
         // 折りたたみ操作案内（FORの折畳み・展開、IFの折畳み・展開）の4件を追加しました。
         // 破壊時の制御ブロック取得通知1件と未選択時下部のディスク取得ボタン1件を追加しました。
-        assertEquals(838, keys.size)
+        // コマンド実行位置の名称・説明・操作案内・警告の4件を追加しました。
+        assertEquals(842, keys.size)
         assertEquals(
-            "0f2946b8bdc99f9d44e6ceff9a57bc08e0762f7ac233a6d8b9f911211e474fdd",
+            "00751043eb1acf46edb7653d35fedb686ebf0f5b1f27dcf51f4f94dbbb3d3b0a",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
