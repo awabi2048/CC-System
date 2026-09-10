@@ -25,9 +25,10 @@ class KantanLocalizationContractTest {
         // コマンド実行位置の名称・説明・操作案内・警告の4件を追加しました。
         // 対象・位置・移動先の再編に伴う詳細設定・参照・向き指定等の9件を追加し、
         // Dialog操作ラベルの色指定を&形式から§形式へ統一しました。
-        assertEquals(851, keys.size)
+        // 向き複写の選択肢・説明の2件を追加しました。
+        assertEquals(853, keys.size)
         assertEquals(
-            "5fbcf5e03806fc406df07f2e2083c0bd094f51b08a3c0373fcae853c6d3e5a56",
+            "a1a819eed5038162fcef691d174dc2c871d880e0dbfa7f67385cdff67bff7090",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
