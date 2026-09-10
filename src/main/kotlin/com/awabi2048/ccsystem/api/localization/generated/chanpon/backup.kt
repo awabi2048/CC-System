@@ -210,6 +210,7 @@ object ChanponBackupKeys {
     @JvmField val CHANPON_BACKUP_CONFIRM_BUTTON_CANCEL_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.confirm.button.cancel_action", setOf())
     @JvmField val CHANPON_BACKUP_MESSAGE_BACKUP_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.backup_success", setOf())
     @JvmField val CHANPON_BACKUP_MESSAGE_BACKUP_FAILED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.backup_failed", setOf())
+    @JvmField val CHANPON_BACKUP_MESSAGE_BACKUP_STARTED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.backup_started", setOf())
     @JvmField val CHANPON_BACKUP_MESSAGE_RESTORE_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.restore_success", setOf())
     @JvmField val CHANPON_BACKUP_MESSAGE_RESTORE_FAILED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.restore_failed", setOf())
     @JvmField val CHANPON_BACKUP_MESSAGE_RESTORE_RECOVERED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.restore_recovered", setOf())
@@ -433,6 +434,7 @@ object ChanponBackupKeys {
         CHANPON_BACKUP_CONFIRM_BUTTON_CANCEL_ACTION,
         CHANPON_BACKUP_MESSAGE_BACKUP_SUCCESS,
         CHANPON_BACKUP_MESSAGE_BACKUP_FAILED,
+        CHANPON_BACKUP_MESSAGE_BACKUP_STARTED,
         CHANPON_BACKUP_MESSAGE_RESTORE_SUCCESS,
         CHANPON_BACKUP_MESSAGE_RESTORE_FAILED,
         CHANPON_BACKUP_MESSAGE_RESTORE_RECOVERED,

@@ -223,6 +223,7 @@ internal object JaJpChanponBackupCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.backup.confirm.button.cancel_action", value = EmbeddedLocalizedValue.Text("キャンセル"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_success", value = EmbeddedLocalizedValue.Text("§aバックアップを作成しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_failed", value = EmbeddedLocalizedValue.Text("§cバックアップに失敗しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.message.backup_started", value = EmbeddedLocalizedValue.Text("§7バックアップの作成を開始しました。しばらく時間がかかる場合があります。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_success", value = EmbeddedLocalizedValue.Text("§aロールバックが完了しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_failed", value = EmbeddedLocalizedValue.Text("§cロールバックに失敗しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.message.restore_recovered", value = EmbeddedLocalizedValue.Text("§eロールバックに失敗したため、実行前状態へ復旧しました。"), domain = DOMAIN),
