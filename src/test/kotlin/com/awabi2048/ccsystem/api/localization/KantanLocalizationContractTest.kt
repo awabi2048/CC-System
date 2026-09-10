@@ -26,9 +26,11 @@ class KantanLocalizationContractTest {
         // 対象・位置・移動先の再編に伴う詳細設定・参照・向き指定等の9件を追加し、
         // Dialog操作ラベルの色指定を&形式から§形式へ統一しました。
         // 向き複写の選択肢・説明の2件を追加しました。
-        assertEquals(853, keys.size)
+        // Entity操作再編（#32）に伴う操作コマンド・選択肢・設定項目・警告の67件を追加し、
+        // 既存のエンティティ操作コマンド文言をアクション側へ整理しました。
+        assertEquals(920, keys.size)
         assertEquals(
-            "a1a819eed5038162fcef691d174dc2c871d880e0dbfa7f67385cdff67bff7090",
+            "9c673d3e8f003a488cdd0300381bceb36146c90d29a120dc3604e88b465bf00b",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
