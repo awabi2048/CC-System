@@ -107,6 +107,24 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COORDINATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_coordinates", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_MYWORLD_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_myworld_spawn", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_ROTATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.facing_rotation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEARBY_PLAYERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_target_nearby_players", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_MYWORLD_PLAYERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_target_myworld_players", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEAREST_PLAYER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_target_nearest_player", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEARBY_ENTITIES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_target_nearby_entities", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_CONTROL_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_control_block", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_NEAREST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_nearest", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_NEARBY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_nearby", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_MYWORLD_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_myworld_spawn", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_COORDINATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_coordinates", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_NEAREST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_facing_nearest", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_COORDINATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_facing_coordinates", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_NUMERIC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_facing_numeric", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_position_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_facing_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_COPY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_facing_copy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_DETAIL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_target_detail", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_MYWORLD_SPAWN_MEMBER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_myworld_spawn_member", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_MYWORLD_SPAWN_GUEST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.preset_myworld_spawn_guest", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_variable", setOf())
@@ -986,6 +1004,24 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_COORDINATES,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_MYWORLD_SPAWN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_FACING_ROTATION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEARBY_PLAYERS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_MYWORLD_PLAYERS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEAREST_PLAYER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_NEARBY_ENTITIES,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_CONTROL_BLOCK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_NEAREST,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_NEARBY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_MYWORLD_SPAWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_COORDINATES,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_NEAREST,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_COORDINATES,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_NUMERIC,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_POSITION_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_FACING_COPY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_TARGET_DETAIL,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_MYWORLD_SPAWN_MEMBER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_PRESET_MYWORLD_SPAWN_GUEST,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_VARIABLE,

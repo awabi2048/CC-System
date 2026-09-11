@@ -26,9 +26,10 @@ class KantanLocalizationContractTest {
         // 対象・位置・移動先の再編に伴う詳細設定・参照・向き指定等の9件を追加し、
         // Dialog操作ラベルの色指定を&形式から§形式へ統一しました。
         // 向き複写の選択肢・説明の2件を追加しました。
-        assertEquals(853, keys.size)
+        // プリセットホバー案内の専用キー18件を追加しました。
+        assertEquals(871, keys.size)
         assertEquals(
-            "a1a819eed5038162fcef691d174dc2c871d880e0dbfa7f67385cdff67bff7090",
+            "a7e2f0d1068540df8bedf97dd57f969fb048cac203500d3e9d909b5046b9c3e1",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
