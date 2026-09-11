@@ -83,7 +83,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.selected", value = EmbeddedLocalizedValue.Text("選択中"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.choice_description", value = EmbeddedLocalizedValue.TextList(listOf("「{value}」をこの設定に使用します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.select_action", value = EmbeddedLocalizedValue.Text("この項目を選択する"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.nearest_player", value = EmbeddedLocalizedValue.Text("プレイヤー"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.nearest_player", value = EmbeddedLocalizedValue.Text("最寄りのプレイヤー"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.nearby_players", value = EmbeddedLocalizedValue.Text("周囲のプレイヤー"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.random_player", value = EmbeddedLocalizedValue.Text("ランダムなプレイヤー"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.nearest_entity", value = EmbeddedLocalizedValue.Text("プレイヤー以外のエンティティ"), domain = DOMAIN),
