@@ -226,6 +226,11 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_CHEST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.equipment_chest", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_LEGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.equipment_legs", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_FEET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.equipment_feet", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_EQUIPMENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.destination_equipment", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_PLAYER_HOTBAR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.destination_player_hotbar", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_PLAYER_INVENTORY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.destination_player_inventory", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_ITEM_FRAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.destination_item_frame", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_BLOCK_CONTAINER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.destination_block_container", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONFIRM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.confirm", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.back", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.cancel", setOf())
@@ -393,6 +398,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.equipment_slot", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.equipment_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.overwrite", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.place_destination", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.place_slot", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.place_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DESTINATION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.destination", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DESTINATION_FACING: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.destination_facing", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_COUNT: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.count", setOf())
@@ -411,6 +419,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_EQUIP_TARGET: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.equip_target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_GIVE_ITEM: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.give_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_EQUIP_ITEM: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.equip_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_ITEM: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.place_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_TARGET: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.place_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_POSITION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.place_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_RANGE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.range", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DISPLAY_DURATION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.display_duration", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DISPLAY_ACTIONBAR_DURATION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.display_actionbar_duration", setOf())
@@ -470,6 +481,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_EQUIP_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.equip_target", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.give_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_EQUIP_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.equip_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.place_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.place_target", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.place_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_SOUND_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.sound_parameters", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PARTICLE_PARAMETERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.particle_parameters", setOf())
@@ -520,6 +534,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.teleport_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.give_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.give_item_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PLACE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.place_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PLACE_ITEM_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.place_item_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.entity_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_ACTION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.entity_action_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_DISPLAY_TEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.display_text", setOf())
@@ -708,6 +724,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SHAKE_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.shake_type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.equipment_slot", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.equipment_item", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_DESTINATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.place_destination", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.place_slot", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.place_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OVERWRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.overwrite", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.tag_operation", setOf())
@@ -1108,6 +1127,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_CHEST,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_LEGS,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_EQUIPMENT_FEET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_EQUIPMENT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_PLAYER_HOTBAR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_PLAYER_INVENTORY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_ITEM_FRAME,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESTINATION_BLOCK_CONTAINER,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CONFIRM,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_BACK,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL,
@@ -1278,6 +1302,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_SLOT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_DESTINATION,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_SLOT,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_PLACE_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DESTINATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DESTINATION_FACING,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_COUNT,
@@ -1296,6 +1323,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_EQUIP_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_GIVE_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_EQUIP_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_PLACE_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_RANGE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DISPLAY_DURATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_DISPLAY_ACTIONBAR_DURATION,
@@ -1354,6 +1384,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_EQUIP_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_GIVE_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_EQUIP_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_TARGET,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_PLACE_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_RANGE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_DISPLAY_DURATION,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_DISPLAY_ACTIONBAR_DURATION,
@@ -1408,6 +1441,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM,
         KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_PLACE_ITEM,
+        KANTAN_COMMANDER_CLEAN_COMMAND_PLACE_ITEM_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_ACTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_ACTION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_DISPLAY_TEXT,
@@ -1599,6 +1634,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_SHAKE_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_SLOT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_EQUIPMENT_ITEM,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_DESTINATION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_SLOT,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_PLACE_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OVERWRITE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_OPERATION,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG_OPERATION,
