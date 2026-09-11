@@ -31,9 +31,13 @@ class KantanLocalizationContractTest {
         // Entity操作再編（#32）に伴う操作コマンド・選択肢・設定項目・警告の67件を追加し、
         // 既存のエンティティ操作コマンド文言をアクション側へ整理しました。
         // 部分適用件数表示（F4）の1件を追加しました。
-        assertEquals(940, keys.size)
+        // アイテム配置コマンド（issue #21）のコマンド名・説明・配置先選択肢・
+        // 項目名・説明・操作案内・警告の19件を追加し、ENTITY_ACTIONの説明から
+        // /item・/tag相当の記載を外してride/dismount/motionに限定しました。
+        // 統合後の件数は暫定959件とし、指紋は再計算後に確定します。
+        assertEquals(959, keys.size)
         assertEquals(
-            "c0eca7685211ea4daa303073af3c41166b923d9bb39dc2e99164ad0bc8b035b7",
+            "60f6c3ed4ac28de52d37b43a063fefe2fdc0fa963e9acd4660ed88b76b5cf088",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
