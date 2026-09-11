@@ -46,7 +46,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_description", value = EmbeddedLocalizedValue.TextList(listOf("Shows the complete command structure", "and the currently visible area")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_viewport_label", value = EmbeddedLocalizedValue.Text("Visible area"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_viewport_value", value = EmbeddedLocalizedValue.Text("Yellow ■"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.node_incomplete", value = EmbeddedLocalizedValue.Text("⚠️ Setup incomplete"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.node_incomplete", value = EmbeddedLocalizedValue.Text("⚠ Setup incomplete"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_outside_label", value = EmbeddedLocalizedValue.Text("Outside view"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_outside_value", value = EmbeddedLocalizedValue.Text("Gray ■"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_omitted_label", value = EmbeddedLocalizedValue.Text("Omitted"), domain = DOMAIN),

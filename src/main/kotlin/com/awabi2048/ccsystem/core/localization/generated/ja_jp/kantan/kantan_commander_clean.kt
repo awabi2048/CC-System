@@ -46,7 +46,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_description", value = EmbeddedLocalizedValue.TextList(listOf("コマンド全体の構造と、現在表示している", "範囲を示します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_viewport_label", value = EmbeddedLocalizedValue.Text("表示範囲"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_viewport_value", value = EmbeddedLocalizedValue.Text("黄色の■"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.node_incomplete", value = EmbeddedLocalizedValue.Text("⚠️ 設定が完了していません"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.node_incomplete", value = EmbeddedLocalizedValue.Text("⚠ 設定が完了していません"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_outside_label", value = EmbeddedLocalizedValue.Text("表示範囲外"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_outside_value", value = EmbeddedLocalizedValue.Text("灰色の■"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.info_omitted_label", value = EmbeddedLocalizedValue.Text("省略"), domain = DOMAIN),
