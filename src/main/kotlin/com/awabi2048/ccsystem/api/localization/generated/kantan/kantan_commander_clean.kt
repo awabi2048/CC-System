@@ -35,6 +35,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.info_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_VIEWPORT_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_viewport_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_VIEWPORT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_viewport_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NODE_INCOMPLETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.node_incomplete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_outside_label", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_outside_value", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_LABEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.info_omitted_label", setOf())
@@ -939,6 +940,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_VIEWPORT_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_VIEWPORT_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_NODE_INCOMPLETE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_LABEL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OUTSIDE_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INFO_OMITTED_LABEL,
