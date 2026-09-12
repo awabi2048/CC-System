@@ -649,6 +649,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PLAY_SOUND_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.play_sound_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.particle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.particle_description", setOf())
+    // #30で分離する図形描画コマンドの名称・説明です。通常表示のPARTICLEと対になります。
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_GEOMETRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.particle_geometry", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_GEOMETRY_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.particle_geometry_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.firework_launch", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.firework_launch_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.apply_effect", setOf())
@@ -1646,6 +1649,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_COMMAND_PLAY_SOUND_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE,
         KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_GEOMETRY,
+        KANTAN_COMMANDER_CLEAN_COMMAND_PARTICLE_GEOMETRY_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH,
         KANTAN_COMMANDER_CLEAN_COMMAND_FIREWORK_LAUNCH_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_APPLY_EFFECT,

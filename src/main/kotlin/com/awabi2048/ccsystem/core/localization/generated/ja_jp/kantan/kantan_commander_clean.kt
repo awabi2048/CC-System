@@ -929,6 +929,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.warning.burst_height", value = EmbeddedLocalizedValue.Text("打ち上げ高さの設定が必要です"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.particle", value = EmbeddedLocalizedValue.Text("パーティクルを表示する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.particle_description", value = EmbeddedLocalizedValue.TextList(listOf("/particle に相当します。実行ワールド内の全プレイヤーへ表示します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.particle_geometry", value = EmbeddedLocalizedValue.Text("図形を表示する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.particle_geometry_description", value = EmbeddedLocalizedValue.TextList(listOf("パーティクルで幾何図形を描画します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.firework_launch", value = EmbeddedLocalizedValue.Text("花火を打ち上げる"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.command.firework_launch_description", value = EmbeddedLocalizedValue.TextList(listOf("設定した花火を指定位置から打ち上げます")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.test_execution", value = EmbeddedLocalizedValue.Text("テスト実行"), domain = DOMAIN),
