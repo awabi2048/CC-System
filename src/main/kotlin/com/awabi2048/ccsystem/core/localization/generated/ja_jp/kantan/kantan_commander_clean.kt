@@ -220,6 +220,12 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_type_vector", value = EmbeddedLocalizedValue.Text("ベクトル"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.assign", value = EmbeddedLocalizedValue.Text("代入"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.calculate", value = EmbeddedLocalizedValue.Text("計算"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_change_property", value = EmbeddedLocalizedValue.Text("詳細値を取得する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_change_random", value = EmbeddedLocalizedValue.Text("乱数で生成する"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.random_min", value = EmbeddedLocalizedValue.Text("最小値"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.random_max", value = EmbeddedLocalizedValue.Text("最大値"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.property_source", value = EmbeddedLocalizedValue.Text("参照元変数"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.variable_property", value = EmbeddedLocalizedValue.Text("取得する詳細値"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.remove", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
     )
 

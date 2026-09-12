@@ -220,6 +220,12 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_type_vector", value = EmbeddedLocalizedValue.Text("Vector"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.assign", value = EmbeddedLocalizedValue.Text("Assign"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.calculate", value = EmbeddedLocalizedValue.Text("Calculate"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_change_property", value = EmbeddedLocalizedValue.Text("Fetch detail value"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_change_random", value = EmbeddedLocalizedValue.Text("Generate random value"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.random_min", value = EmbeddedLocalizedValue.Text("Minimum"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.random_max", value = EmbeddedLocalizedValue.Text("Maximum"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.property_source", value = EmbeddedLocalizedValue.Text("Reference variable"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.variable_property", value = EmbeddedLocalizedValue.Text("Detail value"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.remove", value = EmbeddedLocalizedValue.Text("Remove"), domain = DOMAIN),
     )
 
