@@ -446,6 +446,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_SLOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.equipment_slot", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.equipment_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.overwrite", setOf())
+    // 配置先タブの中央下トグル用ラベルです。独立タブを持たない上書き設定の固定表示に使います。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.overwrite_place", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_X: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.motion_x", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_Y: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.motion_y", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_Z: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.motion_z", setOf())
@@ -1439,6 +1441,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_SLOT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_EQUIPMENT_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_OVERWRITE_PLACE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_X,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_Y,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_MOTION_Z,
