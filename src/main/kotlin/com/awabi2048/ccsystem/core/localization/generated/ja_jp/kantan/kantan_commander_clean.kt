@@ -651,6 +651,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.entity_state", value = EmbeddedLocalizedValue.Text("プレイヤー・エンティティ状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.player_state", value = EmbeddedLocalizedValue.Text("プレイヤーの状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.variable_state", value = EmbeddedLocalizedValue.Text("変数の状態"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.value_state", value = EmbeddedLocalizedValue.Text("値の比較"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.block_state", value = EmbeddedLocalizedValue.Text("ブロックの状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.control_block_state", value = EmbeddedLocalizedValue.Text("制御ブロックの状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.condition.control_block_redstone_input", value = EmbeddedLocalizedValue.Text("赤石信号の入力"), domain = DOMAIN),

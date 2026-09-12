@@ -683,6 +683,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.player_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.variable_state", setOf())
+    // #5の型付き条件比較の判定対象名です。左辺・演算子・右辺の共通モデルで比較します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.value_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.block_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.control_block_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_REDSTONE_INPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.control_block_redstone_input", setOf())
@@ -1697,6 +1699,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE,
+        KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_CONTROL_BLOCK_REDSTONE_INPUT,
