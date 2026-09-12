@@ -208,6 +208,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TOGGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.toggle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DEFINE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.define", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.change", setOf())
+    // #2の真偽値入力と複合型の案内に使うダイアログ文言です。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_VALUE_BOOLEAN_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.variable_value_boolean_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_VALUE_BOOLEAN_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.variable_value_boolean_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_COMPLEX_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_complex_body", setOf())
     // #2の変数操作（複写）と変数scope・型の選択肢です。操作・対象・型の表示に使います。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_operation_copy", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_execution", setOf())
@@ -1208,6 +1212,9 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_TOGGLE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DEFINE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CHANGE,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_VALUE_BOOLEAN_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_VALUE_BOOLEAN_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_COMPLEX_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD,
