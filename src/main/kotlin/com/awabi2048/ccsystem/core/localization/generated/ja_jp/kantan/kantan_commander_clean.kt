@@ -427,6 +427,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.equipment_slot", value = EmbeddedLocalizedValue.Text("装備するスロット"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.equipment_item", value = EmbeddedLocalizedValue.Text("装備するアイテム"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.overwrite", value = EmbeddedLocalizedValue.Text("上書きするかどうか"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.overwrite_place", value = EmbeddedLocalizedValue.Text("上書きして配置する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.motion_x", value = EmbeddedLocalizedValue.Text("X"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.motion_y", value = EmbeddedLocalizedValue.Text("Y"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.motion_z", value = EmbeddedLocalizedValue.Text("Z"), domain = DOMAIN),
