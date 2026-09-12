@@ -208,6 +208,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TOGGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.toggle", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DEFINE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.define", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.change", setOf())
+    // #2の変数操作（複写）と変数scope・型の選択肢です。操作・対象・型の表示に使います。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_operation_copy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_execution", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_world", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_boolean", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_vector", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.assign", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CALCULATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.calculate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REMOVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.remove", setOf())
@@ -399,6 +405,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_WORLD_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.world_variable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_SCOPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.variable_scope", setOf())
+    // #2の変数複写で使う複写元変数名の項目です。複写先の変数名（field.variable）と区別します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.variable_source", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_OPERATOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.operator", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.block", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ITEM_CONDITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.item_condition", setOf())
@@ -1200,6 +1208,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_TOGGLE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DEFINE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CHANGE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CALCULATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_REMOVE,
@@ -1397,6 +1410,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_WORLD_VARIABLE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_STATE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_SCOPE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_SOURCE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_OPERATOR,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_BLOCK,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ITEM_CONDITION,
