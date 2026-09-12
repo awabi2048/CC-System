@@ -648,6 +648,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_CONDITION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.condition_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_DISK_CALL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.disk_call", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_DISK_CALL_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.disk_call_description", setOf())
+    // #8の戻り値コマンドの名称・説明です。実行時に残りのノードを打ち切って呼出元へ戻ります。
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_RETURN_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.return_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_RETURN_VALUE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.return_value_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.variable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_VARIABLE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.variable_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TEMPORARY_VARIABLE_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.temporary_variable_set", setOf())
@@ -1665,6 +1668,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_COMMAND_CONDITION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_DISK_CALL,
         KANTAN_COMMANDER_CLEAN_COMMAND_DISK_CALL_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_RETURN_VALUE,
+        KANTAN_COMMANDER_CLEAN_COMMAND_RETURN_VALUE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_VARIABLE,
         KANTAN_COMMANDER_CLEAN_COMMAND_VARIABLE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_TEMPORARY_VARIABLE_SET,

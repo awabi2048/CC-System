@@ -35,11 +35,11 @@ class KantanLocalizationContractTest {
         // 項目名・説明・操作案内・警告の19件を追加し、ENTITY_ACTIONの説明から
         // /item・/tag相当の記載を外してride/dismount/motionに限定しました。
         // アイテム配置の上書きトグル移設に伴い、配置先タブ用の固定ラベル1件を追加しました。
-        // #5の型付き条件比較に伴い、値比較の判定対象名1件を追加しました。
-        // 統合後の件数は暫定978件とし、指紋は再計算後に確定します。
-        assertEquals(978, keys.size)
+        // #8の引数・戻り値に伴い、値を返すコマンド名・説明の2件を追加しました。
+        // 統合後の件数は暫定980件とし、指紋は再計算後に確定します。
+        assertEquals(980, keys.size)
         assertEquals(
-            "8be0579b86aa62ffb39ec58578dfa522a06970e5d0de87fb5a304d4df1804073",
+            "0864693f69bc361da16b49229f91bc59076ee685e1342e316a0e5447d8a13a43",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
