@@ -220,6 +220,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_operation_copy", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_execution", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_world", setOf())
+    // #22のENTITY scope選択肢です。対象直結のため事前DEFINEを要求しません。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_boolean", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_vector", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.assign", setOf())
@@ -1275,6 +1277,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_OPERATION_COPY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN,

@@ -218,6 +218,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_operation_copy", value = EmbeddedLocalizedValue.Text("複写する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_scope_execution", value = EmbeddedLocalizedValue.Text("実行内変数"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_scope_world", value = EmbeddedLocalizedValue.Text("ワールド変数"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_scope_entity", value = EmbeddedLocalizedValue.Text("エンティティ変数"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_type_boolean", value = EmbeddedLocalizedValue.Text("真偽値"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.variable_type_vector", value = EmbeddedLocalizedValue.Text("ベクトル"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.assign", value = EmbeddedLocalizedValue.Text("代入"), domain = DOMAIN),

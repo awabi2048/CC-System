@@ -38,10 +38,11 @@ class KantanLocalizationContractTest {
         // #8の引数・戻り値に伴い、値を返すコマンド名・説明の2件を追加しました。
         // #7の起動方法に伴い、起動方法名・ダイアログ説明・起動種別8件・警告の11件を追加しました。
         // #8の指摘対応でディスク設定（取り出しと引数定義）のキー7件を追加しました。
-        // 統合後の件数は1012件とし、指紋を確定します。
-        assertEquals(1012, keys.size)
+        // #22のENTITY scope選択肢の1件を追加しました。
+        // 統合後の件数は1013件とし、指紋を確定します。
+        assertEquals(1013, keys.size)
         assertEquals(
-            "2167697ed50ee4050bbd7a83adf5857d53adf94132437ff7c182a48358b10685",
+            "a7ce1d5b81b7b4dfc9572e1a27b64e53ce909c0f39df8dc1855b82565ffdf117",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
