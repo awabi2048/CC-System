@@ -39,10 +39,8 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_SAFETY_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.disabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_BLOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.blocked", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.title", setOf())
-    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_FIRST_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.first_description", setOf())
-    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_SECOND_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.second_description", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.description", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.command_label", setOf())
-    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_TARGET_COUNT: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.target_count", setOf("targets", "total", "percentage"))
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.confirm", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.cancel", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.ui_unavailable", setOf())
@@ -83,10 +81,8 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_SAFETY_DISABLED,
         CHANPON_UTILITIES_SAFETY_BLOCKED,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE,
-        CHANPON_UTILITIES_COMMAND_SAFEGUARD_FIRST_DESCRIPTION,
-        CHANPON_UTILITIES_COMMAND_SAFEGUARD_SECOND_DESCRIPTION,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL,
-        CHANPON_UTILITIES_COMMAND_SAFEGUARD_TARGET_COUNT,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE,
