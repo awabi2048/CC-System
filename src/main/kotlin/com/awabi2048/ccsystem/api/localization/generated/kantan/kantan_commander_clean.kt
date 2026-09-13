@@ -276,6 +276,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_BASE_PLATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_armor_stand_base_plate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_RABBIT_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_rabbit_type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_PROFILE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_profile_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_IMMOVABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_immovable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_MAIN_HAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_main_hand", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_POSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_pose", setOf())
@@ -1354,6 +1355,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_BASE_PLATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_RABBIT_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_PROFILE_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_IMMOVABLE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_MAIN_HAND,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_POSE,

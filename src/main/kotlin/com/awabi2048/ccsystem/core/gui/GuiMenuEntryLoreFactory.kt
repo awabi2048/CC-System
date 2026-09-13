@@ -3,6 +3,7 @@ package com.awabi2048.ccsystem.core.gui
 import com.awabi2048.ccsystem.api.gui.GuiLoreBlock
 import com.awabi2048.ccsystem.api.gui.GuiLoreLine
 import com.awabi2048.ccsystem.api.gui.GuiLoreSpec
+import net.kyori.adventure.text.Component
 import com.awabi2048.ccsystem.api.gui.GuiElementRole
 import com.awabi2048.ccsystem.api.gui.GuiInputGesture
 import com.awabi2048.ccsystem.api.gui.GuiInteractionGuidance
@@ -26,7 +27,16 @@ internal object GuiMenuEntryLoreFactory {
         } else {
             val blocks = buildList {
                 block(spec.description.map(GuiLoreLine::Text))
-                block(spec.data.map { GuiLoreLine.Data(it.label, it.value, it.tone.colorCode) })
+                block(spec.data.map { entry ->
+                    // Component値（バニラ翻訳など）は文字列化せずComponent行へ変換します。
+                    // 従来の文字列値は従来どおりData行へ変換し、表示は変えません。
+                    val value = entry.value
+                    if (value is Component) {
+                        GuiLoreLine.ComponentData(entry.label, value, entry.tone.colorCode)
+                    } else {
+                        GuiLoreLine.Data(entry.label, value, entry.tone.colorCode)
+                    }
+                })
                 block(spec.options.map {
                     GuiLoreLine.Option(
                         it.label,

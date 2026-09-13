@@ -275,6 +275,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_armor_stand_base_plate", value = EmbeddedLocalizedValue.Text("台座"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_rabbit_type", value = EmbeddedLocalizedValue.Text("ウサギの種類"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_mannequin_profile_name", value = EmbeddedLocalizedValue.Text("スキンのプレイヤー名"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_mannequin_description", value = EmbeddedLocalizedValue.Text("説明文"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_mannequin_immovable", value = EmbeddedLocalizedValue.Text("移動不可"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_mannequin_main_hand", value = EmbeddedLocalizedValue.Text("利き手"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.property_mannequin_pose", value = EmbeddedLocalizedValue.Text("ポーズ"), domain = DOMAIN),
