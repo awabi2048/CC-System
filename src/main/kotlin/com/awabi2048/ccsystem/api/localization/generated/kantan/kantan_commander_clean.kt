@@ -22,6 +22,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.insert", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.insert_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.timer", setOf())
+    // #7の起動方法カードの名称です。「タイマー設定」から「起動方法」へ整理します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.trigger", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center", setOf())
     /** ジェスチャーGUIの「先頭へ移動」ブロックに表示する短い記号です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_glyph", setOf())
@@ -301,6 +303,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.cancel", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_DETAILS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.show_details", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_body", setOf())
+    // #7の起動方法ダイアログの説明です。タイマー／信号／イベントの選択肢を案内します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TRIGGER_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.trigger_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.interval", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.timer_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.variable_title", setOf())
@@ -686,6 +690,15 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.player_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.variable_state", setOf())
+    // #7の起動方法の名称です。タイマー／信号／6種の初期イベントから一つを選びます。
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.timer", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.redstone", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_break", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_place", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_SWITCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_switch", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_pressure_plate", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_entity_click", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_click", setOf())
     // #5の型付き条件比較の判定対象名です。左辺・演算子・右辺の共通モデルで比較します。
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.value_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.block_state", setOf())
@@ -855,6 +868,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition_kind", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.disk", setOf())
+    // #7の起動方法カードの未完了警告です。表示文字列は組み立てず固定キーで示します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.trigger", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.variable", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.value", setOf())
@@ -1046,6 +1061,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_INSERT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TIMER,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TRIGGER,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_DESCRIPTION,
@@ -1317,6 +1333,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_CANCEL,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_SHOW_DETAILS,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TRIGGER_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_INTERVAL,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_TIMER_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_VARIABLE_TITLE,
@@ -1703,6 +1720,14 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_CONDITION_TARGET_EXISTS,
         KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_SWITCH,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_CLICK,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK,
         KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE,
@@ -1875,6 +1900,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TRIGGER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VARIABLE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE,
