@@ -38,6 +38,12 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_SAFETY_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.enabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.disabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_BLOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.blocked", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.title", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.description", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.command_label", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.confirm", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.cancel", setOf())
+    @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.ui_unavailable", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         CHANPON_UTILITIES_COMMON_PREFIX,
@@ -74,5 +80,11 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_SAFETY_ENABLED,
         CHANPON_UTILITIES_SAFETY_DISABLED,
         CHANPON_UTILITIES_SAFETY_BLOCKED,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL,
+        CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE,
     )
 }

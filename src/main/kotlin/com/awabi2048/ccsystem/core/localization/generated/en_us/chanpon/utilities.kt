@@ -47,6 +47,12 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.enabled", value = EmbeddedLocalizedValue.Text("&aTour safety mode is now on."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.disabled", value = EmbeddedLocalizedValue.Text("&eTour safety mode is now off."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.blocked", value = EmbeddedLocalizedValue.Text("&7Tour safety mode is currently on. Use &e/anzen&7 to turn it off."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.title", value = EmbeddedLocalizedValue.Text("Command Safeguard"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.description", value = EmbeddedLocalizedValue.Text("Do you want to execute this command?"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.command_label", value = EmbeddedLocalizedValue.Text("Command to execute"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.confirm", value = EmbeddedLocalizedValue.Text("Execute"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.cancel", value = EmbeddedLocalizedValue.Text("Cancel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.ui_unavailable", value = EmbeddedLocalizedValue.Text("The command was cancelled because the confirmation screen could not be shown."), domain = DOMAIN),
     )
 
 }
