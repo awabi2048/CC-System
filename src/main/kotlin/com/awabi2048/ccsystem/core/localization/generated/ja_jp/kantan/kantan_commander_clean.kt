@@ -66,6 +66,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output", value = EmbeddedLocalizedValue.Text("出力する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy", value = EmbeddedLocalizedValue.Text("プログラムディスクを複製する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_description", value = EmbeddedLocalizedValue.TextList(listOf("かんたんコマンダー制御ブロックの内容を独立したプログラムディスクへ複製します")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.disk_settings", value = EmbeddedLocalizedValue.Text("ディスクの設定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_title", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックへ書き込む"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_description", value = EmbeddedLocalizedValue.TextList(listOf("プログラムディスクの内容で、空のかんたんコマンダー制御ブロックを上書きします")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.write_confirm", value = EmbeddedLocalizedValue.Text("上書きする"), domain = DOMAIN),
@@ -305,6 +306,11 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.show_details", value = EmbeddedLocalizedValue.Text("§e候補を表示"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.timer_body", value = EmbeddedLocalizedValue.Text("実行間隔を秒で1～86400の整数で指定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.trigger_body", value = EmbeddedLocalizedValue.Text("起動方法を選びます。タイマーは定期実行、信号は立ち上がり、イベントは発生時に実行します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.disk_settings_body", value = EmbeddedLocalizedValue.Text("取り出しと引数の定義を行います。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.disk_take_out", value = EmbeddedLocalizedValue.Text("取り出す"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.disk_arg_add", value = EmbeddedLocalizedValue.Text("引数を追加"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.disk_arg_name", value = EmbeddedLocalizedValue.Text("引数の名前を入力してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.disk_arg_deleted", value = EmbeddedLocalizedValue.Text("引数を削除しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.interval", value = EmbeddedLocalizedValue.Text("実行間隔"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.timer_invalid", value = EmbeddedLocalizedValue.Text("実行間隔は0より大きい86400秒以下の秒数を、0.05秒単位で指定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.variable_title", value = EmbeddedLocalizedValue.Text("変数"), domain = DOMAIN),
@@ -599,6 +605,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.facing", value = EmbeddedLocalizedValue.Text("向きを設定する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.diskId", value = EmbeddedLocalizedValue.Text("ディスクの選択を開始する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.disk_call_settings", value = EmbeddedLocalizedValue.Text("呼び出しの設定を開く"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.held_disk_required", value = EmbeddedLocalizedValue.Text("呼び出すディスクを持ってください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.scope", value = EmbeddedLocalizedValue.Text("変数の範囲を設定する"), domain = DOMAIN),
     )
 
