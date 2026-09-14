@@ -809,6 +809,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.error_expression_invalid_number", value = EmbeddedLocalizedValue.Text("数値リテラルが不正です。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.error_expression_invalid_character", value = EmbeddedLocalizedValue.Text("計算式に使用できない文字があります。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.error_expression_invalid_variable_name", value = EmbeddedLocalizedValue.Text("変数名が不正です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.error_expression_literal_operand", value = EmbeddedLocalizedValue.Text("計算式には変数同士だけを使えます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.error_variable_name", value = EmbeddedLocalizedValue.Text("変数名は英小文字・数字・._-で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.message_item_set", value = EmbeddedLocalizedValue.Text("アイテムを設定しました: {item}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.message_item_overwritten", value = EmbeddedLocalizedValue.Text("アイテムを上書きしました: {item}"), domain = DOMAIN),
