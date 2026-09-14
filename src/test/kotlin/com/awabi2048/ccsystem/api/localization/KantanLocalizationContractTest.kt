@@ -41,10 +41,11 @@ class KantanLocalizationContractTest {
         // #22のENTITY scope選択肢の1件を追加しました。
         // Mannequin対応で固有項目11件・選択肢9件の20件を追加しました。
         // Mannequin説明文の1件を追加しました。
-        // 統合後の件数は1034件とし、指紋を確定します。
-        assertEquals(1034, keys.size)
+        // 資源ID直接指定の入力キー1件を追加しました。
+        // 統合後の件数は1035件とし、指紋を確定します。
+        assertEquals(1035, keys.size)
         assertEquals(
-            "cf086e932a2fd75a0297de5c88479488c6798d9aab1a86592abd49feddc3c884",
+            "60fc0753801a161eb98dca59b3b5a84a8b8e82442b5345247a763ff489031b32",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

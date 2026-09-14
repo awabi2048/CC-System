@@ -740,6 +740,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.edit_value", value = EmbeddedLocalizedValue.Text("値を入力"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.mainhand_save_hover", value = EmbeddedLocalizedValue.Text("メインハンドのアイテム情報を保存します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.dialog_input_hover", value = EmbeddedLocalizedValue.Text("左クリックで値を入力します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.resource_id_input", value = EmbeddedLocalizedValue.Text("IDを指定して設定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.get_item", value = EmbeddedLocalizedValue.Text("設定中のアイテムを取得"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.get_item_hover", value = EmbeddedLocalizedValue.Text("保存済みのアイテムをインベントリへ取得します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.get_disk", value = EmbeddedLocalizedValue.Text("ディスクの設定"), domain = DOMAIN),

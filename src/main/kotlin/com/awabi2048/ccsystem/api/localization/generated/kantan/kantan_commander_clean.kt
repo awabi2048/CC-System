@@ -785,6 +785,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.edit_value", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.mainhand_save_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.dialog_input_hover", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_RESOURCE_ID_INPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.resource_id_input", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_item_hover", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.get_disk", setOf())
@@ -1860,6 +1861,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_EDIT_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MAINHAND_SAVE_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DIALOG_INPUT_HOVER,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_RESOURCE_ID_INPUT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_ITEM_HOVER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_GET_DISK,
