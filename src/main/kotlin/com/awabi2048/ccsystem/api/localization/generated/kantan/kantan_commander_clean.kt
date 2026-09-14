@@ -377,6 +377,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ALL_PLAYERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.all_players", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FIXED_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.fixed_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DIRECT_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.direct_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONDITION_DIRECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.condition_direct", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_LOOP_COUNT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.current_loop_count", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_NEAREST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sort_nearest", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_FURTHEST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.sort_furthest", setOf())
@@ -1464,6 +1465,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_ALL_PLAYERS,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_FIXED_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DIRECT_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CONDITION_DIRECT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CURRENT_LOOP_COUNT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_NEAREST,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_SORT_FURTHEST,
