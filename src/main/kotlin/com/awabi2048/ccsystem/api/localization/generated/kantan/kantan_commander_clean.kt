@@ -603,6 +603,11 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.dy", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DZ: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.dz", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.range", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_REGION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.region", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_CONTROL_BLOCK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_control_block", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_FIXED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_fixed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TEMPORARY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_temporary", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TARGET_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_target_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_LIMIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.limit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sort", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.game_mode", setOf())
@@ -1683,6 +1688,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DY,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DZ,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANGE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_REGION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_CONTROL_BLOCK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_FIXED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TEMPORARY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TARGET_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_LIMIT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_SORT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE,
