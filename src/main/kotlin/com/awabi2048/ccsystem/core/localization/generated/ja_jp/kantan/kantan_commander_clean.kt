@@ -695,7 +695,6 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_block_break", value = EmbeddedLocalizedValue.Text("ブロック破壊"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_block_place", value = EmbeddedLocalizedValue.Text("ブロック設置"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_button_on", value = EmbeddedLocalizedValue.Text("ボタンが押された"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_button_off", value = EmbeddedLocalizedValue.Text("ボタンが戻った"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_lever_on", value = EmbeddedLocalizedValue.Text("レバーがオン"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_lever_off", value = EmbeddedLocalizedValue.Text("レバーがオフ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.trigger.event_pressure_plate_on", value = EmbeddedLocalizedValue.Text("感圧板が踏まれた"), domain = DOMAIN),

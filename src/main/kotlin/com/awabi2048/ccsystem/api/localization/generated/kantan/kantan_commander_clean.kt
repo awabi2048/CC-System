@@ -867,13 +867,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.player_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.variable_state", setOf())
-    // #7の起動方法の名称です。タイマー／信号／6種の初期イベントから一つを選びます。
+    // #7の起動方法の名称です。タイマー／信号／10種の初期イベントから一つを選びます。
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.timer", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.redstone", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_break", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_place", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_button_on", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_button_off", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_lever_on", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_lever_off", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_pressure_plate_on", setOf())
@@ -1948,7 +1947,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_OFF,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_ON,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_OFF,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE_ON,
