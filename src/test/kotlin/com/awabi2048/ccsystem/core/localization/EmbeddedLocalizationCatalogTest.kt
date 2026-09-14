@@ -35,7 +35,7 @@ class EmbeddedLocalizationCatalogTest {
     }
 
     @Test
-    fun `KantanのDialog操作ラベルは確定と候補表示を使う`() {
+    fun `KantanのDialog操作ラベルは確定と検索を使う`() {
         // ボタン文言は§形式で保持し、Component.text直渡しの経路でも発色します。
         // &形式は利用者入力の検証表示でのみ§へ変換するため、カタログ値には置きません。
         assertEquals(
@@ -43,7 +43,7 @@ class EmbeddedLocalizationCatalogTest {
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("§e候補を表示"),
+            EmbeddedLocalizedValue.Text("§e検索"),
             EmbeddedLocalizationCatalog.value("ja_jp", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
@@ -51,7 +51,7 @@ class EmbeddedLocalizationCatalogTest {
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.confirm"),
         )
         assertEquals(
-            EmbeddedLocalizedValue.Text("§eShow candidates"),
+            EmbeddedLocalizedValue.Text("§eSearch"),
             EmbeddedLocalizationCatalog.value("en_us", "kantan_commander_clean.gui.dialog.show_details"),
         )
         assertEquals(
@@ -64,7 +64,7 @@ class EmbeddedLocalizationCatalogTest {
         )
         assertEquals(
             NamedTextColor.YELLOW,
-            LegacyComponentSerializer.legacySection().deserialize("§e候補を表示").color(),
+            LegacyComponentSerializer.legacySection().deserialize("§e検索").color(),
         )
         assertEquals(
             NamedTextColor.RED,
