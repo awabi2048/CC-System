@@ -275,6 +275,27 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_MARKER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_armor_stand_marker", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_BASE_PLATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_armor_stand_base_plate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_RABBIT_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_rabbit_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_PROFILE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_profile_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_IMMOVABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_immovable", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_MAIN_HAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_main_hand", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_POSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_pose", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_CAPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_cape", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_JACKET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_jacket", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_LEFT_SLEEVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_left_sleeve", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_RIGHT_SLEEVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_right_sleeve", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_LEFT_PANTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_left_pants", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_RIGHT_PANTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_right_pants", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_HAT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mannequin_skin_hat", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_MAIN_HAND_LEFT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_main_hand_left", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_MAIN_HAND_RIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_main_hand_right", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_STANDING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_standing", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SNEAKING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_sneaking", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SWIMMING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_swimming", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SLEEPING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_sleeping", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SITTING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_sitting", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_FALL_FLYING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_fall_flying", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SPIN_ATTACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mannequin_pose_spin_attack", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.rabbit_brown", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.rabbit_white", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_BLACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.rabbit_black", setOf())
@@ -1333,6 +1354,27 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_MARKER,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ARMOR_STAND_BASE_PLATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_RABBIT_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_PROFILE_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_IMMOVABLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_MAIN_HAND,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_POSE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_CAPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_JACKET,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_LEFT_SLEEVE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_RIGHT_SLEEVE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_LEFT_PANTS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_RIGHT_PANTS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MANNEQUIN_SKIN_HAT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_MAIN_HAND_LEFT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_MAIN_HAND_RIGHT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_STANDING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SNEAKING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SWIMMING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SLEEPING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SITTING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_FALL_FLYING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MANNEQUIN_POSE_SPIN_ATTACK,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_BROWN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_WHITE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_RABBIT_BLACK,

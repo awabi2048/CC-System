@@ -58,6 +58,29 @@ class GuiMenuEntryLoreFactoryTest {
     }
 
     @Test
+    fun `component data values keep their component without string conversion`() {
+        // バニラ翻訳などのComponent値（種別名表示など）は文字列化せず保持します。
+        // 文字列値は従来どおりData行へ変換します。
+        val component = net.kyori.adventure.text.Component.translatable("entity.minecraft.mannequin")
+        val spec = GuiMenuEntrySpec(
+            slot = 0,
+            material = Material.STONE,
+            name = GuiNameSpec.Empty,
+            role = GuiElementRole.ACTION,
+            data = listOf(
+                GuiMenuEntryData("種類", component, GuiValueTone.DEFAULT),
+                GuiMenuEntryData("個数", "3", GuiValueTone.DEFAULT),
+            ),
+        )
+
+        val blocks = materializedBlocks(GuiMenuEntryLoreFactory.build(spec, spec.expandedActions(), null))
+        val lines = blocks.single().lines
+        val componentLine = org.junit.jupiter.api.Assertions.assertInstanceOf(GuiLoreLine.ComponentData::class.java, lines[0])
+        assertEquals(component, componentLine.value)
+        org.junit.jupiter.api.Assertions.assertInstanceOf(GuiLoreLine.Data::class.java, lines[1])
+    }
+
+    @Test
     fun `multiple actions use an independent action block`() {
         val spec = GuiMenuEntrySpec(
             slot = 0,
