@@ -984,6 +984,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_NUMBER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_number", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_CHARACTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_character", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_VARIABLE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_invalid_variable_name", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_LITERAL_OPERAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_expression_literal_operand", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_variable_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_set", setOf("item"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.message_item_overwritten", setOf("item"))
@@ -2061,6 +2062,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_NUMBER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_CHARACTER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_INVALID_VARIABLE_NAME,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_EXPRESSION_LITERAL_OPERAND,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_VARIABLE_NAME,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_SET,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_MESSAGE_ITEM_OVERWRITTEN,

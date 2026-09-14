@@ -46,10 +46,11 @@ class KantanLocalizationContractTest {
         // エンティティ統合選択に伴い、選択基盤10件・固有項目25件・
         // 選択肢95件の130件を追加しました。
         // #7の初期イベント一覧への適合に伴い、対象外のBUTTON_OFFキー1件を廃止しました。
-        // 統合後の件数は1166件とし、指紋を確定します。
-        assertEquals(1166, keys.size)
+        // #3の変数同士限定に伴い、リテラル被演算子の入力エラーキー1件を追加しました。
+        // 統合後の件数は1167件とし、指紋を確定します。
+        assertEquals(1167, keys.size)
         assertEquals(
-            "67a4d2f624e9cdc9d5b14abae3eb98022057dfbd8a012da13b8e7c72878defb7",
+            "fb5835a8421ff5993bc419c074dd0db588116c402481ef819e67b1c4b858906b",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
