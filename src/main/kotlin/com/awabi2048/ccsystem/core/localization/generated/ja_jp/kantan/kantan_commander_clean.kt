@@ -23,6 +23,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.action_edit", value = EmbeddedLocalizedValue.Text("編集する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.entry_description", value = EmbeddedLocalizedValue.TextList(listOf("保存済みプログラムを複製してプログラムディスクを取得します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.page", value = EmbeddedLocalizedValue.Text("ページ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.status", value = EmbeddedLocalizedValue.Text("状態"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.navigation_description", value = EmbeddedLocalizedValue.TextList(listOf("ライブラリ内の表示ページを移動します")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.save", value = EmbeddedLocalizedValue.Text("ライブラリへ保存"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.title", value = EmbeddedLocalizedValue.Text("プログラムディスク"), domain = DOMAIN),

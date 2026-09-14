@@ -23,6 +23,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.action_edit", value = EmbeddedLocalizedValue.Text("Edit"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.entry_description", value = EmbeddedLocalizedValue.TextList(listOf("Duplicates the saved program to obtain a program disk")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.page", value = EmbeddedLocalizedValue.Text("Page"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.status", value = EmbeddedLocalizedValue.Text("Status"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.programs.navigation_description", value = EmbeddedLocalizedValue.TextList(listOf("Moves between pages of the library")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.save", value = EmbeddedLocalizedValue.Text("Save to library"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.title", value = EmbeddedLocalizedValue.Text("Program Disk"), domain = DOMAIN),

@@ -11,6 +11,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ACTION_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.action_edit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ENTRY_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.programs.entry_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_PAGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.page", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.status", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_NAVIGATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.programs.navigation_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.save", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.title", setOf())
@@ -1103,6 +1104,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ACTION_EDIT,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ENTRY_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_PAGE,
+        KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_STATUS,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_NAVIGATION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TITLE,
