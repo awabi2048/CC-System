@@ -26,6 +26,136 @@ object KantanKantanCommanderCleanKeys {
     // #7の起動方法カードの名称です。「タイマー設定」から「起動方法」へ整理します。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.trigger", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_DATA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.entity_data", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAG_ENTRIES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.tag_entries", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ATTRIBUTE_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.attribute_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY_DATA_TAG: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.entity_data_tag", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY_DATA_ATTRIBUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.entity_data_attribute", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TAG_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.tag_add", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_TAG_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.tag_delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ENTITY_DATA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.entity_data", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG_ENTRIES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.tag_entries", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ATTRIBUTE_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.attribute_value", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_AGEABLE_BABY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_ageable_baby", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHEEP_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_sheep_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHEEP_SHEARED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_sheep_sheared", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SLIME_SIZE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_slime_size", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_CREEPER_POWERED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_creeper_powered", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SITTABLE_SITTING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_sittable_sitting", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_COLLAR_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_collar_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_CAT_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_cat_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_AXOLOTL_VARIANT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_axolotl_variant", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_FOX_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_fox_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_FROG_VARIANT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_frog_variant", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_VILLAGER_PROFESSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_villager_profession", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ZOMBIE_BABY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_zombie_baby", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PIG_SADDLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_pig_saddle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PUFFER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_puffer_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_VILLAGER_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_villager_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MOOSHROOM_VARIANT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_mooshroom_variant", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_HORSE_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_horse_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_HORSE_STYLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_horse_style", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_LLAMA_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_llama_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PARROT_VARIANT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_parrot_variant", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHULKER_COLOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_shulker_color", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BOAT_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_boat_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BEE_NECTAR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_bee_nectar", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BEE_ANGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.property_bee_anger", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_white", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_ORANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_orange", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_MAGENTA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_magenta", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIGHT_BLUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_light_blue", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_YELLOW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_yellow", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_lime", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_PINK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_pink", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_GRAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_gray", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIGHT_GRAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_light_gray", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_CYAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_cyan", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_PURPLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_purple", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BLUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_blue", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_brown", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_GREEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_green", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_RED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_red", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BLACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.dye_black", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_TABBY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_tabby", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_BLACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_black", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_RED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_red", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_SIAMESE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_siamese", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_BRITISH_SHORTHAIR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_british_shorthair", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_CALICO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_calico", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_PERSIAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_persian", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_RAGDOLL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_ragdoll", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_white", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_JELLIE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_jellie", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_ALL_BLACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.cat_all_black", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_LUCY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.axolotl_lucy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_WILD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.axolotl_wild", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_GOLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.axolotl_gold", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_CYAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.axolotl_cyan", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_BLUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.axolotl_blue", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FOX_RED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.fox_red", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FOX_SNOW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.fox_snow", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_TEMPERATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.frog_temperate", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_WARM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.frog_warm", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_COLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.frog_cold", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_NONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_none", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_ARMORER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_armorer", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_BUTCHER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_butcher", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_CARTOGRAPHER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_cartographer", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_CLERIC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_cleric", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FARMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_farmer", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FISHERMAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_fisherman", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FLETCHER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_fletcher", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_LEATHERWORKER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_leatherworker", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_LIBRARIAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_librarian", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_MASON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_mason", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_NITWIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_nitwit", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_SHEPHERD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_shepherd", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_TOOLSMITH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_toolsmith", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_WEAPONSMITH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_profession_weaponsmith", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_DESERT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_desert", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_JUNGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_jungle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_PLAINS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_plains", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SAVANNA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_savanna", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SNOW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_snow", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SWAMP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_swamp", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_TAIGA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.villager_type_taiga", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MOOSHROOM_RED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mooshroom_red", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_MOOSHROOM_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.mooshroom_brown", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_white", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_CREAMY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_creamy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_CHESTNUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_chestnut", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_brown", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_BLACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_black", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_GRAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_gray", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_DARK_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_dark_brown", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_NONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_style_none", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_style_white", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITEFIELD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_style_whitefield", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITE_DOTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_style_white_dots", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_BLACK_DOTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.horse_style_black_dots", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_CREAMY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.llama_creamy", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_WHITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.llama_white", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_BROWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.llama_brown", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_GRAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.llama_gray", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_RED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.parrot_red", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_BLUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.parrot_blue", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_GREEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.parrot_green", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_CYAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.parrot_cyan", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_GRAY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.parrot_gray", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_OAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_oak", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_SPRUCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_spruce", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_BIRCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_birch", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_JUNGLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_jungle", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_ACACIA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_acacia", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_DARK_OAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_dark_oak", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_MANGROVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_mangrove", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_CHERRY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_cherry", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_PALE_OAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_pale_oak", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_BAMBOO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boat_bamboo", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_UNPUFFED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.puffer_unpuffed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_HALF_PUFFED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.puffer_half_puffed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_FULLY_PUFFED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.puffer_fully_puffed", setOf())
     /** ジェスチャーGUIの「先頭へ移動」ブロックに表示する短い記号です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_GLYPH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.center_glyph", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CENTER_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.center_description", setOf())
@@ -2152,6 +2282,136 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SIMPLE_FORM_UNAVAILABLE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_BLOCK_REQUIRED,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_HELD_FIREWORK_REQUIRED,
-        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_FIREWORK_PREVIEW,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_FIREWORK_PREVIEW,        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_DATA,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_TAG_ENTRIES,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ATTRIBUTE_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY_DATA_TAG,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY_DATA_ATTRIBUTE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_TAG_ADD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_TAG_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ENTITY_DATA,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TAG_ENTRIES,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_ATTRIBUTE_VALUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_AGEABLE_BABY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHEEP_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHEEP_SHEARED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SLIME_SIZE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_CREEPER_POWERED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SITTABLE_SITTING,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_COLLAR_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_CAT_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_AXOLOTL_VARIANT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_FOX_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_FROG_VARIANT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_VILLAGER_PROFESSION,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_ZOMBIE_BABY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PIG_SADDLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PUFFER_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_VILLAGER_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_MOOSHROOM_VARIANT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_HORSE_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_HORSE_STYLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_LLAMA_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_PARROT_VARIANT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_SHULKER_COLOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BOAT_TYPE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BEE_NECTAR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PROPERTY_BEE_ANGER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_WHITE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_ORANGE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_MAGENTA,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIGHT_BLUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_YELLOW,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIME,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_PINK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_GRAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_LIGHT_GRAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_CYAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_PURPLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BLUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BROWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_GREEN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_RED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DYE_BLACK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_TABBY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_BLACK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_RED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_SIAMESE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_BRITISH_SHORTHAIR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_CALICO,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_PERSIAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_RAGDOLL,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_WHITE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_JELLIE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_CAT_ALL_BLACK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_LUCY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_WILD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_GOLD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_CYAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_AXOLOTL_BLUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FOX_RED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FOX_SNOW,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_TEMPERATE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_WARM,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_FROG_COLD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_NONE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_ARMORER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_BUTCHER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_CARTOGRAPHER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_CLERIC,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FARMER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FISHERMAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_FLETCHER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_LEATHERWORKER,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_LIBRARIAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_MASON,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_NITWIT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_SHEPHERD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_TOOLSMITH,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_PROFESSION_WEAPONSMITH,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_DESERT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_JUNGLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_PLAINS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SAVANNA,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SNOW,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_SWAMP,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VILLAGER_TYPE_TAIGA,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MOOSHROOM_RED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_MOOSHROOM_BROWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_WHITE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_CREAMY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_CHESTNUT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_BROWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_BLACK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_GRAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_DARK_BROWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_NONE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITEFIELD,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_WHITE_DOTS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_HORSE_STYLE_BLACK_DOTS,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_CREAMY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_WHITE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_BROWN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_LLAMA_GRAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_RED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_BLUE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_GREEN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_CYAN,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PARROT_GRAY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_OAK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_SPRUCE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_BIRCH,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_JUNGLE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_ACACIA,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_DARK_OAK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_MANGROVE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_CHERRY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_PALE_OAK,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOAT_BAMBOO,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_UNPUFFED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_HALF_PUFFED,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_PUFFER_FULLY_PUFFED,
+
     )
 }
