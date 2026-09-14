@@ -250,6 +250,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.all_players", value = EmbeddedLocalizedValue.Text("マイワールド内の全プレイヤー"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.fixed_entity", value = EmbeddedLocalizedValue.Text("見ているエンティティ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.direct_value", value = EmbeddedLocalizedValue.Text("値を指定"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.condition_direct", value = EmbeddedLocalizedValue.Text("Boolean値を直接使う"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.current_loop_count", value = EmbeddedLocalizedValue.Text("現在のループ回数"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.sort_nearest", value = EmbeddedLocalizedValue.Text("近い順"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.sort_furthest", value = EmbeddedLocalizedValue.Text("遠い順"), domain = DOMAIN),
