@@ -609,6 +609,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_FIXED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_fixed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TEMPORARY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_temporary", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TARGET_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.region_anchor_target_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_STRUCTURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.structure", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_NONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.structure_mirror_none", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_LEFT_RIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.structure_mirror_left_right", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_FRONT_BACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.structure_mirror_front_back", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_LIMIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.limit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_SORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.sort", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.game_mode", setOf())
@@ -1130,6 +1134,10 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_ticks", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.block_operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.block_operation_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.structure_save", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.structure_save_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.structure_place", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.structure_place_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.entity_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.entity_delete_description", setOf())
     /** ノード未選択時に表示するワールド内変数編集カードの項目名です。 */
@@ -1695,6 +1703,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_FIXED,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TEMPORARY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_REGION_ANCHOR_TARGET_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_STRUCTURE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_NONE,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_LEFT_RIGHT,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_STRUCTURE_MIRROR_FRONT_BACK,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_LIMIT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_SORT,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GAME_MODE,
@@ -2211,6 +2223,10 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE,
+        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE,
+        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE_DESCRIPTION,
     )
