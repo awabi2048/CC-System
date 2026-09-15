@@ -941,6 +941,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_success", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_failed", setOf())
+    // WorldEdit等の対象外一括操作を検出した際の警告です。操作名だけを引数に取ります。
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.worldedit_unsupported_operation", setOf("command"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_execute", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_CANCEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_cancel", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_SELECT_NODE_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.select_node_hint", setOf())
@@ -2054,6 +2056,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION,
     )
 
     private fun keyChunk5(): List<LocalizationKey<*>> = listOf(

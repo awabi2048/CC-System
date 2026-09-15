@@ -766,6 +766,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックへ書き込みました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_success", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックを1個付与しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_failed", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックを付与できませんでした。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.worldedit_unsupported_operation", value = EmbeddedLocalizedValue.Text("操作 {command} は制御ブロックの自動追従対象外です。不正に複製された制御ブロックは自動削除されます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_execute", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_cancel", value = EmbeddedLocalizedValue.Text("キャンセル"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.select_node_hint", value = EmbeddedLocalizedValue.Text("ノードを選択してください"), domain = DOMAIN),
