@@ -12,6 +12,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ENTRY_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.programs.entry_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_PAGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.page", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.status", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_EDITING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.programs.editing", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_NAVIGATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.programs.navigation_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.save", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.title", setOf())
@@ -212,6 +213,16 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_PROCESS_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_process_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_control", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_control_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_basic", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_basic_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_entity_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_build", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_build_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EFFECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_effect", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EFFECT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_effect_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_VARIABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_variable", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_VARIABLE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_variable_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_external_disk", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_external_disk_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.selected", setOf())
@@ -829,6 +840,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_NAME_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.name_disk", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.program_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_OWNER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.owner", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_CREATED_AT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.created_at", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_edit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_ACTION_WRITE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.action_write", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
@@ -1261,6 +1273,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_ENTRY_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_PAGE,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_STATUS,
+        KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_EDITING,
         KANTAN_COMMANDER_CLEAN_GUI_PROGRAMS_NAVIGATION_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_TITLE,
@@ -1321,6 +1334,16 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_PROCESS_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EFFECT,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EFFECT_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_VARIABLE,
+        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_VARIABLE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_EXTERNAL_DISK_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SELECTED,
@@ -1934,6 +1957,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_ITEM_NAME_DISK,
         KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME,
         KANTAN_COMMANDER_CLEAN_ITEM_OWNER,
+        KANTAN_COMMANDER_CLEAN_ITEM_CREATED_AT,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_EDIT,
         KANTAN_COMMANDER_CLEAN_ITEM_ACTION_WRITE,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,

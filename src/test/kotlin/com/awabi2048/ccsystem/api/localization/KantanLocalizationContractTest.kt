@@ -51,10 +51,11 @@ class KantanLocalizationContractTest {
         // #5の直接条件に伴い、Boolean直接利用の選択肢1件を追加しました。
         // #11の建造物に伴い、コマンド4件・項目1件・反転選択肢3件の8件を追加しました。
         // #24のEntity Groupに伴い、コマンド2件・項目2件・操作選択肢8件の12件を追加しました。
-        // 統合後の件数は1193件とし、指紋を確定します。
-        assertEquals(1193, keys.size)
+        // #13の編集UIに伴い、分類10件・項目1件・一覧表示1件の12件を追加しました。
+        // 統合後の件数は1205件とし、指紋を確定します。
+        assertEquals(1205, keys.size)
         assertEquals(
-            "df5174c26cacaf6744214396c5ff3dd64ba2a6bb4184ce0bd49375ac04e819dd",
+            "788ecb08e238a19babed9f250a87fcdf7c42a81fbaf38edb225714ecc5d4da89",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
