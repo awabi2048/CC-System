@@ -96,8 +96,30 @@ internal class MenuFormServiceImpl(
                         is MenuFormInput.Toggle -> toggles[input.id] = response.asToggle(index)
                     }
                 }
-                val result = handleSafely(request.owner, request.id, player, MenuFormResponse(text, toggles), request.handler)
-                applyResult(player, result, request.sounds, request.sounds, originRevision) { show(player, request) }
+                val formResponse = MenuFormResponse(text, toggles)
+                val result = handleSafely(request.owner, request.id, player, formResponse, request.handler)
+                applyResult(
+                    player,
+                    result,
+                    request.sounds,
+                    request.sounds,
+                    originRevision,
+                    reshowRejected = {
+                        // Rejectedは送信値を編集中の値として保持し、同じ入力画面を
+                        // 再表示します。エラー欄だけを直して再送信できるようにし、
+                        // キャンセル時には編集中の値を破棄します（onClosed経路）。
+                        // 遅れて届いた古い応答が新しい表示を上書きしないよう、
+                        // 世代境界を適用します（Dialog側のRejected契約と同一）。
+                        if (!isCurrentForm(player, request, originRevision)) return@applyResult
+                        show(player, request.copy(inputs = request.inputs.map { input ->
+                            when (input) {
+                                is MenuFormInput.Text -> input.copy(defaultValue = formResponse.textValue(input.id))
+                                is MenuFormInput.Toggle -> input.copy(defaultValue = formResponse.toggleValue(input.id))
+                            }
+                        }))
+                    },
+                    refresh = { show(player, request) },
+                )
             }
         }
         val closeHandler = request.onClosed
@@ -131,7 +153,8 @@ internal class MenuFormServiceImpl(
         actionSounds: MenuActionSoundPolicy,
         requestSounds: MenuActionSoundPolicy,
         originRevision: Long?,
-        refresh: () -> Unit
+        reshowRejected: (() -> Unit)? = null,
+        refresh: () -> Unit,
     ) {
         when (result) {
             is MenuActionResult.Success -> {
@@ -141,9 +164,29 @@ internal class MenuFormServiceImpl(
             is MenuActionResult.Rejected -> {
                 result.message?.let(player::sendMessage)
                 play(player, result.sound, MenuSoundPolicyResolver.rejectedPolicy(actionSounds, requestSounds))
+                reshowRejected?.invoke()
             }
             MenuActionResult.Ignored -> Unit
         }
+    }
+
+    /**
+     * Formが現行表示かを返します。
+     *
+     * 遅れて届いた古い応答のRejected再表示が、新しいFormや別プラグインの
+     * 外部入力セッションを上書きすることを防ぎます（Dialog側と同一契約）。
+     */
+    private fun isCurrentForm(
+        player: Player,
+        request: MenuCustomFormRequest,
+        originRevision: Long?,
+    ): Boolean {
+        val current = presentations.current(player) ?: return false
+        return originRevision != null &&
+            current.surface == com.awabi2048.ccsystem.api.gui.MenuSurface.FORM &&
+            current.owner == request.owner &&
+            current.id == request.id &&
+            current.revision == originRevision
     }
 
     private fun applyUpdate(player: Player, update: MenuUpdate, originRevision: Long?, refresh: () -> Unit) {
