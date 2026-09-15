@@ -1163,6 +1163,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_TARGETS_SEPARATOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.detail.targets_separator", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_EXECUTION_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.detail.execution_failed", setOf("program", "cause"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_EXECUTION_FAILED_CAUSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.detail.execution_failed_cause", setOf("cause"))
+    /** 管理操作によるテスト対象の変更・削除を通知する操作種別です。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_change", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
@@ -2312,5 +2315,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_TARGETS_SEPARATOR,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_EXECUTION_FAILED,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_EXECUTION_FAILED_CAUSE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE,
     )
 }

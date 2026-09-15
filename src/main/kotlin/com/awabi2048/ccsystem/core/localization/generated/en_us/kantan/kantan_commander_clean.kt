@@ -1099,6 +1099,8 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
     )
 
     private fun chunk5(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_delete", value = EmbeddedLocalizedValue.Text("Delete"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_change", value = EmbeddedLocalizedValue.Text("Modify"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.entity", value = EmbeddedLocalizedValue.Text("Entity"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.actionbar_duration", value = EmbeddedLocalizedValue.Text("Display duration"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.teleport", value = EmbeddedLocalizedValue.Text("Teleported the targets to the location"), domain = DOMAIN),

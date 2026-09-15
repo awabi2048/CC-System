@@ -1100,6 +1100,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
     )
 
     private fun chunk5(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_delete", value = EmbeddedLocalizedValue.Text("削除"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_change", value = EmbeddedLocalizedValue.Text("変更"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.entity", value = EmbeddedLocalizedValue.Text("エンティティ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.actionbar_duration", value = EmbeddedLocalizedValue.Text("表示時間"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.teleport", value = EmbeddedLocalizedValue.Text("対象を指定位置へテレポートした"), domain = DOMAIN),
