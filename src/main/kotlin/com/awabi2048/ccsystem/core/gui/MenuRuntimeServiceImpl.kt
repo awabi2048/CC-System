@@ -237,7 +237,7 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             if (failure is Error) throw failure
             plugin.logger.log(
-                Level.SEVERE,
+                Level.WARNING,
                 "可逆状態の捕捉に失敗しました: route=${holder.route} player=${player.uniqueId}",
                 failure,
             )
@@ -338,7 +338,7 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             if (failure is Error) throw failure
             plugin.logger.log(
-                Level.SEVERE,
+                Level.WARNING,
                 "可逆状態の復元に失敗しました: route=${entry.route} player=${player.uniqueId}",
                 failure,
             )
@@ -600,7 +600,7 @@ internal class MenuRuntimeServiceImpl(
                 } catch (failure: Throwable) {
                     failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
-                        Level.SEVERE,
+                        Level.WARNING,
                         "外部画面終了後のメニュー再表示に失敗しました: route=${route.id} player=${player.uniqueId}",
                         failure,
                     )
@@ -722,7 +722,7 @@ internal class MenuRuntimeServiceImpl(
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
                 plugin.logger.log(
-                    Level.SEVERE,
+                    Level.WARNING,
                     "メニュー再描画に失敗しました: route=${definition.routeId} " +
                         "player=${player.uniqueId} exception=${prepared.exceptionType}",
                     prepared.cause,
@@ -774,7 +774,7 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
-                Level.SEVERE,
+                Level.WARNING,
                 "メニュー再描画の反映に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                 failure,
             )
@@ -969,7 +969,7 @@ internal class MenuRuntimeServiceImpl(
                     MenuActionResult.Rejected(migrationRejectedComponent(player, failure))
                 } else {
                     plugin.logger.log(
-                        Level.SEVERE,
+                        Level.WARNING,
                         "プレイヤーインベントリActionの実行に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                         failure,
                     )
@@ -1221,7 +1221,7 @@ internal class MenuRuntimeServiceImpl(
                 MenuActionResult.Rejected(migrationRejectedComponent(player, failure))
             } else {
                 plugin.logger.log(
-                    Level.SEVERE,
+                    Level.WARNING,
                     "メニュー操作の実行に失敗しました: route=${definition.routeId} interaction=${interaction.javaClass.simpleName} player=${player.uniqueId}",
                     failure,
                 )
@@ -1294,7 +1294,7 @@ internal class MenuRuntimeServiceImpl(
             } catch (failure: Throwable) {
                 failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
-                        Level.SEVERE,
+                        Level.WARNING,
                         "メニューClose処理に失敗しました: route=${holder.route.key()} player=${player.uniqueId}",
                         failure,
                     )
@@ -1397,7 +1397,7 @@ internal class MenuRuntimeServiceImpl(
             is MenuRuntimePreparedViewResult.Ready -> prepared.view.withHistoryNavigation(navigation.canGoBack(player))
             is MenuRuntimePreparedViewResult.RenderFailed -> {
                 plugin.logger.log(
-                    Level.SEVERE,
+                    Level.WARNING,
                     "メニュー描画に失敗しました: route=${definition.routeId} exception=${prepared.exceptionType}",
                     prepared.cause,
                 )
@@ -1428,7 +1428,7 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
-                Level.SEVERE,
+                Level.WARNING,
                 "メニューInventoryの作成に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                 failure,
             )
@@ -1456,7 +1456,7 @@ internal class MenuRuntimeServiceImpl(
         } catch (failure: Throwable) {
             failure.rethrowIfUnrecoverableMenuRuntimeFailure()
             plugin.logger.log(
-                Level.SEVERE,
+                Level.WARNING,
                 "メニューInventoryを開けませんでした: route=${definition.routeId} player=${player.uniqueId}",
                 failure,
             )
@@ -1683,7 +1683,7 @@ internal class MenuRuntimeServiceImpl(
                 } catch (failure: Throwable) {
                     failure.rethrowIfUnrecoverableMenuRuntimeFailure()
                     plugin.logger.log(
-                        Level.SEVERE,
+                        Level.WARNING,
                         "メニュー更新の適用に失敗しました: route=${definition.routeId} player=${player.uniqueId}",
                         failure,
                     )

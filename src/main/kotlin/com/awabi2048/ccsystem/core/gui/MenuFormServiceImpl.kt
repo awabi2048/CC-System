@@ -216,7 +216,7 @@ internal class MenuFormServiceImpl(
         handler: MenuFormHandler
     ): MenuActionResult = runCatching { handler.handle(player, response) }.getOrElse { failure ->
         plugin.logger.log(
-            Level.SEVERE,
+            Level.WARNING,
             "Bedrock Form処理に失敗しました: owner=$owner id=$id player=${player.uniqueId}",
             failure
         )

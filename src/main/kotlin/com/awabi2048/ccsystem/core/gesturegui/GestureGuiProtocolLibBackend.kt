@@ -143,9 +143,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
             plugin.logger.log(Level.WARNING, "アイテム converter の解決に失敗しました", failure)
             return false
         }
-        val className = handle.javaClass.name
-        val valid = className == NMS_ITEM_STACK_CLASS
-        plugin.logger.info("[GestureGuiProbe] item converter=$className valid=$valid")
+        val valid = handle.javaClass.name == NMS_ITEM_STACK_CLASS
         return valid
     }
 
