@@ -40,23 +40,25 @@ internal class MenuFormServiceImpl(
                 builder.button(button.label, FormImage.Type.PATH, button.imagePath)
             }
         }
+        // issue #review P2-8: 世代番号は表示時に捕捉します。応答処理時の取得では、
+        // 同owner・IDの新しいフォームへ切り替わった後に古い応答が現世代で
+        // 照合を通過し、以前の画面を再表示できてしまいます。
+        var shownRevision: Long? = null
         builder.validResultHandler { response ->
             onMainThread {
                 val button = request.buttons.getOrNull(response.clickedButtonId()) ?: return@onMainThread
-                val originRevision = presentations.current(player)?.revision
                 val result = if (button.enabled) {
                     handleSafely(request.owner, request.id, player, MenuFormResponse(text = mapOf("button" to button.id)), request.handler)
                 } else MenuActionResult.Rejected()
-                applyResult(player, result, button.sound, request.sounds, originRevision) { show(player, request) }
+                applyResult(player, result, button.sound, request.sounds, shownRevision) { show(player, request) }
             }
         }
         val closeHandler = request.onClosed
         if (closeHandler != null) {
             builder.closedOrInvalidResultHandler(Runnable {
                 onMainThread {
-                    val originRevision = presentations.current(player)?.revision
                     val result = handleSafely(request.owner, request.id, player, MenuFormResponse(), closeHandler)
-                    applyResult(player, result, request.sounds, request.sounds, originRevision) { show(player, request) }
+                    applyResult(player, result, request.sounds, request.sounds, shownRevision) { show(player, request) }
                 }
             })
         }
@@ -64,7 +66,7 @@ internal class MenuFormServiceImpl(
             FloodgateApi.getInstance().sendForm(player.uniqueId, builder.build())
         }.getOrDefault(false)
         if (shown) {
-            presentations.markOpened(
+            shownRevision = presentations.markOpened(
                 player,
                 com.awabi2048.ccsystem.api.gui.MenuSurface.FORM,
                 request.owner,
@@ -85,9 +87,10 @@ internal class MenuFormServiceImpl(
                 is MenuFormInput.Toggle -> builder.toggle(input.label, input.defaultValue)
             }
         }
+        // issue #review P2-8: 世代番号は表示時に捕捉します（SimpleForm側と同一理由）。
+        var shownRevision: Long? = null
         builder.validResultHandler { response ->
             onMainThread {
-                val originRevision = presentations.current(player)?.revision
                 val text = mutableMapOf<String, String>()
                 val toggles = mutableMapOf<String, Boolean>()
                 request.inputs.forEachIndexed { index, input ->
@@ -103,14 +106,14 @@ internal class MenuFormServiceImpl(
                     result,
                     request.sounds,
                     request.sounds,
-                    originRevision,
+                    shownRevision,
                     reshowRejected = {
                         // Rejectedは送信値を編集中の値として保持し、同じ入力画面を
                         // 再表示します。エラー欄だけを直して再送信できるようにし、
                         // キャンセル時には編集中の値を破棄します（onClosed経路）。
                         // 遅れて届いた古い応答が新しい表示を上書きしないよう、
                         // 世代境界を適用します（Dialog側のRejected契約と同一）。
-                        if (!isCurrentForm(player, request, originRevision)) return@applyResult
+                        if (!isCurrentForm(player, request, shownRevision)) return@applyResult
                         show(player, request.copy(inputs = request.inputs.map { input ->
                             when (input) {
                                 is MenuFormInput.Text -> input.copy(defaultValue = formResponse.textValue(input.id))
@@ -126,9 +129,8 @@ internal class MenuFormServiceImpl(
         if (closeHandler != null) {
             builder.closedOrInvalidResultHandler(Runnable {
                 onMainThread {
-                    val originRevision = presentations.current(player)?.revision
                     val result = handleSafely(request.owner, request.id, player, MenuFormResponse(), closeHandler)
-                    applyResult(player, result, request.sounds, request.sounds, originRevision) { show(player, request) }
+                    applyResult(player, result, request.sounds, request.sounds, shownRevision) { show(player, request) }
                 }
             })
         }
@@ -136,7 +138,7 @@ internal class MenuFormServiceImpl(
             FloodgateApi.getInstance().sendForm(player.uniqueId, builder.build())
         }.getOrDefault(false)
         if (shown) {
-            presentations.markOpened(
+            shownRevision = presentations.markOpened(
                 player,
                 com.awabi2048.ccsystem.api.gui.MenuSurface.FORM,
                 request.owner,
