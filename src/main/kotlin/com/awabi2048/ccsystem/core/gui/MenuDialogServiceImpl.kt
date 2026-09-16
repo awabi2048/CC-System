@@ -80,6 +80,11 @@ internal class MenuDialogServiceImpl(
         request: MenuDialogRequest,
         validationMessage: Component? = null,
     ) {
+        // issue #review P2-8: 世代番号は表示時に捕捉します。応答処理時の取得では、
+        // 同owner・IDの新しいDialogへ切り替わった後に古い応答が現世代で
+        // 照合を通過してしまいます。markOpenedの戻り値を使います。
+        var shownRevision: Long? = null
+        fun shownRevisionOf(): Long? = shownRevision
         val inputs = request.inputs.map { input ->
             when (input) {
                 is MenuDialogInput.Text -> DialogInput.text(input.id, input.label)
@@ -105,13 +110,13 @@ internal class MenuDialogServiceImpl(
                     .build()
             }
         }
-        val confirm = button(request, request.confirm)
-        val cancel = button(request, request.cancel)
+        val confirm = button(request, request.confirm, ::shownRevisionOf)
+        val cancel = button(request, request.cancel, ::shownRevisionOf)
         val additionalActions = request.additionalActions.map {
-            button(request, it)
+            button(request, it, ::shownRevisionOf)
         }
         val footerActions = request.footerActions.map {
-            button(request, it)
+            button(request, it, ::shownRevisionOf)
         }
         val multiActionButtons = if (request.multiActionWithoutExit) {
             // 候補を先に置き、最後の行を confirm/footer/cancel で埋めます。
@@ -158,7 +163,7 @@ internal class MenuDialogServiceImpl(
         }
         try {
             player.showDialog(dialog)
-            presentations.markOpened(
+            shownRevision = presentations.markOpened(
                 player,
                 com.awabi2048.ccsystem.api.gui.MenuSurface.DIALOG,
                 request.owner,
@@ -176,6 +181,7 @@ internal class MenuDialogServiceImpl(
     private fun button(
         request: MenuDialogRequest,
         button: MenuDialogButton,
+        shownRevisionOf: () -> Long?,
     ): ActionButton {
         val action = DialogAction.customClick(
             { response, audience ->
@@ -188,7 +194,7 @@ internal class MenuDialogServiceImpl(
                     selections = request.inputs.filterIsInstance<MenuDialogInput.SingleOption>()
                         .associate { it.id to response.getText(it.id).orEmpty() },
                 )
-                val originRevision = presentations.current(target)?.revision
+                val originRevision = shownRevisionOf()
                 val result = runCatching { button.handler.handle(target, values) }
                     .getOrElse { failure ->
                         plugin.logger.log(
