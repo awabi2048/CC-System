@@ -30,13 +30,22 @@ object WorldEditCommands {
     fun isMoveCommand(message: String): Boolean =
         normalizedCommandName(message) == "move"
 
+    /** `//undo` 系かを判定します。引数（回数・世界）は無視し履歴巻き戻しとして扱います。 */
+    fun isUndoCommand(message: String): Boolean =
+        normalizedCommandName(message) == "undo"
+
+    /** `//redo` 系かを判定します。引数は無視し履歴繰返しとして扱います。 */
+    fun isRedoCommand(message: String): Boolean =
+        normalizedCommandName(message) == "redo"
+
     /**
      * 自動同期の対象外であり、座標台帳を壊し得る一括操作かを判定します。
      *
      * WorldEditの `//set`・`//replace`・`//stack`・`//rotate`・`//flip`・
      * `//schematic`(`//schem`) と、Bukkitイベントを通さず実体だけを書き換える
      * バニラの `/clone`・`/fill`・`/setblock` が対象です。検出時は警告と
-     * 周期的掃除へ委ね、自動追従しません。
+     * 周期的掃除へ委ね、自動追従しません。undo／redo は専用経路で扱うため
+     * 含めません。
      */
     fun isUnsupportedBulkCommand(message: String): Boolean =
         when (normalizedCommandName(message)) {

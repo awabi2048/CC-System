@@ -32,6 +32,20 @@ class WorldEditCommandsTest {
     }
 
     @Test
+    fun `undoとredoを判定する`() {
+        assertTrue(WorldEditCommands.isUndoCommand("//undo"))
+        assertTrue(WorldEditCommands.isUndoCommand("//UNDO 3"))
+        assertTrue(WorldEditCommands.isUndoCommand("/fawe:undo"))
+        assertFalse(WorldEditCommands.isUndoCommand("//redo"))
+        assertFalse(WorldEditCommands.isUndoCommand("//copy"))
+        assertTrue(WorldEditCommands.isRedoCommand("//redo"))
+        assertTrue(WorldEditCommands.isRedoCommand("//REDO 2"))
+        assertTrue(WorldEditCommands.isRedoCommand("/worldedit:redo"))
+        assertFalse(WorldEditCommands.isRedoCommand("//undo"))
+        assertFalse(WorldEditCommands.isRedoCommand("//paste"))
+    }
+
+    @Test
     fun `対象外の一括操作を判定する`() {
         assertTrue(WorldEditCommands.isUnsupportedBulkCommand("//set stone"))
         assertTrue(WorldEditCommands.isUnsupportedBulkCommand("//replace stone dirt"))
@@ -53,5 +67,7 @@ class WorldEditCommandsTest {
         assertFalse(WorldEditCommands.isUnsupportedBulkCommand("//move 1 north"))
         assertFalse(WorldEditCommands.isUnsupportedBulkCommand("/tp @p 0 64 0"))
         assertFalse(WorldEditCommands.isUnsupportedBulkCommand("/data get block 0 0 0"))
+        assertFalse(WorldEditCommands.isUnsupportedBulkCommand("//undo"))
+        assertFalse(WorldEditCommands.isUnsupportedBulkCommand("//redo"))
     }
 }
