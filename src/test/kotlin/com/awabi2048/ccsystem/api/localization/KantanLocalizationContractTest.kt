@@ -55,10 +55,11 @@ class KantanLocalizationContractTest {
         // WorldEdit移動同期に伴い、対象外一括操作の警告1件を追加しました。
         // #35の表示文整理に伴い、未使用の旧文言139件（旧装備・旧タグ操作・旧条件・
         // 旧変数操作・旧選択肢説明・固定実体等）を廃止し、実行結果文等の49件を追加しました。
-        // 統合後の件数は1116件とし、指紋を確定します。
-        assertEquals(1116, keys.size)
+        // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
+        // 統合後の件数は1114件とし、指紋を確定します。
+        assertEquals(1114, keys.size)
         assertEquals(
-            "f71e5d1a611915009acc436ae7230c7c960237f9229a5e2706b665fb2d66c55a",
+            "3c7f1296f6e7d2e0ba5901fe13e1fb7a7ecd3f93c3d2811a8ccdb164ab7d320f",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

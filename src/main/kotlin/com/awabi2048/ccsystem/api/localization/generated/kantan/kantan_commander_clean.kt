@@ -205,8 +205,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_ACTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.save_action", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_control", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_control_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_basic", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_basic_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_entity", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.editor.category_entity_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.category_build", setOf())
@@ -1243,8 +1241,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_SAVE_ACTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_CONTROL_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC,
-        KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BASIC_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_ENTITY_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_CATEGORY_BUILD,
