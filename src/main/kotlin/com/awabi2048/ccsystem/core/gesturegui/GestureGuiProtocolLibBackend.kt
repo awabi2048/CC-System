@@ -434,16 +434,9 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         packet.bytes.write(1, 0.toByte())
         packet.bytes.write(2, 0.toByte())
         packet.vectors.write(0, Vector(0, 0, 0))
-        verifySpawnRoundTrip(packet, virtualId, type, x, y, z)
         send(viewer, packet)
         if (initialMetadata.isNotEmpty()) sendMetadata(viewer, virtualId, initialMetadata)
         GestureGuiRenderMetrics.virtualSpawns.incrementAndGet()
-        // 生成明細ログ（診断用・原因特定後に除去）。向き・寸法の突合に使います。
-        plugin.logger.info(
-            "[GestureGuiSpawnDiag] viewer=${viewer.name} id=$virtualId type=$type " +
-                "pos=(${"%.3f".format(x)},${"%.3f".format(y)},${"%.3f".format(z)}) " +
-                "meta=${initialMetadata.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" }}",
-        )
     }
 
     fun sendMetadata(viewer: Player, virtualId: Int, values: List<WrappedDataValue>) {
@@ -466,43 +459,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)
-        }
-    }
-
-    private var roundTripWarned = false
-
-    /**
-     * 構築直後の読戻し検証です（診断用・原因特定後に除去）。
-     *
-     * 同一 modifier での往復のため欄順の誤り自体は検出できませんが、
-     * 欄数・型の実行時不一致は検出できます。不一致は初回のみ出します。
-     */
-    private fun verifySpawnRoundTrip(
-        packet: com.comphenix.protocol.events.PacketContainer,
-        virtualId: Int,
-        type: EntityType,
-        x: Double,
-        y: Double,
-        z: Double,
-    ) {
-        if (roundTripWarned) return
-        val failures = runCatching {
-            buildList {
-                if (packet.integers.read(0) != virtualId) add("id")
-                if (packet.integers.read(1) != 0) add("data")
-                if (packet.entityTypeModifier.read(0) != type) add("type")
-                if (packet.doubles.read(0) != x) add("x")
-                if (packet.doubles.read(1) != y) add("y")
-                if (packet.doubles.read(2) != z) add("z")
-                if (packet.bytes.read(0) != 0.toByte()) add("pitch")
-                if (packet.bytes.read(1) != 0.toByte()) add("yaw")
-                if (packet.bytes.read(2) != 0.toByte()) add("headYaw")
-                if (packet.getUUIDs().read(0) == null) add("uuid")
-            }
-        }.getOrElse { return }
-        if (failures.isNotEmpty()) {
-            roundTripWarned = true
-            plugin.logger.warning("[GestureGuiSpawnDiag] spawn 欄不一致: ${failures.joinToString(",")}")
         }
     }
 
