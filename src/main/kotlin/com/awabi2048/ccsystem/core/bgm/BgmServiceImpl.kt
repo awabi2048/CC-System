@@ -43,7 +43,6 @@ class BgmServiceImpl(private val plugin: JavaPlugin) : BgmService {
         val playerReservations = reservations.getOrPut(player.uniqueId) { mutableMapOf() }
         playerReservations[source] = request
         refresh(player)
-        logTransition("取得", player, source, request.soundKey)
     }
 
     override fun release(player: Player, source: BgmSource) {
@@ -52,13 +51,11 @@ class BgmServiceImpl(private val plugin: JavaPlugin) : BgmService {
             reservations.remove(player.uniqueId)
         }
         refresh(player)
-        logTransition("解放", player, source, null)
     }
 
     override fun stop(player: Player) {
         reservations.remove(player.uniqueId)
         stopActivePlayback(player, activePlaybacks.remove(player.uniqueId))
-        logTransition("停止", player, null, null)
     }
 
     override fun stop(player: Player, soundKey: String) {
@@ -72,7 +69,6 @@ class BgmServiceImpl(private val plugin: JavaPlugin) : BgmService {
             stopActivePlayback(player, active)
         }
         refresh(player)
-        logTransition("停止", player, null, soundKey)
     }
 
     override fun stopAll() {
@@ -104,19 +100,6 @@ class BgmServiceImpl(private val plugin: JavaPlugin) : BgmService {
         fun resolveActiveSource(sources: Collection<BgmSource>): BgmSource? {
             return sources.maxByOrNull { it.priority }
         }
-    }
-
-    // 再生遷移の運用記録。イベント駆動のみで毎tick出力はしない。
-    private fun logTransition(action: String, player: Player, source: BgmSource?, soundKey: String?) {
-        val active = activePlaybacks[player.uniqueId]
-        val audible = active?.let { "${it.source}:${it.soundKey}" } ?: "無音"
-        val detail = when {
-            source != null && soundKey != null -> "$source:$soundKey"
-            source != null -> "$source"
-            soundKey != null -> soundKey
-            else -> "全件"
-        }
-        Bukkit.getLogger().info("[CC-System][BGM] $action: player=${player.name} $detail audible=$audible")
     }
 
     // 有効な予約を再生へ反映する。同一source・同一要求なら継続し、再頭出ししない。
