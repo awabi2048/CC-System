@@ -130,7 +130,7 @@ class CCSystem : JavaPlugin() {
     private fun syncMusicFeature() {
         if (ConfigManager.isMusicEnabled()) {
             if (!hasMusicListener()) {
-                musicListener = MusicListener()
+                musicListener = MusicListener(getAPI().getBgmService())
             }
             musicListenerRegistered = registerListenerIfNeeded(musicListener, musicListenerRegistered)
             musicListener.stopAllPlayersMusic()

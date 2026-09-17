@@ -1,6 +1,9 @@
 package com.awabi2048.ccsystem.features.misc.listener
 
 import com.awabi2048.ccsystem.CCSystem
+import com.awabi2048.ccsystem.api.bgm.BgmRequest
+import com.awabi2048.ccsystem.api.bgm.BgmService
+import com.awabi2048.ccsystem.api.bgm.BgmSource
 import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
 import org.bukkit.SoundCategory
@@ -9,19 +12,12 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.UUID
 
 /**
- * 音楽再生リスナー
+ * 音楽再生リスナー。
+ * 実再生は [BgmService] が一元管理し、本リスナーはワールド連動の予約（[BgmSource.WORLD]）のみを担当する。
  */
-class MusicListener : Listener {
-
-    internal companion object {
-        fun replayDelayAfterPlay(durationTicks: Long): Long = (durationTicks - 20L).coerceAtLeast(0L)
-    }
-
-    private val musicTasks = HashMap<UUID, org.bukkit.scheduler.BukkitTask>()
-    private val currentSounds = HashMap<UUID, String>()
+class MusicListener(private val bgmService: BgmService) : Listener {
 
     @EventHandler
     fun onWorldChange(event: PlayerChangedWorldEvent) {
@@ -61,25 +57,20 @@ class MusicListener : Listener {
      * プレイヤーの音楽を停止
      */
     fun stopMusic(player: org.bukkit.entity.Player) {
-        musicTasks.remove(player.uniqueId)?.cancel()
-        val lastSound = currentSounds.remove(player.uniqueId)
-        
-        // 独自BGMはRECORDSカテゴリで再生しているため、停止時だけ同カテゴリを明示する。
+        bgmService.release(player, BgmSource.WORLD)
+        // 移行期の残存音（旧方式のRECORDS再生）も確実に止める。
         player.stopSound(SoundCategory.RECORDS)
-        if (lastSound != null) {
-            player.stopSound(lastSound, SoundCategory.RECORDS)
-        }
     }
 
     /**
      * 音楽を再生
      */
     fun playMusic(player: org.bukkit.entity.Player, worldName: String) {
-        stopMusic(player) // 以前のBGMを停止
-        
+        // 既存のワールド予約を破棄してから評価する（旧来のstopMusic先行と同義）。
+        bgmService.release(player, BgmSource.WORLD)
+
         // 個人の再生設定をチェック (デフォルト true)
         if (!PlayerDataManager.getBoolean(player.uniqueId, "play_music", true)) {
-            stopMusic(player)
             return
         }
 
@@ -90,38 +81,18 @@ class MusicListener : Listener {
 
         // ワールドの音楽設定を取得
         val musicSetting = ConfigManager.getMusicSetting(worldName) ?: return
-        
-        val soundId = musicSetting.sound
-        val volume = musicSetting.volume
-        val pitch = musicSetting.pitch
-        val durationTicks = musicSetting.duration.toLong() * 20L
-        var ticksUntilReplay = 0L
 
-        val task = CCSystem.instance.server.scheduler.runTaskTimer(CCSystem.instance, Runnable {
-            if (player.isOnline) {
-                // 再生中も設定をチェック
-                if (!PlayerDataManager.getBoolean(player.uniqueId, "play_music", true)) {
-                    stopMusic(player)
-                    return@Runnable
-                }
-
-                currentSounds[player.uniqueId] = soundId
-
-                // 曲の長さとは独立して、毎秒バニラの音楽カテゴリを抑止する。
-                player.stopSound(SoundCategory.MUSIC)
-
-                if (ticksUntilReplay <= 0L) {
-                    // BGMとして再生するためRECORDSを使用し、位置はプレイヤーの現在地とする。
-                    player.playSound(player.location, soundId, SoundCategory.RECORDS, volume, pitch)
-                    ticksUntilReplay = replayDelayAfterPlay(durationTicks)
-                } else {
-                    ticksUntilReplay -= 20L
-                }
-            } else {
-                stopMusic(player)
-            }
-        }, 0L, 20L)
-
-        musicTasks[player.uniqueId] = task
+        bgmService.acquire(
+            player,
+            BgmSource.WORLD,
+            BgmRequest(
+                soundKey = musicSetting.sound,
+                loopTicks = musicSetting.duration.toLong() * 20L,
+                pitch = musicSetting.pitch,
+                volume = musicSetting.volume,
+                category = SoundCategory.RECORDS,
+                suppressVanillaMusic = true,
+            )
+        )
     }
 }
