@@ -18,6 +18,8 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.bgm.BgmService
+import com.awabi2048.ccsystem.core.bgm.BgmServiceImpl
 import com.awabi2048.ccsystem.api.time.SharedClockService
 import com.awabi2048.ccsystem.api.time.SeasonService
 import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
@@ -135,6 +137,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
             ?: "world"
     )
     private val soundResolutionService = SoundResolutionServiceImpl()
+    private val bgmService = BgmServiceImpl(plugin)
     private val seasonSettingsFile = File(dataFolder, "config/season.yml")
     private val sharedClockService = SharedClockServiceImpl(settingsFile = seasonSettingsFile)
     private val seasonService = SeasonServiceImpl(
@@ -289,6 +292,8 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
 
     override fun getSoundResolutionService(): SoundResolutionService = soundResolutionService
 
+    override fun getBgmService(): BgmService = bgmService
+
     override fun getSharedClockService(): SharedClockService = sharedClockService
 
     override fun getSeasonService(): SeasonService = seasonService
@@ -308,6 +313,7 @@ internal class CCSystemAPIImpl(plugin: JavaPlugin, dataFolder: File) : CCSystemA
     internal fun getDisplayParticleCount(): Int = displayEffectService.currentDisplayParticleCount()
 
     internal fun shutdown() {
+        bgmService.stopAll()
         gestureGuiService.shutdown()
         displayEffectService.shutdown()
         cosmeticPlatform.shutdown()

@@ -1,7 +1,6 @@
 package com.awabi2048.ccsystem;
 
 import com.awabi2048.ccsystem.core.config.ConfigManager;
-import com.awabi2048.ccsystem.features.misc.listener.MusicListener;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -47,12 +46,6 @@ class MusicSettingValidationTest {
 
         assertThrows(IllegalArgumentException.class,
                 () -> ConfigManager.INSTANCE.validateMusicSetting$CC_System("world", section));
-    }
-
-    @Test
-    void schedulesTheNextTrackAtTheConfiguredDuration() {
-        assertEquals(0L, MusicListener.Companion.replayDelayAfterPlay(20L));
-        assertEquals(3980L, MusicListener.Companion.replayDelayAfterPlay(4000L));
     }
 
     private static YamlConfiguration section() {

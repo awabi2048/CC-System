@@ -18,6 +18,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiService
 import com.awabi2048.ccsystem.api.item.ItemGrantService
 import com.awabi2048.ccsystem.api.sound.SoundResolutionService
 import com.awabi2048.ccsystem.api.action.ContentActionDispatcher
+import com.awabi2048.ccsystem.api.bgm.BgmService
 import com.awabi2048.ccsystem.api.time.SharedClockService
 import com.awabi2048.ccsystem.api.time.SeasonService
 import com.awabi2048.ccsystem.api.resource.ResourceWorldLifecycleService
@@ -135,6 +136,9 @@ interface CCSystemAPI {
     fun getWorldDirectoryService(): WorldDirectoryService
 
     fun getSoundResolutionService(): SoundResolutionService
+
+    /** ループBGMの一元管理サービスです。 */
+    fun getBgmService(): BgmService
 
     fun getSharedClockService(): SharedClockService
 
