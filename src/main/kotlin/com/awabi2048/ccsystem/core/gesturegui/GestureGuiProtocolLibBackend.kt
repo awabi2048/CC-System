@@ -2,9 +2,6 @@ package com.awabi2048.ccsystem.core.gesturegui
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.BukkitConverters
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataValue
@@ -22,11 +19,9 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import org.joml.Vector3f
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 /**
  * ProtocolLib による client-only virtual entity 描画 backend です。
@@ -148,9 +143,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
             plugin.logger.log(Level.WARNING, "アイテム converter の解決に失敗しました", failure)
             return false
         }
-        val className = handle.javaClass.name
-        val valid = className == NMS_ITEM_STACK_CLASS
-        plugin.logger.info("[GestureGuiProbe] item converter=$className valid=$valid")
+        val valid = handle.javaClass.name == NMS_ITEM_STACK_CLASS
         return valid
     }
 
@@ -184,227 +177,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
     fun nextVirtualId(): Int = idAllocator.getAndIncrement()
 
     /**
-     * 初回 spawn 時に基準 template との突合を行います（診断用・原因特定後に除去）。
-     *
-     * 不可視 Bukkit Display を同一 tick で生成・破棄し、watcher の実 index・値を
-     * 本 backend の想定と突き合わせます。不一致は向き・寸法ずれの直接原因になります。
-     */
-    private var probeDone = false
-
-    private fun runOneShotProbe(sampleViewer: Player) {
-        if (probeDone) return
-        probeDone = true
-        // block・text は互いに独立させ、片方の失敗で他方を欠落させません。
-        runCatching { probeBlock(sampleViewer) }.onFailure { failure ->
-            plugin.logger.log(Level.WARNING, "[GestureGuiProbe] block 突合に失敗しました", failure)
-        }
-        runCatching { probeText(sampleViewer) }.onFailure { failure ->
-            plugin.logger.log(Level.WARNING, "[GestureGuiProbe] text 突合に失敗しました", failure)
-        }
-        runCatching { probeItem(sampleViewer) }.onFailure { failure ->
-            plugin.logger.log(Level.WARNING, "[GestureGuiProbe] item 突合に失敗しました", failure)
-        }
-        runCatching { interceptReference(sampleViewer) }.onFailure { failure ->
-            plugin.logger.log(Level.WARNING, "[GestureGuiProbe] 参照差分に失敗しました", failure)
-        }
-    }
-
-    /** 検証結果の記録です。失敗しても後続の検証を継続します。 */
-    private fun verifyProbe(label: String, failures: MutableList<String>, condition: Boolean, lazyMessage: () -> String) {
-        if (!condition) {
-            val message = lazyMessage()
-            failures += message
-            plugin.logger.warning("[GestureGuiProbe] $label: $message")
-        }
-    }
-
-    private fun probeBlock(sampleViewer: Player) {
-        val template = sampleViewer.world.spawn(sampleViewer.location, BlockDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.billboard = org.bukkit.entity.Display.Billboard.CENTER
-            it.brightness = org.bukkit.entity.Display.Brightness(7, 9)
-            it.isGlowing = true
-            it.setGlowColorOverride(org.bukkit.Color.fromRGB(1, 2, 3))
-            it.block = org.bukkit.Bukkit.createBlockData(org.bukkit.Material.STONE)
-        }
-        try {
-            val watcher = WrappedDataWatcher.getEntityWatcher(template)
-            val at = { index: Int -> watcher.getWatchableObject(index)?.value }
-            plugin.logger.info(
-                "[GestureGuiProbe] block translation[11]=${at(11)} scale[12]=${at(12)} " +
-                    "billboard[15]=${at(15)} brightness[16]=${at(16)} glowFlags[0]=${at(0)} " +
-                    "glowColor[22]=${at(22)} blockState[23]=${at(23)?.javaClass?.name}",
-            )
-            val failures = mutableListOf<String>()
-            verifyProbe("block", failures, (at(15) as? Byte) == 3.toByte()) { "billboard CENTER が 3 ではありません: ${at(15)}" }
-            verifyProbe("block", failures, at(16) == packBrightness(7, 9)) { "brightness pack が不一致です: ${at(16)}" }
-            verifyProbe("block", failures, (at(0) as? Byte)?.toInt()?.and(0x40) != 0) { "glow bit が立っていません: ${at(0)}" }
-            verifyProbe("block", failures, at(23) != null) { "blockState が空です" }
-            if (failures.isEmpty()) plugin.logger.info("[GestureGuiProbe] block OK")
-            else plugin.logger.warning("[GestureGuiProbe] block NG(${failures.size}件)")
-        } finally {
-            template.remove()
-        }
-    }
-
-    private fun probeText(sampleViewer: Player) {
-        val template = sampleViewer.world.spawn(sampleViewer.location, org.bukkit.entity.TextDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.text(net.kyori.adventure.text.Component.text("PROBE-12345"))
-            it.lineWidth = 123
-            it.isSeeThrough = true
-            it.alignment = org.bukkit.entity.TextDisplay.TextAlignment.RIGHT
-        }
-        try {
-            val watcher = WrappedDataWatcher.getEntityWatcher(template)
-            val at = { index: Int -> watcher.getWatchableObject(index)?.value }
-            plugin.logger.info(
-                "[GestureGuiProbe] text[23]=${at(23)} lineWidth[24]=${at(24)} flags[27]=${at(27)}",
-            )
-            val failures = mutableListOf<String>()
-            verifyProbe("text", failures, at(24) == 123) { "lineWidth が不一致です: ${at(24)}" }
-            verifyProbe("text", failures, (at(27) as? Byte) == (2 or 16).toByte()) { "text flags が不一致です: ${at(27)}" }
-            // chat handle の往復検証：JSON→NMS→JSON で内容が保たれることを確認します。
-            val roundTripped = runCatching {
-                val handle = WrappedChatComponent.fromJson("{\"text\":\"PROBE-12345\"}").handle
-                WrappedChatComponent.fromHandle(handle).json
-            }.getOrNull()
-            verifyProbe("text", failures, roundTripped?.contains("PROBE-12345") == true) {
-                "chat 往復に失敗しました: $roundTripped"
-            }
-            if (failures.isEmpty()) plugin.logger.info("[GestureGuiProbe] text OK")
-            else plugin.logger.warning("[GestureGuiProbe] text NG(${failures.size}件)")
-        } finally {
-            template.remove()
-        }
-    }
-
-    /**
-     * アイテム変換の検証です（診断用・原因特定後に除去）。
-     *
-     * template 読取と converter の双方を試し、NMS 内容を突き合わせます。
-     */
-    private fun probeItem(sampleViewer: Player) {
-        val item = org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD)
-        val template = sampleViewer.world.spawn(sampleViewer.location, org.bukkit.entity.ItemDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.setItemStack(item.clone())
-        }
-        try {
-            val watcher = WrappedDataWatcher.getEntityWatcher(template)
-            val stored = watcher.getWatchableObject(ID_ITEM_STACK)?.value
-            plugin.logger.info("[GestureGuiProbe] item[23]=$stored")
-            val failures = mutableListOf<String>()
-            verifyProbe("item", failures, stored != null) { "itemstack が空です" }
-            verifyProbe("item", failures, stored.toString().contains("diamond_sword", ignoreCase = true)) {
-                "itemstack 内容が不一致です: $stored"
-            }
-            // 送信経路（converter）の形式も確定させます。Bukkit 形の混入は切断級のため不可です。
-            val converted = runCatching { nmsItemStack(item) }.getOrNull()
-            verifyProbe("item", failures, converted?.javaClass?.name == NMS_ITEM_STACK_CLASS) {
-                "converter 出力が NMS ではありません: ${converted?.javaClass?.name}"
-            }
-            if (failures.isEmpty()) plugin.logger.info("[GestureGuiProbe] item OK")
-            else plugin.logger.warning("[GestureGuiProbe] item NG(${failures.size}件)")
-        } finally {
-            template.remove()
-        }
-    }
-
-    private var interceptArmed = false
-    private val referenceIds = ConcurrentHashMap.newKeySet<Int>()
-
-    /**
-     * Bukkit 参照 Display との packet 差分です（診断用・原因特定後に除去）。
-     *
-     * 同一内容・同一向きの Bukkit 実体を不可視生成し、実際に送信される
-     * spawn・metadata を捕捉して自前の想定と突き合わせます。
-     * 参照は viewer 上空へ出し、5tick 後に破棄します。
-     */
-    private fun interceptReference(sampleViewer: Player) {
-        if (interceptArmed) return
-        interceptArmed = true
-        manager.addPacketListener(
-            object : PacketAdapter(
-                plugin,
-                ListenerPriority.NORMAL,
-                PacketType.Play.Server.SPAWN_ENTITY,
-                PacketType.Play.Server.ENTITY_METADATA,
-            ) {
-                override fun onPacketSending(event: PacketEvent) {
-                    runCatching { dumpReferencePacket(event) }
-                }
-            },
-        )
-        val loc = sampleViewer.location.clone().add(0.0, 25.0, 0.0)
-        val block = sampleViewer.world.spawn(loc, BlockDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.setRotation(45.5f, -12.25f)
-            it.setTransformation(
-                org.bukkit.util.Transformation(
-                    Vector3f(7f, 8f, 9f),
-                    org.joml.AxisAngle4f(),
-                    Vector3f(2f, 3f, 4f),
-                    org.joml.AxisAngle4f(),
-                ),
-            )
-            it.block = org.bukkit.Bukkit.createBlockData(org.bukkit.Material.STONE)
-        }
-        val text = sampleViewer.world.spawn(loc, org.bukkit.entity.TextDisplay::class.java) {
-            it.isVisibleByDefault = false
-            it.isPersistent = false
-            it.setRotation(45.5f, -12.25f)
-            it.text(net.kyori.adventure.text.Component.text("REF-77"))
-            it.lineWidth = 77
-        }
-        referenceIds += block.entityId
-        referenceIds += text.entityId
-        sampleViewer.showEntity(plugin, block)
-        sampleViewer.showEntity(plugin, text)
-        plugin.logger.info(
-            "[GestureGuiIntercept] 参照実体を生成しました id=${block.entityId},${text.entityId}（8tick後に破棄）",
-        )
-        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-            runCatching {
-                sampleViewer.hideEntity(plugin, block)
-                sampleViewer.hideEntity(plugin, text)
-            }
-            block.remove()
-            text.remove()
-        }, 8L)
-    }
-
-    private fun dumpReferencePacket(event: PacketEvent) {
-        val packet = event.packet
-        when (event.packetType) {
-            PacketType.Play.Server.SPAWN_ENTITY -> {
-                val id = packet.integers.read(0)
-                if (id !in referenceIds) return
-                plugin.logger.info(
-                    "[GestureGuiIntercept] spawn id=$id type=${packet.entityTypeModifier.read(0)} " +
-                        "xyz=${packet.doubles.read(0)},${packet.doubles.read(1)},${packet.doubles.read(2)} " +
-                        "bytes=${packet.bytes.read(0)},${packet.bytes.read(1)},${packet.bytes.read(2)} " +
-                        "data=${packet.integers.read(1)}",
-                )
-            }
-            PacketType.Play.Server.ENTITY_METADATA -> {
-                val id = packet.integers.read(0)
-                if (id !in referenceIds) return
-                val values = packet.dataValueCollectionModifier.read(0)
-                plugin.logger.info(
-                    "[GestureGuiIntercept] meta id=$id " +
-                        values.joinToString(";") { "${it.index}=${summarizeValue(it.value)}" },
-                )
-            }
-            else -> {}
-        }
-    }
-
-    /**
      * viewer へ virtual Display を生成し、初期 metadata を一括送信します。
      *
      * 向きは entity 回転ではなく変形の leftRotation quaternion で与えます。
@@ -420,7 +192,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         z: Double,
         initialMetadata: List<WrappedDataValue>,
     ) {
-        runOneShotProbe(viewer)
         val packet = manager.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
         packet.integers.write(0, virtualId)
         packet.integers.write(1, 0)
@@ -621,12 +392,6 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
          * 負角が 1 段階（1.40625°）ずれるため、NMS に合わせます。
          */
         fun toPackedByte(degrees: Float): Byte = floor(degrees * 256.0f / 360.0f).toInt().toByte()
-
-        /** 診断ログ用の値要約です。長大な NMS 文字列を抑えます。 */
-        fun summarizeValue(value: Any?): String {
-            val text = value.toString()
-            return if (text.length <= 120) text else text.take(120) + "…(${text.length})"
-        }
 
         /** adventure Component を packet 用 JSON へ変換します。 */
         fun componentJson(text: net.kyori.adventure.text.Component): String =

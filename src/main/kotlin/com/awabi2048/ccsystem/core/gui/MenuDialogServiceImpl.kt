@@ -198,7 +198,7 @@ internal class MenuDialogServiceImpl(
                 val result = runCatching { button.handler.handle(target, values) }
                     .getOrElse { failure ->
                         plugin.logger.log(
-                            Level.SEVERE,
+                            Level.WARNING,
                             "Dialog処理に失敗しました: owner=${request.owner} id=${request.id} player=${target.uniqueId}",
                             failure
                         )

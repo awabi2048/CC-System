@@ -300,7 +300,6 @@ class GestureGuiServiceImpl(
         val openedSession = requireNotNull(session)
         // 開いた直後の待ちで入力入口が遅れないよう、次 tick で gaze を即時実行します。
         requestGazeUpdate()
-        logResummonPose(openedSession, owner, "open")
         return snapshot(openedSession)
     }
 
@@ -462,7 +461,6 @@ class GestureGuiServiceImpl(
             session.lastMotionTick = tickIndex
             session.followDirty = false
             requestGazeUpdate()
-            logResummonPose(session, owner, "resummon")
             return true
         } catch (failure: Throwable) {
             plugin.logger.log(Level.WARNING, "Gesture GUI停止時再召喚に失敗しました", failure)
@@ -1415,24 +1413,6 @@ class GestureGuiServiceImpl(
         val dy = a.y - b.y
         val dz = a.z - b.z
         return dx * dx + dy * dy + dz * dz
-    }
-
-    /**
-     * 再生成時の向き情報をログ出力します（診断用・原因特定後に除去）。
-     *
-     * 保持 yaw・先頭画面の法線・基底 quaternion を同一行に出し、
-     * client の見え方と突き合わせます。entity 回転 byte は常に 0 です。
-     */
-    private fun logResummonPose(session: Session, owner: Player, trigger: String) {
-        val first = session.screens.firstOrNull() ?: return
-        val pose = first.pose
-        val quat = GestureGuiVirtualScreens.blockQuat(pose)
-        plugin.logger.info(
-            "[GestureGuiPose] $trigger owner=${owner.name} retainedYaw=${"%.2f".format(session.retainedYaw)} " +
-                "normal=(${"%.3f".format(pose.normal.x)},${"%.3f".format(pose.normal.y)},${"%.3f".format(pose.normal.z)}) " +
-                "quat=(${"%.3f".format(quat.x)},${"%.3f".format(quat.y)}," +
-                "${"%.3f".format(quat.z)},${"%.3f".format(quat.w)})",
-        )
     }
 
     private fun createActor(session: Session, player: Player): ActorRuntime {
