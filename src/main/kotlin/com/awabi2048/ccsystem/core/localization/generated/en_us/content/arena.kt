@@ -125,7 +125,7 @@ internal object EnUsContentArenaCatalog {
         EmbeddedLocalizationEntry(key = "arena.messages.mission.returned", value = EmbeddedLocalizedValue.Text("§7Returned to the arena lobby!"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.mission.completed", value = EmbeddedLocalizedValue.Text("&aミッションクリア！"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.hold_hint", value = EmbeddedLocalizedValue.Text("Hold Shift to continue"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.completed_title", value = EmbeddedLocalizedValue.Text("§aLobby tutorial complete!"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.completed_title", value = EmbeddedLocalizedValue.Text("§4§o|| §6§lArena §4§o||"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.steps", value = EmbeddedLocalizedValue.TextList(listOf("§f\"This is the arena lobby! You can accept missions from the board.\"", "§f\"From the lobby center, you can access each facility. Prepare before departure!\"", "§f\"The pedestal lets you enhance gear with specific materials.\"", "§f\"When you are ready, choose a mission and board the lift.\"")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.license.promoted", value = EmbeddedLocalizedValue.Text("&aYour license has been upgraded! &f-> {tier}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.multiplayer.invite_window_started", value = EmbeddedLocalizedValue.Text("§6Mission accepted!§7 Preparing the lift..."), domain = DOMAIN),

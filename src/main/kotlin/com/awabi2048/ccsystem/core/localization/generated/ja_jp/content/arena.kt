@@ -125,7 +125,7 @@ internal object JaJpContentArenaCatalog {
         EmbeddedLocalizationEntry(key = "arena.messages.mission.return_countdown", value = EmbeddedLocalizedValue.Text("§7帰還中 §e{seconds} 秒"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.mission.returned", value = EmbeddedLocalizedValue.Text("§7アリーナロビーに帰還しました！"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.hold_hint", value = EmbeddedLocalizedValue.Text("Shift長押しで進む"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.completed_title", value = EmbeddedLocalizedValue.Text("§aロビーチュートリアル完了！"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.completed_title", value = EmbeddedLocalizedValue.Text("§4§o|| §6§lArena §4§o||"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.lobby.tutorial.steps", value = EmbeddedLocalizedValue.TextList(listOf("§f「ここがアリーナロビーです！ミッションは掲示板から受注できますよ！」", "§f「ロビー中央から各設備にアクセスできます。必要な準備を整えましょう！」", "§f「祭壇では特定の素材を使って強化ができます。試したい時は見てみてください！」", "§f「準備ができたら掲示板でミッションを選んで、リフトに乗って出発です！」")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.license.promoted", value = EmbeddedLocalizedValue.Text("&aライセンスが昇格しました！ &f→ {tier}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.messages.multiplayer.invite_window_started", value = EmbeddedLocalizedValue.Text("§6ミッションを受注しました！§7リフトを準備中です..."), domain = DOMAIN),
