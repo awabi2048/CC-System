@@ -304,7 +304,7 @@ internal object JaJpContentArenaCatalog {
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.get_ready", value = EmbeddedLocalizedValue.Text("§7§lGet Ready!"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.defeat", value = EmbeddedLocalizedValue.Text("§c§lDEFEAT"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.participant_line", value = EmbeddedLocalizedValue.Text("§7◯ §b{name} {status}"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "arena.ui.sidebar.wave_progress", value = EmbeddedLocalizedValue.Text("§7» §6§lWave {wave} §7« §8(§7§l{current} §8/{total} §8)"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "arena.ui.sidebar.wave_progress", value = EmbeddedLocalizedValue.Text("§7» §6§lWave {wave} §7« §8(§7§l{current}§8/{total}§8)"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.status_down", value = EmbeddedLocalizedValue.Text("§eDOWN"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.status_alive", value = EmbeddedLocalizedValue.Text("§aALIVE"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "arena.ui.sidebar.status_preparing", value = EmbeddedLocalizedValue.Text("§dPREPARING"), domain = DOMAIN),
