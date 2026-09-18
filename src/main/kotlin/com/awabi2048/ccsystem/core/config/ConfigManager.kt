@@ -118,6 +118,8 @@ object ConfigManager {
 
     // === ResourceWorld設定 ===
     private var evacuationCommand: String = "spawn"
+    // 事前生成の有効無効。一旦停止中のため既定は無効。再開時は設定で true にする。
+    private var pregenEnabled: Boolean = false
     private var pregenPriorityDiameter: Int = 1000
     private var pregenDelayTicks: Long = 5
     private var pregenBatchSize: Int = 25
@@ -389,6 +391,7 @@ object ConfigManager {
         evacuationCommand = resourceWorld.getString("evacuation_command") ?: "spawn"
 
         val pregenSection = resourceWorld.getConfigurationSection("pregen")
+        pregenEnabled = pregenSection?.getBoolean("enabled") ?: false
         pregenPriorityDiameter = pregenSection?.getInt("priority_diameter") ?: 1000
         pregenDelayTicks = (pregenSection?.getInt("delay_ticks") ?: 5).toLong()
         pregenBatchSize = pregenSection?.getInt("batch_size") ?: 25
@@ -769,6 +772,7 @@ object ConfigManager {
     }
 
     fun getEvacuationCommand(): String = evacuationCommand
+    fun isPregenEnabled(): Boolean = pregenEnabled
     fun getPregenPriorityDiameter(): Int = pregenPriorityDiameter
     fun getPregenDelayTicks(): Long = pregenDelayTicks
     fun getPregenBatchSize(): Int = pregenBatchSize

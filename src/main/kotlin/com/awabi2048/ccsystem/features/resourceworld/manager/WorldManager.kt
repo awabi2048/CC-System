@@ -338,6 +338,20 @@ object WorldManager {
             return
         }
 
+        // 事前生成が無効化されている場合は生成せず利用可能扱いとする（一旦停止中の措置）。
+        if (!ConfigManager.isPregenEnabled()) {
+            val worldKey = worldKey(world)
+            readyWorlds.add(worldKey)
+            pregenProgress[worldKey] = 100
+            priorityPregenProgress[worldKey] = 100
+            val lifecycle = ResourceWorldLifecycleRuntime.service
+            if (lifecycle.getGeneration(world.key)?.state == ResourceWorldState.CREATING) {
+                lifecycle.transition(world.key, ResourceWorldState.READY)
+            }
+            logger.info("ワールド ${world.name} の事前生成は無効化中のためスキップし、利用可能とします。")
+            return
+        }
+
         val lifecycle = ResourceWorldLifecycleRuntime.service
         val generation = lifecycle.getGeneration(world.key)
         if (generation?.state == ResourceWorldState.CREATING) {
@@ -515,6 +529,10 @@ object WorldManager {
      * 中断されていた事前生成を再開する
      */
     fun resumePregeneration() {
+        if (!ConfigManager.isPregenEnabled()) {
+            logger.info("事前生成は無効化中のため再開しません。")
+            return
+        }
         logger.info("中断されていた事前生成をチェックしています...")
 
         val states = PregenerationStateManager.getAllStates()

@@ -3,8 +3,9 @@
 # 避難先のコマンド設定 (プレイヤーに実行させるコマンド)
 evacuation_command: "spawn"
 
-# 事前生成設定
+# 事前生成設定。一旦停止中のため無効。再開時は enabled を true にする。
 pregen:
+  enabled: false
   priority_diameter: 1000
   delay_ticks: 5
   batch_size: 25
