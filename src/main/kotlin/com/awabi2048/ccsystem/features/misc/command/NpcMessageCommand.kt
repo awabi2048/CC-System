@@ -57,13 +57,14 @@ class NpcMessageCommand : CommandExecutor, TabCompleter {
             return true
         }
 
-        // LanguageManagerからメッセージテキストを取得（custom_messages）
-        val texts = LanguageManager.getCustomMessageTexts(targetPlayer, messageId)
+        // 外部設定（config/npc_message.yml）から対象言語の本文を取得します。
+        val texts = MessageManager.getMessageTexts(targetPlayer, messageId)
         if (texts.isEmpty()) {
             sender.sendMessage("§cメッセージが未定義か、空の状態です: $messageId")
             return true
         }
 
+        // 設定読込時に検証済みのため、ここでは形式別の出し分けのみ行います。
         val style = MessageManager.getStyle(targetPlayer, messageId)
         val messagesToSend = mutableListOf<String>()
 
@@ -73,7 +74,7 @@ class NpcMessageCommand : CommandExecutor, TabCompleter {
                 val index = MessageManager.getOrderIndex(targetPlayer, messageId, texts.size)
                 messagesToSend.add(texts[index])
             }
-            "batch" -> messagesToSend.addAll(texts)
+            // batch と、将来の形式追加時の安全側（到達不能想定）の既定です。
             else -> messagesToSend.addAll(texts)
         }
 

@@ -313,6 +313,7 @@ class CCSystem : JavaPlugin() {
             "config/queue.yml",
             "config/season.yml",
             "config/display_effect.yml",
+            "config/npc_message.yml",
             "data/rental_area/rental_area_data.yml",
             "data/ledger/placed_block_ledger.yml",
             "data/announce/announce_data.yml",
@@ -343,7 +344,8 @@ class CCSystem : JavaPlugin() {
             "config/announce.yml",
             "config/queue.yml",
             "config/season.yml",
-            "config/display_effect.yml"
+            "config/display_effect.yml",
+            "config/npc_message.yml"
         )
         val specs = paths.map { resourcePath ->
             val currentVersion = when (resourcePath) {
