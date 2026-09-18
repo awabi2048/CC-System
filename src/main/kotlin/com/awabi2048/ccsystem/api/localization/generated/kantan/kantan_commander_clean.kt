@@ -745,6 +745,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.program_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_OWNER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.owner", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_CREATED_AT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.created_at", setOf())
+    // issue #14: 操作ツールwandの表示名・説明です。基底TROPICAL_FISH+item_modelで識別します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_NAME_WAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.item.name_wand", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_ITEM_LORE_WAND: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.item.lore_wand", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.teleport_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.give_item", setOf())
@@ -837,6 +840,17 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_success", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_failed", setOf())
+    // issue #14: 操作ツールwandの付与・モード・選択通知です。選択Undo履歴は選択集合のみ対象です。
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_WAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.help_wand", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_grant_success", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_grant_failed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_AREA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_area", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_RANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_entity_range", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_DIRECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_entity_direct", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_CHANGED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_changed", setOf("mode"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_cleared", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_undo_empty", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_full", setOf("max"))
     // WorldEdit等の対象外一括操作を検出した際の警告です。操作名だけを引数に取ります。
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.worldedit_unsupported_operation", setOf("command"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_execute", setOf())
@@ -1777,6 +1791,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_ITEM_PROGRAM_NAME,
         KANTAN_COMMANDER_CLEAN_ITEM_OWNER,
         KANTAN_COMMANDER_CLEAN_ITEM_CREATED_AT,
+        KANTAN_COMMANDER_CLEAN_ITEM_NAME_WAND,
+        KANTAN_COMMANDER_CLEAN_ITEM_LORE_WAND,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM,
@@ -1865,6 +1881,16 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_WAND,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_SUCCESS,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_FAILED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_AREA,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_RANGE,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_DIRECT,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_CHANGED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION,
     )
 
