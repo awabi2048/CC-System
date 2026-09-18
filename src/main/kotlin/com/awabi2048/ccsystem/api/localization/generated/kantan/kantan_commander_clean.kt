@@ -880,6 +880,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STRUCTURE_SAVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_structure_saved", setOf("name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STRUCTURE_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_structure_failed", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_invalid_name", setOf())
+    // issue #14: タグ・グループ名の入力不備は規則が異なるため専用キーに分けます。
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_TAG: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_invalid_tag", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_GROUP_NAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_invalid_group_name", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_TAG_ADDED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_tag_added", setOf("tag", "count"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_TAG_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_tag_removed", setOf("tag", "count"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ENTITIES_DELETED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_entities_deleted", setOf("count"))
@@ -1951,6 +1954,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STRUCTURE_SAVED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STRUCTURE_FAILED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_NAME,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_TAG,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_INVALID_GROUP_NAME,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_TAG_ADDED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_TAG_REMOVED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ENTITIES_DELETED,

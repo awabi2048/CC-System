@@ -57,9 +57,9 @@ class KantanLocalizationContractTest {
         // 旧変数操作・旧選択肢説明・固定実体等）を廃止し、実行結果文等の49件を追加しました。
         // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
         // 統合後の件数は1114件とし、指紋を確定します。
-        assertEquals(1157, keys.size)
+        assertEquals(1159, keys.size)
         assertEquals(
-            "361deb83440e9708a8eb98d20ffe1555c6a27141513e3a17fb8b7f4b26432785",
+            "c2ea7f0a6f35fd504167c5199cf682f812986a2212c0ff9ce160add6a8ae6a42",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

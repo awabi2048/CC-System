@@ -713,6 +713,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_saved", value = EmbeddedLocalizedValue.Text("Structure「{name}」を保存しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_failed", value = EmbeddedLocalizedValue.Text("Structureの保存に失敗しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_invalid_name", value = EmbeddedLocalizedValue.Text("名前が不正です。英小文字・数字・_・-（64文字以内）で入力してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_invalid_tag", value = EmbeddedLocalizedValue.Text("タグが不正です。英数字・_・.・:・+・-（64文字以内）で入力してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_invalid_group_name", value = EmbeddedLocalizedValue.Text("グループ名を入力してください（64文字以内）。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_tag_added", value = EmbeddedLocalizedValue.Text("タグ「{tag}」を{count}件に付与しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_tag_removed", value = EmbeddedLocalizedValue.Text("タグ「{tag}」を{count}件から除去しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_entities_deleted", value = EmbeddedLocalizedValue.Text("{count}件のEntityを削除しました。"), domain = DOMAIN),
