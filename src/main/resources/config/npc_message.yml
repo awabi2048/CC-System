@@ -1,0 +1,18 @@
+# === NPCメッセージ設定 ===
+# /npc_message <message_id> [player] の本文定義です。通常データとして直書きします。
+# style: random | order | batch（ID直下、言語共通）
+# texts.<locale>: 1件以上必須。`§` カラーコード可。任意ロケール追加可。
+# 不足ロケールは core.default_language の文面へフォールバックします。
+messages:
+  example_message:
+    style: random
+    texts:
+      ja_jp:
+        - "§aメッセージ例1"
+        - "§bメッセージ例2"
+        - "§cメッセージ例3"
+      en_us:
+        - "§aMessage example 1"
+        - "§bMessage example 2"
+        - "§cMessage example 3"
+config_version: 1

@@ -1,35 +1,37 @@
 package com.awabi2048.ccsystem.core.config
 
-import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.core.data.PlayerDataManager
-import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 
 /**
- * メッセージスタイル管理マネージャー
+ * NPCメッセージの表示形式管理マネージャーです。
+ * 本文の正データは config/npc_message.yml にあり、言語別に外部設定へ直書きします。
+ * 埋め込みローカライズカタログは参照しません。
  */
 object MessageManager {
-    
+
     /**
-     * メッセージ設定をロード（互換性のために残す）
+     * メッセージ設定をロードします。
+     * 実読込は ConfigManager が行うため、ここでは特に処理しません。
      */
     fun load() {
-        // 現在はLanguageManagerがメッセージを管理するため、特に処理なし
+        // ConfigManager.load() で npc_message.yml を検証済みで保持します。
     }
-    
+
     /**
-     * メッセージスタイルを取得
-     * 
-     * @param player プレイヤー（nullの場合はデフォルト言語）
+     * メッセージの表示形式を取得します。
+     *
+     * @param player プレイヤー（形式は言語共通のため未使用、互換用）
      * @param id メッセージID
-     * @return スタイル ("random", "order", "batch")
+     * @return 表示形式 ("random", "order", "batch")、未定義時は "batch"
      */
     fun getStyle(player: Player?, id: String): String {
-        return LanguageManager.getCustomMessageStyle(player, id)
+        // 設定読込時に検証済みのため、未定義時のみ安全側の batch を返します。
+        return ConfigManager.getNpcMessageStyle(id) ?: "batch"
     }
-    
+
     /**
-     * 順序付きメッセージのインデックスを取得
+     * 順序付きメッセージのインデックスを取得します。
      */
     fun getOrderIndex(player: Player, id: String, max: Int): Int {
         if (max <= 0) return 0
@@ -48,18 +50,27 @@ object MessageManager {
 
         return index
     }
-    
+
     /**
-     * メッセージIDの一覧を取得
+     * メッセージIDの一覧を取得します。
      */
     fun getMessageIds(player: Player?): Set<String> {
-        return LanguageManager.getCustomMessageIds(player)
+        // ID一覧は言語非依存のため、player は互換用に残します。
+        return ConfigManager.getNpcMessageIds()
     }
-    
+
     /**
-     * メッセージテキストリストを取得
+     * 対象プレイヤーの言語に合わせた本文を取得します。
+     * 不足ロケールは既定言語へフォールバックし、未定義時は空を返します。
      */
     fun getMessageTexts(player: Player?, id: String): List<String> {
-        return LanguageManager.getCustomMessageTexts(player, id)
+        val requestedLocale = resolveRequestedLocale(player)
+        return ConfigManager.getNpcMessageTexts(id, requestedLocale)
+    }
+
+    // LanguageManager 未初期化時（単体試験等）でも落とさず、既定言語で解決します。
+    private fun resolveRequestedLocale(player: Player?): String {
+        return runCatching { LanguageManager.getPlayerLanguageCode(player) }
+            .getOrElse { ConfigManager.getDefaultLanguage() }
     }
 }

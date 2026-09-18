@@ -63,18 +63,6 @@ object LanguageManager {
         return unified.deserialize(message)
     }
 
-    fun getCustomMessageStyle(player: Player?, id: String): String {
-        return unified.getString(player, "custom_messages.$id.style").lowercase()
-    }
-
-    fun getCustomMessageTexts(player: Player?, id: String): List<String> {
-        return unified.getStringList(player, "custom_messages.$id.texts")
-    }
-
-    fun getCustomMessageIds(player: Player?): Set<String> {
-        return unified.getSectionKeys(player, "custom_messages")
-    }
-
     fun getUnified(): UnifiedLanguageManager {
         return unified
     }

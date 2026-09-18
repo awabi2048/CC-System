@@ -24,6 +24,7 @@ object ConfigManager {
     private const val ANNOUNCE_CONFIG_PATH = "config/announce.yml"
     private const val QUEUE_CONFIG_PATH = "config/queue.yml"
     private const val DISPLAY_EFFECT_CONFIG_PATH = "config/display_effect.yml"
+    private const val NPC_MESSAGE_CONFIG_PATH = "config/npc_message.yml"
 
     private lateinit var coreConfigFile: File
     private lateinit var coreConfig: YamlConfiguration
@@ -184,6 +185,18 @@ object ConfigManager {
         val variations: List<String>
     )
 
+    // NPCメッセージ定義は外部設定の通常データとして保持します。
+    // styleはID共通、textsはロケール毎に保持し、不足時は既定言語へフォールバックします。
+    data class NpcMessageEntry(
+        val style: String,
+        val textsByLocale: Map<String, List<String>>
+    )
+
+    // NPCメッセージの許容形式とロケール名制約です。
+    private val npcMessageStyles = setOf("random", "order", "batch")
+    private val npcMessageLocalePattern = Regex("^[a-z0-9_]+$")
+    private val npcMessages = mutableMapOf<String, NpcMessageEntry>()
+
     private fun org.bukkit.configuration.ConfigurationSection.requireFiniteNumber(
         key: String,
         worldName: String
@@ -204,6 +217,7 @@ object ConfigManager {
         val announce = loadYaml(ANNOUNCE_CONFIG_PATH)
         val queue = loadYaml(QUEUE_CONFIG_PATH)
         val displayEffect = loadYaml(DISPLAY_EFFECT_CONFIG_PATH)
+        val npcMessage = loadYaml(NPC_MESSAGE_CONFIG_PATH)
 
         loadCoreSettings(core)
         loadMiscSettings(misc)
@@ -211,6 +225,7 @@ object ConfigManager {
         loadResourceWorldSettings(resourceWorld)
         loadAnnounceSettings(announce)
         loadQueueSettings(queue)
+        loadNpcMessageSettings(npcMessage)
         DisplayParticleLimitType.entries.forEach { type ->
             displayParticleLimits[type] = displayEffect.getInt(type.configPath, type.defaultValue).also { value ->
                 require(value in type.allowedRange) {
@@ -483,6 +498,83 @@ object ConfigManager {
             queueSection?.getString("queue_data_file")?.trim()?.ifBlank { null } ?: "data/queue/queue_data.yml"
     }
 
+    // NPCメッセージ設定を読込みます。誤設定は補正せず起動失敗させます。
+    private fun loadNpcMessageSettings(npcMessage: YamlConfiguration) {
+        npcMessages.clear()
+        npcMessages.putAll(parseNpcMessageEntries(npcMessage, defaultLanguage))
+    }
+
+    // 単体試験から直接呼べるよう、ファイル読込と検証を分離します。
+    internal fun parseNpcMessageEntries(
+        npcMessage: YamlConfiguration,
+        defaultLocale: String
+    ): Map<String, NpcMessageEntry> {
+        val normalizedDefault = normalizeNpcLocale(defaultLocale)
+        val messagesSection = npcMessage.getConfigurationSection("messages") ?: return emptyMap()
+        val parsed = linkedMapOf<String, NpcMessageEntry>()
+        for (id in messagesSection.getKeys(false)) {
+            val normalizedId = id.trim()
+            require(normalizedId.isNotEmpty()) { "NPCメッセージ設定 'messages' に空のIDがあります。" }
+            val entrySection = messagesSection.getConfigurationSection(normalizedId)
+                ?: throw IllegalArgumentException("NPCメッセージ設定 'messages.$normalizedId' は設定項目として記述してください。")
+            parsed[normalizedId] = validateNpcMessageEntry(normalizedId, entrySection, normalizedDefault)
+        }
+        return parsed
+    }
+
+    // 1件分のstyleと言語別textsを検証し、正規化済み定義へ変換します。
+    internal fun validateNpcMessageEntry(
+        id: String,
+        entrySection: org.bukkit.configuration.ConfigurationSection,
+        normalizedDefaultLocale: String
+    ): NpcMessageEntry {
+        val style = entrySection.getString("style")?.trim()?.lowercase()
+            ?: throw IllegalArgumentException("NPCメッセージ設定 'messages.$id.style' を指定してください。")
+        require(style in npcMessageStyles) {
+            "NPCメッセージ設定 'messages.$id.style' は ${npcMessageStyles.sorted().joinToString(" | ")} で指定してください: $style"
+        }
+        val textsSection = entrySection.getConfigurationSection("texts")
+            ?: throw IllegalArgumentException("NPCメッセージ設定 'messages.$id.texts' を指定してください。")
+        val localeKeys = textsSection.getKeys(false)
+        require(localeKeys.isNotEmpty()) {
+            "NPCメッセージ設定 'messages.$id.texts' に言語がありません。"
+        }
+        val textsByLocale = linkedMapOf<String, List<String>>()
+        for (rawLocale in localeKeys) {
+            val locale = normalizeNpcLocale(rawLocale)
+            require(locale.isNotEmpty() && npcMessageLocalePattern.matches(locale)) {
+                "NPCメッセージ設定 'messages.$id.texts.$rawLocale' の言語名が不正です。"
+            }
+            require(!textsByLocale.containsKey(locale)) {
+                "NPCメッセージ設定 'messages.$id.texts' に重複した言語があります: $locale"
+            }
+            // getStringListは欠落時も空を返すため、containsで存在確認してから取得します。
+            require(textsSection.contains(locale) || textsSection.contains(rawLocale)) {
+                "NPCメッセージ設定 'messages.$id.texts.$rawLocale' を指定してください。"
+            }
+            val rawList = textsSection.getStringList(rawLocale)
+            val cleaned = rawList.filter { it.isNotBlank() }
+            require(cleaned.isNotEmpty()) {
+                "NPCメッセージ設定 'messages.$id.texts.$rawLocale' は1件以上の本文を指定してください。"
+            }
+            textsByLocale[locale] = cleaned.toList()
+        }
+        require(textsByLocale.containsKey(normalizedDefaultLocale)) {
+            "NPCメッセージ設定 'messages.$id.texts' に既定言語 '$normalizedDefaultLocale' がありません。"
+        }
+        return NpcMessageEntry(style, textsByLocale.toMap())
+    }
+
+    // 設定キーと要求ロケールを同一規則で正規化します。
+    internal fun normalizeNpcLocale(raw: String?): String {
+        val normalized = raw?.trim()?.lowercase()?.replace('-', '_').orEmpty()
+        return when (normalized) {
+            "", "ja" -> "ja_jp"
+            "en" -> "en_us"
+            else -> normalized
+        }
+    }
+
     private fun parseRangeString(raw: String?, defaultRange: IntRange): IntRange {
         if (raw.isNullOrBlank()) return defaultRange
         val regex = Regex("^\\s*(-?\\d+)\\s*\\.\\.\\s*(-?\\d+)\\s*$")
@@ -620,6 +712,36 @@ object ConfigManager {
     fun isPlayerLeftClickBinderEnabled(): Boolean = featurePlayerLeftClickBinderEnabled
     fun isDelayCommandEnabled(): Boolean = featureDelayCommandEnabled
     fun isNpcMessageEnabled(): Boolean = featureNpcMessageEnabled
+    // NPCメッセージID一覧を返します。表示対象の有無判定とTab補完に用います。
+    fun getNpcMessageIds(): Set<String> = npcMessages.keys.toSet()
+    // NPCメッセージの表示形式を返します。未定義IDではnullを返します。
+    fun getNpcMessageStyle(id: String): String? = npcMessages[id.trim()]?.style
+    // 指定ロケールの本文を返します。不足時は既定言語へフォールバックし、未定義時は空を返します。
+    fun getNpcMessageTexts(id: String, requestedLocale: String?): List<String> {
+        val entry = npcMessages[id.trim()] ?: return emptyList()
+        return resolveNpcMessageTexts(entry, requestedLocale ?: defaultLanguage, defaultLanguage)
+    }
+    // 全NPCメッセージ定義の複製を返します。設定画面や診断用途に用います。
+    fun getAllNpcMessages(): Map<String, NpcMessageEntry> = npcMessages.toMap()
+
+    // 単体試験可能な純粋解決です。要求ロケールがなければ既定言語へフォールバックします。
+    internal fun resolveNpcMessageTexts(
+        entry: NpcMessageEntry,
+        requestedLocale: String?,
+        defaultLocale: String
+    ): List<String> {
+        val requested = normalizeNpcLocale(requestedLocale ?: defaultLocale)
+        textsForLocale(entry, requested)?.let { return it.toList() }
+        textsForLocale(entry, normalizeNpcLocale(defaultLocale))?.let { return it.toList() }
+        return emptyList()
+    }
+
+    private fun textsForLocale(entry: NpcMessageEntry, locale: String): List<String>? {
+        entry.textsByLocale[locale]?.let { return it }
+        // ja -> ja_jp のような短縮表記も同一ロケールとして扱います。
+        val normalized = normalizeNpcLocale(locale)
+        return entry.textsByLocale[normalized]
+    }
     fun getAnnounceMenuCommand(): String = announceMenuCommand
     fun getAnnounceUncheckedNotifyIntervalMinutes(): Long = announceUncheckedNotifyIntervalMinutes
     fun isDynamicDistanceEnabled(): Boolean = featureDynamicDistanceEnabled
