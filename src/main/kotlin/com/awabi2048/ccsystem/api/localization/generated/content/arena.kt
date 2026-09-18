@@ -22,7 +22,8 @@ object ContentArenaKeys {
     @JvmField val ARENA_MARKER_MODES_LOBBY_MAIN: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lobby_main", setOf())
     @JvmField val ARENA_MARKER_MODES_LOBBY_TUTORIAL_START: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lobby_tutorial_start", setOf())
     @JvmField val ARENA_MARKER_MODES_LOBBY_TUTORIAL_STEP: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lobby_tutorial_step", setOf())
-    @JvmField val ARENA_MARKER_MODES_LIFT: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lift", setOf())
+    @JvmField val ARENA_MARKER_MODES_LIFT_VERTICAL: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lift_vertical", setOf())
+    @JvmField val ARENA_MARKER_MODES_LIFT_HORIZONTAL: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.lift_horizontal", setOf())
     @JvmField val ARENA_MARKER_MODES_PEDESTAL: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.pedestal", setOf())
     @JvmField val ARENA_MARKER_MODES_CONNECTION: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.connection", setOf())
     @JvmField val ARENA_MARKER_MODES_CONNECTION_IN: LocalizationKey<String> = LocalizationKey.text("arena.marker.modes.connection_in", setOf())
@@ -366,7 +367,8 @@ object ContentArenaKeys {
         ARENA_MARKER_MODES_LOBBY_MAIN,
         ARENA_MARKER_MODES_LOBBY_TUTORIAL_START,
         ARENA_MARKER_MODES_LOBBY_TUTORIAL_STEP,
-        ARENA_MARKER_MODES_LIFT,
+        ARENA_MARKER_MODES_LIFT_VERTICAL,
+        ARENA_MARKER_MODES_LIFT_HORIZONTAL,
         ARENA_MARKER_MODES_PEDESTAL,
         ARENA_MARKER_MODES_CONNECTION,
         ARENA_MARKER_MODES_CONNECTION_IN,

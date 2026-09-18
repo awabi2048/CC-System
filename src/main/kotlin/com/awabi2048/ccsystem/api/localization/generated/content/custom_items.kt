@@ -235,10 +235,8 @@ object ContentCustomItemsKeys {
     @JvmField val CUSTOM_ITEMS_SUKIMA_DUNGEON_MARKER_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.sukima_dungeon.marker_tool.name", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_STRUCTURE_MARKER_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.structure_marker_tool.name", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_STRUCTURE_MARKER_TOOL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("custom_items.arena.structure_marker_tool.lore", setOf())
-    @JvmField val CUSTOM_ITEMS_ARENA_OTHER_MARKER_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.other_marker_tool.name", setOf())
-    @JvmField val CUSTOM_ITEMS_ARENA_OTHER_MARKER_TOOL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("custom_items.arena.other_marker_tool.lore", setOf())
-    @JvmField val CUSTOM_ITEMS_ARENA_LIFT_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.lift_tool.name", setOf())
-    @JvmField val CUSTOM_ITEMS_ARENA_LIFT_TOOL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("custom_items.arena.lift_tool.lore", setOf())
+    @JvmField val CUSTOM_ITEMS_ARENA_LOBBY_MARKER_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.lobby_marker_tool.name", setOf())
+    @JvmField val CUSTOM_ITEMS_ARENA_LOBBY_MARKER_TOOL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("custom_items.arena.lobby_marker_tool.lore", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_MECHANIC_MARKER_TOOL_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.mechanic_marker_tool.name", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_MECHANIC_MARKER_TOOL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("custom_items.arena.mechanic_marker_tool.lore", setOf())
     @JvmField val CUSTOM_ITEMS_ARENA_LIMIT_BREAKING_SHARPNESS_T1_NAME: LocalizationKey<String> = LocalizationKey.text("custom_items.arena.limit_breaking_sharpness_t1.name", setOf())
@@ -793,10 +791,8 @@ object ContentCustomItemsKeys {
         CUSTOM_ITEMS_SUKIMA_DUNGEON_MARKER_TOOL_NAME,
         CUSTOM_ITEMS_ARENA_STRUCTURE_MARKER_TOOL_NAME,
         CUSTOM_ITEMS_ARENA_STRUCTURE_MARKER_TOOL_LORE,
-        CUSTOM_ITEMS_ARENA_OTHER_MARKER_TOOL_NAME,
-        CUSTOM_ITEMS_ARENA_OTHER_MARKER_TOOL_LORE,
-        CUSTOM_ITEMS_ARENA_LIFT_TOOL_NAME,
-        CUSTOM_ITEMS_ARENA_LIFT_TOOL_LORE,
+        CUSTOM_ITEMS_ARENA_LOBBY_MARKER_TOOL_NAME,
+        CUSTOM_ITEMS_ARENA_LOBBY_MARKER_TOOL_LORE,
         CUSTOM_ITEMS_ARENA_MECHANIC_MARKER_TOOL_NAME,
         CUSTOM_ITEMS_ARENA_MECHANIC_MARKER_TOOL_LORE,
         CUSTOM_ITEMS_ARENA_LIMIT_BREAKING_SHARPNESS_T1_NAME,
