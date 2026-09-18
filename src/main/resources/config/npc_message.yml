@@ -4,6 +4,7 @@
 # texts.<locale>: 1件以上必須。`§` カラーコード可。任意ロケール追加可。
 # 不足ロケールは core.default_language の文面へフォールバックします。
 messages:
+  # ランダム表示の例です。実行毎に1件だけ表示します。
   example_message:
     style: random
     texts:
@@ -15,4 +16,38 @@ messages:
         - "§aMessage example 1"
         - "§bMessage example 2"
         - "§cMessage example 3"
+  # 旧埋め込み npc_messages.example_npc の引越例です。複数行をまとめて表示します。
+  example_npc:
+    style: batch
+    texts:
+      ja_jp:
+        - "§6[NPC] こんにちは！"
+        - "§6[NPC] 何かお手伝いできることはありますか？"
+      en_us:
+        - "§6[NPC] Hello!"
+        - "§6[NPC] Can I help you with anything?"
+  # 順番表示の例です。実行毎に次の1件を表示し、最後の次は先頭に戻ります。
+  example_order:
+    style: order
+    texts:
+      ja_jp:
+        - "§e[案内 1/3] まずはスポーン地点を確認しましょう。"
+        - "§e[案内 2/3] 次に掲示板でお知らせを確認しましょう。"
+        - "§e[案内 3/3] 最後に資源ワールドへ出発しましょう。"
+      en_us:
+        - "§e[Guide 1/3] First, check the spawn point."
+        - "§e[Guide 2/3] Next, check the notice board."
+        - "§e[Guide 3/3] Finally, head to the resource world."
+  # 一括表示の例です。全行をまとめて表示します。
+  example_batch:
+    style: batch
+    texts:
+      ja_jp:
+        - "§b[お知らせ] イベント開催中です！"
+        - "§b[お知らせ] 詳細は掲示板をご覧ください。"
+        - "§b[お知らせ] 皆さまのご参加をお待ちしています。"
+      en_us:
+        - "§b[Notice] An event is now running!"
+        - "§b[Notice] See the notice board for details."
+        - "§b[Notice] We look forward to your participation."
 config_version: 1
