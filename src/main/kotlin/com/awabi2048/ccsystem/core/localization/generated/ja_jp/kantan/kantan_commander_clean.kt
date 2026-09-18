@@ -684,6 +684,12 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_selection_cleared", value = EmbeddedLocalizedValue.Text("選択をすべて解除しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_undo_empty", value = EmbeddedLocalizedValue.Text("戻せる選択履歴がありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_selection_full", value = EmbeddedLocalizedValue.Text("選択数が上限（{max}件）に達したため、追加しませんでした。"), domain = DOMAIN),
+        // issue #14: 操作ツールwandの選択結果・pos設定・Box上限・状態表示の通知です。
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_added", value = EmbeddedLocalizedValue.Text("{count}件を選択へ追加しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos1_set", value = EmbeddedLocalizedValue.Text("pos1を設定しました（{world} {x},{y},{z}）。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos2_set", value = EmbeddedLocalizedValue.Text("pos2を設定しました（{world} {x},{y},{z}）。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_box_too_large", value = EmbeddedLocalizedValue.Text("Boxが上限（{max}ブロック）を超えたためキャンセルしました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_status", value = EmbeddedLocalizedValue.Text("操作モード:{mode} 選択:{count}件"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.worldedit_unsupported_operation", value = EmbeddedLocalizedValue.Text("操作 {command} は制御ブロックの自動追従対象外です。不正に複製された制御ブロックは自動削除されます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_execute", value = EmbeddedLocalizedValue.Text("削除する"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.delete_confirm_cancel", value = EmbeddedLocalizedValue.Text("キャンセル"), domain = DOMAIN),

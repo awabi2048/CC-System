@@ -851,6 +851,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_cleared", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_undo_empty", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_full", setOf("max"))
+    // issue #14: 操作ツールwandの選択結果・pos設定・Box上限・状態表示の通知です。
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ADDED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_added", setOf("count"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS1_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos1_set", setOf("world", "x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS2_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos2_set", setOf("world", "x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_box_too_large", setOf("max"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_status", setOf("mode", "count"))
     // WorldEdit等の対象外一括操作を検出した際の警告です。操作名だけを引数に取ります。
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.worldedit_unsupported_operation", setOf("command"))
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE_CONFIRM_EXECUTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete_confirm_execute", setOf())
@@ -1891,6 +1897,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ADDED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS1_SET,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS2_SET,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION,
     )
 
