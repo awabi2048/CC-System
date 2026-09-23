@@ -13,6 +13,12 @@ internal object JaJpChanponUtilitiesCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.usage", value = EmbeddedLocalizedValue.Text("&c使用法: /beplayerhead <プレイヤー名>"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.loading", value = EmbeddedLocalizedValue.Text("&7統合版スキンを取得しています…"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.not_found", value = EmbeddedLocalizedValue.Text("&c対象プレイヤーまたはスキンが見つかりません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.failed", value = EmbeddedLocalizedValue.Text("&cスキンの取得に失敗しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.inventory_full", value = EmbeddedLocalizedValue.Text("&cインベントリに空きがありません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.success", value = EmbeddedLocalizedValue.Text("&a{name} のヘッドを取得しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.common.prefix", value = EmbeddedLocalizedValue.Text("&7[&bChanpon-Utilities&7] "), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.usage", value = EmbeddedLocalizedValue.Text("&c使用方法: /cu status|enable <module>|disable <module>"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.no_permission", value = EmbeddedLocalizedValue.Text("&cこのコマンドを実行する権限がありません。"), domain = DOMAIN),

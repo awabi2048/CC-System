@@ -13,6 +13,12 @@ internal object EnUsChanponUtilitiesCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /beplayerhead <player name>"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.loading", value = EmbeddedLocalizedValue.Text("&7Fetching Bedrock skin…"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.not_found", value = EmbeddedLocalizedValue.Text("&cPlayer or skin not found."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.failed", value = EmbeddedLocalizedValue.Text("&cCould not fetch the skin."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.inventory_full", value = EmbeddedLocalizedValue.Text("&cYour inventory is full."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.success", value = EmbeddedLocalizedValue.Text("&aReceived {name}'s head."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.common.prefix", value = EmbeddedLocalizedValue.Text("&7[&bChanpon-Utilities&7] "), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /cu status|enable <module>|disable <module>"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.no_permission", value = EmbeddedLocalizedValue.Text("&cYou do not have permission to use this command."), domain = DOMAIN),
