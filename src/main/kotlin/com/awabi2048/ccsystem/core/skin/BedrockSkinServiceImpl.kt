@@ -23,12 +23,20 @@ internal class BedrockSkinServiceImpl : BedrockSkinService {
         }
         val floodgate = FloodgateApi.getInstance()
         val prefix = floodgate.playerPrefix
-        val gamertag = if (prefix.isNotEmpty() && playerName.startsWith(prefix)) playerName.removePrefix(prefix) else playerName
+        val requestedName = playerName.trim()
+        val gamertag = if (prefix.isNotEmpty() && requestedName.startsWith(prefix)) requestedName.removePrefix(prefix) else requestedName
         if (gamertag.isBlank()) return CompletableFuture.completedFuture(BedrockSkinLookupResult.PlayerNotFound)
+
+        // 認識名を使えない場合にも接頭辞を二重に付けず、入力名からヘッド名を確定できます。
+        val normalizedRequestedName = if (prefix.isEmpty() || requestedName.startsWith(prefix)) {
+            requestedName
+        } else {
+            prefix + requestedName
+        }
 
         // 参加中はFloodgateの確定済みXUIDを優先し、オフラインの場合だけ名前解決APIを利用します。
         val online = floodgate.players.firstOrNull {
-            it.correctUsername.equals(playerName, true) || it.username.equals(gamertag, true)
+            it.correctUsername.equals(requestedName, true) || it.username.equals(gamertag, true)
         }
         val xuidFuture = online?.xuid?.toLongOrNull()?.let { CompletableFuture.completedFuture(it) }
             ?: floodgate.getXuidFor(gamertag)
@@ -48,7 +56,8 @@ internal class BedrockSkinServiceImpl : BedrockSkinService {
                             if (value.isNullOrBlank()) return@runCatching BedrockSkinLookupResult.InvalidResponse
                             val skin = BedrockSkin(
                                 gamertag = gamertag,
-                                serverName = online?.correctUsername ?: prefix + gamertag,
+                                serverName = online?.correctUsername?.takeIf(String::isNotBlank)
+                                    ?: normalizedRequestedName,
                                 xuid = xuid.toString(),
                                 value = value,
                                 signature = json.get("signature")?.takeUnless { it.isJsonNull }?.asString,
