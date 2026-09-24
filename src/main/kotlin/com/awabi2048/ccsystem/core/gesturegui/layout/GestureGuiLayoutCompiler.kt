@@ -150,16 +150,17 @@ internal object GestureGuiLayoutCompiler {
             is GestureGuiText -> GestureGuiVisual.Text(
                 visualId, centerX(bounds), centerY(bounds), declared.text,
                 declared.size, declared.lineWidth, layerOf(node.resolvedZ),
-                declared.seeThrough, declared.alignment,
+                declared.seeThrough, declared.alignment, declared.interpolationTicks,
             )
             is GestureGuiBlock -> GestureGuiVisual.Block(
                 visualId, centerX(bounds), centerY(bounds),
                 bounds.maxX - bounds.minX, bounds.maxY - bounds.minY,
                 declared.blockData, layerOf(node.resolvedZ), declared.glowColor, declared.outline,
+                declared.interpolationTicks,
             )
             is GestureGuiItem -> GestureGuiVisual.Item(
                 visualId, centerX(bounds), centerY(bounds), declared.item.clone(),
-                declared.scale, layerOf(node.resolvedZ), declared.glowColor,
+                declared.scale, layerOf(node.resolvedZ), declared.glowColor, declared.interpolationTicks,
             )
             else -> null
         }
@@ -252,6 +253,7 @@ internal object GestureGuiLayoutCompiler {
                 x = centerX(rect), y = centerY(rect),
                 width = rect.maxX - rect.minX, height = rect.maxY - rect.minY,
                 blockData = outline.blockData, layer = (visual.layer + 1).coerceAtMost(MAX_LAYER),
+                interpolationTicks = visual.interpolationTicks,
             )
         }
         return true
