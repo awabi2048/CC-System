@@ -406,7 +406,9 @@ internal class GestureGuiVirtualScreens(
         visual: GestureGuiVisual.Block,
         blockData: org.bukkit.block.data.BlockData,
     ): List<WrappedDataValue> = blockMetadata(
-        viewer, pose, anchor, target, visual.width, visual.height, blockData, null, interpTicks = 0,
+        viewer, pose, anchor, target, visual.width, visual.height, blockData, null,
+        interpTicks = 0,
+        posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS,
     )
 
     private fun anchorOf(state: GestureViewerRenderState, key: String, target: PlacedPoint): PlacedPoint =
