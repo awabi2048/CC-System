@@ -1216,54 +1216,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_change", setOf())
 
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_FLAME: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.flame", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SMOKE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.smoke", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_LARGE_SMOKE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.large_smoke", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_HEART: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.heart", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_NOTE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.note", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_PORTAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.portal", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_ENCHANT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.enchant", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_CRIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.crit", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_CLOUD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.cloud", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_DUST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.dust", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_FIREWORK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.firework", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_TOTEM_OF_UNDYING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.totem_of_undying", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SOUL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.soul", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_DRAGON_BREATH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.dragon_breath", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_HAPPY_VILLAGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.happy_villager", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_WITCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.witch", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_POOF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.poof", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_EXPLOSION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.explosion", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_BUBBLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.bubble", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SPLASH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.splash", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_LAVA: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.lava", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_END_ROD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.end_rod", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SWEEP_ATTACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.sweep_attack", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SONIC_BOOM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.particle.sonic_boom", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_HARP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_note_block_harp", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_PLING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_note_block_pling", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_BELL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_note_block_bell", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_PLAYER_LEVELUP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_player_levelup", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_EXPERIENCE_ORB_PICKUP: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_experience_orb_pickup", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_LAUNCH: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_launch", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_BLAST: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_blast", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_GENERIC_EXPLODE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_generic_explode", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_LIGHTNING_BOLT_THUNDER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_lightning_bolt_thunder", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_ANVIL_LAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_anvil_land", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_CHEST_OPEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_chest_open", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_PORTAL_TRAVEL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_portal_travel", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ENDER_DRAGON_GROWL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_ender_dragon_growl", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_WITHER_SPAWN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_wither_spawn", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_BEACON_ACTIVATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_beacon_activate", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_WEATHER_RAIN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.weather_rain", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ARROW_SHOOT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_arrow_shoot", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_CHEST_CLOSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_chest_close", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_TNT_PRIMED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_tnt_primed", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_PORTAL_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_portal_trigger", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ENDER_PEARL_THROW: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_ender_pearl_throw", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_BASS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.block_note_block_bass", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_TWINKLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_twinkle", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_WEATHER_THUNDER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.resource_preset.sound.weather_thunder", setOf())
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
         addAll(keyChunk2())
@@ -2460,53 +2412,5 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE,
     )
     private fun keyChunk9(): List<LocalizationKey<*>> = listOf(
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_FLAME,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SMOKE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_LARGE_SMOKE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_HEART,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_NOTE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_PORTAL,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_ENCHANT,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_CRIT,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_CLOUD,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_DUST,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_FIREWORK,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_TOTEM_OF_UNDYING,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SOUL,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_DRAGON_BREATH,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_HAPPY_VILLAGER,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_WITCH,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_POOF,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_EXPLOSION,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_BUBBLE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SPLASH,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_LAVA,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_END_ROD,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SWEEP_ATTACK,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_PARTICLE_SONIC_BOOM,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_HARP,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_PLING,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_BELL,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_PLAYER_LEVELUP,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_EXPERIENCE_ORB_PICKUP,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_LAUNCH,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_BLAST,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_GENERIC_EXPLODE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_LIGHTNING_BOLT_THUNDER,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_ANVIL_LAND,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_CHEST_OPEN,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_PORTAL_TRAVEL,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ENDER_DRAGON_GROWL,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_WITHER_SPAWN,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_BEACON_ACTIVATE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_WEATHER_RAIN,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ARROW_SHOOT,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_CHEST_CLOSE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_TNT_PRIMED,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_PORTAL_TRIGGER,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_ENDER_PEARL_THROW,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_BLOCK_NOTE_BLOCK_BASS,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_ENTITY_FIREWORK_ROCKET_TWINKLE,
-        KANTAN_COMMANDER_CLEAN_GUI_RESOURCE_PRESET_SOUND_WEATHER_THUNDER,
     )
 }
