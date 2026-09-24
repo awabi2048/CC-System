@@ -14,6 +14,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         addAll(chunk3())
         addAll(chunk4())
         addAll(chunk5())
+        addAll(chunk6())
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
@@ -1198,4 +1199,54 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.execution_failed_cause", value = EmbeddedLocalizedValue.Text("(Cause: {cause})"), domain = DOMAIN),
     )
 
+    private fun chunk6(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.flame", value = EmbeddedLocalizedValue.Text("Flame"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.smoke", value = EmbeddedLocalizedValue.Text("Smoke"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.large_smoke", value = EmbeddedLocalizedValue.Text("Large Smoke"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.heart", value = EmbeddedLocalizedValue.Text("Heart"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.note", value = EmbeddedLocalizedValue.Text("Note"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.portal", value = EmbeddedLocalizedValue.Text("Portal"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.enchant", value = EmbeddedLocalizedValue.Text("Enchant"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.crit", value = EmbeddedLocalizedValue.Text("Critical Hit"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.cloud", value = EmbeddedLocalizedValue.Text("Cloud"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.dust", value = EmbeddedLocalizedValue.Text("Dust"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.firework", value = EmbeddedLocalizedValue.Text("Firework"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.totem_of_undying", value = EmbeddedLocalizedValue.Text("Totem of Undying"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.soul", value = EmbeddedLocalizedValue.Text("Soul"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.dragon_breath", value = EmbeddedLocalizedValue.Text("Dragon's Breath"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.happy_villager", value = EmbeddedLocalizedValue.Text("Happy Villager"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.witch", value = EmbeddedLocalizedValue.Text("Witch"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.poof", value = EmbeddedLocalizedValue.Text("Poof"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.explosion", value = EmbeddedLocalizedValue.Text("Explosion"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.bubble", value = EmbeddedLocalizedValue.Text("Bubble"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.splash", value = EmbeddedLocalizedValue.Text("Splash"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.lava", value = EmbeddedLocalizedValue.Text("Lava"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.end_rod", value = EmbeddedLocalizedValue.Text("End Rod"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.sweep_attack", value = EmbeddedLocalizedValue.Text("Sweep Attack"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.particle.sonic_boom", value = EmbeddedLocalizedValue.Text("Sonic Boom"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_note_block_harp", value = EmbeddedLocalizedValue.Text("Note Block Harp"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_note_block_pling", value = EmbeddedLocalizedValue.Text("Note Block Pling"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_note_block_bell", value = EmbeddedLocalizedValue.Text("Note Block Bell"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_player_levelup", value = EmbeddedLocalizedValue.Text("Level Up"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_experience_orb_pickup", value = EmbeddedLocalizedValue.Text("Experience Orb Pickup"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_launch", value = EmbeddedLocalizedValue.Text("Firework Launch"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_blast", value = EmbeddedLocalizedValue.Text("Firework Blast"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_generic_explode", value = EmbeddedLocalizedValue.Text("Explosion"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_lightning_bolt_thunder", value = EmbeddedLocalizedValue.Text("Thunder"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_anvil_land", value = EmbeddedLocalizedValue.Text("Anvil Land"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_chest_open", value = EmbeddedLocalizedValue.Text("Chest Open"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_portal_travel", value = EmbeddedLocalizedValue.Text("Portal Travel"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_ender_dragon_growl", value = EmbeddedLocalizedValue.Text("Ender Dragon Growl"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_wither_spawn", value = EmbeddedLocalizedValue.Text("Wither Spawn"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_beacon_activate", value = EmbeddedLocalizedValue.Text("Beacon Activate"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.weather_rain", value = EmbeddedLocalizedValue.Text("Rain"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_arrow_shoot", value = EmbeddedLocalizedValue.Text("Arrow Shoot"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_chest_close", value = EmbeddedLocalizedValue.Text("Chest Close"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_tnt_primed", value = EmbeddedLocalizedValue.Text("TNT Primed"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_portal_trigger", value = EmbeddedLocalizedValue.Text("Portal Trigger"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_ender_pearl_throw", value = EmbeddedLocalizedValue.Text("Ender Pearl Throw"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.block_note_block_bass", value = EmbeddedLocalizedValue.Text("Note Block Bass"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.entity_firework_rocket_twinkle", value = EmbeddedLocalizedValue.Text("Firework Twinkle"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.resource_preset.sound.weather_thunder", value = EmbeddedLocalizedValue.Text("Thunderstorm"), domain = DOMAIN),
+    )
 }
