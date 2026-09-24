@@ -268,7 +268,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_REDSTONE_INPUT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_detail_redstone_input", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_invert_on", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.condition_invert_off", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_boolean", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_DECIMAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_decimal", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_TEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_text", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_position", setOf())
@@ -330,15 +329,12 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_world", setOf())
     // #22のENTITY scope選択肢です。対象直結のため事前DEFINEを要求しません。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_scope_entity", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_boolean", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_vector", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_type_item", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.assign", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_CALCULATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.calculate", setOf())
     // #3の値生成方法（詳細値取得・乱数）と乱数範囲・参照元・詳細値の項目です。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_CHANGE_PROPERTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_change_property", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_CHANGE_RANDOM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.variable_change_random", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANDOM_MIN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.random_min", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANDOM_MAX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.random_max", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_PROPERTY_SOURCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.property_source", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_PROPERTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.variable_property", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_REMOVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.remove", setOf())
@@ -1354,7 +1350,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_DETAIL_REDSTONE_INPUT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_ON,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_CONDITION_INVERT_OFF,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_DECIMAL,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_TEXT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_POSITION,
@@ -1413,14 +1408,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_EXECUTION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_WORLD,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_SCOPE_ENTITY,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_BOOLEAN,
-        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_VECTOR,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_TYPE_ITEM,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_ASSIGN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_CALCULATE,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_CHANGE_PROPERTY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_VARIABLE_CHANGE_RANDOM,
-        KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANDOM_MIN,
-        KANTAN_COMMANDER_CLEAN_GUI_FIELD_RANDOM_MAX,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_PROPERTY_SOURCE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_VARIABLE_PROPERTY,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_REMOVE,
