@@ -31,16 +31,18 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
 /**
- * 制限付き HTML/CSS frontend の実装です（自前実装・Profile 2）。
+ * 制限付き HTML/CSS frontend の実装です（自前実装・Profile 3）。
  *
  * モジュール外からは公開入口の [com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutFacade]
  * を用い、この実装は直接参照しません。
  * HTML/CSS 自体は内部モデルにせず、この frontend が [GestureGuiDocument] へ変換します。
- * 対応範囲は Profile 2 に限定し、範囲外は診断します。
+ * 対応範囲は Profile 3 に限定し、範囲外は診断します。
  * 対応タグ: div / section / header / footer / nav / span / p / button /
  * mc-item / mc-block / gesture-viewport / custom / style。
  */
 internal object GestureGuiHtml {
+    /** Text の Auto 高さとボタン内ラベル位置で共有する論理行高係数です。 */
+    private const val TEXT_LINE_HEIGHT_FACTOR = 3.0
 
     /**
      * HTML 文字列を文書へ変換します。
@@ -385,7 +387,7 @@ internal object GestureGuiHtml {
             is DomText -> {
                 val text = node.text.trim()
                 if (text.isEmpty()) emptyList() else listOf(
-                    GestureGuiText(text = Component.text(text), id = null),
+                    GestureGuiText(text = ctx.environment.textComponent(text, "", emptySet(), null), id = null),
                 )
             }
             is DomElement -> listOf(buildElement(node, styleSheet, null, ctx))
@@ -437,9 +439,10 @@ internal object GestureGuiHtml {
                 val text = child.text.trim().replace(Regex("\\s+"), " ")
                 if (text.isEmpty()) emptyList() else listOf(
                     GestureGuiText(
-                        text = Component.text(text),
+                        text = ctx.environment.textComponent(text, element.tag, element.classes, element.id),
                         size = ctx.environment.textSize(element.tag, element.classes, element.id),
                         id = null,
+                        hover = ctx.environment.hover(element.tag, element.classes, element.id),
                     ),
                 )
             }
@@ -463,7 +466,8 @@ internal object GestureGuiHtml {
         val absolute = absoluteOf(style, element, ctx)
         val color = textColorOr(style, element, ctx)
         return GestureGuiText(
-            text = Component.text(directText(element)).let { if (color == null) it else it.color(color) },
+            text = ctx.environment.textComponent(directText(element), element.tag, element.classes, element.id)
+                .let { if (color == null) it else it.color(color) },
             size = positiveNumberOr(style["font-size"], ctx.environment.textSize(element.tag, element.classes, element.id), element, ctx),
             lineWidth = lineWidthOr(style, element, ctx),
             alignment = when (style["text-align"]?.lowercase()) {
@@ -483,6 +487,8 @@ internal object GestureGuiHtml {
             ),
             width = sizeOr(style["width"], fill = true, element, ctx),
             height = sizeOr(style["height"], fill = false, element, ctx),
+            gestureGuard = ctx.environment.gestureGuard(element.tag, element.classes, element.id),
+            hover = ctx.environment.hover(element.tag, element.classes, element.id),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absolute,
         )
@@ -591,9 +597,11 @@ internal object GestureGuiHtml {
                 ctx.environment.outlineBlock(element.classes, element.id)?.let { GestureGuiOutline(it, ratio) }
             }
         }
+        val textSize = positiveNumberOr(style["font-size"], 0.0055, element, ctx)
+        val textOffsetY = signedNumberOr(style["text-offset-y"], 0.0, element, ctx)
         return GestureGuiComponents.button(
             id = element.id ?: "button",
-            label = Component.text(directText(element)).let {
+            label = ctx.environment.textComponent(directText(element), element.tag, element.classes, element.id).let {
                 val color = textColorOr(style, element, ctx)
                 if (color == null) it else it.color(color)
             },
@@ -602,13 +610,35 @@ internal object GestureGuiHtml {
             width = sizeOr(style["width"], fill = true, element, ctx),
             height = sizeOr(style["height"], fill = false, element, ctx)
                 .takeUnless { it is GestureGuiSizeSpec.Auto } ?: GestureGuiSizeSpec.Fixed(0.1),
-            textSize = positiveNumberOr(style["font-size"], 0.0055, element, ctx),
+            textSize = textSize,
             outline = outline,
             margin = insetsOr(style["margin"], element, ctx),
             acceptedGestures = actionGestures(action, gesturesOr(element, ctx)),
         ).let { node ->
+            val enriched = (node as GestureGuiOverlay).copy(
+                gestureGuard = ctx.environment.gestureGuard(element.tag, element.classes, element.id),
+                hover = ctx.environment.hover(element.tag, element.classes, element.id),
+                children = node.children.map { child ->
+                    if (child !is GestureGuiText) return@map child
+                    val fixedHeight = (node.height as? GestureGuiSizeSpec.Fixed)?.value
+                    val childAbsolute = if (textOffsetY == 0.0) {
+                        null
+                    } else if (fixedHeight != null) {
+                        GestureGuiAbsoluteOffsets(
+                            top = fixedHeight / 2.0 - textOffsetY - textSize * TEXT_LINE_HEIGHT_FACTOR / 2.0,
+                        )
+                    } else {
+                        unsupported(element, "text-offset-y", "requires a fixed button height", ctx)
+                        null
+                    }
+                    child.copy(
+                        lineWidth = lineWidthOr(style, element, ctx),
+                        absolute = childAbsolute,
+                    )
+                },
+            )
             val absolute = absoluteOf(style, element, ctx)
-            if (absolute == null) node else (node as GestureGuiOverlay).copy(absolute = absolute)
+            if (absolute == null) enriched else enriched.copy(absolute = absolute)
         }
     }
 
@@ -640,6 +670,8 @@ internal object GestureGuiHtml {
                 element.attributes["action"]?.takeIf(String::isNotBlank),
                 gesturesOr(element, ctx),
             ),
+            gestureGuard = ctx.environment.gestureGuard(element.tag, element.classes, element.id),
+            hover = ctx.environment.hover(element.tag, element.classes, element.id),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -673,6 +705,8 @@ internal object GestureGuiHtml {
                 element.attributes["action"]?.takeIf(String::isNotBlank),
                 gesturesOr(element, ctx),
             ),
+            gestureGuard = ctx.environment.gestureGuard(element.tag, element.classes, element.id),
+            hover = ctx.environment.hover(element.tag, element.classes, element.id),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -730,6 +764,8 @@ internal object GestureGuiHtml {
             actionId = element.attributes["action"]?.takeIf(String::isNotBlank),
             // Custom の既定（空集合）を維持します。明示指定だけが上書きします。
             acceptedGestures = gesturesOr(element, ctx) ?: emptySet(),
+            gestureGuard = ctx.environment.gestureGuard(element.tag, element.classes, element.id),
+            hover = ctx.environment.hover(element.tag, element.classes, element.id),
             margin = insetsOr(style["margin"], element, ctx),
             absolute = absoluteOf(style, element, ctx),
         )
@@ -889,7 +925,7 @@ internal object GestureGuiHtml {
         val containers = setOf("div", "section", "header", "footer", "nav")
         val supported = common + when (element.tag) {
             "p", "span" -> setOf("font-size", "text-align", "color", "line-width")
-            "button" -> setOf("font-size", "background", "border", "color")
+            "button" -> setOf("font-size", "background", "border", "color", "line-width", "text-offset-y")
             "gesture-viewport" -> setOf("overflow", "padding")
             in containers -> setOf(
                 "display", "flex-direction", "justify-content", "align-items", "gap",
@@ -923,6 +959,17 @@ internal object GestureGuiHtml {
         val value = raw.trim().toDoubleOrNull()
         if (value == null || !value.isFinite() || value <= 0.0) {
             unsupported(element, "font-size", raw, ctx)
+            return fallback
+        }
+        return value
+    }
+
+    /** ボタン文言の微調整用です。負の値も許可し、有限性だけ検証します。 */
+    private fun signedNumberOr(raw: String?, fallback: Double, element: DomElement, ctx: Context): Double {
+        if (raw == null) return fallback
+        val value = raw.trim().toDoubleOrNull()
+        if (value == null || !value.isFinite()) {
+            unsupported(element, "text-offset-y", raw, ctx)
             return fallback
         }
         return value

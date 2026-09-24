@@ -67,9 +67,10 @@ interface CCSystemAPI {
         // 追従画面距離の指定を追加したため、契約版を更新します。
         const val GESTURE_GUI_CONTRACT_VERSION: Int = 18
         /** 空のclipを区別する型とCustom表示矩形の契約を追加した版です。 */
-        const val GESTURE_GUI_LAYOUT_CONTRACT_VERSION: Int = 3
-        /** gestures属性・color・line-widthを追加した制限付きHTML/CSS frontendの版です。 */
-        const val GESTURE_HTML_PROFILE_VERSION: Int = 2
+        /** 予約矩形の交差診断を追加したレイアウト契約です。 */
+        const val GESTURE_GUI_LAYOUT_CONTRACT_VERSION: Int = 4
+        /** Component・hover・gestureGuardの実行時解決を追加したHTML/CSS frontendの版です。 */
+        const val GESTURE_HTML_PROFILE_VERSION: Int = 3
     }
     /**
      * プレイヤーの言語設定を取得します

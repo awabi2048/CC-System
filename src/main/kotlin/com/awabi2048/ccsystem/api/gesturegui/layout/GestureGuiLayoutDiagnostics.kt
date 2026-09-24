@@ -13,6 +13,9 @@ enum class GestureGuiLayoutErrorCode {
     /** REJECT 領域での逸脱です。 */
     REJECT_OVERFLOW,
 
+    /** HTML文書で、独立した表示・操作要素の予約領域が交差しています。 */
+    OVERLAPPING_CONTENT,
+
     /** 不正なサイズ指定の解決結果です（非有限・非正など）。 */
     INVALID_SIZE,
 

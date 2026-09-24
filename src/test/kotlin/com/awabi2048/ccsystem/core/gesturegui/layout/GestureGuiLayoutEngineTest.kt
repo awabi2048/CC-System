@@ -104,6 +104,120 @@ class GestureGuiLayoutEngineTest {
     }
 
     @Test
+    fun `html reservations diagnose intersecting text while button labels stay grouped`() {
+        val sharedPlacement = GestureGuiAbsoluteOffsets(left = 0.2, top = 0.2)
+        val overlapping = GestureGuiDocument(
+            GestureGuiBox(
+                children = listOf(
+                    GestureGuiText(
+                        text = Component.text("first"),
+                        id = "first",
+                        width = GestureGuiSizeSpec.Fixed(0.7),
+                        height = GestureGuiSizeSpec.Fixed(0.1),
+                        absolute = sharedPlacement,
+                    ),
+                    GestureGuiText(
+                        text = Component.text("second"),
+                        id = "second",
+                        width = GestureGuiSizeSpec.Fixed(0.7),
+                        height = GestureGuiSizeSpec.Fixed(0.1),
+                        absolute = sharedPlacement,
+                    ),
+                ),
+                id = "root",
+                width = GestureGuiSizeSpec.Percent(1.0),
+                height = GestureGuiSizeSpec.Percent(1.0),
+            ),
+            panel,
+        )
+
+        val diagnostics = GestureGuiLayoutEngine.layout(overlapping, source = "overlap.html").diagnostics
+        val overlap = diagnostics.single { it.code == GestureGuiLayoutErrorCode.OVERLAPPING_CONTENT }
+        assertEquals("first", overlap.nodeId)
+        assertEquals("second", overlap.parentId)
+        assertEquals("overlap.html", overlap.source)
+
+        val button = GestureGuiOverlay(
+            children = listOf(
+                GestureGuiText(
+                    text = Component.text("button label"),
+                    id = "button-label",
+                    width = GestureGuiSizeSpec.Percent(1.0),
+                    height = GestureGuiSizeSpec.Auto,
+                ),
+            ),
+            id = "button",
+            actionId = "button",
+            width = GestureGuiSizeSpec.Fixed(0.7),
+            height = GestureGuiSizeSpec.Fixed(0.1),
+            absolute = sharedPlacement,
+        )
+        val buttonDiagnostics = GestureGuiLayoutEngine.layout(
+            GestureGuiDocument(button, panel),
+            knownActionIds = setOf("button"),
+            source = "button.html",
+        ).diagnostics
+        assertTrue(buttonDiagnostics.isEmpty(), "diagnostics: $buttonDiagnostics")
+    }
+
+    @Test
+    fun `html button labels still collide with independent content`() {
+        val sharedPlacement = GestureGuiAbsoluteOffsets(left = 0.2, top = 0.2)
+        val document = GestureGuiDocument(
+            GestureGuiBox(
+                children = listOf(
+                    GestureGuiOverlay(
+                        children = listOf(
+                            GestureGuiText(
+                                text = Component.text("button label"),
+                                id = "button-label",
+                                width = GestureGuiSizeSpec.Percent(1.0),
+                                height = GestureGuiSizeSpec.Fixed(0.1),
+                            ),
+                        ),
+                        id = "button",
+                        actionId = "button",
+                        width = GestureGuiSizeSpec.Fixed(0.7),
+                        height = GestureGuiSizeSpec.Fixed(0.1),
+                        absolute = sharedPlacement,
+                    ),
+                    GestureGuiText(
+                        text = Component.text("independent"),
+                        id = "independent-label",
+                        width = GestureGuiSizeSpec.Fixed(0.5),
+                        height = GestureGuiSizeSpec.Fixed(0.1),
+                        absolute = sharedPlacement,
+                    ),
+                ),
+                id = "root",
+                width = GestureGuiSizeSpec.Percent(1.0),
+                height = GestureGuiSizeSpec.Percent(1.0),
+            ),
+            panel,
+        )
+
+        val diagnostics = GestureGuiLayoutEngine.layout(
+            document,
+            knownActionIds = setOf("button"),
+            source = "button-overlap.html",
+        ).diagnostics
+        assertTrue(
+            diagnostics.any {
+                it.code == GestureGuiLayoutErrorCode.OVERLAPPING_CONTENT &&
+                    setOf(it.nodeId, it.parentId) == setOf("button-label", "independent-label")
+            },
+            "diagnostics: $diagnostics",
+        )
+        assertTrue(
+            diagnostics.any {
+                it.code == GestureGuiLayoutErrorCode.OVERLAPPING_CONTENT &&
+                    setOf(it.nodeId, it.parentId) == setOf("button", "independent-label")
+            },
+            "diagnostics: $diagnostics",
+        )
+    }
+
+    @Test
     fun `reject overflow is reported and visible overflows silently`() {
         val wide = text("wide", width = GestureGuiSizeSpec.Fixed(5.0), height = GestureGuiSizeSpec.Fixed(0.1))
         val rejected = GestureGuiLayoutEngine.layout(

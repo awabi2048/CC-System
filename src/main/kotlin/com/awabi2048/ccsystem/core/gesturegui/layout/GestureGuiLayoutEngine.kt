@@ -82,6 +82,9 @@ internal object GestureGuiLayoutEngine {
             parentId = "<panel>",
             ctx = ctx,
         )
+        // HTML文書は新しいフロー契約へ移行中のため、固定配置の予約矩形どうしを
+        // 描画前に検証します。既存Kotlin画面は移行単位ごとに有効化します。
+        if (source != null) reportOverlappingContent(root, ctx)
         return ResolvedGestureGui(root, ctx.diagnostics.toList(), panel)
     }
 
@@ -144,6 +147,67 @@ internal object GestureGuiLayoutEngine {
             )
         }
         childrenOf(node).forEach { checkIds(it, node.id ?: parentId, ctx) }
+    }
+
+    /**
+     * HTML画面の予約領域を比較し、同じ領域を独立要素が要求する状態を診断します。
+     * ボタンのラベルは操作ノードの子要素なので親子関係から除外され、Button要素内で
+     * 背景とラベルを重ねる通常の表現は許可されます。別々に置いた文字同士や操作面同士は
+     * 画面上のXY矩形で比較するため、Zレイヤー差に隠れた重なりも検出できます。
+     */
+    private fun reportOverlappingContent(root: ResolvedGestureGuiNode, ctx: Context) {
+        data class Entry(
+            val node: ResolvedGestureGuiNode,
+            val ancestors: List<ResolvedGestureGuiNode>,
+        )
+
+        val entries = mutableListOf<Entry>()
+        fun collect(node: ResolvedGestureGuiNode, ancestors: List<ResolvedGestureGuiNode>) {
+            entries += Entry(node, ancestors)
+            val nextAncestors = ancestors + node
+            node.children.forEach { collect(it, nextAncestors) }
+        }
+        collect(root, emptyList())
+
+        for (leftIndex in entries.indices) {
+            val left = entries[leftIndex]
+            for (rightIndex in leftIndex + 1 until entries.size) {
+                val right = entries[rightIndex]
+                if (left.ancestors.any { it === right.node } || right.ancestors.any { it === left.node }) continue
+                val intersection = when {
+                    left.node.interactionBounds != null && right.node.interactionBounds != null ->
+                        intersection(left.node.interactionBounds, right.node.interactionBounds)
+                    left.node.source is GestureGuiText && right.node.source is GestureGuiText ->
+                        intersection(left.node.borderBounds, right.node.borderBounds)
+                    left.node.source is GestureGuiText && right.node.interactionBounds != null ->
+                        intersection(left.node.borderBounds, right.node.interactionBounds)
+                    right.node.source is GestureGuiText && left.node.interactionBounds != null ->
+                        intersection(right.node.borderBounds, left.node.interactionBounds)
+                    else -> null
+                } ?: continue
+
+                val leftId = left.node.nodeId ?: "<anonymous>"
+                val rightId = right.node.nodeId ?: "<anonymous>"
+                ctx.add(
+                    GestureGuiLayoutErrorCode.OVERLAPPING_CONTENT,
+                    left.node.nodeId,
+                    right.node.nodeId,
+                    "reserved content overlaps: $leftId and $rightId " +
+                        "(width=${intersection.first}, height=${intersection.second})",
+                )
+            }
+        }
+    }
+
+    /** 境界線が触れるだけなら交差とせず、正の面積を共有する矩形だけを返します。 */
+    private fun intersection(
+        left: GestureGuiBounds,
+        right: GestureGuiBounds,
+    ): Pair<Double, Double>? {
+        val overlapWidth = minOf(left.maxX, right.maxX) - maxOf(left.minX, right.minX)
+        val overlapHeight = minOf(left.maxY, right.maxY) - maxOf(left.minY, right.minY)
+        if (overlapWidth <= 0.0 || overlapHeight <= 0.0) return null
+        return overlapWidth to overlapHeight
     }
 
     private fun childrenOf(node: GestureGuiNode): List<GestureGuiNode> = when (node) {
