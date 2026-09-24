@@ -50,6 +50,7 @@ class KantanLocalizationContractTest {
         // #4の明示領域に伴い、領域項目・基準選択肢の5件を追加しました。
         // #5の直接条件に伴い、Boolean直接利用の選択肢1件を追加しました。
         // #11の建造物に伴い、コマンド4件・項目1件・反転選択肢3件の8件を追加しました。
+        // 建造物保存コマンド廃止に伴い、ランタイムコマンド名・説明の2件を削除しました。
         // #24のEntity Groupに伴い、コマンド2件・項目2件・操作選択肢8件の12件を追加しました。
         // #13の編集UIに伴い、分類10件・項目1件・一覧表示1件の12件を追加しました。
         // WorldEdit移動同期に伴い、対象外一括操作の警告1件を追加しました。
@@ -57,10 +58,10 @@ class KantanLocalizationContractTest {
         // 旧変数操作・旧選択肢説明・固定実体等）を廃止し、実行結果文等の49件を追加しました。
         // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
         // 資源プリセットのパーティクル・効果音表示名を独立管理する48件を追加しました。
-        // 統合後の件数は1207件とし、指紋を確定します。
-        assertEquals(1207, keys.size)
+        // 統合後の件数は1205件とし、指紋を確定します。
+        assertEquals(1205, keys.size)
         assertEquals(
-            "1f0ab1dc370bee947dc0bec2eb53922e8219a32aed1d8d3bc4a31e94c682d354",
+            "8bba854b7278e5992c59e99cdbfb71f8cafa9ed1dace42d8979130c2f858c3fc",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

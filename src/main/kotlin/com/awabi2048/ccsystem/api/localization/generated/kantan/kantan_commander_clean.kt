@@ -1071,8 +1071,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.geometry_ticks", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.block_operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.block_operation_description", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.structure_save", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.structure_save_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.structure_place", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.structure_place_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.entity_delete", setOf())
@@ -2192,8 +2190,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_GEOMETRY_TICKS,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION,
         KANTAN_COMMANDER_CLEAN_COMMAND_BLOCK_OPERATION_DESCRIPTION,
-        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE,
-        KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_SAVE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE,
         KANTAN_COMMANDER_CLEAN_COMMAND_STRUCTURE_PLACE_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_ENTITY_DELETE,
