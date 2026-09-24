@@ -45,6 +45,33 @@ class GestureGuiLayoutCompilerTest {
     ) { _, _, _ -> null } as BlockData
 
     @Test
+    fun `選択肢ごとの補間指定は他の表示へ波及しない`() {
+        val document = GestureGuiDocument(
+            GestureGuiColumn(
+                children = listOf(
+                    GestureGuiBlock(
+                        blockData = blockData(),
+                        width = GestureGuiSizeSpec.Fixed(0.4),
+                        height = GestureGuiSizeSpec.Fixed(0.2),
+                        id = "choice",
+                        interpolationTicks = 0,
+                    ),
+                    GestureGuiText(text = Component.text("label"), id = "label", interpolationTicks = 0),
+                    GestureGuiText(text = Component.text("other"), id = "other"),
+                ),
+                width = GestureGuiSizeSpec.Percent(1.0),
+                height = GestureGuiSizeSpec.Percent(1.0),
+            ),
+            panel,
+        )
+        val compiled = GestureGuiLayoutCompiler.compile(GestureGuiLayoutEngine.layout(document), "interpolation")
+        assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
+        assertEquals(0, compiled.view.visuals.single { it.visualId == "visual-choice" }.interpolationTicks)
+        assertEquals(0, compiled.view.visuals.single { it.visualId == "visual-label" }.interpolationTicks)
+        assertEquals(null, compiled.view.visuals.single { it.visualId == "visual-other" }.interpolationTicks)
+    }
+
+    @Test
     fun `text and container compile to visuals and auto-generated elements`() {
         val document = GestureGuiDocument(
             GestureGuiColumn(

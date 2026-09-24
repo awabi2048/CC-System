@@ -256,6 +256,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         glowColorRgb: Int?,
         billboard: Byte = BILLBOARD_FIXED,
         interpTicks: Int = TRANSFORM_INTERP_TICKS,
+        posRotInterpTicks: Int = POSROT_INTERP_TICKS,
     ): List<WrappedDataValue> = buildList {
         val s = serializers
         val vec = vector()
@@ -266,7 +267,7 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         add(WrappedDataValue(ID_BRIGHTNESS, s.intValue, packBrightness(15, 15)))
         add(WrappedDataValue(ID_TRANSFORM_START, s.intValue, 0))
         add(WrappedDataValue(ID_TRANSFORM_DURATION, s.intValue, interpTicks))
-        add(WrappedDataValue(ID_POSROT_DURATION, s.intValue, POSROT_INTERP_TICKS))
+        add(WrappedDataValue(ID_POSROT_DURATION, s.intValue, posRotInterpTicks))
         add(WrappedDataValue(ID_SHARED_FLAGS, s.byteValue, if (glowColorRgb != null) FLAG_GLOWING else 0.toByte()))
         add(WrappedDataValue(ID_GLOW_COLOR, s.intValue, glowColorRgb?.and(0xFFFFFF) ?: NO_GLOW_COLOR))
     }

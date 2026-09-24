@@ -45,6 +45,8 @@ sealed interface GestureGuiVisual {
     val x: Double
     val y: Double
     val layer: Int
+    /** null は標準補間、0 は表示の変形と位置・回転を即時反映します。 */
+    val interpolationTicks: Int?
 
     data class Block(
         override val visualId: String,
@@ -58,12 +60,14 @@ sealed interface GestureGuiVisual {
         val glowColor: Int? = null,
         /** ボタン矩形へ縦内側・横外側で追加する四辺の枠。nullなら枠なし。 */
         val outline: GestureGuiOutline? = null,
+        override val interpolationTicks: Int? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
             require(width > 0.0 && height > 0.0) { "gesture GUI block visual size must be positive" }
             require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
+            require(interpolationTicks == null || interpolationTicks >= 0) { "gesture GUI interpolation must be non-negative" }
         }
     }
 
@@ -79,6 +83,7 @@ sealed interface GestureGuiVisual {
         val seeThrough: Boolean = false,
         /** TextDisplayへ反映する水平方向の文字揃えです。 */
         val alignment: GestureGuiTextAlignment = GestureGuiTextAlignment.CENTER,
+        override val interpolationTicks: Int? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
@@ -86,6 +91,7 @@ sealed interface GestureGuiVisual {
             require(size > 0.0) { "gesture GUI text size must be positive" }
             require(lineWidth > 0) { "gesture GUI text lineWidth must be positive" }
             require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
+            require(interpolationTicks == null || interpolationTicks >= 0) { "gesture GUI interpolation must be non-negative" }
         }
     }
 
@@ -98,12 +104,14 @@ sealed interface GestureGuiVisual {
         override val layer: Int = 10,
         /** 選択ハイライト等に用いるglowの色(ARGB)。nullならglowなし。Geyser非対応時の背景色変更と併用 */
         val glowColor: Int? = null,
+        override val interpolationTicks: Int? = null,
     ) : GestureGuiVisual {
         init {
             require(visualId.isNotBlank()) { "gesture GUI visualId must not be blank" }
             require(x.isFinite() && y.isFinite()) { "gesture GUI visual position must be finite" }
             require(scale > 0.0) { "gesture GUI item scale must be positive" }
             require(layer in 1..40) { "gesture GUI visual layer must be between 1 and 40" }
+            require(interpolationTicks == null || interpolationTicks >= 0) { "gesture GUI interpolation must be non-negative" }
         }
     }
 }

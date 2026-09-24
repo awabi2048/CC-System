@@ -71,13 +71,13 @@ internal class GestureGuiVirtualScreens(
     fun visualFingerprint(visual: GestureGuiVisual): String = when (visual) {
         is GestureGuiVisual.Block ->
             "B|${visual.x}|${visual.y}|${visual.layer}|${visual.width}|${visual.height}|" +
-                "${visual.blockData.asString}|${visual.glowColor}|${visual.outline?.blockData?.asString}|${visual.outline?.thicknessRatio}"
+                "${visual.blockData.asString}|${visual.glowColor}|${visual.outline?.blockData?.asString}|${visual.outline?.thicknessRatio}|${visual.interpolationTicks}"
         is GestureGuiVisual.Text ->
             "T|${visual.x}|${visual.y}|${visual.layer}|${GestureGuiProtocolLibBackend.componentJson(visual.text)}|" +
-                "${visual.size}|${visual.lineWidth}|${visual.seeThrough}|${visual.alignment}"
+                "${visual.size}|${visual.lineWidth}|${visual.seeThrough}|${visual.alignment}|${visual.interpolationTicks}"
         is GestureGuiVisual.Item ->
             "I|${visual.x}|${visual.y}|${visual.layer}|${visual.item.type}|${visual.item.amount}|" +
-                "${visual.item.itemMeta?.hashCode()}|${visual.scale}|${visual.glowColor}"
+                "${visual.item.itemMeta?.hashCode()}|${visual.scale}|${visual.glowColor}|${visual.interpolationTicks}"
     }
 
     // -- 画面同期 ------------------------------------------------------------
@@ -312,7 +312,9 @@ internal class GestureGuiVirtualScreens(
             is GestureGuiVisual.Block -> {
                 val point = visualPoint(pose, visual.x, visual.y, visual.layer.toDouble())
                 DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                    blockMetadata(viewer, pose, anchorOf(state, key, point), point, visual.width, visual.height, visual.blockData, visual.glowColor)
+                    blockMetadata(viewer, pose, anchorOf(state, key, point), point, visual.width, visual.height, visual.blockData, visual.glowColor,
+                        interpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
+                        posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS)
                 }
             }
             is GestureGuiVisual.Item -> {
@@ -321,7 +323,9 @@ internal class GestureGuiVirtualScreens(
                     val scale = visual.scale.toFloat()
                     val quat = blockQuat(pose)
                     val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
-                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, visual.glowColor) +
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, visual.glowColor,
+                        interpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
+                        posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS) +
                         backend.itemStackValue(visual.item) + backend.itemDisplayTypeValue()
                 }
             }
@@ -331,7 +335,9 @@ internal class GestureGuiVirtualScreens(
                     val scale = GestureGuiTextMetrics.toDisplayScale(visual.size)
                     val quat = textQuat(pose)
                     val translation = resolveTranslation(quat, anchorOf(state, key, point), point, Vector3f())
-                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null) +
+                    backend.displayBaseValues(translation, Vector3f(scale, scale, scale), quat, null,
+                        interpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
+                        posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS) +
                         backend.textValues(
                             GestureGuiProtocolLibBackend.componentJson(visual.text),
                             visual.lineWidth, visual.seeThrough, alignmentFlags(visual.alignment),
@@ -353,12 +359,14 @@ internal class GestureGuiVirtualScreens(
             val key = "$screenKey/v/${visual.visualId}/outline/$index"
             val point = visualPoint(pose, visual.x + segment.x, visual.y + segment.y, visual.layer + OUTLINE_LAYER_OFFSET)
             val fingerprint = if (contentStale || state.contentFingerprintByKey[key] == null) {
-                "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}"
+                "OL|${visual.visualId}|$index|${segment.width}|${segment.height}|${outline.blockData.asString}|${visual.interpolationTicks}"
             } else {
                 state.contentFingerprintByKey.getValue(key)
             }
             DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, fingerprint) { viewer ->
-                blockMetadata(viewer, pose, anchorOf(state, key, point), point, segment.width, segment.height, outline.blockData, null)
+                blockMetadata(viewer, pose, anchorOf(state, key, point), point, segment.width, segment.height, outline.blockData, null,
+                    interpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
+                    posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS)
             }
         }
     }
@@ -373,6 +381,7 @@ internal class GestureGuiVirtualScreens(
         blockData: org.bukkit.block.data.BlockData,
         glowColor: Int?,
         interpTicks: Int = GestureGuiProtocolLibBackend.TRANSFORM_INTERP_TICKS,
+        posRotInterpTicks: Int = GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS,
     ): List<WrappedDataValue> {
         val quat = blockQuat(pose)
         return backend.displayBaseValues(
@@ -384,6 +393,7 @@ internal class GestureGuiVirtualScreens(
             quat,
             glowColor,
             interpTicks = interpTicks,
+            posRotInterpTicks = posRotInterpTicks,
         ) + backend.blockStateValue(blockData, viewer.world, viewer.location)
     }
 
@@ -396,7 +406,9 @@ internal class GestureGuiVirtualScreens(
         visual: GestureGuiVisual.Block,
         blockData: org.bukkit.block.data.BlockData,
     ): List<WrappedDataValue> = blockMetadata(
-        viewer, pose, anchor, target, visual.width, visual.height, blockData, null, interpTicks = 0,
+        viewer, pose, anchor, target, visual.width, visual.height, blockData, null,
+        interpTicks = 0,
+        posRotInterpTicks = visual.interpolationTicks ?: GestureGuiProtocolLibBackend.POSROT_INTERP_TICKS,
     )
 
     private fun anchorOf(state: GestureViewerRenderState, key: String, target: PlacedPoint): PlacedPoint =

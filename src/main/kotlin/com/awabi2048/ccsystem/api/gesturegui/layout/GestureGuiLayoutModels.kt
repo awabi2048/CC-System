@@ -355,6 +355,8 @@ data class GestureGuiText(
     override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
     override val hover: GestureGuiHover? = null,
     override val consumeInput: Boolean = false,
+    /** null は標準補間、0 はこの表示だけ即時反映します。 */
+    val interpolationTicks: Int? = null,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -386,6 +388,8 @@ data class GestureGuiBlock(
     override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
     override val hover: GestureGuiHover? = null,
     override val consumeInput: Boolean = false,
+    /** null は標準補間、0 はこの表示だけ即時反映します。 */
+    val interpolationTicks: Int? = null,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
@@ -414,6 +418,8 @@ data class GestureGuiItem(
     override val gestureGuard: ((Player, GestureGuiGesture) -> Boolean)? = null,
     override val hover: GestureGuiHover? = null,
     override val consumeInput: Boolean = false,
+    /** null は標準補間、0 はこの表示だけ即時反映します。 */
+    val interpolationTicks: Int? = null,
 ) : GestureGuiNode {
     init {
         requireCommonNodeProps(id, actionId)
