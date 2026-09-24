@@ -72,8 +72,8 @@ class GestureGuiServiceImpl(
         val view: GestureGuiView,
         val options: GestureGuiChildOptions,
         var pose: GestureGuiScreenPose,
-        /** モーダル遮蔽面の素材。null なら遮蔽面なし。 */
-        val overlayMaterial: Material?,
+        /** 遮蔽面は子画面に所有させ、表示範囲だけ親の寸法に追従させます。 */
+        var overlay: GestureGuiVirtualScreens.OverlayRequest?,
         var state: GestureGuiSessionState,
     )
 
@@ -430,19 +430,31 @@ class GestureGuiServiceImpl(
             val newScreens = session.screens.mapIndexed { index, screen ->
                 screen.copy(pose = newPoses[index])
             }
-            val newChildren = session.children.mapIndexed { index, child ->
-                // 親が見つからない子は旧来のrepositionChildrenと同様に維持します。
-                val parent = newScreens.firstOrNull {
+            val newChildren = mutableListOf<ChildRuntime>()
+            session.children.forEachIndexed { index, child ->
+                // 親が子画面の場合も、更新済みの直近のposeから順に再計算します。
+                val parentChildIndex = newChildren.indexOfLast {
                     it.view.definition.screenId == child.options.parentScreenId
-                } ?: return@mapIndexed child
+                }
+                val parent = newChildren.getOrNull(parentChildIndex)?.let { ParentRuntime(it.view, it.pose) } ?: newScreens.firstOrNull {
+                    it.view.definition.screenId == child.options.parentScreenId
+                }?.let { ParentRuntime(it.view, it.pose) }
+                if (parent == null) {
+                    newChildren += child
+                    return@forEachIndexed
+                }
                 val newPose = childPose(
                     parent.pose,
                     child.view,
                     child.options,
                     newScreens.size + index,
                     index,
+                    parentChildIndex,
                 )
-                child.copy(pose = newPose)
+                newChildren += child.copy(
+                    pose = newPose,
+                    overlay = child.overlay?.copy(width = parent.view.panel.width, height = parent.view.panel.height),
+                )
             }
             session.screens = newScreens
             newChildren.forEachIndexed { index, child -> session.children[index] = child }
@@ -601,12 +613,17 @@ class GestureGuiServiceImpl(
         }
         val childIndex = session.children.size
         session.revision = nextRevision++
-        val pose = childPose(parent.pose, view, options, session.screens.size + childIndex, childIndex)
-        // 仮想描画では子画面も論理 view・pose だけを保持し、遮蔽面の素材だけ記録します。
+        val parentChildIndex = session.children.indexOfLast { it.view.definition.screenId == options.parentScreenId }
+        val pose = childPose(parent.pose, view, options, session.screens.size + childIndex, childIndex, parentChildIndex)
+        // 子画面は本体と遮蔽面を一つの描画単位として保持します。
         // 実 packet は次の gaze 通過で viewer ごとに生成します。
         val child = ChildRuntime(
             view, options, pose,
-            if (!options.allowParentInteraction) options.overlayMaterial ?: Material.GRAY_STAINED_GLASS else null,
+            if (!options.allowParentInteraction) GestureGuiVirtualScreens.OverlayRequest(
+                options.overlayMaterial ?: Material.GRAY_STAINED_GLASS,
+                parent.view.panel.width,
+                parent.view.panel.height,
+            ) else null,
             if (options.animated) GestureGuiSessionState.OPENING else GestureGuiSessionState.ACTIVE,
         )
         session.children += child
@@ -1325,9 +1342,9 @@ class GestureGuiServiceImpl(
                     )
                 }
             }
-            session.children.forEachIndexed { index, child ->
+            session.children.forEach { child ->
                 // 開閉演出中の子画面は演出波が専有するため、通常同期は行いません。
-                if (child.state != GestureGuiSessionState.ACTIVE) return@forEachIndexed
+                if (child.state != GestureGuiSessionState.ACTIVE) return@forEach
                 val key = screenKey(child)
                 val lod = screenLod(session, state, key, child.view, child.pose, eye, player)
                 if (lod == GestureViewerLod.HIDDEN) {
@@ -1335,16 +1352,9 @@ class GestureGuiServiceImpl(
                     virtualScreens.destroyHover(player, state, key)
                     state.lodByScreenKey[key] = GestureViewerLod.HIDDEN
                 } else {
-                    // 遮蔽面は子画面の描画集合に含め、同じ sweep で管理します。
-                    val overlay = child.overlayMaterial
-                        ?.takeIf { !child.options.allowParentInteraction }
-                        ?.let { material ->
-                            val parent = parentRuntime(session, child.options.parentScreenId)
-                            val overlayPose = if (parent != null) modalOverlayPose(parent.pose, index) else child.pose
-                            GestureGuiVirtualScreens.OverlayRequest(material, overlayPose.width, overlayPose.height, overlayPose)
-                        }
+                    // モーダル遮蔽面は子画面の構成要素として同時に描画・破棄します。
                     virtualScreens.syncScreen(
-                        player, session.id, state, key, child.view, child.pose, lod, overlay, null, contentStale,
+                        player, session.id, state, key, child.view, child.pose, lod, child.overlay, null, contentStale,
                     )
                 }
             }
@@ -1815,7 +1825,11 @@ class GestureGuiServiceImpl(
     private fun repositionChildren(session: Session) {
         session.children.forEachIndexed { index, child ->
             val parent = parentRuntime(session, child.options.parentScreenId) ?: return@forEachIndexed
-            child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index)
+            val parentChildIndex = session.children.indexOfLast {
+                it.view.definition.screenId == child.options.parentScreenId
+            }
+            child.pose = childPose(parent.pose, child.view, child.options, session.screens.size + index, index, parentChildIndex)
+            child.overlay = child.overlay?.copy(width = parent.view.panel.width, height = parent.view.panel.height)
         }
     }
 
@@ -1873,16 +1887,13 @@ class GestureGuiServiceImpl(
         options: GestureGuiChildOptions,
         stackIndex: Int,
         childIndex: Int,
+        parentChildIndex: Int,
     ): GestureGuiScreenPose = parent.copy(
         screenIndex = stackIndex,
         center = parent.center + parent.right * options.offsetX + parent.up * options.offsetY -
-            parent.normal * GestureGuiChildDepth.childOffset(childIndex),
+            parent.normal * GestureGuiChildDepth.childOffset(childIndex, parentChildIndex),
         width = view.panel.width,
         height = view.panel.height,
-    )
-
-    private fun modalOverlayPose(parent: GestureGuiScreenPose, childIndex: Int): GestureGuiScreenPose = parent.copy(
-        center = parent.center - parent.normal * GestureGuiChildDepth.modalOverlayOffset(childIndex),
     )
 
     /** InteractionのLocationは底面基準なので、ヒットボックス中央が目位置へ来るよう補正します。 */

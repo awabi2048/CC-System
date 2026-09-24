@@ -198,12 +198,8 @@ internal class GestureGuiVirtualScreens(
         state.hiddenVisualBodyIds.clear()
     }
 
-    /**
-     * モーダル遮蔽面の要求です。子画面の描画集合に含め、同じ sweep で管理します。
-     *
-     * @param pose 親 pose から求めた遮蔽面専用の pose（子画面 pose とは異なります）
-     */
-    data class OverlayRequest(val material: Material, val width: Double, val height: Double, val pose: GestureGuiScreenPose)
+    /** 子画面に属する遮蔽面です。位置は子画面のposeから常に導出します。 */
+    data class OverlayRequest(val material: Material, val width: Double, val height: Double)
     data class DummyRequest(val width: Double, val height: Double)
 
     private fun buildDesired(
@@ -232,12 +228,13 @@ internal class GestureGuiVirtualScreens(
         items += panelBackground(screenKey, panel, pose, state)
         items += panelFrames(screenKey, panel, pose, state)
         overlay?.let {
-            // 遮蔽面は子画面の描画集合に含め、同じ sweep で管理します。
-            // 別経路で送ると子画面同期の過剰分削除に巻き込まれるためです。
+            // 子の背景との距離を一定にし、親画面の階層や移動に依存させません。
+            // 子画面の描画集合に含めるため、破棄も同じ sweep で完了します。
+            val overlayPose = GestureGuiChildDepth.overlayPose(pose, it.width, it.height)
             val key = "$screenKey/overlay"
-            val point = visualPoint(it.pose, 0.0, 0.0, MODAL_OVERLAY_LAYER)
+            val point = visualPoint(overlayPose, 0.0, 0.0, PANEL_BACKGROUND_LAYER)
             items += DesiredVisual(key, EntityType.BLOCK_DISPLAY, point, "O|${it.material}|${it.width}|${it.height}") { viewer ->
-                blockMetadata(viewer, it.pose, anchorOf(state, key, point), point, it.width, it.height, Bukkit.createBlockData(it.material), null)
+                blockMetadata(viewer, overlayPose, anchorOf(state, key, point), point, it.width, it.height, Bukkit.createBlockData(it.material), null)
             }
         }
         if (lod == GestureViewerLod.FULL) {
@@ -570,8 +567,6 @@ internal class GestureGuiVirtualScreens(
         const val TEXT_ITEM_SURFACE_LIFT: Double = 0.0005
         const val PANEL_BACKGROUND_LAYER: Double = 0.0
         const val PANEL_FRAME_LAYER: Double = 6.0
-        // 最大の通常層（枠の浮き上がりを含む）より前、子画面の背景より後ろに置きます。
-        const val MODAL_OVERLAY_LAYER: Double = 44.0
         const val OUTLINE_LAYER_OFFSET: Double = 0.5
         const val BLOCK_NORMAL_DEPTH: Float = 0.025f
         const val TEXT_BASELINE_OFFSET: Double = 0.018
