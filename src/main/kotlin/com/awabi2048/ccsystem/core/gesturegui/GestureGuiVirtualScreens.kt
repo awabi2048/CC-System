@@ -565,17 +565,19 @@ internal class GestureGuiVirtualScreens(
     private data class QuadPart(val x: Double, val y: Double, val width: Double, val height: Double)
 
     companion object {
-        const val LAYER_DEPTH: Double = 0.005
+        // 子画面の間隔と同じ比率で画面内の層間隔も縮め、親の内容→遮蔽面→子の背景の順序を保ちます。
+        const val LAYER_DEPTH: Double = 0.0025
         const val TEXT_ITEM_SURFACE_LIFT: Double = 0.0005
         const val PANEL_BACKGROUND_LAYER: Double = 0.0
         const val PANEL_FRAME_LAYER: Double = 6.0
-        const val MODAL_OVERLAY_LAYER: Double = 48.0
+        // 最大の通常層（枠の浮き上がりを含む）より前、子画面の背景より後ろに置きます。
+        const val MODAL_OVERLAY_LAYER: Double = 44.0
         const val OUTLINE_LAYER_OFFSET: Double = 0.5
         const val BLOCK_NORMAL_DEPTH: Float = 0.025f
         const val TEXT_BASELINE_OFFSET: Double = 0.018
         val DUMMY_PANEL_MATERIAL: Material = Material.GLASS
 
-        /** hover 置換が対象より前面へ浮く論理層数です（16層×0.005×0.25≒0.02 block）。 */
+        /** hover 置換が対象より前面へ浮く論理層数です（16層×0.0025×0.25≒0.01 block）。 */
         const val HOVER_FLOAT_LAYERS: Int = 16
         const val MAX_LAYER: Int = 40
 
