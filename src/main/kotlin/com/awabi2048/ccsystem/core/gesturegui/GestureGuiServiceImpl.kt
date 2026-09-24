@@ -1876,13 +1876,13 @@ class GestureGuiServiceImpl(
     ): GestureGuiScreenPose = parent.copy(
         screenIndex = stackIndex,
         center = parent.center + parent.right * options.offsetX + parent.up * options.offsetY -
-            parent.normal * (CHILD_SCREEN_DEPTH + childIndex * CHILD_STACK_DEPTH),
+            parent.normal * GestureGuiChildDepth.childOffset(childIndex),
         width = view.panel.width,
         height = view.panel.height,
     )
 
     private fun modalOverlayPose(parent: GestureGuiScreenPose, childIndex: Int): GestureGuiScreenPose = parent.copy(
-        center = parent.center - parent.normal * (childIndex * CHILD_STACK_DEPTH),
+        center = parent.center - parent.normal * GestureGuiChildDepth.modalOverlayOffset(childIndex),
     )
 
     /** InteractionのLocationは底面基準なので、ヒットボックス中央が目位置へ来るよう補正します。 */
@@ -1914,9 +1914,6 @@ class GestureGuiServiceImpl(
 
     private companion object {
         const val GESTURE_OWNER_PREFIX = "gesture-gui:"
-        const val CHILD_SCREEN_DEPTH = 0.25
-        // 通常要素の最大40 layer（0.2 block）より広く取り、次の遮蔽が必ず前面へ来るようにします。
-        const val CHILD_STACK_DEPTH = 0.25
         const val MAX_CHILD_DEPTH = 3
         /** 視線依存処理の実行間隔（tick）です。2 tick = 約10Hz です。 */
         const val GAZE_INTERVAL_TICKS: Long = 2L
