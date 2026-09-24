@@ -58,9 +58,10 @@ class KantanLocalizationContractTest {
         // 旧変数操作・旧選択肢説明・固定実体等）を廃止し、実行結果文等の49件を追加しました。
         // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
         // プリセット表示名48件と建造物保存コマンド2件を削除した後の契約件数です。
-        assertEquals(1153, keys.size)
+        // 起動方法とイベント種別の表示名を分離するキーを1件追加しました。
+        assertEquals(1154, keys.size)
         assertEquals(
-            "317884492fdeb2392926e3a69e0ec2055ad14efaae6478aa10357b87eede4c66",
+            "a48ae22c3bb79fa5e21b3931cee508890695792073f68b810ad9afd4d020f864",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(

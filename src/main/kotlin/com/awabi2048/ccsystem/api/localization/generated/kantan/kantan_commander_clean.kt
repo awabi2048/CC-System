@@ -813,6 +813,7 @@ object KantanKantanCommanderCleanKeys {
     // #7の起動方法の名称です。タイマー／信号／10種の初期イベントから一つを選びます。
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.timer", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.redstone", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_break", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_place", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_button_on", setOf())
@@ -1885,6 +1886,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE,
         KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER,
         KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON,
