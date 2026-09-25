@@ -824,17 +824,32 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_RIGHT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_entity_right_click", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_click", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_RIGHT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_right_click", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WHO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.who", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_PLAYER_FILTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.player_filter", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.operation", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ANY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.any", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_LEFT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.left", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_RIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.right", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.on", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.off", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.edit", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_CAPTURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.capture", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_INDIVIDUAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.individual", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.world", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DRAFT_DISCARDED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.draft_discarded", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_PLAYER_FILTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.player_filter", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_ENTITY_FILTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.entity_filter", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_FILTER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.block_filter", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_ANY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.any", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_INDIVIDUAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.individual", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.block_type", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_IDENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.description.block_identity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_BLOCK_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.block_removed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_ENTITY_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.entity_removed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_CLICK_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.click_removed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_LEVER_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.lever_removed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_DISCOVERY_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.discovery_removed", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_KIND_NORMALIZED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.kind_normalized", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_INAPPLICABLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.warning.inapplicable", setOf())
+
     // #5の型付き条件比較の判定対象名です。左辺・演算子・右辺の共通モデルで比較します。
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.value_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.block_state", setOf())
@@ -1908,17 +1923,32 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_RIGHT_CLICK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_RIGHT_CLICK,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WHO,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_PLAYER_FILTER,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OPERATION,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ANY,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_LEFT,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_RIGHT,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ON,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OFF,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_EDIT,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_CAPTURE,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_INDIVIDUAL,
         KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WORLD,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DRAFT_DISCARDED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_PLAYER_FILTER,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_ENTITY_FILTER,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_FILTER,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_OPERATION,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_ANY,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_INDIVIDUAL,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_TYPE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_DESCRIPTION_BLOCK_IDENTITY,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_BLOCK_REMOVED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_ENTITY_REMOVED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_CLICK_REMOVED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_LEVER_REMOVED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_DISCOVERY_REMOVED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_KIND_NORMALIZED,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WARNING_INAPPLICABLE,
+
         KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE,
