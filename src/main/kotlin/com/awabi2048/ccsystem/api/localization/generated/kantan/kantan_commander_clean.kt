@@ -934,6 +934,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.duplicate", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_open_filters", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_RECLICK_APPLY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_reclick_apply", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_ENTITY_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_entity_type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_LIMIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_limit", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_SORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.desc_filter_sort", setOf())
@@ -2031,6 +2032,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DUPLICATE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_OPEN_FILTERS,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_RECLICK_APPLY,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_ENTITY_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_LIMIT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_DESC_FILTER_SORT,
