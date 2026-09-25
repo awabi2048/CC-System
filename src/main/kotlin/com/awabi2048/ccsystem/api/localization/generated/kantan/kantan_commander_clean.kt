@@ -874,6 +874,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.disk_written", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_success", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.grant_failed", setOf())
+    // Axiom併用時の注意喚起です。エディター起動時と/kankoma実行時に表示します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_AXIOM_WARNING: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.axiom_warning", setOf())
     // issue #14: 操作ツールwandの付与・モード・選択通知です。選択Undo履歴は選択集合のみ対象です。
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_WAND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.help_wand", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_grant_success", setOf())
@@ -1973,6 +1975,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_DISK_WRITTEN,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_GRANT_FAILED,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_AXIOM_WARNING,
         KANTAN_COMMANDER_CLEAN_MESSAGE_HELP_WAND,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_SUCCESS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GRANT_FAILED,

@@ -707,6 +707,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("Written into the Kantan Commander Control Block."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_success", value = EmbeddedLocalizedValue.Text("Granted one Kantan Commander Control Block."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_failed", value = EmbeddedLocalizedValue.Text("Could not grant the Kantan Commander Control Block."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.axiom_warning", value = EmbeddedLocalizedValue.Text("§c⚠ Using Axiom together may cause unexpected issues."), domain = DOMAIN),
         // issue #14: Operation Tool wand grant, mode and selection notices.
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_wand", value = EmbeddedLocalizedValue.Text("/kankoma wand - Grants one Operation Tool"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_grant_success", value = EmbeddedLocalizedValue.Text("Granted one Operation Tool."), domain = DOMAIN),

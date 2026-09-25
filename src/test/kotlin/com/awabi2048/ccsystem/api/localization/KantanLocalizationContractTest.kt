@@ -59,9 +59,10 @@ class KantanLocalizationContractTest {
         // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
         // プリセット表示名48件と建造物保存コマンド2件を削除した後の契約件数です。
         // 起動条件の「誰が」を「プレイヤーの絞り込み」へ改め、詳細説明・正規化警告・下書き破棄の16件を追加しました。
-        assertEquals(1179, keys.size)
+        // Axiom併用時の注意喚起1件を追加しました。
+        assertEquals(1180, keys.size)
         assertEquals(
-            "437de7e4cbe845b3dbe15b36446362cfd9d638b121bd658d5effbe0edaf12b8a",
+            "d69235c9406b508a573b73144fb6c82a1114261ef54c94da2151bd3033cfad34",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
