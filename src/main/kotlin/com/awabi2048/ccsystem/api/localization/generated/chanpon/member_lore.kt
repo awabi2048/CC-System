@@ -20,6 +20,9 @@ object ChanponMemberLoreKeys {
     @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_MEMBER: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.role.member", setOf())
     @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_MODERATOR: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.role.moderator", setOf())
     @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.role.action", setOf())
+    @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.bypass.display", setOf())
+    @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.bypass.description", setOf())
+    @JvmField val CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.permission_menu.bypass.action", setOf())
     @JvmField val CHANPON_MEMBER_LORE_CLICK_EDIT_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.click_edit_action", setOf())
     @JvmField val CHANPON_MEMBER_LORE_TOOL_PERMISSION_OPERATION: LocalizationKey<String> = LocalizationKey.text("chanpon.member_lore.tool_permission_operation", setOf())
 
@@ -40,6 +43,9 @@ object ChanponMemberLoreKeys {
         CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_MEMBER,
         CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_MODERATOR,
         CHANPON_MEMBER_LORE_PERMISSION_MENU_ROLE_ACTION,
+        CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_DISPLAY,
+        CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_DESCRIPTION,
+        CHANPON_MEMBER_LORE_PERMISSION_MENU_BYPASS_ACTION,
         CHANPON_MEMBER_LORE_CLICK_EDIT_ACTION,
         CHANPON_MEMBER_LORE_TOOL_PERMISSION_OPERATION,
     )
