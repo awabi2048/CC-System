@@ -810,20 +810,31 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_ENTITY_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.entity_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_PLAYER_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.player_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.variable_state", setOf())
-    // #7の起動方法の名称です。タイマー／信号／10種の初期イベントから一つを選びます。
+    // 起動方法と7種のイベント名、およびイベント詳細条件の表示名です。
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_TIMER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.timer", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_REDSTONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.redstone", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_break", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_place", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_button_on", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_lever_on", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_lever_click", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_lever_off", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_pressure_plate_on", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_LEFT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_entity_left_click", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_entity_click", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_RIGHT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_entity_right_click", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_LEFT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_left_click", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_click", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_RIGHT_CLICK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.event_block_right_click", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WHO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.who", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OPERATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.operation", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ANY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.any", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_LEFT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.left", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_RIGHT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.right", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ON: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.on", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OFF: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.off", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_EDIT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.edit", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_CAPTURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.capture", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_INDIVIDUAL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.individual", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WORLD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.trigger.detail.world", setOf())
     // #5の型付き条件比較の判定対象名です。左辺・演算子・右辺の共通モデルで比較します。
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.value_state", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.condition.block_state", setOf())
@@ -1890,13 +1901,24 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_BREAK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_PLACE,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BUTTON_ON,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_ON,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_CLICK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_LEVER_OFF,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_PRESSURE_PLATE_ON,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_LEFT_CLICK,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_CLICK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_ENTITY_RIGHT_CLICK,
-        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_LEFT_CLICK,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_CLICK,
         KANTAN_COMMANDER_CLEAN_TRIGGER_EVENT_BLOCK_RIGHT_CLICK,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WHO,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OPERATION,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ANY,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_LEFT,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_RIGHT,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_ON,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_OFF,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_EDIT,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_CAPTURE,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_INDIVIDUAL,
+        KANTAN_COMMANDER_CLEAN_TRIGGER_DETAIL_WORLD,
         KANTAN_COMMANDER_CLEAN_CONDITION_VARIABLE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_VALUE_STATE,
         KANTAN_COMMANDER_CLEAN_CONDITION_BLOCK_STATE,
