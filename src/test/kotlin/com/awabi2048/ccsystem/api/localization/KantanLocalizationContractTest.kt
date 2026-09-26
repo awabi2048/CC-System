@@ -59,9 +59,10 @@ class KantanLocalizationContractTest {
         // タブ再編に伴い、基礎分類の2件（category_basic・category_basic_description）を廃止しました。
         // プリセット表示名48件と建造物保存コマンド2件を削除した後の契約件数です。
         // Axiom併用時の注意喚起1件を追加しました。
-        assertEquals(1158, keys.size)
+        // 起動トリガー詳細の型付き文言30件を別ラインから統合しました。
+        assertEquals(1188, keys.size)
         assertEquals(
-            "8454554e61ff6e03cde7b902744844d1a742eb45ff824083a3123b0b190131f7",
+            "8177669f3ba07de54e01925cb49481b0bfb353e094fae9ad67eff2f3f72dd292",
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
         assertEquals(
