@@ -15,6 +15,7 @@ import org.bukkit.NamespacedKey
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 import java.time.format.DateTimeFormatter
 import java.util.logging.Logger
 
@@ -164,27 +165,30 @@ object WorldManager {
         border.setCenter(0.5, 0.5)
         border.size = borderSize.toDouble()
 
-        val spawnLoc: Location = calculateSpawnLocation(world)
-        world.setSpawnLocation(spawnLoc)
-
         val difficulty = customDifficulty ?: ConfigManager.getDefaultDifficulty()
         world.difficulty = difficulty
         logger.info("ワールド $worldName の難易度を ${difficulty.name} に設定しました。")
 
-        val broadcastMsg = LanguageManager.getRawString(null, "broadcast_success")
-            .replace("%world_name%", worldName)
-            .replace("%border_size%", borderSize.toString())
-        val consoleMsg = LanguageManager.getRawString(null, "console_success")
-            .replace("%world_name%", worldName)
-            .replace("%border_size%", borderSize.toString())
+        // スポーン探索が未生成チャンクの同期生成を引き起こさないよう、
+        // 候補チャンクを非同期ロードしてからメインスレッドで探索する
+        calculateSpawnLocationAsync(world) { spawnLoc ->
+            world.setSpawnLocation(spawnLoc)
 
-        broadcastLegacy(broadcastMsg)
-        logger.info(consoleMsg)
+            val broadcastMsg = LanguageManager.getRawString(null, "broadcast_success")
+                .replace("%world_name%", worldName)
+                .replace("%border_size%", borderSize.toString())
+            val consoleMsg = LanguageManager.getRawString(null, "console_success")
+                .replace("%world_name%", worldName)
+                .replace("%border_size%", borderSize.toString())
 
-        createScaffold(world, spawnLoc)
-        ResourceWorldPermissionPolicy.apply(world)
-        MacroManager.executeAfterGeneration(worldName, borderSize)
-        startPregeneration(world, borderSize)
+            broadcastLegacy(broadcastMsg)
+            logger.info(consoleMsg)
+
+            createScaffold(world, spawnLoc)
+            ResourceWorldPermissionPolicy.apply(world)
+            MacroManager.executeAfterGeneration(worldName, borderSize)
+            startPregeneration(world, borderSize)
+        }
         return true
     }
 
@@ -206,21 +210,80 @@ object WorldManager {
         logger.info("ワールド ${world.name} のスポーン地点に半径 $radius の足場を生成しました (${material.name})")
     }
 
-    private fun calculateSpawnLocation(world: World): Location {
+    private data class SpawnCandidate(val x: Int, val z: Int)
+
+    /**
+     * 環境ごとのスポーン候補座標を生成する。ブロックへはアクセスしない。
+     * first はフォールバック表示用の基準座標（通常 (0,0)）、second は探索候補。
+     */
+    private fun spawnCandidates(world: World): Pair<SpawnCandidate?, List<SpawnCandidate>> {
+        val random = java.util.Random()
         return when (world.environment) {
             World.Environment.NETHER -> {
                 val searchRadius = ConfigManager.getNetherSpawnSearchRadius()
                 val maxAttempts = ConfigManager.getNetherSpawnSearchAttempts()
+                null to (1..maxAttempts).map {
+                    SpawnCandidate(
+                        random.nextInt(searchRadius * 2 + 1) - searchRadius,
+                        random.nextInt(searchRadius * 2 + 1) - searchRadius
+                    )
+                }
+            }
+            World.Environment.THE_END ->
+                SpawnCandidate(0, 0) to (1..100).map {
+                    SpawnCandidate(random.nextInt(65) - 32, random.nextInt(65) - 32)
+                }
+            else -> {
+                val searchRadius = ConfigManager.getSpawnSearchRadius()
+                val maxAttempts = ConfigManager.getSpawnSearchAttempts()
+                SpawnCandidate(0, 0) to (1..maxAttempts).map {
+                    SpawnCandidate(
+                        random.nextInt(searchRadius * 2 + 1) - searchRadius,
+                        random.nextInt(searchRadius * 2 + 1) - searchRadius
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * 候補座標のチャンクを非同期で先読みし、完了後にメインスレッドでスキャンを実行する。
+     * これにより getHighestBlockAt 等が未生成チャンクの同期生成を誘発しない。
+     */
+    private fun calculateSpawnLocationAsync(world: World, onComplete: (Location) -> Unit) {
+        val (fallback, candidates) = spawnCandidates(world)
+        val chunkCoords = buildSet {
+            fallback?.let { add(it.x shr 4 to (it.z shr 4)) }
+            candidates.forEach { add(it.x shr 4 to (it.z shr 4)) }
+        }
+        val futures = chunkCoords.map { (cx, cz) -> world.getChunkAtAsync(cx, cz) }
+        CompletableFuture.allOf(*futures.toTypedArray()).whenComplete { _, _ ->
+            Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
+                if (Bukkit.getWorld(world.uid) == null) {
+                    logger.warning("ワールド ${world.name} がアンロードされたため、スポーン探索を中断しました。")
+                    return@Runnable
+                }
+                onComplete(scanSpawnLocation(world, fallback, candidates))
+            })
+        }
+    }
+
+    private fun scanSpawnLocation(
+        world: World,
+        fallback: SpawnCandidate?,
+        candidates: List<SpawnCandidate>
+    ): Location {
+        return when (world.environment) {
+            World.Environment.NETHER -> {
                 val safeBlocks = ConfigManager.getNetherSpawnSafeBlocks()
-                val random = java.util.Random()
 
                 // デフォルト値（見つからない場合のフォールバック）
                 var bestLoc = Location(world, 0.5, 64.0, 0.5)
                 var found = false
 
-                for (i in 1..maxAttempts) {
-                    val rx = random.nextInt(searchRadius * 2 + 1) - searchRadius
-                    val rz = random.nextInt(searchRadius * 2 + 1) - searchRadius
+                for ((i, candidate) in candidates.withIndex()) {
+                    val rx = candidate.x
+                    val rz = candidate.z
 
                     // ネザーはY層を120から1まで探索
                     var foundY = 64.0
@@ -248,7 +311,7 @@ object WorldManager {
                             if (material1 != Material.LAVA && material2 != Material.LAVA) {
                                 bestLoc = Location(world, rx + 0.5, (y + 1).toDouble(), rz + 0.5)
                                 found = true
-                                logger.info("ネザーの適切なスポーン位置を発見: ($rx, ${y + 1}, $rz) (試行回数: $i)")
+                                logger.info("ネザーの適切なスポーン位置を発見: ($rx, ${y + 1}, $rz) (試行回数: ${i + 1})")
                                 break
                             }
                         }
@@ -262,12 +325,10 @@ object WorldManager {
                 bestLoc
             }
             World.Environment.THE_END -> {
-                var bestLoc = Location(world, 0.5, (world.getHighestBlockAt(0, 0).y + 1).toDouble(), 0.5)
-                val random = java.util.Random()
-                for (i in 1..100) {
-                    val rx = random.nextInt(65) - 32
-                    val rz = random.nextInt(65) - 32
-                    val topBlock = world.getHighestBlockAt(rx, rz)
+                val base = fallback ?: SpawnCandidate(0, 0)
+                var bestLoc = Location(world, 0.5, (world.getHighestBlockAt(base.x, base.z).y + 1).toDouble(), 0.5)
+                for (candidate in candidates) {
+                    val topBlock = world.getHighestBlockAt(candidate.x, candidate.z)
                     if (topBlock.type == Material.END_STONE) {
                         bestLoc = topBlock.location.add(0.5, 1.0, 0.5)
                         break
@@ -277,18 +338,16 @@ object WorldManager {
             }
             else -> {
                 // 適切な地表を探す
-                val searchRadius = ConfigManager.getSpawnSearchRadius()
-                val maxAttempts = ConfigManager.getSpawnSearchAttempts()
                 val safeBlocks = ConfigManager.getSpawnSafeBlocks()
-                val random = java.util.Random()
+                val base = fallback ?: SpawnCandidate(0, 0)
 
                 // デフォルト値（見つからない場合のフォールバック）
-                var bestLoc = Location(world, 0.5, (world.getHighestBlockAt(0, 0).y + 1).toDouble(), 0.5)
+                var bestLoc = Location(world, 0.5, (world.getHighestBlockAt(base.x, base.z).y + 1).toDouble(), 0.5)
                 var found = false
 
-                for (i in 1..maxAttempts) {
-                    val rx = random.nextInt(searchRadius * 2 + 1) - searchRadius
-                    val rz = random.nextInt(searchRadius * 2 + 1) - searchRadius
+                for ((i, candidate) in candidates.withIndex()) {
+                    val rx = candidate.x
+                    val rz = candidate.z
                     val groundBlock = world.getHighestBlockAt(rx, rz)
 
                     // 安全なブロックかチェック
@@ -306,7 +365,7 @@ object WorldManager {
                                 material2 != Material.WATER && material2 != Material.LAVA) {
                                 bestLoc = Location(world, rx + 0.5, (y + 1).toDouble(), rz + 0.5)
                                 found = true
-                                logger.info("適切なスポーン位置を発見: ($rx, ${y + 1}, $rz) (試行回数: $i)")
+                                logger.info("適切なスポーン位置を発見: ($rx, ${y + 1}, $rz) (試行回数: ${i + 1})")
                                 break
                             }
                         }
@@ -620,14 +679,14 @@ object WorldManager {
         }
 
         // ワールドアンロード後、ファイルが完全に解放されるまで少し待機
-        // 非同期で削除処理を実行
+        // ディレクトリ走査・削除はメインスレッドを止めないよう非同期で実行する
         object : BukkitRunnable() {
             private var attempts = 0
             private val maxAttempts = 5
-            
+
             override fun run() {
                 var hasRemainingFiles = false
-                
+
                 for (entry in directoriesToRemove) {
                     if (deleteWorldDirectory(entry.directory)) {
                         logger.info("ワールドディレクトリ ${entry.directory} を削除しました。")
@@ -636,24 +695,27 @@ object WorldManager {
                         logger.warning("ワールドディレクトリ ${entry.directory} の削除に失敗しました。リトライします (${attempts + 1}/${maxAttempts})")
                     }
                 }
-                
+
                 attempts++
                 if (hasRemainingFiles && attempts < maxAttempts) {
                     // リトライ（1秒後）
-                    this.runTaskLater(CCSystem.instance, 20L)
+                    this.runTaskLaterAsynchronously(CCSystem.instance, 20L)
                 } else {
-                    this.cancel()
-                    if (hasRemainingFiles) {
-                        logger.severe("ワールドフォルダの削除が完了しませんでした。手動での削除が必要かもしれません。")
-                        removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.FAILED) }
-                        onComplete(false)
-                    } else {
-                        removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.DELETED) }
-                        onComplete(true)
-                    }
+                    val succeeded = !hasRemainingFiles
+                    // ライフサイクル遷移と後続のワールド生成はメインスレッドへ戻して実行する
+                    Bukkit.getScheduler().runTask(CCSystem.instance, Runnable {
+                        if (succeeded) {
+                            removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.DELETED) }
+                            onComplete(true)
+                        } else {
+                            logger.severe("ワールドフォルダの削除が完了しませんでした。手動での削除が必要かもしれません。")
+                            removalKeys.forEach { lifecycle.transition(it, ResourceWorldState.FAILED) }
+                            onComplete(false)
+                        }
+                    })
                 }
             }
-        }.runTaskLater(CCSystem.instance, 20L) // 1秒後に最初の削除を試行
+        }.runTaskLaterAsynchronously(CCSystem.instance, 20L) // 1秒後に最初の削除を試行
     }
 
     private fun deleteWorldDirectory(path: Path): Boolean {
