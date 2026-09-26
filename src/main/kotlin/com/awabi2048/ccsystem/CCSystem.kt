@@ -486,6 +486,7 @@ class CCSystem : JavaPlugin() {
             .stopAutoRefreshScheduler()
         // 資源ワールド関連のクリーンアップ
         PlacedBlockLedgerManager.save()
+        com.awabi2048.ccsystem.core.resource.NaturalOriginRuntime.shutdown()
         shutdownFeatureRuntime()
         if (hasAnnouncementNotificationListener()) {
             announcementNotificationListener.shutdown()

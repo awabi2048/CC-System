@@ -26,6 +26,10 @@ class NaturalOriginRegistryImpl(
     private val states = load()
     private var placementRecordingEnabled = true
 
+    /** 未保存の変更があるか。チャンク毎の全量保存を避けるため定期フラッシュへ遅延する。 */
+    @Volatile
+    private var dirty = false
+
     init {
         lifecycleService.subscribe("cc-system:natural-origin") { change ->
             if (change.current.state == ResourceWorldState.DELETED ||
@@ -61,7 +65,7 @@ class NaturalOriginRegistryImpl(
         val generation = lifecycleService.getGeneration(worldKey) ?: return
         val state = states.getOrPut(generation.generationId) { GenerationState(worldKey) }
         state.nonNaturalBlocks += BlockPosition(x, y, z)
-        save()
+        dirty = true
     }
 
     @Synchronized
@@ -73,7 +77,7 @@ class NaturalOriginRegistryImpl(
             val state = states.getOrPut(generation.generationId) { GenerationState(block.world.key) }
             changed = state.nonNaturalBlocks.add(BlockPosition(block.x, block.y, block.z)) || changed
         }
-        if (changed) save()
+        if (changed) dirty = true
     }
 
     @Synchronized
@@ -89,12 +93,22 @@ class NaturalOriginRegistryImpl(
         }
         val state = states.getOrPut(generationId) { GenerationState(worldKey) }
         require(state.worldKey == worldKey) { "generation $generationId belongs to ${state.worldKey}" }
-        if (state.generatedChunks.add(ChunkPosition(chunkX, chunkZ))) save()
+        if (state.generatedChunks.add(ChunkPosition(chunkX, chunkZ))) dirty = true
     }
 
     @Synchronized
     override fun clearGeneration(generationId: UUID) {
-        if (states.remove(generationId) != null) save()
+        if (states.remove(generationId) != null) dirty = true
+    }
+
+    /**
+     * 未保存の変更があればディスクへ書き込む。定期タスクとプラグイン停止時に呼び出す。
+     */
+    @Synchronized
+    fun flush() {
+        if (!dirty) return
+        save()
+        dirty = false
     }
 
     private fun load(): MutableMap<UUID, GenerationState> {

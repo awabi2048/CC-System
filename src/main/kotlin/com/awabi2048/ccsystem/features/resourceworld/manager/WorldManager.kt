@@ -408,13 +408,18 @@ object WorldManager {
             var index = startIndex
             var lastReportedPercent = -1
             var lastSavedPercent = -1
+            // 生成が追いつかないときにリクエストが積み上がらないよう、前バッチの完了を待ってから次を発行する
+            val inFlight = java.util.concurrent.atomic.AtomicInteger(0)
 
             override fun run() {
+                if (inFlight.get() > 0) return
                 val endIdx = Math.min(index + batchSize, totalChunks)
 
                 for (i in index until endIdx) {
                     val coords = sortedChunks[i]
+                    inFlight.incrementAndGet()
                     world.getChunkAtAsync(coords.x, coords.z)
+                        .whenComplete { _, _ -> inFlight.decrementAndGet() }
                 }
 
                 index = endIdx
