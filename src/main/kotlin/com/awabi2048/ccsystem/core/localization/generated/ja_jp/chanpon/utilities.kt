@@ -13,6 +13,15 @@ internal object JaJpChanponUtilitiesCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.usage", value = EmbeddedLocalizedValue.Text("&c使用法: /beplayerhead <プレイヤー名>"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.loading", value = EmbeddedLocalizedValue.Text("&7統合版スキンを取得しています…"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.inventory_full", value = EmbeddedLocalizedValue.Text("&cインベントリに空きがありません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.success", value = EmbeddedLocalizedValue.Text("&a{name} のヘッドを取得しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.floodgate_unavailable", value = EmbeddedLocalizedValue.Text("&cFloodgateが起動していないため、統合版プレイヤーを検索できません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.player_not_found", value = EmbeddedLocalizedValue.Text("&c指定された名前の統合版プレイヤーが見つかりません。ゲーマータグを確認してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.skin_not_found", value = EmbeddedLocalizedValue.Text("&cプレイヤーは見つかりましたが、Geyserに取得可能なスキンが登録されていません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.service_unavailable", value = EmbeddedLocalizedValue.Text("&cFloodgateまたはGeyserのスキン取得サービスに接続できませんでした。時間をおいて再試行してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.invalid_response", value = EmbeddedLocalizedValue.Text("&cスキン取得サービスから有効なテクスチャが返されませんでした。対象プレイヤーが一度サーバーへ接続した後に再試行してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.common.prefix", value = EmbeddedLocalizedValue.Text("&7[&bChanpon-Utilities&7] "), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.usage", value = EmbeddedLocalizedValue.Text("&c使用方法: /cu status|enable <module>|disable <module>"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.no_permission", value = EmbeddedLocalizedValue.Text("&cこのコマンドを実行する権限がありません。"), domain = DOMAIN),

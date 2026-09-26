@@ -13,6 +13,15 @@ internal object EnUsChanponUtilitiesCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /beplayerhead <player name>"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.loading", value = EmbeddedLocalizedValue.Text("&7Fetching Bedrock skin…"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.inventory_full", value = EmbeddedLocalizedValue.Text("&cYour inventory is full."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.success", value = EmbeddedLocalizedValue.Text("&aReceived {name}'s head."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.floodgate_unavailable", value = EmbeddedLocalizedValue.Text("&cFloodgate is not running, so Bedrock players cannot be looked up."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.player_not_found", value = EmbeddedLocalizedValue.Text("&cNo Bedrock player was found with that name. Check the gamertag."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.skin_not_found", value = EmbeddedLocalizedValue.Text("&cThe player was found, but Geyser has no retrievable skin for them."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.service_unavailable", value = EmbeddedLocalizedValue.Text("&cFloodgate or Geyser skin service could not be reached. Please try again later."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.beplayerhead.invalid_response", value = EmbeddedLocalizedValue.Text("&cThe skin service returned no usable texture. Try again after the player has joined the server."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.common.prefix", value = EmbeddedLocalizedValue.Text("&7[&bChanpon-Utilities&7] "), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /cu status|enable <module>|disable <module>"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.management.no_permission", value = EmbeddedLocalizedValue.Text("&cYou do not have permission to use this command."), domain = DOMAIN),

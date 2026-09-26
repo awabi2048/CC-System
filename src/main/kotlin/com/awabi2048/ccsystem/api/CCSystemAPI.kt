@@ -26,6 +26,7 @@ import com.awabi2048.ccsystem.api.resource.NaturalOriginRegistry
 import com.awabi2048.ccsystem.api.world.WorldDirectoryService
 import com.awabi2048.ccsystem.api.world.WorldIdentityService
 import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
+import com.awabi2048.ccsystem.api.skin.BedrockSkinService
 import com.awabi2048.ccsystem.core.queue.model.ChunkTask
 import net.kyori.adventure.text.Component
 import com.awabi2048.ccsystem.api.localization.LocalizationKey
@@ -37,6 +38,8 @@ import org.bukkit.entity.Player
  * 他のプラグインがこのインターフェースを経由してCC-Systemの機能を利用します
  */
 interface CCSystemAPI {
+    /** Floodgate/Geyserを通じて統合版スキンを取得します。 */
+    fun getBedrockSkinService(): BedrockSkinService
     /** GUI runtime の公開契約版です。consumer は provider 登録前に要求版との完全一致を確認してください。 */
     val guiRuntimeContractVersion: Int
         get() = GUI_RUNTIME_CONTRACT_VERSION

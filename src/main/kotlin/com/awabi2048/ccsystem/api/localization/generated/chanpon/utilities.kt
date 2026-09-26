@@ -4,6 +4,15 @@ import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
 /** コンパイル時に値型を保証する、領域別の生成済みローカライズキーです。 */
 object ChanponUtilitiesKeys {
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_USAGE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.usage", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_LOADING: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.loading", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_INVENTORY_FULL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.inventory_full", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.success", setOf("name"))
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_FLOODGATE_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.floodgate_unavailable", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_PLAYER_NOT_FOUND: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.player_not_found", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_SKIN_NOT_FOUND: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.skin_not_found", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_SERVICE_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.service_unavailable", setOf())
+    @JvmField val CHANPON_UTILITIES_BEPLAYERHEAD_INVALID_RESPONSE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.beplayerhead.invalid_response", setOf())
     @JvmField val CHANPON_UTILITIES_COMMON_PREFIX: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.common.prefix", setOf())
     @JvmField val CHANPON_UTILITIES_MANAGEMENT_USAGE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.management.usage", setOf())
     @JvmField val CHANPON_UTILITIES_MANAGEMENT_NO_PERMISSION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.management.no_permission", setOf())
@@ -46,6 +55,15 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.ui_unavailable", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        CHANPON_UTILITIES_BEPLAYERHEAD_USAGE,
+        CHANPON_UTILITIES_BEPLAYERHEAD_LOADING,
+        CHANPON_UTILITIES_BEPLAYERHEAD_INVENTORY_FULL,
+        CHANPON_UTILITIES_BEPLAYERHEAD_SUCCESS,
+        CHANPON_UTILITIES_BEPLAYERHEAD_FLOODGATE_UNAVAILABLE,
+        CHANPON_UTILITIES_BEPLAYERHEAD_PLAYER_NOT_FOUND,
+        CHANPON_UTILITIES_BEPLAYERHEAD_SKIN_NOT_FOUND,
+        CHANPON_UTILITIES_BEPLAYERHEAD_SERVICE_UNAVAILABLE,
+        CHANPON_UTILITIES_BEPLAYERHEAD_INVALID_RESPONSE,
         CHANPON_UTILITIES_COMMON_PREFIX,
         CHANPON_UTILITIES_MANAGEMENT_USAGE,
         CHANPON_UTILITIES_MANAGEMENT_NO_PERMISSION,
