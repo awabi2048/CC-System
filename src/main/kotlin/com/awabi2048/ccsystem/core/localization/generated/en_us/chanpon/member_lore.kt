@@ -29,6 +29,9 @@ internal object EnUsChanponMemberLoreCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.member", value = EmbeddedLocalizedValue.Text("Member"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.moderator", value = EmbeddedLocalizedValue.Text("Moderator"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.action", value = EmbeddedLocalizedValue.Text("Change role"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.display", value = EmbeddedLocalizedValue.Text("Global permission bypass"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.description", value = EmbeddedLocalizedValue.Text("This member stays active while global building is suspended"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.action", value = EmbeddedLocalizedValue.Text("Toggle bypass"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.click_edit_action", value = EmbeddedLocalizedValue.Text("Open menu"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.tool_permission_operation", value = EmbeddedLocalizedValue.Text("Configure permissions"), domain = DOMAIN),
     )

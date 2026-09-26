@@ -29,6 +29,9 @@ internal object JaJpChanponMemberLoreCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.member", value = EmbeddedLocalizedValue.Text("メンバー"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.moderator", value = EmbeddedLocalizedValue.Text("モデレーター"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.role.action", value = EmbeddedLocalizedValue.Text("権限を切り替える"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.display", value = EmbeddedLocalizedValue.Text("グローバル権限のバイパス"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.description", value = EmbeddedLocalizedValue.Text("全体の建築停止中もこの対象者は活動できる"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.member_lore.permission_menu.bypass.action", value = EmbeddedLocalizedValue.Text("バイパスを切り替える"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.click_edit_action", value = EmbeddedLocalizedValue.Text("メニューを開く"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.member_lore.tool_permission_operation", value = EmbeddedLocalizedValue.Text("権限を設定する"), domain = DOMAIN),
     )

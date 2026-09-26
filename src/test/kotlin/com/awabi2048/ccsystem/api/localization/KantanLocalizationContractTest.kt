@@ -61,9 +61,10 @@ class KantanLocalizationContractTest {
         // 起動条件の「誰が」を「プレイヤーの絞り込み」へ改め、詳細説明・正規化警告・下書き破棄の16件を追加しました。
         // エンティティのデータ設定の二段階操作に伴い、葉の再クリック案内1件を追加しました。
         // Axiom併用時の注意喚起1件を追加しました。
+        // 起動トリガー詳細の型付き文言30件は重複統合のため件数へ影響しません。
         assertEquals(1181, keys.size)
         assertEquals(
-            "TODO-finalize-after-integration",
+            "1f46d7a94f673e31e23537a4656e172620bdde9db85b798eb8a760dc6236310b",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
