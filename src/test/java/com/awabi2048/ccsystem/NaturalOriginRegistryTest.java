@@ -44,6 +44,7 @@ class NaturalOriginRegistryTest {
         assertFalse(registry.isNatural(worldKey, 20, 64, -2));
         assertTrue(registry.isNatural(worldKey, 21, 64, -2));
 
+        registry.flush();
         NaturalOriginRegistryImpl reloaded = new NaturalOriginRegistryImpl(store, lifecycle);
         assertFalse(reloaded.isNatural(worldKey, 20, 64, -2));
         assertTrue(reloaded.isNatural(worldKey, 21, 64, -2));
@@ -100,6 +101,7 @@ class NaturalOriginRegistryTest {
         registry.markPlayerPlaced(worldKey, 3, 64, 3);
         assertFalse(registry.isNatural(worldKey, 3, 64, 3));
 
+        registry.flush();
         NaturalOriginRegistryImpl reloaded = new NaturalOriginRegistryImpl(store, lifecycle);
         assertTrue(reloaded.isPlacementRecordingEnabled());
         assertTrue(reloaded.isNatural(worldKey, 2, 64, 2));
