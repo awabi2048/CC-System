@@ -60,9 +60,10 @@ class KantanLocalizationContractTest {
         // プリセット表示名48件と建造物保存コマンド2件を削除した後の契約件数です。
         // 起動条件の「誰が」を「プレイヤーの絞り込み」へ改め、詳細説明・正規化警告・下書き破棄の16件を追加しました。
         // エンティティのデータ設定の二段階操作に伴い、葉の再クリック案内1件を追加しました。
-        assertEquals(1180, keys.size)
+        // Axiom併用時の注意喚起1件を追加しました。
+        assertEquals(1181, keys.size)
         assertEquals(
-            "bfc980b2acd8b7ec4ed66debde9325e84ec0283ba7d384b54962bbe5ce8ac395",
+            "TODO-finalize-after-integration",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )

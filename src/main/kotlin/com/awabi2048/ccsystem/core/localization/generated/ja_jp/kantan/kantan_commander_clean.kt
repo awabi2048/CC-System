@@ -708,6 +708,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.disk_written", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックへ書き込みました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_success", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックを1個付与しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.grant_failed", value = EmbeddedLocalizedValue.Text("かんたんコマンダー制御ブロックを付与できませんでした。"), domain = DOMAIN),
+        // Axiom併用時の注意喚起です。エディター起動時と/kankoma実行時に表示します。
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.axiom_warning", value = EmbeddedLocalizedValue.Text("§c⚠ Axiom を併用すると、予期せぬ不具合が生じる場合があります。"), domain = DOMAIN),
         // issue #14: 操作ツールwandの付与・モード・選択通知です。
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.help_wand", value = EmbeddedLocalizedValue.Text("/kankoma wand - 操作ツールを1個付与します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_grant_success", value = EmbeddedLocalizedValue.Text("操作ツールを1個付与しました。"), domain = DOMAIN),
