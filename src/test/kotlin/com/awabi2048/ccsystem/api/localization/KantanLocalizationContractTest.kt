@@ -62,9 +62,11 @@ class KantanLocalizationContractTest {
         // エンティティのデータ設定の二段階操作に伴い、葉の再クリック案内1件を追加しました。
         // Axiom併用時の注意喚起1件を追加しました。
         // 起動トリガー詳細の型付き文言30件は重複統合のため件数へ影響しません。
-        assertEquals(1181, keys.size)
+        // 操作ツールwandの未使用モード切替通知1件を廃止し、候補数・選択なし案内・
+        // グループ作成失敗の3件を追加しました。
+        assertEquals(1183, keys.size)
         assertEquals(
-            "1f46d7a94f673e31e23537a4656e172620bdde9db85b798eb8a760dc6236310b",
+            "e68188285d66e86aeb14d0ef0be8e58079ca90bf6bdd9fa267241892b0593eb6",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
