@@ -884,12 +884,13 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_RANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_entity_range", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_DIRECT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_mode_entity_direct", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_cleared", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_undo_empty", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_selection_full", setOf("max"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_REMOVED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_removed", setOf())
     // issue #14: 操作ツールwandの選択結果・pos設定・Box上限・状態表示の通知です。
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ADDED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_added", setOf("count"))
-    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS1_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos1_set", setOf("world", "x", "y", "z"))
-    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS2_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos2_set", setOf("world", "x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS1_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos1_set", setOf("x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS2_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_pos2_set", setOf("x", "y", "z"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_AREA_GUIDE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_area_guide", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_box_too_large", setOf("max"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_status", setOf("mode", "count"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_CANDIDATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_candidates", setOf("count"))
@@ -1986,11 +1987,12 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_RANGE,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_MODE_ENTITY_DIRECT,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_CLEARED,
-        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_UNDO_EMPTY,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_SELECTION_FULL,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_REMOVED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ADDED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS1_SET,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_POS2_SET,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_AREA_GUIDE,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_CANDIDATES,

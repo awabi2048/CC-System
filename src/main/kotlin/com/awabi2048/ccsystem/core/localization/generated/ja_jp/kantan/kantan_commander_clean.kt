@@ -585,7 +585,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.created_at", value = EmbeddedLocalizedValue.Text("作成日時"), domain = DOMAIN),
         // issue #14: 操作ツールwandの表示名・説明です。
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.name_wand", value = EmbeddedLocalizedValue.Text("かんたんコマンダー操作ツール"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.lore_wand", value = EmbeddedLocalizedValue.TextList(listOf("ワールド上で対象を直接選択します", "スニーク+スクロールでモードを切り替えます")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.item.lore_wand", value = EmbeddedLocalizedValue.TextList(listOf("ワールド上で対象を直接選択します", "左クリック:メニュー / Fキー:選択解除", "スニーク+スクロール:モード切替")), domain = DOMAIN),
         // issue #14: 操作ツールwandの操作GUIの表題・状態・操作ラベルです。
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_title_area", value = EmbeddedLocalizedValue.Text("操作ツール: エリア"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_title_entity", value = EmbeddedLocalizedValue.Text("操作ツール: エンティティ"), domain = DOMAIN),
@@ -718,12 +718,13 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_mode_entity_range", value = EmbeddedLocalizedValue.Text("エンティティ選択（範囲）"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_mode_entity_direct", value = EmbeddedLocalizedValue.Text("エンティティ選択（直接）"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_selection_cleared", value = EmbeddedLocalizedValue.Text("選択をすべて解除しました。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_undo_empty", value = EmbeddedLocalizedValue.Text("戻せる選択履歴がありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_selection_full", value = EmbeddedLocalizedValue.Text("選択数が上限（{max}件）に達したため、追加しませんでした。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_removed", value = EmbeddedLocalizedValue.Text("選択から外しました。"), domain = DOMAIN),
         // issue #14: 操作ツールwandの選択結果・pos設定・Box上限・状態表示の通知です。
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_added", value = EmbeddedLocalizedValue.Text("{count}件を選択へ追加しました。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos1_set", value = EmbeddedLocalizedValue.Text("pos1を設定しました（{world} {x},{y},{z}）。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos2_set", value = EmbeddedLocalizedValue.Text("pos2を設定しました（{world} {x},{y},{z}）。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos1_set", value = EmbeddedLocalizedValue.Text("pos1を設定しました（{x},{y},{z}）。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_pos2_set", value = EmbeddedLocalizedValue.Text("pos2を設定しました（{x},{y},{z}）。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_area_guide", value = EmbeddedLocalizedValue.Text("pos1は左クリック、pos2は右クリックで指定します。再指定はスニーク+クリックです。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_box_too_large", value = EmbeddedLocalizedValue.Text("Boxが上限（{max}ブロック）を超えたためキャンセルしました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_status", value = EmbeddedLocalizedValue.Text("操作モード:{mode} 選択:{count}件"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_candidates", value = EmbeddedLocalizedValue.Text("候補:{count}件"), domain = DOMAIN),
