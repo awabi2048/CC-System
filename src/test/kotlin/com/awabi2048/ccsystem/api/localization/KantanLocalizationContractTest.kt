@@ -64,9 +64,11 @@ class KantanLocalizationContractTest {
         // 起動トリガー詳細の型付き文言30件は重複統合のため件数へ影響しません。
         // 操作ツールwandの未使用モード切替通知1件を廃止し、候補数・選択なし案内・
         // グループ作成失敗・選択除外・エリア案内を追加しました（Undo通知は機能廃止で削除）。
-        assertEquals(1184, keys.size)
+        // wand GUIの説明5件・タグ一覧3件・タグダイアログ現行表示1件を追加し、
+        // 左クリック全メニュー化で未使用となった選択なし案内1件を廃止しました。
+        assertEquals(1192, keys.size)
         assertEquals(
-            "948cb9c70f6b8c472537d6bf73bf573066f743ce7ad7cb6320154b09b8083ad7",
+            "30d3b84e6b007ee69875e32b22dd41d87d580095148768840788f088f150e74b",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )

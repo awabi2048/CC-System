@@ -8,6 +8,7 @@ enum class GuiLayoutStyle {
     CONFIRMATION_45,
     PAGED_LIST_54,
     SEVEN_COLUMN_LIST,
+    SETTINGS_45,
     SETTINGS_54,
     THREE_CHOICE_45,
     FREE_45,
@@ -57,14 +58,13 @@ data class GuiSevenColumnPage(
     val itemCount: Int
 )
 
-/** 54-slot settings menus use a shared footer while keeping feature-specific body slots local. */
+/** Settings menus use a shared footer while keeping feature-specific body slots local. */
 data class GuiSettingsLayout(
     val size: Int,
     val backSlot: Int,
-    val infoSlot: Int
-) {
+    val infoSlot: Int,
     val style: GuiLayoutStyle = GuiLayoutStyle.SETTINGS_54
-}
+)
 
 /** Three-option 45-slot menus use the same left, center, right, and footer positions. */
 data class GuiThreeChoiceLayout(

@@ -29,6 +29,8 @@ interface GuiLayoutService {
      */
     fun centeredSevenColumnSlots(row: Int, itemCount: Int): List<Int>
 
+    fun settings45(): GuiSettingsLayout
+
     fun settings54(): GuiSettingsLayout
 
     fun threeChoice45(): GuiThreeChoiceLayout

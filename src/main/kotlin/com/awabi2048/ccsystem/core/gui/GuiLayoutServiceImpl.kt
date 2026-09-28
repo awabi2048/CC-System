@@ -139,6 +139,17 @@ class GuiLayoutServiceImpl(
         return columns.map { column -> row * 9 + column }
     }
 
+    override fun settings45(): GuiSettingsLayout {
+        // 45スロットのSettings画面です。footer行（36-44）の左端を戻る、
+        // 中央を情報表示としてsettings54と同じ役割配置に揃えます。
+        return GuiSettingsLayout(
+            size = size45(),
+            backSlot = 36,
+            infoSlot = 40,
+            style = GuiLayoutStyle.SETTINGS_45
+        )
+    }
+
     override fun settings54(): GuiSettingsLayout {
         return GuiSettingsLayout(
             size = size54(),

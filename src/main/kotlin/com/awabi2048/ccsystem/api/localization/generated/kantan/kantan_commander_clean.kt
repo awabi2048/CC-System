@@ -755,6 +755,15 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_TAG_REMOVE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_action_tag_remove", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_ENTITY_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_action_entity_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_GROUP_CREATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_action_group_create", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_status_tags", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_TAGS_NONE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_tags_none", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_TAGS_MORE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_tags_more", setOf("count"))
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_SAVE_STRUCTURE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_save_structure", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_TAG_ADD: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_tag_add", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_TAG_REMOVE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_tag_remove", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_ENTITY_DELETE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_entity_delete", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_GROUP_CREATE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_group_create", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_TAG_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_dialog_tag_current", setOf("tags"))
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.teleport_description", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.give_item", setOf())
@@ -894,7 +903,6 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_box_too_large", setOf("max"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_status", setOf("mode", "count"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_CANDIDATES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_candidates", setOf("count"))
-    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_NO_SELECTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_no_selection", setOf())
     // issue #14: 操作ツールwandの入力ダイアログと操作結果の通知です。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_STRUCTURE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_dialog_structure_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_STRUCTURE_BODY: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_dialog_structure_body", setOf())
@@ -1864,6 +1872,15 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_TAG_REMOVE,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_ENTITY_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_ACTION_GROUP_CREATE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_TAGS,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_TAGS_NONE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_TAGS_MORE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_SAVE_STRUCTURE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_TAG_ADD,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_TAG_REMOVE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_ENTITY_DELETE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_GROUP_CREATE,
+        KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_TAG_CURRENT,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION,
         KANTAN_COMMANDER_CLEAN_COMMAND_GIVE_ITEM,
@@ -1996,7 +2013,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_BOX_TOO_LARGE,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_STATUS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_CANDIDATES,
-        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_NO_SELECTION,
+
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_STRUCTURE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_STRUCTURE_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_TAG_TITLE,
