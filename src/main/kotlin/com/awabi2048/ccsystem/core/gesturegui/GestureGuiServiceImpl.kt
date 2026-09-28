@@ -1365,7 +1365,7 @@ class GestureGuiServiceImpl(
     /**
      * 1 画面分の LOD を求め、遷移を計測します。
      *
-     * 距離・可視性・操作可否はその画面の定義だけで判定し、他画面の権限に引きずられません。
+     * 距離・可視性はその画面の定義だけで判定し、他画面の権限に引きずられません。
      */
     private fun screenLod(
         session: Session,
@@ -1380,7 +1380,6 @@ class GestureGuiServiceImpl(
         val resolved = GestureViewerLodPolicy.resolve(
             current,
             distanceSquared(eye, pose.center),
-            view.definition.canOperate(session.ownerId, player.uniqueId),
             view.definition.canView(session.ownerId, player.uniqueId),
         )
         if (resolved != current) {

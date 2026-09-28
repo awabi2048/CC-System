@@ -4,32 +4,49 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 /**
- * LOD 境界（15 ブロック）とヒステリシスの回帰試験です。
+ * LOD 境界（10 ブロック）とヒステリシスの回帰試験です。
  *
- * 境界直上での FULL/BACKGROUND_ONLY 往復を防ぐことが目的であり、
- * 負荷試験の代わりに遷移条件をここで固定します。
+ * 「10 ブロック以内にいるプレイヤーには内容を視認できる」仕様を固定します。
+ * 範囲内は表示・操作権限を問わず FULL、範囲外は canView が
+ * BACKGROUND_ONLY と HIDDEN だけを分けます。
  */
 class GestureViewerLodPolicyTest {
     @Test
-    fun `15ブロック未満はFULL`() {
+    fun `10ブロック以内はFULL`() {
         val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.HIDDEN, 14.9 * 14.9, operable = true, visible = true,
+            GestureViewerLod.HIDDEN, 9.9 * 9.9, visible = true,
         )
         assertEquals(GestureViewerLod.FULL, resolved)
     }
 
     @Test
-    fun `15ブロック以上はBACKGROUND_ONLY`() {
+    fun `10ブロック以内はcanView不可でもFULL`() {
         val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.HIDDEN, 15.1 * 15.1, operable = true, visible = true,
+            GestureViewerLod.HIDDEN, 9.9 * 9.9, visible = false,
+        )
+        assertEquals(GestureViewerLod.FULL, resolved)
+    }
+
+    @Test
+    fun `10ブロック超のcanViewはBACKGROUND_ONLY`() {
+        val resolved = GestureViewerLodPolicy.resolve(
+            GestureViewerLod.HIDDEN, 10.1 * 10.1, visible = true,
         )
         assertEquals(GestureViewerLod.BACKGROUND_ONLY, resolved)
     }
 
     @Test
+    fun `10ブロック超のcanView不可はHIDDEN`() {
+        val resolved = GestureViewerLodPolicy.resolve(
+            GestureViewerLod.BACKGROUND_ONLY, 12.0 * 12.0, visible = false,
+        )
+        assertEquals(GestureViewerLod.HIDDEN, resolved)
+    }
+
+    @Test
     fun `FULLはヒステリシス内では維持される`() {
         val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.FULL, 15.5 * 15.5, operable = true, visible = true,
+            GestureViewerLod.FULL, 10.5 * 10.5, visible = true,
         )
         assertEquals(GestureViewerLod.FULL, resolved)
     }
@@ -37,23 +54,7 @@ class GestureViewerLodPolicyTest {
     @Test
     fun `FULLはヒステリシス超過でBACKGROUND_ONLYへ遷移する`() {
         val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.FULL, 16.5 * 16.5, operable = true, visible = true,
-        )
-        assertEquals(GestureViewerLod.BACKGROUND_ONLY, resolved)
-    }
-
-    @Test
-    fun `非表示はHIDDEN`() {
-        val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.FULL, 1.0, operable = true, visible = false,
-        )
-        assertEquals(GestureViewerLod.HIDDEN, resolved)
-    }
-
-    @Test
-    fun `操作不可はBACKGROUND_ONLY`() {
-        val resolved = GestureViewerLodPolicy.resolve(
-            GestureViewerLod.FULL, 1.0, operable = false, visible = true,
+            GestureViewerLod.FULL, 11.5 * 11.5, visible = true,
         )
         assertEquals(GestureViewerLod.BACKGROUND_ONLY, resolved)
     }
