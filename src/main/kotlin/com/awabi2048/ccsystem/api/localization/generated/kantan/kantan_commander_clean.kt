@@ -764,9 +764,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_ENTITY_DELETE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_entity_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_GROUP_CREATE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.wand_desc_group_create", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_TAG_CURRENT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_dialog_tag_current", setOf("tags"))
-    // issue #14: 未選択時のEntity左クリックで開くタグ一覧画面と、構造物原点の状態表示です。
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_TITLE_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_title_tags", setOf())
-    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_TARGET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_status_target", setOf())
+    // issue #14: 構造物原点の状態表示です。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_ORIGIN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.wand_status_origin", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.command.teleport", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.command.teleport_description", setOf())
@@ -928,8 +926,9 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GROUP_CREATED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_group_created", setOf("name"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GROUP_EXISTS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_group_exists", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GROUP_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_group_failed", setOf())
-    // issue #14: 未選択時のメニュー抑止と、Qキーによる構造物原点設定の通知です。
+    // issue #14: 未選択時のメニュー抑止・Entityタグ一覧・Qキーによる構造物原点設定の通知です。
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_NO_SELECTION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_no_selection", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ENTITY_TAGS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_entity_tags", setOf("name", "tags"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ORIGIN_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_origin_set", setOf("x", "y", "z"))
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ORIGIN_FAILED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.wand_origin_failed", setOf())
     // WorldEdit等の対象外一括操作を検出した際の警告です。操作名だけを引数に取ります。
@@ -1889,8 +1888,6 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_ENTITY_DELETE,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DESC_GROUP_CREATE,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_DIALOG_TAG_CURRENT,
-        KANTAN_COMMANDER_CLEAN_GUI_WAND_TITLE_TAGS,
-        KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_TARGET,
         KANTAN_COMMANDER_CLEAN_GUI_WAND_STATUS_ORIGIN,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT,
         KANTAN_COMMANDER_CLEAN_COMMAND_TELEPORT_DESCRIPTION,
@@ -2045,6 +2042,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GROUP_EXISTS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_GROUP_FAILED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_NO_SELECTION,
+        KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ENTITY_TAGS,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ORIGIN_SET,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WAND_ORIGIN_FAILED,
         KANTAN_COMMANDER_CLEAN_MESSAGE_WORLDEDIT_UNSUPPORTED_OPERATION,
