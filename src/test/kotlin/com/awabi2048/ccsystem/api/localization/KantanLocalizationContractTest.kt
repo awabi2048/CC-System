@@ -66,9 +66,9 @@ class KantanLocalizationContractTest {
         // グループ作成失敗・選択除外・エリア案内を追加しました（Undo通知は機能廃止で削除）。
         // wand GUIの説明5件・タグ一覧3件・タグダイアログ現行表示1件を追加し、
         // 左クリック全メニュー化で未使用となった選択なし案内1件を廃止しました。
-        assertEquals(1192, keys.size)
+        assertEquals(1198, keys.size)
         assertEquals(
-            "30d3b84e6b007ee69875e32b22dd41d87d580095148768840788f088f150e74b",
+            "745e16dc8708dff11b05614c87155a6cd58a60d5d9b921614ba5d7d46262278e",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
