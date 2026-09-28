@@ -58,6 +58,7 @@ object MyworldBiomesKeys {
     @JvmField val BIOMES_DRIPSTONE_CAVES: LocalizationKey<String> = LocalizationKey.text("biomes.dripstone_caves", setOf())
     @JvmField val BIOMES_LUSH_CAVES: LocalizationKey<String> = LocalizationKey.text("biomes.lush_caves", setOf())
     @JvmField val BIOMES_DEEP_DARK: LocalizationKey<String> = LocalizationKey.text("biomes.deep_dark", setOf())
+    @JvmField val BIOMES_SULFUR_CAVES: LocalizationKey<String> = LocalizationKey.text("biomes.sulfur_caves", setOf())
     @JvmField val BIOMES_NETHER_WASTES: LocalizationKey<String> = LocalizationKey.text("biomes.nether_wastes", setOf())
     @JvmField val BIOMES_SOUL_SAND_VALLEY: LocalizationKey<String> = LocalizationKey.text("biomes.soul_sand_valley", setOf())
     @JvmField val BIOMES_CRIMSON_FOREST: LocalizationKey<String> = LocalizationKey.text("biomes.crimson_forest", setOf())
@@ -125,6 +126,7 @@ object MyworldBiomesKeys {
         BIOMES_DRIPSTONE_CAVES,
         BIOMES_LUSH_CAVES,
         BIOMES_DEEP_DARK,
+        BIOMES_SULFUR_CAVES,
         BIOMES_NETHER_WASTES,
         BIOMES_SOUL_SAND_VALLEY,
         BIOMES_CRIMSON_FOREST,

@@ -67,6 +67,7 @@ internal object JaJpMyworldBiomesCatalog {
         EmbeddedLocalizationEntry(key = "biomes.dripstone_caves", value = EmbeddedLocalizedValue.Text("鍾乳洞"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.lush_caves", value = EmbeddedLocalizedValue.Text("茂った洞窟"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.deep_dark", value = EmbeddedLocalizedValue.Text("ディープダーク"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "biomes.sulfur_caves", value = EmbeddedLocalizedValue.Text("硫黄洞窟"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.nether_wastes", value = EmbeddedLocalizedValue.Text("ネザーの荒野"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.soul_sand_valley", value = EmbeddedLocalizedValue.Text("ソウルサンドの谷"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.crimson_forest", value = EmbeddedLocalizedValue.Text("真紅の森"), domain = DOMAIN),

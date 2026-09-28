@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.awabi2048"
-version = "26.928.5"
+version = "26.928.6"
 
 repositories {
     mavenLocal()
@@ -30,7 +30,7 @@ kotlin {
 
 // pom.xml の provided スコープ相当（compileOnly へ配置し、テストのコンパイル・実行双方で見えるよう testImplementation にも追加）
 val providedDeps = listOf(
-    "io.papermc.paper:paper-api:26.1.2.build.72-stable",
+    "io.papermc.paper:paper-api:26.2.build.129-stable",
     // bungeecord-chat等が同梱する旧gsonを上書き解決するため明示宣言（Mavenでは宣言順で先行解決されていた）
     "com.google.code.gson:gson:2.13.2",
     "org.jetbrains.kotlin:kotlin-stdlib:2.3.20",

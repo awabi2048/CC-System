@@ -67,6 +67,7 @@ internal object EnUsMyworldBiomesCatalog {
         EmbeddedLocalizationEntry(key = "biomes.dripstone_caves", value = EmbeddedLocalizedValue.Text("Dripstone Caves"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.lush_caves", value = EmbeddedLocalizedValue.Text("Lush Caves"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.deep_dark", value = EmbeddedLocalizedValue.Text("Deep Dark"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "biomes.sulfur_caves", value = EmbeddedLocalizedValue.Text("Sulfur Caves"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.nether_wastes", value = EmbeddedLocalizedValue.Text("Nether Wastes"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.soul_sand_valley", value = EmbeddedLocalizedValue.Text("Soul Sand Valley"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "biomes.crimson_forest", value = EmbeddedLocalizedValue.Text("Crimson Forest"), domain = DOMAIN),
