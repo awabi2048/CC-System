@@ -227,6 +227,32 @@ internal class GestureGuiProtocolLibBackend(private val plugin: Plugin) {
         GestureGuiRenderMetrics.virtualDestroys.addAndGet(virtualIds.size.toLong())
     }
 
+    /**
+     * 仮想 Entity ID を採番します。
+     *
+     * 汎用 virtual 表示サービスと Gesture GUI で採番域を共有し、ID 衝突を
+     * 防ぎます。既存の単独 backend と等価な連番であり、振る舞いは変わりません。
+     */
+    internal fun allocateVirtualId(): Int = idAllocator.incrementAndGet()
+
+    /**
+     * virtual Entity の絶対 teleport を送信します。
+     *
+     * 毎tick追従の作り直し（destroy+spawn）を避け、同一IDのまま移動させる
+     * ために使います。変形の更新は metadata で別送します。
+     */
+    internal fun sendTeleport(viewer: Player, virtualId: Int, x: Double, y: Double, z: Double) {
+        val packet = manager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT)
+        packet.integers.write(0, virtualId)
+        packet.doubles.write(0, x)
+        packet.doubles.write(1, y)
+        packet.doubles.write(2, z)
+        packet.bytes.write(0, 0.toByte())
+        packet.bytes.write(1, 0.toByte())
+        packet.booleans.write(0, false)
+        send(viewer, packet)
+    }
+
     private fun send(viewer: Player, packet: com.comphenix.protocol.events.PacketContainer) {
         runCatching { manager.sendServerPacket(viewer, packet) }.onFailure { failure ->
             plugin.logger.log(Level.WARNING, "仮想 GUI packet の送信に失敗しました: viewer=${viewer.name}", failure)
