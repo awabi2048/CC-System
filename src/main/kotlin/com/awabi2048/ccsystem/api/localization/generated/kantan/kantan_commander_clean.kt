@@ -1061,6 +1061,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.value", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INVERTED: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.inverted", setOf())
+    /** 項目固有の警告キーが未定義な場合の汎用警告です。画面構築を止めずに設定不足を示します。 */
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FIELD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.field", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_upper_render", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.error_reopen_hint", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.action_click_add", setOf())
@@ -2185,6 +2187,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VALUE,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_INVERTED,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_FIELD,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_UPPER_RENDER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ERROR_REOPEN_HINT,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_ACTION_CLICK_ADD,

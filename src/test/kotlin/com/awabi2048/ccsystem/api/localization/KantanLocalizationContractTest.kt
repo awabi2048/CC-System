@@ -70,9 +70,10 @@ class KantanLocalizationContractTest {
         // 条件対象・判定位置のタブ説明・操作案内と信号強度の項目名・Dialog文言の7件を追加しました。
         // ブロック状態設定UI向けの6件と、条件の判定位置警告・距離まとめ項目・
         // 詳細設定画面見出しの3件を追加しました。
-        assertEquals(1206, keys.size)
+        // 項目固有の警告キー未定義時の汎用警告1件を追加しました。
+        assertEquals(1207, keys.size)
         assertEquals(
-            "46b7cd52adf6e9f8a935f7d8270eef0d2cce5224731f04e116cc21448bef0883",
+            "b32f261b3aec23bf942877cbcc54c2f21a4730a91448622fda7dd1658ce92437",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
