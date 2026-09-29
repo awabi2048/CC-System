@@ -370,7 +370,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_invalid", value = EmbeddedLocalizedValue.Text("0～15の整数または範囲（例: 3..、..2、4..6）で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.minimum_distance_body", value = EmbeddedLocalizedValue.Text("対象までの距離を最小値・最大値の組で指定します（例: 2..16）。空欄にすると指定を解除します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_body", value = EmbeddedLocalizedValue.Text("対象が範囲内にいるかどうかを、X・Y・Z方向の範囲で指定してください。空欄にすると各方向の指定を解除します。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_constraint", value = EmbeddedLocalizedValue.Text("各軸は0以上の数値で入力してください。空欄にするとその軸の指定を解除します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_constraint", value = EmbeddedLocalizedValue.Text("各軸は数値で入力してください。負の値は反対方向の領域を意味します。空欄にするとその軸の判定を行いません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.sound_parameters_body", value = EmbeddedLocalizedValue.Text("再生する効果音の音量とピッチを設定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.sound_parameters_constraint", value = EmbeddedLocalizedValue.Text("音量は0.0～34.0、ピッチは0.5～2.0の数値で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.target", value = EmbeddedLocalizedValue.Text("対象"), domain = DOMAIN),
