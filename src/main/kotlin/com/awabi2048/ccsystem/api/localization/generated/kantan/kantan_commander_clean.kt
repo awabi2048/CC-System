@@ -1259,6 +1259,12 @@ object KantanKantanCommanderCleanKeys {
     /** 管理操作によるテスト対象の変更・削除を通知する操作種別です。 */
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_DELETE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_delete", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.admin_mutation_action_change", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE_DESCRIPTION: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.block_state_description", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE_DISABLED_TEMPORARY: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.gesture.block_state_disabled_temporary", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_BLOCK_STATE: LocalizationKey<List<String>> = LocalizationKey.textList("kantan_commander_clean.gui.field_description.block_state", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_BLOCK_STATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field_action.block_state", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = buildList {
         addAll(keyChunk1())
@@ -2496,5 +2502,11 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_TEST_ADMIN_MUTATION_ACTION_CHANGE,
     )
     private fun keyChunk9(): List<LocalizationKey<*>> = listOf(
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE_DESCRIPTION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_BLOCK_STATE_DISABLED_TEMPORARY,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_DESCRIPTION_BLOCK_STATE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_ACTION_BLOCK_STATE,
     )
 }

@@ -1241,5 +1241,11 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
     )
 
     private fun chunk6(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state", value = EmbeddedLocalizedValue.Text("ブロック状態の設定"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state_description", value = EmbeddedLocalizedValue.TextList(listOf("設置するブロックの詳細な状態（向き・開閉・段数など）を設定します", "一覧から項目を選ぶと値を設定できます")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state_disabled_temporary", value = EmbeddedLocalizedValue.TextList(listOf("一時変数でブロックを参照している場合は、ブロック状態を設定できません")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.block_state", value = EmbeddedLocalizedValue.Text("ブロック状態"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_description.block_state", value = EmbeddedLocalizedValue.TextList(listOf("設置するブロックの詳細な状態（向き・開閉・段数など）を設定します", "一時変数でブロックを参照している場合は設定できません")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.block_state", value = EmbeddedLocalizedValue.Text("ブロック状態を設定する"), domain = DOMAIN),
     )
 }

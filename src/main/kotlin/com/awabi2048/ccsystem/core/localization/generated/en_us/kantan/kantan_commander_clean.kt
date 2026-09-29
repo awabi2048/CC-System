@@ -1239,5 +1239,11 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
     )
 
     private fun chunk6(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state", value = EmbeddedLocalizedValue.Text("Block States"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state_description", value = EmbeddedLocalizedValue.TextList(listOf("Configure detailed block properties (facing, open/close, layers, etc.)", "Select a property to set its value")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.gesture.block_state_disabled_temporary", value = EmbeddedLocalizedValue.TextList(listOf("Block states cannot be configured while the block is referenced via a temporary variable")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.block_state", value = EmbeddedLocalizedValue.Text("Block States"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_description.block_state", value = EmbeddedLocalizedValue.TextList(listOf("Configure detailed block properties (facing, open/close, layers, etc.)", "Not available while the block is referenced via a temporary variable")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.block_state", value = EmbeddedLocalizedValue.Text("Configure block states"), domain = DOMAIN),
     )
 }
