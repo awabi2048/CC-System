@@ -14,6 +14,7 @@ object GeneratedLocalizationKeyIndex {
         addAll(ChanponEnvironmentKeys.all())
         addAll(ChanponMemberLoreKeys.all())
         addAll(ChanponPhaseKeys.all())
+        addAll(ChanponPreviewTourKeys.all())
         addAll(ChanponSubmissionKeys.all())
         addAll(ChanponSystemKeys.all())
         addAll(ChanponUtilitiesKeys.all())
