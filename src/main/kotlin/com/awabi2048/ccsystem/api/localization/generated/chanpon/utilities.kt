@@ -53,6 +53,27 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.confirm", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.cancel", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.ui_unavailable", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_USAGE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.usage", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_STARTED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.started", setOf("route"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_START_REPLACED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.start_replaced", setOf("route"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_STOPPED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stopped", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_NOT_ACTIVE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.not_active", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ROUTE_NOT_FOUND: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.route_not_found", setOf("route"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_NO_ROUTES: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.no_routes", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_COMPLETED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.completed", setOf("route"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_WAYPOINT_COMPLETED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.waypoint_completed", setOf("index", "total"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_STATUS_ACTIVE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.status.active", setOf("route", "index", "total"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_STATUS_INACTIVE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.status.inactive", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_WORLD_LEFT: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.world_left", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_FOLLOW_PROMPT: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.follow_prompt", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_RETURNED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.returned", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ALLAY_NAME: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.allay_name", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_PLAYER_ONLY: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.player_only", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_USAGE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.usage", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_SETPOINT_SAVED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.setpoint_saved", setOf("route", "index"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_ROUTE_CREATED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.route_created", setOf("route"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_RELOADED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.reloaded", setOf("count"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.invalid_index", setOf("index"))
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         CHANPON_UTILITIES_BEPLAYERHEAD_USAGE,
@@ -104,5 +125,26 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_CONFIRM,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_CANCEL,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_UI_UNAVAILABLE,
+        CHANPON_UTILITIES_GUIDE_USAGE,
+        CHANPON_UTILITIES_GUIDE_STARTED,
+        CHANPON_UTILITIES_GUIDE_START_REPLACED,
+        CHANPON_UTILITIES_GUIDE_STOPPED,
+        CHANPON_UTILITIES_GUIDE_NOT_ACTIVE,
+        CHANPON_UTILITIES_GUIDE_ROUTE_NOT_FOUND,
+        CHANPON_UTILITIES_GUIDE_NO_ROUTES,
+        CHANPON_UTILITIES_GUIDE_COMPLETED,
+        CHANPON_UTILITIES_GUIDE_WAYPOINT_COMPLETED,
+        CHANPON_UTILITIES_GUIDE_STATUS_ACTIVE,
+        CHANPON_UTILITIES_GUIDE_STATUS_INACTIVE,
+        CHANPON_UTILITIES_GUIDE_WORLD_LEFT,
+        CHANPON_UTILITIES_GUIDE_FOLLOW_PROMPT,
+        CHANPON_UTILITIES_GUIDE_RETURNED,
+        CHANPON_UTILITIES_GUIDE_ALLAY_NAME,
+        CHANPON_UTILITIES_GUIDE_PLAYER_ONLY,
+        CHANPON_UTILITIES_GUIDE_ADMIN_USAGE,
+        CHANPON_UTILITIES_GUIDE_ADMIN_SETPOINT_SAVED,
+        CHANPON_UTILITIES_GUIDE_ADMIN_ROUTE_CREATED,
+        CHANPON_UTILITIES_GUIDE_ADMIN_RELOADED,
+        CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX,
     )
 }
