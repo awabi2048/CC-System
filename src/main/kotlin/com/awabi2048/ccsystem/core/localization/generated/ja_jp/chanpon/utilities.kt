@@ -83,6 +83,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.route_created", value = EmbeddedLocalizedValue.Text("&b新規ルート {route} を作成しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reloaded", value = EmbeddedLocalizedValue.Text("&aガイドルートを再読込しました（{count} 件）。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.invalid_index", value = EmbeddedLocalizedValue.Text("&c中継点番号が不正です: {index}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reload_failed", value = EmbeddedLocalizedValue.Text("&cガイドルートの再読込に失敗しました。定義を確認してください。"), domain = DOMAIN),
     )
 
 }

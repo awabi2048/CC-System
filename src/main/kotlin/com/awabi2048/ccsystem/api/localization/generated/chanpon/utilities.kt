@@ -74,6 +74,7 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_ROUTE_CREATED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.route_created", setOf("route"))
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_RELOADED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.reloaded", setOf("count"))
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.invalid_index", setOf("index"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.reload_failed", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         CHANPON_UTILITIES_BEPLAYERHEAD_USAGE,
@@ -146,5 +147,6 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_GUIDE_ADMIN_ROUTE_CREATED,
         CHANPON_UTILITIES_GUIDE_ADMIN_RELOADED,
         CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX,
+        CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED,
     )
 }
