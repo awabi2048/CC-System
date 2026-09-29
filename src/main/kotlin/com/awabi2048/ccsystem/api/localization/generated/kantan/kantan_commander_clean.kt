@@ -548,6 +548,11 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_TYPE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.entity_type", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MINIMUM_DISTANCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.minimum_distance", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MAXIMUM_DISTANCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.maximum_distance", setOf())
+    // 距離の最小・最大をまとめて編集する項目行と、その入力Dialogの見出しです。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET_DISTANCE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.target_distance", setOf())
+    // 対象の詳細設定子画面の見出しです。絞り込み対象が何を指すかを親画面の
+    // 項目名（付与対象等）ではなく意味で示します。
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_MATCHING_ENTITIES: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.matching_entities", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DX: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.dx", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.dy", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_FIELD_DZ: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.field.dz", setOf())
@@ -1048,6 +1053,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_TO: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.block_to", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition_kind", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.condition_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.disk", setOf())
     // #7の起動方法カードの未完了警告です。表示文字列は組み立てず固定キーで示します。
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TRIGGER: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.gesture.warning.trigger", setOf())
@@ -1681,6 +1687,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_ENTITY_TYPE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_MINIMUM_DISTANCE,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_MAXIMUM_DISTANCE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_TARGET_DISTANCE,
+        KANTAN_COMMANDER_CLEAN_GUI_FIELD_MATCHING_ENTITIES,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DX,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DY,
         KANTAN_COMMANDER_CLEAN_GUI_FIELD_DZ,
@@ -2170,6 +2178,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_BLOCK_TO,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_KIND,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION,
+        KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_CONDITION_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_DISK,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_TRIGGER,
         KANTAN_COMMANDER_CLEAN_GUI_GESTURE_WARNING_VARIABLE,

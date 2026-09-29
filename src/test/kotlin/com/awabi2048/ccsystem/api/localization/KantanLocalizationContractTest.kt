@@ -68,9 +68,11 @@ class KantanLocalizationContractTest {
         // 左クリック全メニュー化で未使用となった選択なし案内1件を廃止しました。
         // 条件GUI再編に伴い、「値の比較」・詳細画面入口説明・Boolean直接利用の7件を廃止し、
         // 条件対象・判定位置のタブ説明・操作案内と信号強度の項目名・Dialog文言の7件を追加しました。
-        assertEquals(1197, keys.size)
+        // ブロック状態設定UI向けの6件と、条件の判定位置警告・距離まとめ項目・
+        // 詳細設定画面見出しの3件を追加しました。
+        assertEquals(1206, keys.size)
         assertEquals(
-            "3455fcbe2f69d31be76fd565a6453ed2dbb28b19f37be0fc876ba39318ee2de3",
+            "46b7cd52adf6e9f8a935f7d8270eef0d2cce5224731f04e116cc21448bef0883",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
