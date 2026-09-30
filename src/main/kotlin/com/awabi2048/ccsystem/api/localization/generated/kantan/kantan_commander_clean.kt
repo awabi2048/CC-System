@@ -2,7 +2,7 @@ package com.awabi2048.ccsystem.api.localization.generated
 
 import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
-/** KantanCommander?????????????????????????? */
+/** KantanCommander向けの領域別生成済み型付きローカライズキーです。 */
 object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_COMMON_BACK: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.common.back", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_COMMON_CLOSE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.common.close", setOf())

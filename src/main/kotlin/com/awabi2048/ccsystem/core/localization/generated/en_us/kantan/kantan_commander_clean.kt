@@ -3,7 +3,7 @@ package com.awabi2048.ccsystem.core.localization.generated
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
 
-/** Kotlin????????KantanCommander??????????????????????? */
+/** Kotlin埋め込みのKantanCommander向け不変カタログです。実行時に外部ファイルを参照しません。 */
 internal object EnUsKantanKantanCommanderCleanCatalog {
     const val LOCALE: String = "en_us"
     const val DOMAIN: String = "kantan/kantan_commander_clean"
@@ -367,7 +367,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity", value = EmbeddedLocalizedValue.Text("Camera Shake Intensity"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity_body", value = EmbeddedLocalizedValue.Text("Enter a camera-shake intensity from 0.1 to 4.0."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_value_body", value = EmbeddedLocalizedValue.Text("Enter a value matching the compared variable's type."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("Enter a signal strength of 0-15 as an integer or range (e.g. 3.., ..2, 4..6). Enter 0 or leave empty to clear the condition."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("Enter a signal strength of 0-15 as an integer or range (e.g. 3.., ..2, 4..6). 0 tests for no signal. Leave empty to clear the condition."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_invalid", value = EmbeddedLocalizedValue.Text("Enter an integer or range within 0-15 (e.g. 3.., ..2, 4..6)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.minimum_distance_body", value = EmbeddedLocalizedValue.Text("Set the minimum and maximum target distance together. Leave blank to clear the range."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_body", value = EmbeddedLocalizedValue.Text("Set the target range along the X, Y, and Z directions. Leave an axis blank to clear that axis."), domain = DOMAIN),

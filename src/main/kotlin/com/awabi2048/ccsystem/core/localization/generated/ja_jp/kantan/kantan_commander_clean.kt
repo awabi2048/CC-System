@@ -3,7 +3,7 @@ package com.awabi2048.ccsystem.core.localization.generated
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
 
-/** Kotlin????????KantanCommander??????????????????????? */
+/** Kotlin埋め込みのKantanCommander向け不変カタログです。実行時に外部ファイルを参照しません。 */
 internal object JaJpKantanKantanCommanderCleanCatalog {
     const val LOCALE: String = "ja_jp"
     const val DOMAIN: String = "kantan/kantan_commander_clean"
@@ -367,7 +367,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity", value = EmbeddedLocalizedValue.Text("カメラシェイクの強さ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity_body", value = EmbeddedLocalizedValue.Text("カメラシェイクの強さを0.1～4.0で指定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_value_body", value = EmbeddedLocalizedValue.Text("比較する変数の型に合う値を指定してください。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("0～15の信号強度を、整数または範囲（例: 3..、..2、4..6）で指定してください。0または空欄にすると条件なしに戻します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("0～15の信号強度を、整数または範囲（例: 3..、..2、4..6）で指定してください。0は無信号を判定します。空欄にすると条件なしに戻します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_invalid", value = EmbeddedLocalizedValue.Text("0～15の整数または範囲（例: 3..、..2、4..6）で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.minimum_distance_body", value = EmbeddedLocalizedValue.Text("対象までの距離を最小値・最大値の組で指定します。空欄にすると指定を解除します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_body", value = EmbeddedLocalizedValue.Text("対象が範囲内にいるかどうかを、X・Y・Z方向の範囲で指定してください。空欄にすると各方向の指定を解除します。"), domain = DOMAIN),
