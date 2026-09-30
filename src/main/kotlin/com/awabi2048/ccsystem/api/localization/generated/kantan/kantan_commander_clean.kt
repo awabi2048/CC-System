@@ -267,6 +267,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_TEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_text", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_POSITION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_position", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_type_boolean", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_SET: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_operation_set", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_ADD: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_operation_add", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_CLEAR: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option_description.variable_operation_clear", setOf())
@@ -1154,6 +1155,8 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_string_body", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_number_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_string_invalid", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BOOLEAN_BODY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_boolean_body", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BOOLEAN_INVALID: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_value_boolean_invalid", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.world_variable_create_title", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_next", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DUPLICATE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.editor.world_variables_duplicate", setOf())
@@ -1218,6 +1221,7 @@ object KantanKantanCommanderCleanKeys {
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_SUCCESS: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_finished_success", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_MESSAGE_TEST_FINISHED_FAILURE: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.message.test_finished_failure", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.entity", setOf())
+    @JvmField val KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOOLEAN: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.option.boolean", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ACTIONBAR_DURATION: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.dialog.actionbar_duration", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_TELEPORT: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.detail.teleport", setOf())
     @JvmField val KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_GIVE_ITEM: LocalizationKey<String> = LocalizationKey.text("kantan_commander_clean.gui.test.detail.give_item", setOf())
@@ -1413,6 +1417,7 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_TEXT,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_POSITION,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_TYPE_BOOLEAN,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_SET,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_ADD,
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_DESCRIPTION_VARIABLE_OPERATION_CLEAR,
@@ -2274,6 +2279,8 @@ object KantanKantanCommanderCleanKeys {
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_BODY,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_NUMBER_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_STRING_INVALID,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BOOLEAN_BODY,
+        KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_VALUE_BOOLEAN_INVALID,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_WORLD_VARIABLE_CREATE_TITLE,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_NEXT,
         KANTAN_COMMANDER_CLEAN_GUI_EDITOR_WORLD_VARIABLES_DUPLICATE,
@@ -2464,6 +2471,7 @@ object KantanKantanCommanderCleanKeys {
     )
     private fun keyChunk8(): List<LocalizationKey<*>> = listOf(
         KANTAN_COMMANDER_CLEAN_GUI_OPTION_ENTITY,
+        KANTAN_COMMANDER_CLEAN_GUI_OPTION_BOOLEAN,
         KANTAN_COMMANDER_CLEAN_GUI_DIALOG_ACTIONBAR_DURATION,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_TELEPORT,
         KANTAN_COMMANDER_CLEAN_GUI_TEST_DETAIL_GIVE_ITEM,
