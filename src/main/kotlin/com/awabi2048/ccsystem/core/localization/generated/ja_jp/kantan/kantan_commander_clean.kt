@@ -3,7 +3,7 @@ package com.awabi2048.ccsystem.core.localization.generated
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
 
-/** Kotlin????????KantanCommander??????????????????????? */
+/** Kotlin埋め込みのKantanCommander向け不変カタログです。実行時に外部ファイルを参照しません。 */
 internal object JaJpKantanKantanCommanderCleanCatalog {
     const val LOCALE: String = "ja_jp"
     const val DOMAIN: String = "kantan/kantan_commander_clean"
@@ -144,6 +144,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_text", value = EmbeddedLocalizedValue.Text("文字列型のワールド内変数を保存します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_position", value = EmbeddedLocalizedValue.Text("位置を保存します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_entity", value = EmbeddedLocalizedValue.Text("対象エンティティを保存します"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_boolean", value = EmbeddedLocalizedValue.Text("真偽値（true/false）を保存します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_set", value = EmbeddedLocalizedValue.Text("新しいワールド内変数を定義します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_add", value = EmbeddedLocalizedValue.Text("既存のワールド内変数を変更します"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_clear", value = EmbeddedLocalizedValue.Text("変数の値を消去します"), domain = DOMAIN),
@@ -366,7 +367,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity", value = EmbeddedLocalizedValue.Text("カメラシェイクの強さ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity_body", value = EmbeddedLocalizedValue.Text("カメラシェイクの強さを0.1～4.0で指定してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_value_body", value = EmbeddedLocalizedValue.Text("比較する変数の型に合う値を指定してください。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("0～15の信号強度を、整数または範囲（例: 3..、..2、4..6）で指定してください。0または空欄にすると条件なしに戻します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("0～15の信号強度を、整数または範囲（例: 3..、..2、4..6）で指定してください。0は無信号を判定します。空欄にすると条件なしに戻します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_invalid", value = EmbeddedLocalizedValue.Text("0～15の整数または範囲（例: 3..、..2、4..6）で入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.minimum_distance_body", value = EmbeddedLocalizedValue.Text("対象までの距離を最小値・最大値の組で指定します。空欄にすると指定を解除します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_body", value = EmbeddedLocalizedValue.Text("対象が範囲内にいるかどうかを、X・Y・Z方向の範囲で指定してください。空欄にすると各方向の指定を解除します。"), domain = DOMAIN),
@@ -958,6 +959,8 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_string_body", value = EmbeddedLocalizedValue.Text("文字列型の値を入力してください。256文字以内で保存できます。変数参照を含める場合は正しい形式にしてください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_number_invalid", value = EmbeddedLocalizedValue.Text("有限の数値、または min..max 形式の正しい範囲を入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_string_invalid", value = EmbeddedLocalizedValue.Text("文字列型には256文字以内の文字列を入力してください。変数参照を含める場合は正しい形式にしてください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_boolean_body", value = EmbeddedLocalizedValue.Text("真偽値型の値として true または false を入力してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_boolean_invalid", value = EmbeddedLocalizedValue.Text("真偽値型には true または false を入力してください。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_create_title", value = EmbeddedLocalizedValue.Text("ワールド内変数の新規作成"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_next", value = EmbeddedLocalizedValue.Text("次へ"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_duplicate", value = EmbeddedLocalizedValue.Text("その名前のワールド内変数はすでに定義されています。別の名前を入力してください。"), domain = DOMAIN),
@@ -1196,6 +1199,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_delete", value = EmbeddedLocalizedValue.Text("削除"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_change", value = EmbeddedLocalizedValue.Text("変更"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.entity", value = EmbeddedLocalizedValue.Text("エンティティ"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.boolean", value = EmbeddedLocalizedValue.Text("真偽値"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.actionbar_duration", value = EmbeddedLocalizedValue.Text("表示時間"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.teleport", value = EmbeddedLocalizedValue.Text("対象を指定位置へテレポートした"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.give_item", value = EmbeddedLocalizedValue.Text("対象へアイテムを付与した"), domain = DOMAIN),

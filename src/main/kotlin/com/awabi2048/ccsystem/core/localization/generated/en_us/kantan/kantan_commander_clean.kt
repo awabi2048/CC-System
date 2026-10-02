@@ -3,7 +3,7 @@ package com.awabi2048.ccsystem.core.localization.generated
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizedValue
 import com.awabi2048.ccsystem.core.localization.EmbeddedLocalizationEntry
 
-/** Kotlin????????KantanCommander??????????????????????? */
+/** Kotlin埋め込みのKantanCommander向け不変カタログです。実行時に外部ファイルを参照しません。 */
 internal object EnUsKantanKantanCommanderCleanCatalog {
     const val LOCALE: String = "en_us"
     const val DOMAIN: String = "kantan/kantan_commander_clean"
@@ -144,6 +144,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_text", value = EmbeddedLocalizedValue.Text("Stores a string world variable"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_position", value = EmbeddedLocalizedValue.Text("Stores a position"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_entity", value = EmbeddedLocalizedValue.Text("Stores a target entity"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_type_boolean", value = EmbeddedLocalizedValue.Text("Stores a true/false value"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_set", value = EmbeddedLocalizedValue.Text("Defines a new world variable"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_add", value = EmbeddedLocalizedValue.Text("Changes an existing world variable"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option_description.variable_operation_clear", value = EmbeddedLocalizedValue.Text("Clears the variable value"), domain = DOMAIN),
@@ -366,7 +367,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity", value = EmbeddedLocalizedValue.Text("Camera Shake Intensity"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.field_intensity_body", value = EmbeddedLocalizedValue.Text("Enter a camera-shake intensity from 0.1 to 4.0."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_value_body", value = EmbeddedLocalizedValue.Text("Enter a value matching the compared variable's type."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("Enter a signal strength of 0-15 as an integer or range (e.g. 3.., ..2, 4..6). Enter 0 or leave empty to clear the condition."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_hint", value = EmbeddedLocalizedValue.Text("Enter a signal strength of 0-15 as an integer or range (e.g. 3.., ..2, 4..6). 0 tests for no signal. Leave empty to clear the condition."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.condition_signal_invalid", value = EmbeddedLocalizedValue.Text("Enter an integer or range within 0-15 (e.g. 3.., ..2, 4..6)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.minimum_distance_body", value = EmbeddedLocalizedValue.Text("Set the minimum and maximum target distance together. Leave blank to clear the range."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.range_body", value = EmbeddedLocalizedValue.Text("Set the target range along the X, Y, and Z directions. Leave an axis blank to clear that axis."), domain = DOMAIN),
@@ -956,6 +957,8 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_string_body", value = EmbeddedLocalizedValue.Text("Enter a value for the string variable. Up to 256 characters can be saved. Variable references must use a valid format."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_number_invalid", value = EmbeddedLocalizedValue.Text("Enter a finite number or a valid min..max range."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_string_invalid", value = EmbeddedLocalizedValue.Text("Enter a string of up to 256 characters. Variable references must use a valid format."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_boolean_body", value = EmbeddedLocalizedValue.Text("Enter true or false for the boolean variable."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_value_boolean_invalid", value = EmbeddedLocalizedValue.Text("Enter true or false for the boolean type."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.world_variable_create_title", value = EmbeddedLocalizedValue.Text("Create world variable"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_next", value = EmbeddedLocalizedValue.Text("Next"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.world_variables_duplicate", value = EmbeddedLocalizedValue.Text("A world variable with that name is already defined. Enter a different name."), domain = DOMAIN),
@@ -1194,6 +1197,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_delete", value = EmbeddedLocalizedValue.Text("Delete"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.admin_mutation_action_change", value = EmbeddedLocalizedValue.Text("Modify"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.entity", value = EmbeddedLocalizedValue.Text("Entity"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.option.boolean", value = EmbeddedLocalizedValue.Text("Boolean"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.dialog.actionbar_duration", value = EmbeddedLocalizedValue.Text("Display duration"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.teleport", value = EmbeddedLocalizedValue.Text("Teleported the targets to the location"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.test.detail.give_item", value = EmbeddedLocalizedValue.Text("Gave items to the targets"), domain = DOMAIN),

@@ -71,9 +71,10 @@ class KantanLocalizationContractTest {
         // ブロック状態設定UI向けの6件と、条件の判定位置警告・距離まとめ項目・
         // 詳細設定画面見出しの3件を追加しました。
         // 項目固有の警告キー未定義時の汎用警告1件を追加しました。
-        assertEquals(1207, keys.size)
+        // 真偽値型の一時変数対応に伴う文言4件を追加しました。
+        assertEquals(1211, keys.size)
         assertEquals(
-            "b32f261b3aec23bf942877cbcc54c2f21a4730a91448622fda7dd1658ce92437",
+            "0bf812abadb0d1d36dbdbd63dae4029b1e7c46cc7e96bee4d5987b3203f829b6",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
