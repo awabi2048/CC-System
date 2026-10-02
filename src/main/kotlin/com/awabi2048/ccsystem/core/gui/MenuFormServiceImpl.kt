@@ -12,6 +12,7 @@ import com.awabi2048.ccsystem.api.gui.MenuSimpleFormRequest
 import com.awabi2048.ccsystem.api.gui.MenuSoundPolicy
 import com.awabi2048.ccsystem.api.gui.MenuSoundService
 import com.awabi2048.ccsystem.api.gui.MenuUpdate
+import com.awabi2048.ccsystem.core.bedrock.BedrockPlayerLookup
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -28,8 +29,7 @@ internal class MenuFormServiceImpl(
     private val presentations: MenuPresentationTracker,
 ) : MenuFormService {
     override fun isAvailable(player: Player): Boolean =
-        Bukkit.getPluginManager().isPluginEnabled("floodgate") &&
-            runCatching { FloodgateApi.getInstance().isFloodgatePlayer(player.uniqueId) }.getOrDefault(false)
+        BedrockPlayerLookup.isBedrockPlayer(player)
 
     override fun show(player: Player, request: MenuSimpleFormRequest): Boolean {
         if (!isAvailable(player) || request.buttons.isEmpty()) return false

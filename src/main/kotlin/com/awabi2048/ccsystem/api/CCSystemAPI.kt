@@ -40,6 +40,13 @@ import org.bukkit.entity.Player
 interface CCSystemAPI {
     /** Floodgate/Geyserを通じて統合版スキンを取得します。 */
     fun getBedrockSkinService(): BedrockSkinService
+
+    /**
+     * 指定プレイヤーが統合版（Bedrock）かを floodgate API で判定します。
+     * プレイヤー名の接頭辞ではなくUUIDで判定するため、複数プロキシ構成でも利用できます。
+     * floodgate 未導入時は常に false を返します。
+     */
+    fun isBedrockPlayer(player: Player): Boolean
     /** GUI runtime の公開契約版です。consumer は provider 登録前に要求版との完全一致を確認してください。 */
     val guiRuntimeContractVersion: Int
         get() = GUI_RUNTIME_CONTRACT_VERSION
