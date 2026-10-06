@@ -66,9 +66,15 @@ class KantanLocalizationContractTest {
         // グループ作成失敗・選択除外・エリア案内を追加しました（Undo通知は機能廃止で削除）。
         // wand GUIの説明5件・タグ一覧3件・タグダイアログ現行表示1件を追加し、
         // 左クリック全メニュー化で未使用となった選択なし案内1件を廃止しました。
-        assertEquals(1197, keys.size)
+        // 条件GUI再編に伴い、「値の比較」・詳細画面入口説明・Boolean直接利用の7件を廃止し、
+        // 条件対象・判定位置のタブ説明・操作案内と信号強度の項目名・Dialog文言の7件を追加しました。
+        // ブロック状態設定UI向けの6件と、条件の判定位置警告・距離まとめ項目・
+        // 詳細設定画面見出しの3件を追加しました。
+        // 項目固有の警告キー未定義時の汎用警告1件を追加しました。
+        // 真偽値型の一時変数対応に伴う文言4件を追加しました。
+        assertEquals(1211, keys.size)
         assertEquals(
-            "bf3f5b15ceecbdf41e471a86b7fb1247fd18ea924d53396aa6378cc7af4304f1",
+            "0bf812abadb0d1d36dbdbd63dae4029b1e7c46cc7e96bee4d5987b3203f829b6",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
