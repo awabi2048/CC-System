@@ -28,6 +28,7 @@ object GestureGuiKeys {
     @JvmField val GESTURE_GUI_DEMO_CHOICE_TRADER = LocalizationKey.text("gesture_gui.demo.choice.trader")
     @JvmField val GESTURE_GUI_DEMO_CHOICE_GUARDIAN = LocalizationKey.text("gesture_gui.demo.choice.guardian")
     @JvmField val GESTURE_GUI_EXIT_GUIDANCE = LocalizationKey.text("gesture_gui.exit_guidance")
+    @JvmField val GESTURE_GUI_OPERATION_DENIED = LocalizationKey.text("gesture_gui.operation_denied")
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         GESTURE_GUI_DEMO_TITLE,
@@ -54,5 +55,6 @@ object GestureGuiKeys {
         GESTURE_GUI_DEMO_CHOICE_TRADER,
         GESTURE_GUI_DEMO_CHOICE_GUARDIAN,
         GESTURE_GUI_EXIT_GUIDANCE,
+        GESTURE_GUI_OPERATION_DENIED,
     )
 }

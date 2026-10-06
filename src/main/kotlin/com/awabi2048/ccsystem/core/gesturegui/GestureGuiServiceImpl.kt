@@ -1,5 +1,6 @@
 package com.awabi2048.ccsystem.core.gesturegui
 
+import com.awabi2048.ccsystem.CCSystem
 import com.awabi2048.ccsystem.api.entity.SystemEntityRegistry
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiCloseMode
@@ -22,6 +23,8 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.input.PlayerInteractionChannel
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaim
 import com.awabi2048.ccsystem.api.input.PlayerInteractionClaimService
+import com.awabi2048.ccsystem.api.localization.generated.GestureGuiKeys
+import net.kyori.adventure.text.Component
 import java.util.UUID
 import org.bukkit.Bukkit
 import org.bukkit.FluidCollisionMode
@@ -43,6 +46,11 @@ internal enum class GestureGuiDispatchResult(
     val deduplicate: Boolean,
 ) {
     UNHANDLED(consumed = false, deduplicate = false),
+    /**
+     * 操作権限の無い画面への入力です。通知のみ行い、入力自体は外部へ委ねます。
+     * ARM_SWINGとInteractで同一入力が二度届くため、通知の二重化だけを抑止します。
+     */
+    UNHANDLED_DENIED(consumed = false, deduplicate = true),
     CONSUMED(consumed = true, deduplicate = true),
     /** 視線はGUI領域内だが要素が未確定なため、同一tickに再判定できます。 */
     RETRYABLE_CONSUMED(consumed = true, deduplicate = false),
@@ -750,7 +758,7 @@ class GestureGuiServiceImpl(
             .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
             .mapNotNull { session -> accessibleTarget(session, actor)?.let { session to it } }
             .minByOrNull { (_, target) -> target.hit.distance }
-            ?: return GestureGuiDispatchResult.UNHANDLED
+            ?: return notifyOperationDenied(actor)
         val (session, target) = candidate
         if (!session.secondaryInputEnabled &&
             gesture in setOf(GestureGuiGesture.SECONDARY, GestureGuiGesture.SHIFT_SECONDARY)
@@ -792,6 +800,31 @@ class GestureGuiServiceImpl(
         // Action 実行で内容が変わるため、次 tick で gaze（hover・差分）を即時更新します。
         requestGazeUpdate()
         return GestureGuiDispatchResult.ACTION_HANDLED
+    }
+
+    /**
+     * 操作可能ターゲットが見つからなかった入力について、視認中の画面への操作試行だけを
+     * 検出して拒否理由をアクションバーへ通知します。
+     *
+     * accessibleTargetと同じ射線評価（画面・子画面の最前面ヒット）を使い、
+     * 「内容が視認できるが操作権限が無い」ケースだけを他の未ターゲット状態
+     * （画面外を見ている・距離外・遮蔽なしで何も指していない等）と区別します。
+     * 通知した場合でも入力は外部へ委ねるためUNHANDLED系を返します。
+     */
+    private fun notifyOperationDenied(actor: Player): GestureGuiDispatchResult {
+        val denied = sessions.values.asSequence()
+            .filter { it.state == GestureGuiSessionState.ACTIVE && actor.world.uid == Bukkit.getPlayer(it.ownerId)?.world?.uid }
+            .any { session ->
+                val target = targetHit(session, actor) ?: return@any false
+                // 操作可否は視認可否から独立しています。accessibleTargetの権限ゲートと
+                // 同じくヒット対象（画面・子画面・遮蔽物）のcanOperateで判定し、
+                // falseのときだけ権限不足による拒否として通知します。
+                // 距離外や遮蔽なしの未ヒットは通知対象にしません。
+                target.view?.definition?.canOperate(session.ownerId, actor.uniqueId) == false
+            }
+        if (!denied) return GestureGuiDispatchResult.UNHANDLED
+        actor.sendActionBar(Component.text(CCSystem.getAPI().getLocalized(actor, GestureGuiKeys.GESTURE_GUI_OPERATION_DENIED)))
+        return GestureGuiDispatchResult.UNHANDLED_DENIED
     }
 
     override fun snapshot(ownerId: UUID): GestureGuiSessionSnapshot? = sessions[ownerId]?.let(::snapshot)

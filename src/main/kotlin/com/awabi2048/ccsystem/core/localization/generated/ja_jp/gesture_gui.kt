@@ -33,6 +33,7 @@ internal object JaJpGestureGuiCatalog {
         entry("gesture_gui.demo.choice.trader", "商人"),
         entry("gesture_gui.demo.choice.guardian", "守護者"),
         entry("gesture_gui.exit_guidance", "Shift＋ジャンプで終了"),
+        entry("gesture_gui.operation_denied", "この画面は閲覧のみ可能です（操作権限がありません）"),
     )
 
     private fun entry(key: String, value: String) =

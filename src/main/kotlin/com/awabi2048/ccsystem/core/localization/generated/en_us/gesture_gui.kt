@@ -33,6 +33,7 @@ internal object EnUsGestureGuiCatalog {
         entry("gesture_gui.demo.choice.trader", "Trader"),
         entry("gesture_gui.demo.choice.guardian", "Guardian"),
         entry("gesture_gui.exit_guidance", "Shift + jump to close"),
+        entry("gesture_gui.operation_denied", "You can view this screen, but you don't have permission to operate it"),
     )
 
     private fun entry(key: String, value: String) =
