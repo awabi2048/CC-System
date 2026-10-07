@@ -84,6 +84,8 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reloaded", value = EmbeddedLocalizedValue.Text("&aガイドルートを再読込しました（{count} 件）。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.invalid_index", value = EmbeddedLocalizedValue.Text("&c中継点番号が不正です: {index}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reload_failed", value = EmbeddedLocalizedValue.Text("&cガイドルートの再読込に失敗しました。定義を確認してください。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7最初の中継点でアレイをクリックするとガイドが始まります。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eこっちだよ！", "&e次の中継点はあっち！", "&eついてきて！", "&eコースはこちら側だよ", "&eルートから外れてるみたい")), domain = DOMAIN),
     )
 
 }

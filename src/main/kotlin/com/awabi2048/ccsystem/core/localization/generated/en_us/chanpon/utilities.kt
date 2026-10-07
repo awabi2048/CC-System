@@ -84,6 +84,8 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reloaded", value = EmbeddedLocalizedValue.Text("&aReloaded guide routes ({count} routes)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.invalid_index", value = EmbeddedLocalizedValue.Text("&cInvalid waypoint index: {index}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reload_failed", value = EmbeddedLocalizedValue.Text("&cFailed to reload guide routes. Check the definitions."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7Click the allay at the first waypoint to begin the guide."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eThe next waypoint is over there!", "&eFollow me!", "&eThe course is on this side", "&eLooks like you left the route")), domain = DOMAIN),
     )
 
 }
