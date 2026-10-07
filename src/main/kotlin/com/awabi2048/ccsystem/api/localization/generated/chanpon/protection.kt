@@ -13,6 +13,7 @@ object ChanponProtectionKeys {
     @JvmField val CHANPON_PROTECTION_BUILD_DENIED_OWNER_ONLY = LocalizationKey.text("chanpon.protection.build_denied.owner_only")
     @JvmField val CHANPON_PROTECTION_BUILD_DENIED_MEMBERS_ONLY = LocalizationKey.text("chanpon.protection.build_denied.members_only")
     @JvmField val CHANPON_PROTECTION_BUILD_DENIED_SPAWN = LocalizationKey.text("chanpon.protection.build_denied.spawn")
+    @JvmField val CHANPON_PROTECTION_BUILD_DENIED_EXTERNAL = LocalizationKey.text("chanpon.protection.build_denied.external")
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
         CHANPON_PROTECTION_BUILD_DENIED_MIGRATION,
@@ -24,5 +25,6 @@ object ChanponProtectionKeys {
         CHANPON_PROTECTION_BUILD_DENIED_OWNER_ONLY,
         CHANPON_PROTECTION_BUILD_DENIED_MEMBERS_ONLY,
         CHANPON_PROTECTION_BUILD_DENIED_SPAWN,
+        CHANPON_PROTECTION_BUILD_DENIED_EXTERNAL,
     )
 }

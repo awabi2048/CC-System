@@ -18,5 +18,6 @@ internal object JaJpChanponProtectionCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.owner_only", value = EmbeddedLocalizedValue.Text("このワールドはオーナー限定のため、建築できません"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.members_only", value = EmbeddedLocalizedValue.Text("このワールドはメンバー限定のため、建築できません"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.spawn", value = EmbeddedLocalizedValue.Text("スポーン地点にはブロックを設置できません"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.external", value = EmbeddedLocalizedValue.Text("このブロックは保護されています"), domain = DOMAIN),
     )
 }

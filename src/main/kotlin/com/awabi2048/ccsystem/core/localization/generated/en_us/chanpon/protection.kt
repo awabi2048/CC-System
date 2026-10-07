@@ -18,5 +18,6 @@ internal object EnUsChanponProtectionCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.owner_only", value = EmbeddedLocalizedValue.Text("You cannot build here: this world is restricted to its owner"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.members_only", value = EmbeddedLocalizedValue.Text("You cannot build here: this world is restricted to members"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.spawn", value = EmbeddedLocalizedValue.Text("You cannot place blocks at the spawn point"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.protection.build_denied.external", value = EmbeddedLocalizedValue.Text("This block is protected"), domain = DOMAIN),
     )
 }
