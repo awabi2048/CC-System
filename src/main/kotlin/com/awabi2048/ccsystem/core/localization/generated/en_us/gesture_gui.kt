@@ -32,6 +32,10 @@ internal object EnUsGestureGuiCatalog {
         entry("gesture_gui.demo.choice.explorer", "Explorer"),
         entry("gesture_gui.demo.choice.trader", "Trader"),
         entry("gesture_gui.demo.choice.guardian", "Guardian"),
+        entry("gesture_gui.measure.title", "Font Measurement"),
+        entry("gesture_gui.measure.note", "Width = right-edge reading x2 from center 0. Ticks: minor 0.02, major 0.1, labels every 0.2."),
+        entry("gesture_gui.measure.opened", "§aOpened the font measurement screen."),
+        entry("gesture_gui.measure.usage", "§eUsage: /cc gesture-gui measure [close]"),
         entry("gesture_gui.exit_guidance", "Shift + jump to close"),
         entry("gesture_gui.operation_denied", "You can view this screen, but you don't have permission to operate it"),
     )

@@ -27,6 +27,10 @@ object GestureGuiKeys {
     @JvmField val GESTURE_GUI_DEMO_CHOICE_EXPLORER = LocalizationKey.text("gesture_gui.demo.choice.explorer")
     @JvmField val GESTURE_GUI_DEMO_CHOICE_TRADER = LocalizationKey.text("gesture_gui.demo.choice.trader")
     @JvmField val GESTURE_GUI_DEMO_CHOICE_GUARDIAN = LocalizationKey.text("gesture_gui.demo.choice.guardian")
+    @JvmField val GESTURE_GUI_MEASURE_TITLE = LocalizationKey.text("gesture_gui.measure.title")
+    @JvmField val GESTURE_GUI_MEASURE_NOTE = LocalizationKey.text("gesture_gui.measure.note")
+    @JvmField val GESTURE_GUI_MEASURE_OPENED = LocalizationKey.text("gesture_gui.measure.opened")
+    @JvmField val GESTURE_GUI_MEASURE_USAGE = LocalizationKey.text("gesture_gui.measure.usage")
     @JvmField val GESTURE_GUI_EXIT_GUIDANCE = LocalizationKey.text("gesture_gui.exit_guidance")
     @JvmField val GESTURE_GUI_OPERATION_DENIED = LocalizationKey.text("gesture_gui.operation_denied")
 
@@ -54,6 +58,10 @@ object GestureGuiKeys {
         GESTURE_GUI_DEMO_CHOICE_EXPLORER,
         GESTURE_GUI_DEMO_CHOICE_TRADER,
         GESTURE_GUI_DEMO_CHOICE_GUARDIAN,
+        GESTURE_GUI_MEASURE_TITLE,
+        GESTURE_GUI_MEASURE_NOTE,
+        GESTURE_GUI_MEASURE_OPENED,
+        GESTURE_GUI_MEASURE_USAGE,
         GESTURE_GUI_EXIT_GUIDANCE,
         GESTURE_GUI_OPERATION_DENIED,
     )

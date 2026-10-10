@@ -14,12 +14,14 @@ import com.awabi2048.ccsystem.core.config.ConfigManager
 import com.awabi2048.ccsystem.core.config.DisplayParticleLimitType
 import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
 import com.awabi2048.ccsystem.features.misc.gesturegui.GestureGuiDemoController
+import com.awabi2048.ccsystem.features.misc.gesturegui.GestureGuiMeasureController
 import com.awabi2048.ccsystem.api.localization.generated.GestureGuiKeys
 
 internal class UnifiedManagementCommand(
     private val displayParticleCountProvider: () -> Int,
     private val displayParticleBookTestController: DisplayParticleBookTestController,
     private val gestureGuiDemoController: GestureGuiDemoController,
+    private val gestureGuiMeasureController: GestureGuiMeasureController,
 ) : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender,
@@ -52,24 +54,34 @@ internal class UnifiedManagementCommand(
         }
         val player = sender as? Player
         val operation = args.firstOrNull()?.lowercase()
-        if (player == null || operation != "demo") {
+        if (player == null || (operation != "demo" && operation != "measure")) {
             sender.sendMessage(CCSystem.getAPI().getLocalized(sender as? Player, GestureGuiKeys.GESTURE_GUI_DEMO_USAGE))
             return true
         }
         if (args.getOrNull(1).equals("close", true)) {
+            // 閉じる処理は画面種別に依らずプレイヤーの画面を閉じる共通経路です。
             gestureGuiDemoController.close(player)
             player.sendMessage(CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_DEMO_CLOSED))
             return true
         }
-        val count = args.getOrNull(1)?.toIntOrNull() ?: 1
-        if (count !in 1..3) {
-            player.sendMessage(CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_DEMO_USAGE))
-            return true
+        when (operation) {
+            "demo" -> {
+                val count = args.getOrNull(1)?.toIntOrNull() ?: 1
+                if (count !in 1..3) {
+                    player.sendMessage(CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_DEMO_USAGE))
+                    return true
+                }
+                gestureGuiDemoController.open(player, count)
+                player.sendMessage(
+                    CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_DEMO_OPENED, mapOf("screens" to count))
+                )
+            }
+            // 計測画面は読み取り専用で操作面を持たず、件数引数も取りません。
+            "measure" -> {
+                gestureGuiMeasureController.open(player)
+                player.sendMessage(CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_MEASURE_OPENED))
+            }
         }
-        gestureGuiDemoController.open(player, count)
-        player.sendMessage(
-            CCSystem.getAPI().getLocalized(player, GestureGuiKeys.GESTURE_GUI_DEMO_OPENED, mapOf("screens" to count))
-        )
         return true
     }
 
@@ -343,8 +355,12 @@ internal class UnifiedManagementCommand(
                 else -> emptyList()
             }
             "gesture-gui" -> when (args.size) {
-                2 -> filter(listOf("demo"), input)
-                3 -> filter(listOf("1", "2", "3", "close"), input)
+                2 -> filter(listOf("demo", "measure"), input)
+                3 -> when (args[1].lowercase()) {
+                    "demo" -> filter(listOf("1", "2", "3", "close"), input)
+                    "measure" -> filter(listOf("close"), input)
+                    else -> emptyList()
+                }
                 else -> emptyList()
             }
             else -> emptyList()
