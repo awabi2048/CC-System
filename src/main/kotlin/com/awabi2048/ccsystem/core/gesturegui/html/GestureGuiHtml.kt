@@ -31,12 +31,12 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
 /**
- * 制限付き HTML/CSS frontend の実装です（自前実装・Profile 3）。
+ * 制限付き HTML/CSS frontend の実装です（自前実装・Profile 4）。
  *
  * モジュール外からは公開入口の [com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutFacade]
  * を用い、この実装は直接参照しません。
  * HTML/CSS 自体は内部モデルにせず、この frontend が [GestureGuiDocument] へ変換します。
- * 対応範囲は Profile 3 に限定し、範囲外は診断します。
+ * 対応範囲は Profile 4 に限定し、範囲外は診断します。
  * 対応タグ: div / section / header / footer / nav / span / p / button /
  * mc-item / mc-block / gesture-viewport / custom / style。
  */
@@ -48,16 +48,21 @@ internal object GestureGuiHtml {
      * HTML 文字列を文書へ変換します。
      *
      * @param documentName 診断用の発生源名です（例 "editor.html"）。
+     * @param baseStyle 基底スタイルシートです（cc-system 同梱語彙等）。文書の
+     *   `<style>`・`style` 属性より低い優先度で適用します。
      */
     fun parse(
         html: String,
         environment: GestureGuiHtmlEnvironment,
         documentName: String? = null,
         panel: GestureGuiPanel = GestureGuiPanel(),
+        baseStyle: String? = null,
     ): GestureGuiHtmlResult {
         val ctx = Context(environment, documentName)
         val roots = DomParser(html, ctx).parse()
         val styleSheet = StyleSheet(ctx)
+        // 基底シートは先に読み込み、同詳細度では文書側のルールが常に勝つようにします。
+        baseStyle?.takeIf(String::isNotBlank)?.let { styleSheet.addRules(it, 0) }
         roots.filterIsInstance<DomElement>().filter { it.tag == "style" }.forEach { styleSheet.addRules(it.textContent(), it.line) }
         val bodies = roots.filter { !(it is DomElement && it.tag == "style") }
         val nodes = bodies.flatMap { buildTopLevel(it, styleSheet, ctx) }
@@ -277,16 +282,16 @@ internal object GestureGuiHtml {
 
     private data class CssRule(
         val tag: String?,
-        val clazz: String?,
+        val classes: Set<String>,
         val id: String?,
         val declarations: Map<String, String>,
         val order: Int,
     ) {
-        val specificity: Int get() = (if (id != null) 100 else 0) + (if (clazz != null) 10 else 0) + (if (tag != null) 1 else 0)
+        val specificity: Int get() = (if (id != null) 100 else 0) + classes.size * 10 + (if (tag != null) 1 else 0)
 
         fun matches(element: DomElement): Boolean {
             if (tag != null && element.tag != tag) return false
-            if (clazz != null && clazz !in element.classes) return false
+            if (!element.classes.containsAll(classes)) return false
             if (id != null && element.id != id) return false
             return true
         }
@@ -307,8 +312,8 @@ internal object GestureGuiHtml {
                 }.toMap()
                 if (declarations.isEmpty()) return@forEach
                 selectors.forEach { selector ->
-                    parseSelector(selector)?.let { (tag, clazz, id) ->
-                        rules += CssRule(tag, clazz, id, declarations, rules.size)
+                    parseSelector(selector)?.let { (tag, classes, id) ->
+                        rules += CssRule(tag, classes, id, declarations, rules.size)
                     } ?: ctx.add(
                         GestureGuiLayoutErrorCode.UNSUPPORTED_PROPERTY,
                         null,
@@ -319,30 +324,26 @@ internal object GestureGuiHtml {
             }
         }
 
-        private fun parseSelector(selector: String): Triple<String?, String?, String?>? {
+        /**
+         * セレクタを解析します。対応形は `タグ` / `.クラス` / `タグ.クラス…` /
+         * `.クラス.クラス…`（複合可）/ `#ID` のみです。
+         */
+        private fun parseSelector(selector: String): Triple<String?, Set<String>, String?>? {
             val trimmed = selector.trim()
             if (trimmed.isEmpty() || trimmed.contains(Regex("\\s")) || trimmed.contains(":")) return null
             if (trimmed.startsWith("#")) {
                 val id = trimmed.drop(1)
                 if (id.isEmpty() || !isName(id)) return null
-                return Triple(null, null, id)
+                return Triple(null, emptySet(), id)
             }
-            if (trimmed.startsWith(".")) {
-                val clazz = trimmed.drop(1)
-                if (clazz.isEmpty() || !isName(clazz)) return null
-                return Triple(null, clazz, null)
-            }
-            val dot = trimmed.indexOf('.')
-            val hash = trimmed.indexOf('#')
-            if (hash >= 0) return null
-            if (dot < 0) {
-                if (!isName(trimmed)) return null
-                return Triple(trimmed.lowercase(), null, null)
-            }
-            val tag = trimmed.substring(0, dot)
-            val clazz = trimmed.substring(dot + 1)
-            if (!isName(tag) || !isName(clazz)) return null
-            return Triple(tag.lowercase(), clazz, null)
+            if (trimmed.contains('#')) return null
+            val segments = trimmed.split('.')
+            val tag = segments[0].ifEmpty { null }
+            if (tag != null && !isName(tag)) return null
+            val classes = segments.drop(1)
+            if (classes.isEmpty() && tag == null) return null
+            if (classes.any { it.isEmpty() || !isName(it) }) return null
+            return Triple(tag?.lowercase(), classes.toSet(), null)
         }
 
         private fun isName(value: String): Boolean =
@@ -1028,7 +1029,7 @@ internal object GestureGuiHtml {
         element: DomElement,
         ctx: Context,
     ): Pair<GestureGuiSizeSpec, GestureGuiSizeSpec> {
-        // Profile 1 では Fixed に対する min/max の clamp のみ対応します。
+        // min/max は Fixed に対する clamp のみ対応します。
         fun clamp(spec: GestureGuiSizeSpec, minRaw: String?, maxRaw: String?): GestureGuiSizeSpec {
             if (spec !is GestureGuiSizeSpec.Fixed) {
                 if (minRaw != null || maxRaw != null) {

@@ -171,6 +171,23 @@ data class GestureGuiTheme(
  * 対応します（通常背景＝薄灰、選択＝白縁、設定済み＝空色縁、ON＝LIME／OFF＝GRAY）。
  */
 object GestureGuiThemes {
+    /** 同梱基底スタイルシートのリソース位置です。 */
+    private const val BASE_STYLE_RESOURCE = "gesture-gui/theme.css"
+
+    /**
+     * cc-system が同梱する基底スタイルシートです。
+     *
+     * 画面足場（`.screen` / `.content` / `.top` / `.bottom` / `.footer`）と
+     * 状態 class（`.selected` / `.set` / `.tab.selected` / `.card.disabled`）の
+     * 既定の見た目を定義し、HTML リソース側は構造と語彙クラスだけを記述します。
+     * シートは構造プロパティとトークン名の結合のみを持ち、実値の解決は
+     * 環境のテーマ（[GestureGuiTheme]）へ委ねます。
+     */
+    fun baseStyleSheet(): String =
+        GestureGuiThemes::class.java.classLoader.getResourceAsStream(BASE_STYLE_RESOURCE)
+            ?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+            ?: error("Gesture GUI の基底スタイルシートが見つかりません: $BASE_STYLE_RESOURCE")
+
     fun standard(): GestureGuiTheme = GestureGuiTheme(
         surface = Material.LIGHT_GRAY_CONCRETE.createBlockData(),
         accent = Material.CYAN_CONCRETE.createBlockData(),

@@ -1,0 +1,58 @@
+/*
+ * Gesture GUI 基底スタイルシート（HTML プロファイル 4）
+ *
+ * マークアップ側は構造と語彙クラスだけを記述し、見た目の実値は
+ * GestureGuiThemedEnvironment がテーマへ解決します。
+ * このシートには構造（display / gap / 寸法）と クラス→トークン名 の結合だけを置き、
+ * 素材名・色・フォント数値の直書きはしません。
+ * 文書側の <style>・style 属性は常にこのシートより優先されます。
+ */
+
+/* ─── 画面足場 ───────────────────────────────────────────
+   <section class="screen">
+     <div class="content">
+       <div class="top">…文脈・上段グループ（ページ対象）…</div>
+       <div class="bottom">…下揃えグループ…</div>
+     </div>
+     <footer class="footer">
+       <div class="footer-left">…ページ移動・主操作…</div>
+       <div class="footer-right">…戻る・閉じる…</div>
+     </footer>
+   </section>
+   操作行は下端へ先行確保し、本文領域は残りを上下両揃えで配分します。 */
+
+.screen        { display: flex; flex-direction: column; height: 100%; }
+.content       { height: 1fr; display: flex; flex-direction: column; justify-content: space-between; gap: 0.02; }
+.top           { display: flex; flex-direction: column; gap: 0.02; }
+.bottom        { display: flex; flex-direction: column; gap: 0.02; }
+.footer        { display: flex; gap: 0.02; height: 0.10; }
+.footer-left   { width: 1fr; }
+.footer-right  { width: 1fr; }
+
+/* ─── カードグリッド ────────────────────────────────────
+   列数は repeat(N, 1fr) の N のみ有効です（列は均一幅）。 */
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.02; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.02; }
+.card   { background: surface; }
+
+/* ─── タブ ──────────────────────────────────────────────
+   選択中タブは濃いアクセントへ替わります。左端固定・右伸長の規則は
+   タブ部品（GestureGuiComponents.tab）側が担います。 */
+
+.tab          { background: surface; }
+.tab.selected { background: accent-deep; }
+
+/* ─── 状態 ──────────────────────────────────────────────
+   縁の素材は環境が規則（選択=白 / 設定済=空色）で決め、ここは太さだけを与えます。
+   無効項目は赤系を使わず無効色の背景と灰文字で示します（灰文字は環境側の規則）。 */
+
+.selected        { border: 0.10; }
+.set             { border: 0.10; }
+.card.disabled   { background: disabled; }
+
+/* ─── 補助 ────────────────────────────────────────────── */
+
+.divider      { background: divider; height: 0.012; }
+.scrim        { background: scrim; }
+.scrim-danger { background: scrim-danger; }

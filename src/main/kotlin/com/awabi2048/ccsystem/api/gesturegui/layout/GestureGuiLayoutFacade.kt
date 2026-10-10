@@ -5,6 +5,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiActionContext
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.html.GestureGuiHtmlEnvironment
 import com.awabi2048.ccsystem.api.gesturegui.html.GestureGuiHtmlResult
+import com.awabi2048.ccsystem.api.gesturegui.theme.GestureGuiThemes
 import com.awabi2048.ccsystem.core.gesturegui.html.GestureGuiHtml
 import com.awabi2048.ccsystem.core.gesturegui.layout.GestureGuiLayoutCompiler
 import com.awabi2048.ccsystem.core.gesturegui.layout.GestureGuiLayoutEngine
@@ -23,13 +24,41 @@ object GestureGuiLayoutFacade {
      * HTML 文字列を文書へ変換します。
      *
      * @param documentName 診断用の発生源名です（例 "editor.html"）。
+     * @param baseStyle 基底スタイルシートです。文書の `<style>`・`style` 属性より
+     *   低い優先度で適用します（cc-system 同梱語彙を使う場合は
+     *   [GestureGuiThemes.baseStyleSheet] を渡します）。
      */
     fun parseHtml(
         html: String,
         environment: GestureGuiHtmlEnvironment,
         documentName: String? = null,
         panel: GestureGuiPanel = GestureGuiPanel(),
-    ): GestureGuiHtmlResult = GestureGuiHtml.parse(html, environment, documentName, panel)
+        baseStyle: String? = null,
+    ): GestureGuiHtmlResult = GestureGuiHtml.parse(html, environment, documentName, panel, baseStyle)
+
+    /**
+     * クラスパス上の `.html` リソースを文書へ変換します。
+     *
+     * リソースは呼び出し側モジュールの JAR 同梱を前提とし、[loader] にはその
+     * モジュールのクラスローダを渡します（例 `MyPlugin::class.java.classLoader`）。
+     * 既定で cc-system 同梱の基底スタイルシートを適用するため、マークアップ側は
+     * 語彙クラスと構造だけを記述します。同梱語彙を使わない場合は [baseStyle] に
+     * null または独自シートを渡します。
+     *
+     * @param resourcePath クラスパス上のリソース位置です（例 `"gesture-gui/setting.html"`）。
+     */
+    fun parseHtmlResource(
+        resourcePath: String,
+        loader: ClassLoader,
+        environment: GestureGuiHtmlEnvironment,
+        documentName: String? = resourcePath.substringAfterLast('/'),
+        panel: GestureGuiPanel = GestureGuiPanel(),
+        baseStyle: String? = GestureGuiThemes.baseStyleSheet(),
+    ): GestureGuiHtmlResult {
+        val html = loader.getResourceAsStream(resourcePath)?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+            ?: throw IllegalArgumentException("Gesture GUI の HTML リソースが見つかりません: $resourcePath")
+        return GestureGuiHtml.parse(html, environment, documentName, panel, baseStyle)
+    }
 
     /**
      * 宣言的文書を解決済みレイアウトへ変換します。
