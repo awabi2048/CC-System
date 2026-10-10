@@ -56,6 +56,10 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.enabled", setOf())
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.disabled", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.description", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.display", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.enabled", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.disabled", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.protection.password_change_action", setOf())
@@ -150,6 +154,10 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_FREECAM_DISPLAY,
         CHANPON_ENVIRONMENT_FREECAM_ENABLED,
         CHANPON_ENVIRONMENT_FREECAM_DISABLED,
+        CHANPON_ENVIRONMENT_RANDOM_TICK_DESCRIPTION,
+        CHANPON_ENVIRONMENT_RANDOM_TICK_DISPLAY,
+        CHANPON_ENVIRONMENT_RANDOM_TICK_ENABLED,
+        CHANPON_ENVIRONMENT_RANDOM_TICK_DISABLED,
         CHANPON_ENVIRONMENT_PROTECTION_DISPLAY,
         CHANPON_ENVIRONMENT_PROTECTION_DESCRIPTION,
         CHANPON_ENVIRONMENT_PROTECTION_PASSWORD_CHANGE_ACTION,
