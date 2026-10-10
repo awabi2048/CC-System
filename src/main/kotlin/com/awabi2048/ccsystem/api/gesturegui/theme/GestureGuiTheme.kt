@@ -33,12 +33,29 @@ object GestureGuiThemeTokens {
     const val ON = "on"
     /** Boolean の OFF を直接示す背景です。 */
     const val OFF = "off"
+    /**
+     * 操作不能な項目の背景です。赤は警告・危険の意味に限るため、
+     * 無効項目は赤系を使わず薄灰系で示します（文字も灰色です）。
+     */
+    const val DISABLED = "disabled"
+    /** 上段候補と下揃え候補の境界線等、グループを区切る細帯です。 */
+    const val DIVIDER = "divider"
+    /** 子画面の背面を覆うスクリムです。 */
+    const val SCRIM = "scrim"
+    /** 破壊的確認の子画面を覆うスクリムです。 */
+    const val SCRIM_DANGER = "scrim-danger"
 
     // ─── 縁（class → `border` の枠素材）───────────────────────
     /** 選択中の枠です（白縁）。 */
     const val SELECTED = "selected"
     /** 設定済みの枠です（空色縁）。 */
     const val SET = "set"
+
+    // ─── 状態（class → 文字色・背景の既定）─────────────────────
+    /** 操作不能です。文字は灰色、背景未指定時は DISABLED の背景になります。 */
+    const val DISABLED_CLASS = "disabled"
+    /** 警告です。タブ等の文字色を赤で示します。 */
+    const val WARN_CLASS = "warn"
 
     // ─── 文字階調（class → 論理文字サイズ）─────────────────────
     /** 見出しです。 */
@@ -78,6 +95,14 @@ data class GestureGuiTheme(
     val off: BlockData,
     val outlineSelected: BlockData,
     val outlineSet: BlockData,
+    /** 操作不能な項目の背景です。 */
+    val disabled: BlockData,
+    /** グループ境界線の細帯です。 */
+    val divider: BlockData,
+    /** 子画面の背面スクリムです。 */
+    val scrim: BlockData,
+    /** 破壊的確認の子画面スクリムです。 */
+    val scrimDanger: BlockData,
     val textTitle: Double = 0.006,
     val textLabel: Double = 0.005,
     val textBody: Double = 0.0055,
@@ -102,6 +127,10 @@ data class GestureGuiTheme(
         normalize(GestureGuiThemeTokens.BACK) -> back
         normalize(GestureGuiThemeTokens.ON) -> on
         normalize(GestureGuiThemeTokens.OFF) -> off
+        normalize(GestureGuiThemeTokens.DISABLED) -> disabled
+        normalize(GestureGuiThemeTokens.DIVIDER) -> divider
+        normalize(GestureGuiThemeTokens.SCRIM) -> scrim
+        normalize(GestureGuiThemeTokens.SCRIM_DANGER) -> scrimDanger
         else -> normalizedExtraBlocks[normalize(name)]
     }
 
@@ -152,6 +181,10 @@ object GestureGuiThemes {
         off = Material.GRAY_CONCRETE.createBlockData(),
         outlineSelected = Material.WHITE_CONCRETE.createBlockData(),
         outlineSet = Material.LIGHT_BLUE_CONCRETE.createBlockData(),
+        disabled = Material.LIGHT_GRAY_TERRACOTTA.createBlockData(),
+        divider = Material.GRAY_CONCRETE.createBlockData(),
+        scrim = Material.GRAY_STAINED_GLASS.createBlockData(),
+        scrimDanger = Material.RED_STAINED_GLASS.createBlockData(),
         items = mapOf(
             GestureGuiThemeTokens.NAV_PREV to ItemStack(Material.ARROW),
             GestureGuiThemeTokens.NAV_NEXT to ItemStack(Material.ARROW),

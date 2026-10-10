@@ -3,7 +3,9 @@ package com.awabi2048.ccsystem.api.gesturegui.html
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiGesture
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHover
 import com.awabi2048.ccsystem.api.gesturegui.theme.GestureGuiTheme
+import com.awabi2048.ccsystem.api.gesturegui.theme.GestureGuiThemeTokens
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
@@ -40,8 +42,19 @@ open class GestureGuiThemedEnvironment(
     protected val itemById: (String) -> ItemStack? = { null },
     protected val textSizeById: (String) -> Double? = { null },
 ) : GestureGuiHtmlEnvironment {
-    override fun textComponent(text: String, tag: String, classes: Set<String>, id: String?): Component =
-        id?.let(textById) ?: Component.text(text)
+    override fun textComponent(text: String, tag: String, classes: Set<String>, id: String?): Component {
+        val component = id?.let(textById) ?: Component.text(text)
+        // 状態classの文字色は、CSS color 指定や登録Component側の色指定へ譲ります。
+        val stateColor = stateTextColor(classes) ?: return component
+        return if (component.color() == null) component.color(stateColor) else component
+    }
+
+    /** 状態classの文字色です。無効は灰、警告は赤です。 */
+    protected open fun stateTextColor(classes: Set<String>): NamedTextColor? = when {
+        GestureGuiThemeTokens.DISABLED_CLASS in classes -> NamedTextColor.GRAY
+        GestureGuiThemeTokens.WARN_CLASS in classes -> NamedTextColor.RED
+        else -> null
+    }
 
     override fun hover(tag: String, classes: Set<String>, id: String?): GestureGuiHover? =
         id?.let(hoverById)
@@ -54,7 +67,10 @@ open class GestureGuiThemedEnvironment(
 
     override fun buttonBackground(background: String?, classes: Set<String>, id: String?): BlockData {
         id?.let(blockById)?.let { return it }
-        if (background == null) return theme.surface
+        if (background == null) {
+            // 無効項目は通常背景ではなく無効色で示します（規則：赤系は使わない）。
+            return if (GestureGuiThemeTokens.DISABLED_CLASS in classes) theme.disabled else theme.surface
+        }
         return theme.block(background) ?: rawBlock(background)
             ?: error("未知のボタン背景指定です: $background (id=$id)")
     }

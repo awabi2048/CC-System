@@ -57,6 +57,10 @@ class GestureGuiThemedEnvironmentTest {
         off = off,
         outlineSelected = outlineSelected,
         outlineSet = outlineSet,
+        disabled = blockData(),
+        divider = blockData(),
+        scrim = blockData(),
+        scrimDanger = blockData(),
         items = mapOf(GestureGuiThemeTokens.NAV_PREV to navPrev),
     )
 
