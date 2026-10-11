@@ -42,7 +42,7 @@ import net.kyori.adventure.text.format.NamedTextColor
  */
 internal object GestureGuiHtml {
     /** Text の Auto 高さとボタン内ラベル位置で共有する論理行高係数です。 */
-    private const val TEXT_LINE_HEIGHT_FACTOR = 3.0
+    private const val TEXT_LINE_HEIGHT_FACTOR = com.awabi2048.ccsystem.core.gesturegui.GestureGuiFontMetrics.LINE_HEIGHT_FACTOR
 
     /**
      * HTML 文字列を文書へ変換します。

@@ -24,7 +24,7 @@ import org.bukkit.entity.Player
  * フォント実測用の管理者向け画面です（`/cc gesture-gui measure`）。
  *
  * 幅係数・行ピッチ・太字補正・特殊グリフ幅は、人間が目盛りから読み取り、
- * Kotlin 定数（`GestureGuiTextMetrics` 周辺）へ手動反映します。
+ * `GestureGuiFontMetrics` の仮値を確定値へ置き換えます。
  * 自動記録・設定ファイル書き戻し・画像解析は行いません。
  *
  * 目盛りと文字は同一画面上にあるため、パネル傾きによる視差補正は不要です。

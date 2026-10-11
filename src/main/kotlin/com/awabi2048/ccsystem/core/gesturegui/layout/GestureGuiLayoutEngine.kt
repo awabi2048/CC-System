@@ -37,8 +37,8 @@ internal object GestureGuiLayoutEngine {
     /** 退化 bound を避ける最小寸法です（ブロック単位）。 */
     const val MIN_EXTENT: Double = 1.0e-6
 
-    /** Text の Auto 高さ概算に使う行高係数です。 */
-    const val TEXT_LINE_HEIGHT_FACTOR: Double = 3.0
+    /** Text の Auto 高さ概算に使う行高係数です。正本は [com.awabi2048.ccsystem.core.gesturegui.GestureGuiFontMetrics]。 */
+    const val TEXT_LINE_HEIGHT_FACTOR: Double = com.awabi2048.ccsystem.core.gesturegui.GestureGuiFontMetrics.LINE_HEIGHT_FACTOR
 
     /**
      * 文書を解決します。
