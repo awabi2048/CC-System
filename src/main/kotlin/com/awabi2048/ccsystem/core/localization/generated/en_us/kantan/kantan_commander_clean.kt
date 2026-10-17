@@ -1275,12 +1275,7 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_overwrite_body", value = EmbeddedLocalizedValue.TextList(listOf("\"{name}\" already exists.", "Overwriting changes the output of every program referencing it.")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_title", value = EmbeddedLocalizedValue.Text("Delete structure"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_body", value = EmbeddedLocalizedValue.TextList(listOf("Delete \"{name}\".", "Programs referencing this structure will fail at runtime.")), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_action_group_cleanup", value = EmbeddedLocalizedValue.Text("Collect unreferenced groups"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_desc_group_cleanup", value = EmbeddedLocalizedValue.TextList(listOf("Delete all groups that no program references")), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_group_cleanup_title", value = EmbeddedLocalizedValue.Text("Collect unreferenced groups?"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_group_cleanup_body", value = EmbeddedLocalizedValue.TextList(listOf("All groups not referenced by any program will be deleted.")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_deleted", value = EmbeddedLocalizedValue.Text("Deleted structure {name}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_too_large", value = EmbeddedLocalizedValue.Text("Selection is too large (limit: {max} blocks)"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_groups_deleted", value = EmbeddedLocalizedValue.Text("Deleted {count} unreferenced group(s)"), domain = DOMAIN),
     )
 }

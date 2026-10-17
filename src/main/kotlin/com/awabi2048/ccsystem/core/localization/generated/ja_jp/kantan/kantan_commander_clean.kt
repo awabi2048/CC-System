@@ -1277,12 +1277,7 @@ internal object JaJpKantanKantanCommanderCleanCatalog {
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_overwrite_body", value = EmbeddedLocalizedValue.TextList(listOf("「{name}」は既に存在します。", "上書きすると、この建造物を参照するすべてのプログラムの出力が変わります。")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_title", value = EmbeddedLocalizedValue.Text("建造物の削除"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_body", value = EmbeddedLocalizedValue.TextList(listOf("「{name}」を削除します。", "この建造物を参照するプログラムは実行時に失敗します。")), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_action_group_cleanup", value = EmbeddedLocalizedValue.Text("未参照の群を回収"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_desc_group_cleanup", value = EmbeddedLocalizedValue.TextList(listOf("どのプログラムからも参照されない群を", "まとめて削除します")), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_group_cleanup_title", value = EmbeddedLocalizedValue.Text("未参照の群を回収しますか？"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_group_cleanup_body", value = EmbeddedLocalizedValue.TextList(listOf("どのプログラムからも参照されていない群をすべて削除します。")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_deleted", value = EmbeddedLocalizedValue.Text("建造物 {name} を削除しました"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_too_large", value = EmbeddedLocalizedValue.Text("選択範囲が大きすぎます（上限 {max} ブロック）"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_groups_deleted", value = EmbeddedLocalizedValue.Text("未参照の群を {count} 件削除しました"), domain = DOMAIN),
     )
 }

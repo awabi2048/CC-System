@@ -72,10 +72,10 @@ class KantanLocalizationContractTest {
         // 詳細設定画面見出しの3件を追加しました。
         // 項目固有の警告キー未定義時の汎用警告1件を追加しました。
         // 真偽値型の一時変数対応に伴う文言4件を追加しました。
-        // 建造物一覧・保存オプション・上書き・削除確認と群の一括回収の25件を追加しました。
-        assertEquals(1236, keys.size)
+        // 建造物一覧・保存オプション・上書き・削除確認の20件を追加しました。
+        assertEquals(1231, keys.size)
         assertEquals(
-            "96292d6696ca58ba45d26916148b00cefb5b3cc1be20b74989e62d6e512266e6",
+            "c67876c7343a649fb0d79ef57198429f1a9a771a4bfbafc90e81f6e4ef0858e8",
 
             LocalizationCatalogContract.fingerprint("kantan_commander_clean"),
         )
