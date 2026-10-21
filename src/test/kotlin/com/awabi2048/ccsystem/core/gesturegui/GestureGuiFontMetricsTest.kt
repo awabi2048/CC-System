@@ -25,7 +25,7 @@ class GestureGuiFontMetricsTest {
         assertEquals(10.0, m.LINE_HEIGHT_FACTOR, epsilon)
         assertEquals(10.0, m.LINE_ADVANCE_PX, epsilon)
         assertEquals(1.0, m.PX_TO_BLOCK, epsilon)
-        assertEquals(9.4, m.WIDE_ADVANCE_PX, epsilon)
+        assertEquals(9.0, m.WIDE_ADVANCE_PX, epsilon)
         assertTrue(m.SIZE_CORRECTION.isEmpty())
     }
 
@@ -56,8 +56,9 @@ class GestureGuiFontMetricsTest {
         val m = GestureGuiFontMetrics
         assertEquals(3 * m.WIDE_ADVANCE_PX, m.estimateWidthPx("あいう"), epsilon)
         assertTrue(m.isWide("あ".codePointAt(0)))
-        // 日本語15文字の実測は字あたり 9.38px でした。
-        assertEquals(9.4, m.advancePx("あ".codePointAt(0)), epsilon)
+        // 実測は句点込み16文字で約8.8px/字（読み方で9.0〜9.1px/字）で、
+        // vanilla参照値の 9.0 を採用しています。
+        assertEquals(9.0, m.advancePx("あ".codePointAt(0)), epsilon)
     }
 
     @Test

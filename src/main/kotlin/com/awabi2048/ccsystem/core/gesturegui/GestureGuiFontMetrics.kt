@@ -31,9 +31,11 @@ internal object GestureGuiFontMetrics {
     const val DEFAULT_ADVANCE_PX: Double = 6.0
 
     /**
-     * 全角グリフの文字送り（px/字）です。日本語15文字の実測 9.38px/字を丸めた値です。
+     * 全角グリフの文字送り（px/字）です。
+     * 日本語16文字（句点込み）の実測では 8.8px/字前後、句点を除いた読みで 9.0〜9.1px/字
+     * とばらつきがあったため、vanilla 参照値かつ実測範囲の中央である 9.0 を採用します。
      */
-    const val WIDE_ADVANCE_PX: Double = 9.4
+    const val WIDE_ADVANCE_PX: Double = 9.0
 
     /** 空白の文字送り（px/字）です。パングラム内空白で検証済み。 */
     const val SPACE_ADVANCE_PX: Double = 4.0
@@ -124,3 +126,4 @@ internal object GestureGuiFontMetrics {
         else -> false
     }
 }
+
