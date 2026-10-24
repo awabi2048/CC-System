@@ -22,4 +22,17 @@ internal object GestureGuiTextDepth {
     } else {
         CONTENT_SURFACE_LAYER + (layer - CONTENT_SURFACE_LAYER) * SURFACE_DISTANCE_RATIO
     }
+
+    /**
+     * 実効層が target となる宣言層を逆解きします。
+     *
+     * 宣言レイアウトの compiler は z 順の連番で層を採番するため、Block と
+     * 隣接する層の Text はこの逆写像で宣言層へ戻し、同じ実効層のブロックより
+     * 背面へ回り込まないようにします。
+     */
+    fun declaredLayerForEffective(target: Int): Int = if (target <= CONTENT_SURFACE_LAYER) {
+        target
+    } else {
+        (CONTENT_SURFACE_LAYER + (target - CONTENT_SURFACE_LAYER) / SURFACE_DISTANCE_RATIO).toInt()
+    }
 }

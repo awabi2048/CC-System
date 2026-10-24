@@ -17,6 +17,7 @@ import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverPosition
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiHoverTarget
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiOutlineGeometry
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiTextDepth
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiCustomRenderer
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiItem
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiLayoutDiagnostic
@@ -132,6 +133,17 @@ internal object GestureGuiLayoutCompiler {
 
     private fun layerOf(resolvedZ: Int): Int = resolvedZ.coerceAtLeast(0).coerceAtMost(MAX_LAYER - 1) + 1
 
+    /**
+     * Text の宣言層です。
+     *
+     * renderer は標準コンテンツ面（layer 4）より奥の Text を面方向へ圧縮するため、
+     * 解決深度どおりの実効層へ戻すよう逆写像で宣言層を求めます。この対応がないと
+     * 深いネストの Text が同じ実効層のブロック背面へ回り込み、描画が不安定になります。
+     * 同一実効層となった場合の前後関係は renderer 側の surface lift が担います。
+     */
+    private fun textLayerOf(resolvedZ: Int): Int =
+        GestureGuiTextDepth.declaredLayerForEffective(layerOf(resolvedZ)).coerceAtMost(MAX_LAYER)
+
     private fun centerX(bounds: GestureGuiBounds): Double = (bounds.minX + bounds.maxX) / 2.0
 
     private fun centerY(bounds: GestureGuiBounds): Double = (bounds.minY + bounds.maxY) / 2.0
@@ -149,7 +161,7 @@ internal object GestureGuiLayoutCompiler {
         val visual = when (declared) {
             is GestureGuiText -> GestureGuiVisual.Text(
                 visualId, centerX(bounds), centerY(bounds), declared.text,
-                declared.size, declared.lineWidth, layerOf(node.resolvedZ),
+                declared.size, declared.lineWidth, textLayerOf(node.resolvedZ),
                 declared.seeThrough, declared.alignment, declared.interpolationTicks,
             )
             is GestureGuiBlock -> GestureGuiVisual.Block(
@@ -368,7 +380,14 @@ internal object GestureGuiLayoutCompiler {
             }
         }
         // 置換対象と同じ深さ近傍へ浮かせ、対象なしは既定層へ置きます。
-        val layer = if (ownVisualId != null) (layerOf(node.resolvedZ) + 2).coerceAtMost(MAX_LAYER) else 30
+        // ホバー文言も Text なので、目標実効層から宣言層へ逆解きします。
+        val layer = if (ownVisualId != null) {
+            GestureGuiTextDepth.declaredLayerForEffective(
+                (layerOf(node.resolvedZ) + 2).coerceAtMost(MAX_LAYER),
+            ).coerceAtMost(MAX_LAYER)
+        } else {
+            30
+        }
         return GestureGuiHoverText(
             text = spec.text,
             x = x,

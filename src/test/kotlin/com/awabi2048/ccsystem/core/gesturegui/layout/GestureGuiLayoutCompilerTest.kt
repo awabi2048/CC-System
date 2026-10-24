@@ -7,6 +7,7 @@ import com.awabi2048.ccsystem.api.gesturegui.GestureGuiPanel
 import com.awabi2048.ccsystem.api.gesturegui.GestureGuiVisual
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiAbsoluteOffsets
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiEntityRenderer
+import com.awabi2048.ccsystem.core.gesturegui.GestureGuiTextDepth
 import com.awabi2048.ccsystem.core.gesturegui.GestureGuiVirtualScreens
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBlock
 import com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiBox
@@ -229,7 +230,8 @@ class GestureGuiLayoutCompilerTest {
     @Test
     fun `sibling text shares the block layer and renderer lifts it`() {
         // z-fighting 対策の持上げは renderer 側の微調整（TEXT_ITEM_SURFACE_LIFT）で行い、
-        // compiler は解決深度どおりの層を保ちます。
+        // compiler は解決深度どおりの実効層を保ちます。標準コンテンツ面より浅い層では
+        // Text の宣言層は実効層と一致するため、同階層の Block と同じ層になります。
         val blockData = Proxy.newProxyInstance(
             BlockData::class.java.classLoader,
             arrayOf(BlockData::class.java),
@@ -269,6 +271,53 @@ class GestureGuiLayoutCompilerTest {
         val text = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Text>().single()
         assertEquals(block.layer, text.layer)
         assertTrue(text.layer in 1..40)
+    }
+
+    @Test
+    fun `deeply nested text stays in front of its backing block`() {
+        // HTML リソース由来の深いネストでは Block/Text の解決深度が標準コンテンツ面
+        // （実効 layer 4）を超えます。renderer の Text 圧縮で背面へ回り込まないよう、
+        // compiler は Text の宣言層を実効層の逆写像で採番します。
+        val bd = blockData()
+        val overlay = GestureGuiOverlay(
+            children = listOf(
+                GestureGuiBlock(
+                    blockData = bd,
+                    width = GestureGuiSizeSpec.Fixed(0.48),
+                    height = GestureGuiSizeSpec.Fixed(0.12),
+                    id = "card-bg",
+                ),
+                GestureGuiText(text = Component.text("label"), id = "card-label"),
+            ),
+            id = "card",
+            width = GestureGuiSizeSpec.Fixed(0.48),
+            height = GestureGuiSizeSpec.Fixed(0.12),
+        )
+        // Overlay 内の Block が実効層 4 を超える深さまで包みます。
+        val document = GestureGuiDocument(
+            GestureGuiBox(
+                children = listOf(
+                    GestureGuiBox(
+                        children = listOf(GestureGuiBox(children = listOf(overlay), id = "wrap1")),
+                        id = "wrap2",
+                    ),
+                ),
+                id = "wrap3",
+            ),
+            panel,
+        )
+        val compiled = GestureGuiLayoutCompiler.compile(
+            GestureGuiLayoutEngine.layout(document),
+            screenId = "s",
+        )
+        assertTrue(compiled.diagnostics.isEmpty(), "diagnostics: ${compiled.diagnostics}")
+        val block = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Block>().single()
+        val text = compiled.view.visuals.filterIsInstance<GestureGuiVisual.Text>().single()
+        assertTrue(block.layer > 4, "block layer should exceed the content surface: ${block.layer}")
+        assertTrue(
+            GestureGuiTextDepth.effectiveLayer(text.layer) > block.layer,
+            "text effective ${GestureGuiTextDepth.effectiveLayer(text.layer)} must stay in front of block layer ${block.layer}",
+        )
     }
 
     @Test
