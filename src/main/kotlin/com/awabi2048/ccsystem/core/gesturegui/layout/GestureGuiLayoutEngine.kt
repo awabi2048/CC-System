@@ -368,7 +368,9 @@ internal object GestureGuiLayoutEngine {
                 val rows = node.rows ?: ((inFlow.size + node.columns - 1) / node.columns).coerceAtLeast(1)
                 val childHeights = inFlow.map { measureCrossHeight(it, node.id, ctx) }
                 val maxCell = childHeights.maxOrNull() ?: 0.0
-                maxCell * rows + node.gap * (rows - 1).coerceAtLeast(0) + node.padding.vertical
+                // 行方向の間隔は crossGap です（gap は列方向）。レイアウト側の
+                // cellH 計算と一致させ、非対称間隔で Auto 高さを過大評価しないようにします。
+                maxCell * rows + node.crossGap * (rows - 1).coerceAtLeast(0) + node.padding.vertical
             }
             is GestureGuiOverlay -> {
                 val inFlow = node.children.filter { it.absolute == null }

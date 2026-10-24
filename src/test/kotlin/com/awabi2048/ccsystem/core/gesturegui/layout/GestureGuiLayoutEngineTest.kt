@@ -370,6 +370,38 @@ class GestureGuiLayoutEngineTest {
     }
 
     @Test
+    fun `grid auto height uses cross gap for row spacing`() {
+        // 列間隔（gap）と行間隔（crossGap）が異なる格子では、
+        // Auto 高さは行間隔 crossGap を使って測ります。
+        val document = GestureGuiDocument(
+            GestureGuiBox(
+                children = listOf(
+                    GestureGuiGrid(
+                        children = listOf(text("c0"), text("c1"), text("c2"), text("c3")),
+                        columns = 2,
+                        id = "grid",
+                        width = GestureGuiSizeSpec.Percent(1.0),
+                        height = GestureGuiSizeSpec.Auto,
+                        gap = 0.11,
+                        crossGap = 0.01,
+                    ),
+                ),
+                id = "root",
+                width = GestureGuiSizeSpec.Percent(1.0),
+                height = GestureGuiSizeSpec.Percent(1.0),
+            ),
+            panel,
+        )
+        val resolved = GestureGuiLayoutEngine.layout(document)
+        assertTrue(resolved.diagnostics.isEmpty(), "diagnostics: ${resolved.diagnostics}")
+        val rows = resolved.root.children.single().children
+        // 2行の格子で行ピッチは セル高さ + crossGap です。
+        val rowPitch = rows[0].borderBounds.maxY - rows[2].borderBounds.maxY
+        val cellHeight = rows[0].borderBounds.maxY - rows[0].borderBounds.minY
+        assertEquals(cellHeight + 0.01, rowPitch, 1.0e-9)
+    }
+
+    @Test
     fun `overlay stacks children with increasing z`() {
         val document = GestureGuiDocument(
             GestureGuiOverlay(
