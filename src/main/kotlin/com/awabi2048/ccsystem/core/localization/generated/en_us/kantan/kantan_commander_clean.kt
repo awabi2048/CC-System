@@ -15,6 +15,7 @@ internal object EnUsKantanKantanCommanderCleanCatalog {
         addAll(chunk4())
         addAll(chunk5())
         addAll(chunk6())
+        addAll(chunk7())
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
@@ -1253,5 +1254,28 @@ EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.editor.output_copy",
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field.block_state", value = EmbeddedLocalizedValue.Text("Block States"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_description.block_state", value = EmbeddedLocalizedValue.TextList(listOf("Configure detailed block properties (facing, open/close, layers, etc.)", "Not available while the block is referenced via a temporary variable")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.field_action.block_state", value = EmbeddedLocalizedValue.Text("Configure block states"), domain = DOMAIN),
+    )
+
+    private fun chunk7(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_action_structure_list", value = EmbeddedLocalizedValue.Text("Saved Structures"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_desc_structure_list", value = EmbeddedLocalizedValue.TextList(listOf("Show structures saved in this scope", "Select one to delete it")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_title_structures", value = EmbeddedLocalizedValue.Text("Saved Structures"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structures_empty", value = EmbeddedLocalizedValue.Text("No structures saved in this scope"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_desc_structure_entry", value = EmbeddedLocalizedValue.TextList(listOf("Click to delete this structure")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_option_entities", value = EmbeddedLocalizedValue.Text("Include entities"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_option_remove_air", value = EmbeddedLocalizedValue.Text("Remove air"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_option_on", value = EmbeddedLocalizedValue.Text("Enabled"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_option_off", value = EmbeddedLocalizedValue.Text("Disabled"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_field_scope", value = EmbeddedLocalizedValue.Text("Scope"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_scope_global", value = EmbeddedLocalizedValue.Text("Global"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_structure_scope_myworld", value = EmbeddedLocalizedValue.Text("MyWorld"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_options_title", value = EmbeddedLocalizedValue.Text("Structure save options"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_options_body", value = EmbeddedLocalizedValue.TextList(listOf("Choose save options")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_overwrite_title", value = EmbeddedLocalizedValue.Text("Overwrite existing structure?"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_overwrite_body", value = EmbeddedLocalizedValue.TextList(listOf("\"{name}\" already exists.", "Overwriting changes the output of every program referencing it.")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_title", value = EmbeddedLocalizedValue.Text("Delete structure"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.gui.wand_dialog_structure_delete_body", value = EmbeddedLocalizedValue.TextList(listOf("Delete \"{name}\".", "Programs referencing this structure will fail at runtime.")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_deleted", value = EmbeddedLocalizedValue.Text("Deleted structure {name}"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "kantan_commander_clean.message.wand_structure_too_large", value = EmbeddedLocalizedValue.Text("Selection is too large (limit: {max} blocks)"), domain = DOMAIN),
     )
 }
