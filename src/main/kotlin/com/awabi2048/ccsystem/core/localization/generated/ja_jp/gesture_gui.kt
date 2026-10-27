@@ -32,6 +32,10 @@ internal object JaJpGestureGuiCatalog {
         entry("gesture_gui.demo.choice.explorer", "探検家"),
         entry("gesture_gui.demo.choice.trader", "商人"),
         entry("gesture_gui.demo.choice.guardian", "守護者"),
+        entry("gesture_gui.measure.title", "フォント計測"),
+        entry("gesture_gui.measure.note", "幅＝中央0から右端の読み×2。目盛り: 細0.02／太0.1／数字0.2刻み。"),
+        entry("gesture_gui.measure.opened", "§aフォント計測画面を開きました。"),
+        entry("gesture_gui.measure.usage", "§e使用法: /cc gesture-gui measure [close]"),
         entry("gesture_gui.exit_guidance", "Shift＋ジャンプで終了"),
         entry("gesture_gui.operation_denied", "この画面は閲覧のみ可能です（操作権限がありません）"),
     )

@@ -24,6 +24,7 @@ import com.awabi2048.ccsystem.features.misc.command.NpcMessageCommand
 import com.awabi2048.ccsystem.features.misc.command.UnifiedManagementCommand
 import com.awabi2048.ccsystem.features.misc.displayparticle.DisplayParticleBookTestController
 import com.awabi2048.ccsystem.features.misc.gesturegui.GestureGuiDemoController
+import com.awabi2048.ccsystem.features.misc.gesturegui.GestureGuiMeasureController
 import com.awabi2048.ccsystem.core.displayeffect.DisplayEffectServiceImpl
 import com.awabi2048.ccsystem.core.item.SystemItemGrantProvider
 import com.awabi2048.ccsystem.features.misc.listener.MusicListener
@@ -465,6 +466,7 @@ class CCSystem : JavaPlugin() {
             { _api.getDisplayParticleCount() },
             displayParticleBookTestController,
             GestureGuiDemoController(_api),
+            GestureGuiMeasureController(_api),
         )
         getCommand("cc")?.setExecutor(unifiedManagementCommand)
         getCommand("cc")?.tabCompleter = unifiedManagementCommand

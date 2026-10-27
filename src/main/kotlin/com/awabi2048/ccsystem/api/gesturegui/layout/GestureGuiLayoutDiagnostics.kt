@@ -7,6 +7,8 @@ package com.awabi2048.ccsystem.api.gesturegui.layout
  * ユーザー可視ローカライズ対象ではなく、開発者向けの構造化診断として扱います。
  */
 enum class GestureGuiLayoutErrorCode {
+    /** Textと背景の層順序を保証できない深さの文書です。表示と操作を生成しません。 */
+    LAYER_DEPTH_EXCEEDED,
     /** 親内容域からの逸脱です（CLIP により切り抜かれます）。 */
     LAYOUT_OVERFLOW,
 

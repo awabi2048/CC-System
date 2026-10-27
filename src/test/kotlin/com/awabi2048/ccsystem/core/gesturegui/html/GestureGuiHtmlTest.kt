@@ -238,4 +238,71 @@ class GestureGuiHtmlTest {
         )
         assertEquals("bad-values.html", parsed.diagnostics.first().source)
     }
+
+    @Test
+    fun `compound class selector requires all classes and wins over single class`() {
+        val html = """
+            <style>
+              .card { width: 0.4; }
+              .selected { width: 0.6; }
+              .card.selected { width: 0.8; }
+            </style>
+            <div id="row" style="display: flex;">
+              <div id="plain" class="card" style="height: 0.1;"></div>
+              <div id="picked" class="card selected" style="height: 0.1;"></div>
+              <div id="only-selected" class="selected" style="height: 0.1;"></div>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "compound.html", panel)
+        assertTrue(parsed.diagnostics.isEmpty(), "diagnostics: ${parsed.diagnostics}")
+        val resolved = GestureGuiLayoutEngine.layout(parsed.document)
+        assertTrue(resolved.diagnostics.isEmpty(), "diagnostics: ${resolved.diagnostics}")
+        val widths = resolved.root.children.map { it.borderBounds.maxX - it.borderBounds.minX }
+        // .card.selected は全クラス保有時のみ適用され、単一クラス指定より詳細度が上です。
+        assertEquals(0.4, widths[0], 1.0e-9)
+        assertEquals(0.8, widths[1], 1.0e-9)
+        assertEquals(0.6, widths[2], 1.0e-9)
+    }
+
+    @Test
+    fun `tag and compound class selectors combine`() {
+        val html = """
+            <style>
+              .tab { width: 0.3; }
+              div.tab.selected { width: 0.7; }
+            </style>
+            <div id="row" style="display: flex;">
+              <div id="tab-off" class="tab" style="height: 0.1;"></div>
+              <div id="tab-on" class="tab selected" style="height: 0.1;"></div>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "tag-compound.html", panel)
+        assertTrue(parsed.diagnostics.isEmpty(), "diagnostics: ${parsed.diagnostics}")
+        val widths = GestureGuiLayoutEngine.layout(parsed.document).root.children
+            .map { it.borderBounds.maxX - it.borderBounds.minX }
+        assertEquals(0.3, widths[0], 1.0e-9)
+        assertEquals(0.7, widths[1], 1.0e-9)
+    }
+
+    @Test
+    fun `base stylesheet applies below document rules and inline style`() {
+        val baseStyle = ".card { width: 0.6; height: 0.3; }"
+        val html = """
+            <style>.card { height: 0.2; }</style>
+            <div id="row" style="display: flex;">
+              <div id="a" class="card"></div>
+              <div id="b" class="card" style="width: 0.1;"></div>
+            </div>
+        """.trimIndent()
+        val parsed = GestureGuiHtml.parse(html, environment, "base.html", panel, baseStyle = baseStyle)
+        assertTrue(parsed.diagnostics.isEmpty(), "diagnostics: ${parsed.diagnostics}")
+        val children = GestureGuiLayoutEngine.layout(parsed.document).root.children
+        val sizes = children.map { it.borderBounds.maxX - it.borderBounds.minX to it.borderBounds.maxY - it.borderBounds.minY }
+        // a: 幅は基底シート、高さは文書ルールが基底を上書きします。
+        assertEquals(0.6, sizes[0].first, 1.0e-9)
+        assertEquals(0.2, sizes[0].second, 1.0e-9)
+        // b: inline が最優先、高さは文書ルールです。
+        assertEquals(0.1, sizes[1].first, 1.0e-9)
+        assertEquals(0.2, sizes[1].second, 1.0e-9)
+    }
 }

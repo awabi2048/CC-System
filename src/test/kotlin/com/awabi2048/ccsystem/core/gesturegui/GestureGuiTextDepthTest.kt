@@ -16,4 +16,19 @@ class GestureGuiTextDepthTest {
         assertEquals(2.0, GestureGuiTextDepth.effectiveLayer(2), 1.0e-9)
         assertEquals(4.0, GestureGuiTextDepth.effectiveLayer(4), 1.0e-9)
     }
+
+    @Test
+    fun `declared layer inverse lands the text at the requested effective layer`() {
+        // 宣言レイアウトの compiler が Text の宣言層を逆解きする写像です。
+        // effectiveLayer(declaredLayerForEffective(t)) == t が往復で成り立ちます。
+        for (target in 1..13) {
+            val declared = GestureGuiTextDepth.declaredLayerForEffective(target)
+            assertEquals(
+                target.toDouble(),
+                GestureGuiTextDepth.effectiveLayer(declared),
+                1.0e-9,
+                "target $target -> declared $declared",
+            )
+        }
+    }
 }

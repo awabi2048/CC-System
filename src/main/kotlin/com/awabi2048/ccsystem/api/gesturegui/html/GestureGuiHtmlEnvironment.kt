@@ -13,6 +13,10 @@ import net.kyori.adventure.text.Component
  * HTML/CSS 自体は構造・配置・文言だけを表し、素材・アイテム等のサーバー資源は
  * 呼び出し側指定とします（Gesture GUI 方針）。素材名は正規化済み
  *（小文字・`_` 区切り、例 `black_concrete`）で渡します。
+ *
+ * 共通の見た目規則（トークン語彙）を使う場合は
+ * [com.awabi2048.ccsystem.api.gesturegui.html.GestureGuiThemedEnvironment] を
+ * 基底実装として用います。
  */
 interface GestureGuiHtmlEnvironment {
     /** HTMLの文言を表示用Componentへ解決します。IDを使って翻訳Component等を保持できます。 */

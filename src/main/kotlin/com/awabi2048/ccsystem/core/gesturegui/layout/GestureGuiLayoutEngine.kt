@@ -37,8 +37,8 @@ internal object GestureGuiLayoutEngine {
     /** 退化 bound を避ける最小寸法です（ブロック単位）。 */
     const val MIN_EXTENT: Double = 1.0e-6
 
-    /** Text の Auto 高さ概算に使う行高係数です。 */
-    const val TEXT_LINE_HEIGHT_FACTOR: Double = 3.0
+    /** Text の Auto 高さ概算に使う行高係数です。正本は [com.awabi2048.ccsystem.core.gesturegui.GestureGuiFontMetrics]。 */
+    const val TEXT_LINE_HEIGHT_FACTOR: Double = com.awabi2048.ccsystem.core.gesturegui.GestureGuiFontMetrics.LINE_HEIGHT_FACTOR
 
     /**
      * 文書を解決します。
@@ -368,7 +368,9 @@ internal object GestureGuiLayoutEngine {
                 val rows = node.rows ?: ((inFlow.size + node.columns - 1) / node.columns).coerceAtLeast(1)
                 val childHeights = inFlow.map { measureCrossHeight(it, node.id, ctx) }
                 val maxCell = childHeights.maxOrNull() ?: 0.0
-                maxCell * rows + node.gap * (rows - 1).coerceAtLeast(0) + node.padding.vertical
+                // 行方向の間隔は crossGap です（gap は列方向）。レイアウト側の
+                // cellH 計算と一致させ、非対称間隔で Auto 高さを過大評価しないようにします。
+                maxCell * rows + node.crossGap * (rows - 1).coerceAtLeast(0) + node.padding.vertical
             }
             is GestureGuiOverlay -> {
                 val inFlow = node.children.filter { it.absolute == null }
