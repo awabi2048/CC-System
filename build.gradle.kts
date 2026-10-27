@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.awabi2048"
-version = "26.1024.3"
+version = "26.1027.1"
 
 repositories {
     mavenLocal()
@@ -73,6 +73,8 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    // Kotlinメタデータの結合前に重複を落とさず、変換器へ渡します。
+    duplicatesStrategy = DuplicatesStrategy.WARN
     archiveClassifier.set("")
 }
 

@@ -26,6 +26,28 @@ import com.awabi2048.ccsystem.api.gesturegui.theme.GestureGuiTheme
  */
 object GestureGuiScaffold {
     /**
+     * HTML骨格で宣言された名前付き領域を取得します。
+     * 呼出し側でHTMLのleft/topを再定義せず、解決済み内容域を唯一の座標正本にします。
+     * ID不足・重複は誤った座標への暗黙配置を避けるため構築時に拒否します。
+     */
+    fun namedRegions(document: GestureGuiDocument, ids: Set<String>): Map<String, com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds> {
+        val resolved = GestureGuiLayoutFacade.layout(document)
+        val regions = linkedMapOf<String, com.awabi2048.ccsystem.api.gesturegui.GestureGuiBounds>()
+        val pending = ArrayDeque<ResolvedGestureGuiNode>()
+        pending.add(resolved.root)
+        while (pending.isNotEmpty()) {
+            val node = pending.removeFirst()
+            val id = node.nodeId
+            if (id in ids) {
+                require(regions.put(requireNotNull(id), node.contentBounds) == null) { "骨格領域IDが重複しています: $id" }
+            }
+            pending.addAll(node.children)
+        }
+        require(regions.keys == ids) { "骨格領域が見つかりません: ${ids - regions.keys}" }
+        return regions
+    }
+
+    /**
      * 上段グループ・下揃えグループ・操作行で構成する画面本体です。
      *
      * @param header 文脈領域です（見出し・現在値等）。上段グループの先頭へ置きます。

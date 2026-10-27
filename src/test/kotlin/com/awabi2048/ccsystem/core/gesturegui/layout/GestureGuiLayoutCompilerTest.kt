@@ -32,6 +32,18 @@ import org.junit.jupiter.api.Test
 
 /** compiler（Resolved → GestureGuiView）のテストです。サーバーなしで実行できます。 */
 class GestureGuiLayoutCompilerTest {
+    @Test
+    fun `表現不能な深さは表示と操作をまとめて拒否する`() {
+        var root: com.awabi2048.ccsystem.api.gesturegui.layout.GestureGuiNode = GestureGuiText(
+            text = Component.text("deep"), id = "deep", actionId = "act",
+        )
+        repeat(16) { root = GestureGuiBox(children = listOf(root)) }
+        val compiled = GestureGuiLayoutCompiler.compile(GestureGuiLayoutEngine.layout(GestureGuiDocument(root)), screenId = "deep")
+        assertTrue(compiled.diagnostics.any { it.code == GestureGuiLayoutErrorCode.LAYER_DEPTH_EXCEEDED })
+        assertTrue(compiled.view.visuals.isEmpty())
+        assertTrue(compiled.view.definition.elements.isEmpty())
+    }
+
     private val panel = GestureGuiPanel(width = 2.0, height = 1.0, frameWidth = 0.05)
 
     private fun text(id: String, actionId: String? = null) = GestureGuiText(

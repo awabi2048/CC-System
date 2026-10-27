@@ -13,6 +13,20 @@ import org.junit.jupiter.api.Test
  * 領域足場とページ分割のテストです。サーバーなしで実行できます。
  */
 class GestureGuiScaffoldTest {
+    @Test
+    fun `名前付き領域は解決済み座標を使い不足重複を拒否する`() {
+        fun document(left: Double) = GestureGuiDocument(GestureGuiBox(children = listOf(
+            GestureGuiBox(children = emptyList(), id = "content-grid", width = GestureGuiSizeSpec.Fixed(0.5), height = GestureGuiSizeSpec.Fixed(0.2),
+                absolute = GestureGuiAbsoluteOffsets(left = left, top = 0.1)),
+        )))
+        val before = GestureGuiScaffold.namedRegions(document(0.1), setOf("content-grid")).getValue("content-grid")
+        val after = GestureGuiScaffold.namedRegions(document(0.3), setOf("content-grid")).getValue("content-grid")
+        assertEquals(0.2, after.minX - before.minX, 1.0e-9)
+        assertThrows(IllegalArgumentException::class.java) { GestureGuiScaffold.namedRegions(document(0.1), setOf("missing")) }
+        val duplicates = GestureGuiDocument(GestureGuiBox(children = listOf(GestureGuiBox(children = emptyList(), id = "same"), GestureGuiBox(children = emptyList(), id = "same"))))
+        assertThrows(IllegalArgumentException::class.java) { GestureGuiScaffold.namedRegions(duplicates, setOf("same")) }
+    }
+
     private fun blockData(): BlockData = Proxy.newProxyInstance(
         BlockData::class.java.classLoader,
         arrayOf(BlockData::class.java),
