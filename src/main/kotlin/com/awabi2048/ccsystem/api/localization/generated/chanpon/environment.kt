@@ -4,6 +4,8 @@ import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
 /** コンパイル時に値型を保証する、領域別の生成済みローカライズキーです。 */
 object ChanponEnvironmentKeys {
+    @JvmField val CHANPON_ENVIRONMENT_PUBLIC_TOOLS_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.public_tools.description", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_PUBLIC_TOOLS_INACTIVE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.public_tools.inactive", setOf())
     @JvmField val CHANPON_ENVIRONMENT_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.title", setOf())
     @JvmField val CHANPON_ENVIRONMENT_COMMON_BACK: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.common.back", setOf())
     @JvmField val CHANPON_ENVIRONMENT_COMMON_BACK_TO_SETTINGS: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.common.back_to_settings", setOf())
@@ -102,6 +104,8 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_SCALE_GIANT_VALUE: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.scale.giant.value", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        CHANPON_ENVIRONMENT_PUBLIC_TOOLS_DESCRIPTION,
+        CHANPON_ENVIRONMENT_PUBLIC_TOOLS_INACTIVE,
         CHANPON_ENVIRONMENT_TITLE,
         CHANPON_ENVIRONMENT_COMMON_BACK,
         CHANPON_ENVIRONMENT_COMMON_BACK_TO_SETTINGS,

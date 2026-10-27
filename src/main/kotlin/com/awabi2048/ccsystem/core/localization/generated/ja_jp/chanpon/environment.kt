@@ -13,6 +13,8 @@ internal object JaJpChanponEnvironmentCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon.environment.public_tools.description", value = EmbeddedLocalizedValue.Text("建築許可が「誰でも」の間、非メンバーに付与するツール権限です。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.environment.public_tools.inactive", value = EmbeddedLocalizedValue.Text("建築許可が「誰でも」の場合だけ適用されます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.title", value = EmbeddedLocalizedValue.Text("§e環境設定"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.common.back", value = EmbeddedLocalizedValue.Text("§7戻る"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.common.back_to_settings", value = EmbeddedLocalizedValue.Text("§7ワールド設定に戻る"), domain = DOMAIN),

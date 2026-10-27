@@ -7,11 +7,11 @@ plugins {
 }
 
 group = "com.awabi2048"
-version = "26.1027.1"
+version = "26.1027.2"
 
 repositories {
     mavenLocal()
-    maven { url = uri("../.m2-paper26-kotlin2320") }
+    maven { url = uri(providers.gradleProperty("workspaceMavenRepository").getOrElse("../.m2-paper26-kotlin2320")) }
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.codemc.io/repository/maven-public/")
@@ -88,7 +88,7 @@ publishing {
     repositories {
         maven {
             name = "workspace"
-            url = uri("../.m2-paper26-kotlin2320")
+            url = uri(providers.gradleProperty("workspaceMavenRepository").getOrElse("../.m2-paper26-kotlin2320"))
         }
     }
 }

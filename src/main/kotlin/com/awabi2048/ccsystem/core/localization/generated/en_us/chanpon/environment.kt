@@ -13,6 +13,8 @@ internal object EnUsChanponEnvironmentCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon.environment.public_tools.description", value = EmbeddedLocalizedValue.Text("Tool access granted to non-members while building is open to everyone."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.environment.public_tools.inactive", value = EmbeddedLocalizedValue.Text("Applied only while building is open to everyone."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.title", value = EmbeddedLocalizedValue.Text("Environment Settings"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.common.back", value = EmbeddedLocalizedValue.Text("Back"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.environment.common.back_to_settings", value = EmbeddedLocalizedValue.Text("Back to World Settings"), domain = DOMAIN),
