@@ -76,7 +76,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.world_left", value = EmbeddedLocalizedValue.Text("&eガイド対象のワールドから離れたため、ガイドを終了しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_prompt", value = EmbeddedLocalizedValue.Text("&eコースを外れています。アレイが次の中継点を指し示しています。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.returned", value = EmbeddedLocalizedValue.Text("&aコースに戻りました。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&bガイド"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&7アレイくん"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.player_only", value = EmbeddedLocalizedValue.Text("&cこのコマンドはプレイヤーのみ実行できます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.usage", value = EmbeddedLocalizedValue.Text("&c使用法: /guide admin setpoint <route> <index> | reload"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.setpoint_saved", value = EmbeddedLocalizedValue.Text("&aルート {route} の中継点 {index} を保存しました。"), domain = DOMAIN),

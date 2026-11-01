@@ -76,7 +76,7 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.world_left", value = EmbeddedLocalizedValue.Text("&eYou left the guide's world, so the guide ended."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_prompt", value = EmbeddedLocalizedValue.Text("&eYou are off course. The allay is pointing toward the next waypoint."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.returned", value = EmbeddedLocalizedValue.Text("&aBack on course."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&bGuide"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&7Allay-kun"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.player_only", value = EmbeddedLocalizedValue.Text("&cOnly players can run this command."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /guide admin setpoint <route> <index> | reload"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.setpoint_saved", value = EmbeddedLocalizedValue.Text("&aSaved waypoint {index} of route {route}."), domain = DOMAIN),
