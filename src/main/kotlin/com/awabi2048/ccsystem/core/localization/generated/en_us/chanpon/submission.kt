@@ -14,6 +14,11 @@ internal object EnUsChanponSubmissionCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.action", value = EmbeddedLocalizedValue.Text("Withdraw submission"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.title", value = EmbeddedLocalizedValue.Text("Confirm withdrawal"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.lore", value = EmbeddedLocalizedValue.TextList(listOf("Withdraw the submission and return it to unsubmitted.", "If public, the previous visibility will be restored.")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.success", value = EmbeddedLocalizedValue.Text("§aThe world submission was withdrawn."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.rejected", value = EmbeddedLocalizedValue.Text("§cThe submission state or deadline changed; withdrawal is unavailable."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.action_next", value = EmbeddedLocalizedValue.Text("Toggle"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.on", value = EmbeddedLocalizedValue.Text("On"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.off", value = EmbeddedLocalizedValue.Text("Off"), domain = DOMAIN),
@@ -46,7 +51,7 @@ internal object EnUsChanponSubmissionCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.unsubmitted.action", value = EmbeddedLocalizedValue.Text("Mark as submitted"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.unsubmitted.warning", value = EmbeddedLocalizedValue.Text("Once submitted, world interaction such as placing or breaking blocks will be blocked."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.description", value = EmbeddedLocalizedValue.Text("Submitted."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.warning", value = EmbeddedLocalizedValue.Text("Submission cannot be cancelled."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.warning", value = EmbeddedLocalizedValue.Text("You can withdraw before completion and the deadline."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.completed.description", value = EmbeddedLocalizedValue.Text("Staff has checked this world as completed."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.completed.warning", value = EmbeddedLocalizedValue.Text("Cancellation is generally unavailable after this point."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.error.display", value = EmbeddedLocalizedValue.Text("§cSubmission state error"), domain = DOMAIN),

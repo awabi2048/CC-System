@@ -4,6 +4,11 @@ import com.awabi2048.ccsystem.api.localization.LocalizationKey
 
 /** コンパイル時に値型を保証する、領域別の生成済みローカライズキーです。 */
 object ChanponSubmissionKeys {
+    @JvmField val CHANPON_SUBMISSION_WITHDRAW_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.withdraw.action", setOf())
+    @JvmField val CHANPON_SUBMISSION_WITHDRAW_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.withdraw.title", setOf())
+    @JvmField val CHANPON_SUBMISSION_WITHDRAW_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.submission.withdraw.lore", setOf())
+    @JvmField val CHANPON_SUBMISSION_WITHDRAW_SUCCESS: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.withdraw.success", setOf())
+    @JvmField val CHANPON_SUBMISSION_WITHDRAW_REJECTED: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.withdraw.rejected", setOf())
     @JvmField val CHANPON_SUBMISSION_COMMON_ACTION_NEXT: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.common.action_next", setOf())
     @JvmField val CHANPON_SUBMISSION_COMMON_ON: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.common.on", setOf())
     @JvmField val CHANPON_SUBMISSION_COMMON_OFF: LocalizationKey<String> = LocalizationKey.text("chanpon.submission.common.off", setOf())
@@ -174,6 +179,11 @@ object ChanponSubmissionKeys {
     @JvmField val CHANPON_SUBMISSION_CONFIRM_BUTTON_CANCEL_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.submission.confirm.button.cancel.lore", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        CHANPON_SUBMISSION_WITHDRAW_ACTION,
+        CHANPON_SUBMISSION_WITHDRAW_TITLE,
+        CHANPON_SUBMISSION_WITHDRAW_LORE,
+        CHANPON_SUBMISSION_WITHDRAW_SUCCESS,
+        CHANPON_SUBMISSION_WITHDRAW_REJECTED,
         CHANPON_SUBMISSION_COMMON_ACTION_NEXT,
         CHANPON_SUBMISSION_COMMON_ON,
         CHANPON_SUBMISSION_COMMON_OFF,

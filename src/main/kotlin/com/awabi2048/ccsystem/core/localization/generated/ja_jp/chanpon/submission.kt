@@ -14,6 +14,11 @@ internal object JaJpChanponSubmissionCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.action", value = EmbeddedLocalizedValue.Text("提出を取り下げる"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.title", value = EmbeddedLocalizedValue.Text("提出取り下げの確認"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.lore", value = EmbeddedLocalizedValue.TextList(listOf("提出を取り下げ、未提出に戻します。", "公開中の場合、提出前の公開範囲に戻します。")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.success", value = EmbeddedLocalizedValue.Text("§aワールドの提出を取り下げました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.withdraw.rejected", value = EmbeddedLocalizedValue.Text("§c提出状態または締切が変わったため、取り下げできません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.action_next", value = EmbeddedLocalizedValue.Text("切り替え"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.on", value = EmbeddedLocalizedValue.Text("オン"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.common.off", value = EmbeddedLocalizedValue.Text("オフ"), domain = DOMAIN),
@@ -46,7 +51,7 @@ internal object JaJpChanponSubmissionCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.unsubmitted.action", value = EmbeddedLocalizedValue.Text("提出済みにする"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.unsubmitted.warning", value = EmbeddedLocalizedValue.Text("提出済みにすると、ブロックの設置・破壊などワールドへの干渉ができなくなります。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.description", value = EmbeddedLocalizedValue.Text("提出済みです。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.warning", value = EmbeddedLocalizedValue.Text("提出後は取り消せません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.submitted.warning", value = EmbeddedLocalizedValue.Text("締切前かつ完成前なら提出を取り下げられます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.completed.description", value = EmbeddedLocalizedValue.Text("完成済みとして確認されました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.submission.lore.completed.warning", value = EmbeddedLocalizedValue.Text("これ以降の取り消しは原則として行えません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.submission.error.display", value = EmbeddedLocalizedValue.Text("§c提出状態エラー"), domain = DOMAIN),
