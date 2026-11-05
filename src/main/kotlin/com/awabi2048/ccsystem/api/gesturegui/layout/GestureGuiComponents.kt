@@ -337,7 +337,7 @@ object GestureGuiComponents {
     ): GestureGuiNode {
         val base = baseWidth as? GestureGuiSizeSpec.Fixed
         val extended = selected && base != null
-        val width = if (extended) GestureGuiSizeSpec.Fixed(base!!.value * (1.0 + selectedExtension)) else baseWidth
+        val width = if (extended) GestureGuiSizeSpec.Fixed(base.value * (1.0 + selectedExtension)) else baseWidth
         // 伸長時は基準幅ぶんの左側領域へ文言を固定し、背景だけが右へ伸びる形にします。
         val labelBoxWidth = if (extended) baseWidth else width
         return GestureGuiOverlay(
