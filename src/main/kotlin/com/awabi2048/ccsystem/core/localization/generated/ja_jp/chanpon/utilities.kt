@@ -56,6 +56,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.enabled", value = EmbeddedLocalizedValue.Text("&a観光用の安全機能をオンにしました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.disabled", value = EmbeddedLocalizedValue.Text("&e観光用の安全機能をオフにしました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.safety.blocked", value = EmbeddedLocalizedValue.Text("&7現在、観光用の安全機能がオンになっています。&e/anzen&7でオフにできます。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.tour_mode.game_mode_locked", value = EmbeddedLocalizedValue.Text("&7現在は観光期間中のため、ゲームモードは変更できません"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.title", value = EmbeddedLocalizedValue.Text("コマンドセーフガード"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.description", value = EmbeddedLocalizedValue.Text("このコマンドを実行しますか？"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.command_safeguard.command_label", value = EmbeddedLocalizedValue.Text("実行コマンド"), domain = DOMAIN),
