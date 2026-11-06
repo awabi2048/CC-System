@@ -95,7 +95,7 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("Left-click to stop the guide.\nYou can restart it using the button in the station."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.action_bar", value = EmbeddedLocalizedValue.Text("&d❖ &7Allay is guiding... &6&l{arrow} &b{distance}m &d❖"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.moving_display", value = EmbeddedLocalizedValue.TextList(listOf("&aThis way!", "&aFollow me!", "&aOver here!")), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eThe destination is over there!", "&eFollow me!", "&eThe course is on this side", "&eLooks like you left the route")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eOver here!")), domain = DOMAIN),
     )
 
 }
