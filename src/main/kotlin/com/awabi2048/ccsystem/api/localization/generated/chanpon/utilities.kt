@@ -47,6 +47,7 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_SAFETY_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.enabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.disabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_BLOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.blocked", setOf())
+    @JvmField val CHANPON_UTILITIES_TOUR_MODE_GAME_MODE_LOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.tour_mode.game_mode_locked", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.title", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.description", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.command_label", setOf())
@@ -129,6 +130,7 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_SAFETY_ENABLED,
         CHANPON_UTILITIES_SAFETY_DISABLED,
         CHANPON_UTILITIES_SAFETY_BLOCKED,
+        CHANPON_UTILITIES_TOUR_MODE_GAME_MODE_LOCKED,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL,
