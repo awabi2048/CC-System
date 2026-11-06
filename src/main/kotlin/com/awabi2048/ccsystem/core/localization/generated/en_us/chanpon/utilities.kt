@@ -93,6 +93,7 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.wrong_world", value = EmbeddedLocalizedValue.Text("&cThe target player is not in the route world."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_button", value = EmbeddedLocalizedValue.Text("&8[ Stop guide ]"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("Left-click to stop the guide.\nYou can restart it using the button in the station."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.moving_display", value = EmbeddedLocalizedValue.TextList(listOf("&aThis way!", "&aFollow me!", "&aOver here!")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eThe destination is over there!", "&eFollow me!", "&eThe course is on this side", "&eLooks like you left the route")), domain = DOMAIN),
     )
 

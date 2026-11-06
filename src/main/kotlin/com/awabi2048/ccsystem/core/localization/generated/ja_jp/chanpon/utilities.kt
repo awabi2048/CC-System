@@ -93,6 +93,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.wrong_world", value = EmbeddedLocalizedValue.Text("&c対象プレイヤーがルートのワールドにいません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_button", value = EmbeddedLocalizedValue.Text("&8[ ガイドを終了 ]"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("左クリックで、ガイドを中断します。\n駅構内のボタンから、もう一度ガイドを始められます。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.moving_display", value = EmbeddedLocalizedValue.TextList(listOf("&aこっちだよ～", "&aついてきてね！", "&aこっちこっち！")), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eこっちだよ！", "&e目的地はあっち！", "&eついてきて！", "&eコースはこちら側だよ", "&eルートから外れてるみたい")), domain = DOMAIN),
     )
 
