@@ -88,6 +88,8 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.reset_auto_usage", value = EmbeddedLocalizedValue.Text("&c使い方: /guide admin resetauto <ルートID> <プレイヤー名またはUUID>"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.reset_auto_done", value = EmbeddedLocalizedValue.Text("&a自動開始の記録を解除しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.reset_auto_invalid", value = EmbeddedLocalizedValue.Text("&cルートまたはプレイヤーが見つかりません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.target_unavailable", value = EmbeddedLocalizedValue.Text("&c対象プレイヤーがオンラインではありません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.wrong_world", value = EmbeddedLocalizedValue.Text("&c対象プレイヤーがルートのワールドにいません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_button", value = EmbeddedLocalizedValue.Text("&8[ ガイドを終了 ]"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("左クリックで、ガイドを中断します。\n駅構内のボタンから、もう一度ガイドを始められます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eこっちだよ！", "&e目的地はあっち！", "&eついてきて！", "&eコースはこちら側だよ", "&eルートから外れてるみたい")), domain = DOMAIN),
