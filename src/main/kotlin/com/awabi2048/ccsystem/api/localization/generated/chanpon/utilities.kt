@@ -84,6 +84,7 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_GUIDE_WRONG_WORLD: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.wrong_world", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_STOP_BUTTON: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_button", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_STOP_HOVER: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_hover", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ACTION_BAR: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.action_bar", setOf("arrow", "distance"))
     @JvmField val CHANPON_UTILITIES_GUIDE_MOVING_DISPLAY: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon_utilities.guide.moving_display", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon_utilities.guide.follow_display", setOf())
 
@@ -168,6 +169,7 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_GUIDE_WRONG_WORLD,
         CHANPON_UTILITIES_GUIDE_STOP_BUTTON,
         CHANPON_UTILITIES_GUIDE_STOP_HOVER,
+        CHANPON_UTILITIES_GUIDE_ACTION_BAR,
         CHANPON_UTILITIES_GUIDE_MOVING_DISPLAY,
         CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY,
     )
