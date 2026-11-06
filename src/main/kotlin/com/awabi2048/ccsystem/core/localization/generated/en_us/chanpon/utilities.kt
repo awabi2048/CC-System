@@ -65,7 +65,7 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /guide start [route] | stop | status"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.started", value = EmbeddedLocalizedValue.Text("&bGuide started: {route}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.start_replaced", value = EmbeddedLocalizedValue.Text("&eEnded the current guide and started a new one: {route}"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stopped", value = EmbeddedLocalizedValue.Text("&eGuide stopped."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stopped", value = EmbeddedLocalizedValue.Text("&7The guide has been stopped."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.not_active", value = EmbeddedLocalizedValue.Text("&cNo guide is active."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.route_not_found", value = EmbeddedLocalizedValue.Text("&cGuide route not found: {route}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.no_routes", value = EmbeddedLocalizedValue.Text("&cNo guide routes are available."), domain = DOMAIN),
@@ -76,7 +76,7 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.world_left", value = EmbeddedLocalizedValue.Text("&eYou left the guide's world, so the guide ended."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_prompt", value = EmbeddedLocalizedValue.Text("&eYou are off course. The allay is pointing toward the next waypoint."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.returned", value = EmbeddedLocalizedValue.Text("&aBack on course."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&7Allay-kun"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&aMove closer to continue!"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.player_only", value = EmbeddedLocalizedValue.Text("&cOnly players can run this command."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.usage", value = EmbeddedLocalizedValue.Text("&cUsage: /guide admin setpoint <route> <index> | reload"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.setpoint_saved", value = EmbeddedLocalizedValue.Text("&aSaved waypoint {index} of route {route}."), domain = DOMAIN),
@@ -84,8 +84,10 @@ internal object EnUsChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reloaded", value = EmbeddedLocalizedValue.Text("&aReloaded guide routes ({count} routes)."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.invalid_index", value = EmbeddedLocalizedValue.Text("&cInvalid waypoint index: {index}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reload_failed", value = EmbeddedLocalizedValue.Text("&cFailed to reload guide routes. Check the definitions."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7Click the allay at the first waypoint to begin the guide."), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eThe next waypoint is over there!", "&eFollow me!", "&eThe course is on this side", "&eLooks like you left the route")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7It looks like the allay will guide you. Go closer."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_button", value = EmbeddedLocalizedValue.Text("&8[ Stop guide ]"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("Left-click to stop the guide.\nYou can restart it using the button in the station."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eThis way!", "&eThe destination is over there!", "&eFollow me!", "&eThe course is on this side", "&eLooks like you left the route")), domain = DOMAIN),
     )
 
 }

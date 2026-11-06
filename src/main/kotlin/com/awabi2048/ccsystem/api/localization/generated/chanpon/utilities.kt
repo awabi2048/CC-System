@@ -76,6 +76,8 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.invalid_index", setOf("index"))
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.reload_failed", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_AWAIT_FIRST_CLICK: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.await_first_click", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_STOP_BUTTON: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_button", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_STOP_HOVER: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_hover", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon_utilities.guide.follow_display", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
@@ -151,6 +153,8 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX,
         CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED,
         CHANPON_UTILITIES_GUIDE_AWAIT_FIRST_CLICK,
+        CHANPON_UTILITIES_GUIDE_STOP_BUTTON,
+        CHANPON_UTILITIES_GUIDE_STOP_HOVER,
         CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY,
     )
 }

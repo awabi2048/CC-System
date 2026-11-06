@@ -65,7 +65,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.usage", value = EmbeddedLocalizedValue.Text("&c使用法: /guide start [route] | stop | status"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.started", value = EmbeddedLocalizedValue.Text("&bガイドを開始しました: {route}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.start_replaced", value = EmbeddedLocalizedValue.Text("&e進行中のガイドを終了し、新しいガイドを開始しました: {route}"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stopped", value = EmbeddedLocalizedValue.Text("&eガイドを終了しました。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stopped", value = EmbeddedLocalizedValue.Text("&7ガイドを途中終了しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.not_active", value = EmbeddedLocalizedValue.Text("&cガイド中ではありません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.route_not_found", value = EmbeddedLocalizedValue.Text("&cガイドルートが見つかりません: {route}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.no_routes", value = EmbeddedLocalizedValue.Text("&c利用可能なガイドルートがありません。"), domain = DOMAIN),
@@ -76,7 +76,7 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.world_left", value = EmbeddedLocalizedValue.Text("&eガイド対象のワールドから離れたため、ガイドを終了しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_prompt", value = EmbeddedLocalizedValue.Text("&eコースを外れています。アレイが次の中継点を指し示しています。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.returned", value = EmbeddedLocalizedValue.Text("&aコースに戻りました。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&7アレイくん"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.allay_name", value = EmbeddedLocalizedValue.Text("&a近づくと先に進みます！"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.player_only", value = EmbeddedLocalizedValue.Text("&cこのコマンドはプレイヤーのみ実行できます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.usage", value = EmbeddedLocalizedValue.Text("&c使用法: /guide admin setpoint <route> <index> | reload"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.setpoint_saved", value = EmbeddedLocalizedValue.Text("&aルート {route} の中継点 {index} を保存しました。"), domain = DOMAIN),
@@ -84,8 +84,10 @@ internal object JaJpChanponUtilitiesCatalog {
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reloaded", value = EmbeddedLocalizedValue.Text("&aガイドルートを再読込しました（{count} 件）。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.invalid_index", value = EmbeddedLocalizedValue.Text("&c中継点番号が不正です: {index}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.admin.reload_failed", value = EmbeddedLocalizedValue.Text("&cガイドルートの再読込に失敗しました。定義を確認してください。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7最初の中継点でアレイをクリックするとガイドが始まります。"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eこっちだよ！", "&e次の中継点はあっち！", "&eついてきて！", "&eコースはこちら側だよ", "&eルートから外れてるみたい")), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.await_first_click", value = EmbeddedLocalizedValue.Text("&7アレイが案内をしてくれるみたいです。近くに行ってみましょう。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_button", value = EmbeddedLocalizedValue.Text("&8[ ガイドを終了 ]"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.stop_hover", value = EmbeddedLocalizedValue.Text("左クリックで、ガイドを中断します。\n駅構内のボタンから、もう一度ガイドを始められます。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon_utilities.guide.follow_display", value = EmbeddedLocalizedValue.TextList(listOf("&eこっちだよ！", "&e目的地はあっち！", "&eついてきて！", "&eコースはこちら側だよ", "&eルートから外れてるみたい")), domain = DOMAIN),
     )
 
 }
