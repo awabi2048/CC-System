@@ -47,6 +47,7 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_SAFETY_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.enabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.disabled", setOf())
     @JvmField val CHANPON_UTILITIES_SAFETY_BLOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.safety.blocked", setOf())
+    @JvmField val CHANPON_UTILITIES_TOUR_MODE_GAME_MODE_LOCKED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.tour_mode.game_mode_locked", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.title", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.description", setOf())
     @JvmField val CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.command_safeguard.command_label", setOf())
@@ -76,6 +77,15 @@ object ChanponUtilitiesKeys {
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.invalid_index", setOf("index"))
     @JvmField val CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.admin.reload_failed", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_AWAIT_FIRST_CLICK: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.await_first_click", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_RESET_AUTO_USAGE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.reset_auto_usage", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_RESET_AUTO_DONE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.reset_auto_done", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_RESET_AUTO_INVALID: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.reset_auto_invalid", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_TARGET_UNAVAILABLE: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.target_unavailable", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_WRONG_WORLD: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.wrong_world", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_STOP_BUTTON: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_button", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_STOP_HOVER: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.stop_hover", setOf())
+    @JvmField val CHANPON_UTILITIES_GUIDE_ACTION_BAR: LocalizationKey<String> = LocalizationKey.text("chanpon_utilities.guide.action_bar", setOf("arrow", "distance"))
+    @JvmField val CHANPON_UTILITIES_GUIDE_MOVING_DISPLAY: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon_utilities.guide.moving_display", setOf())
     @JvmField val CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon_utilities.guide.follow_display", setOf())
 
     internal fun all(): List<LocalizationKey<*>> = listOf(
@@ -122,6 +132,7 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_SAFETY_ENABLED,
         CHANPON_UTILITIES_SAFETY_DISABLED,
         CHANPON_UTILITIES_SAFETY_BLOCKED,
+        CHANPON_UTILITIES_TOUR_MODE_GAME_MODE_LOCKED,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_TITLE,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_DESCRIPTION,
         CHANPON_UTILITIES_COMMAND_SAFEGUARD_COMMAND_LABEL,
@@ -151,6 +162,15 @@ object ChanponUtilitiesKeys {
         CHANPON_UTILITIES_GUIDE_ADMIN_INVALID_INDEX,
         CHANPON_UTILITIES_GUIDE_ADMIN_RELOAD_FAILED,
         CHANPON_UTILITIES_GUIDE_AWAIT_FIRST_CLICK,
+        CHANPON_UTILITIES_GUIDE_RESET_AUTO_USAGE,
+        CHANPON_UTILITIES_GUIDE_RESET_AUTO_DONE,
+        CHANPON_UTILITIES_GUIDE_RESET_AUTO_INVALID,
+        CHANPON_UTILITIES_GUIDE_TARGET_UNAVAILABLE,
+        CHANPON_UTILITIES_GUIDE_WRONG_WORLD,
+        CHANPON_UTILITIES_GUIDE_STOP_BUTTON,
+        CHANPON_UTILITIES_GUIDE_STOP_HOVER,
+        CHANPON_UTILITIES_GUIDE_ACTION_BAR,
+        CHANPON_UTILITIES_GUIDE_MOVING_DISPLAY,
         CHANPON_UTILITIES_GUIDE_FOLLOW_DISPLAY,
     )
 }
