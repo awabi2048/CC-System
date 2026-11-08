@@ -75,6 +75,7 @@ object ChanponBackupKeys {
     @JvmField val CHANPON_BACKUP_AUTOMATION_NOTICE_ROLLBACK_FINISHED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.automation_notice.rollback_finished", setOf())
     @JvmField val CHANPON_BACKUP_MANUAL_ROLLBACK_ANNOUNCEMENT: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.backup.manual_rollback.announcement", setOf("actor", "delay"))
     @JvmField val CHANPON_BACKUP_MANUAL_ROLLBACK_STARTED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.manual_rollback.started", setOf())
+    @JvmField val CHANPON_BACKUP_MANUAL_ROLLBACK_RUNNING: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.manual_rollback.running", setOf())
     @JvmField val CHANPON_BACKUP_SPAWN_WORLD_SET_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.spawn_world.set.action", setOf())
     @JvmField val CHANPON_BACKUP_SPAWN_WORLD_SET_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.spawn_world.set.display", setOf())
     @JvmField val CHANPON_BACKUP_SPAWN_WORLD_SET_LORE: LocalizationKey<List<String>> = LocalizationKey.textList("chanpon.backup.spawn_world.set.lore", setOf())
@@ -300,6 +301,7 @@ object ChanponBackupKeys {
         CHANPON_BACKUP_AUTOMATION_NOTICE_ROLLBACK_FINISHED,
         CHANPON_BACKUP_MANUAL_ROLLBACK_ANNOUNCEMENT,
         CHANPON_BACKUP_MANUAL_ROLLBACK_STARTED,
+        CHANPON_BACKUP_MANUAL_ROLLBACK_RUNNING,
         CHANPON_BACKUP_SPAWN_WORLD_SET_ACTION,
         CHANPON_BACKUP_SPAWN_WORLD_SET_DISPLAY,
         CHANPON_BACKUP_SPAWN_WORLD_SET_LORE,
