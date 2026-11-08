@@ -45,6 +45,16 @@ internal object JaJpChanponPhaseCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.controls.command.archive_unzip_failed", value = EmbeddedLocalizedValue.Text("§cアーカイブの展開に失敗しました: §f{reason}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.creation_denied", value = EmbeddedLocalizedValue.Text("§c現在はワールドを作成できません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.production_denied", value = EmbeddedLocalizedValue.Text("§c現在は本番用ワールドを作成・切り替えできません。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.display", value = EmbeddedLocalizedValue.Text("修正期間用バイパス"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.description", value = EmbeddedLocalizedValue.Text("提出・完成による編集制限を一時的に解除します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.enable", value = EmbeddedLocalizedValue.Text("修正期間を開始"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.disable", value = EmbeddedLocalizedValue.Text("修正期間を終了"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.display", value = EmbeddedLocalizedValue.Text("観光用シミュレーション"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("このワールドに提出・完成後の制限を適用します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.enable", value = EmbeddedLocalizedValue.Text("シミュレーションを開始"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.disable", value = EmbeddedLocalizedValue.Text("シミュレーションを終了"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.enabled", value = EmbeddedLocalizedValue.Text("有効"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.disabled", value = EmbeddedLocalizedValue.Text("無効"), domain = DOMAIN),
     )
 
 }

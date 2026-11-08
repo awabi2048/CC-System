@@ -37,7 +37,28 @@ object ChanponPhaseKeys {
     @JvmField val CHANPON_CONTROLS_CREATION_DENIED: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.creation_denied", setOf())
     @JvmField val CHANPON_CONTROLS_PRODUCTION_DENIED: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.production_denied", setOf())
 
+    @JvmField val CHANPON_REPAIR_BYPASS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.repair_bypass.display", setOf())
+    @JvmField val CHANPON_REPAIR_BYPASS_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.repair_bypass.description", setOf())
+    @JvmField val CHANPON_REPAIR_BYPASS_ENABLE: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.repair_bypass.enable", setOf())
+    @JvmField val CHANPON_REPAIR_BYPASS_DISABLE: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.repair_bypass.disable", setOf())
+    @JvmField val CHANPON_SIMULATION_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.simulation.display", setOf())
+    @JvmField val CHANPON_SIMULATION_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.simulation.description", setOf())
+    @JvmField val CHANPON_SIMULATION_ENABLE: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.simulation.enable", setOf())
+    @JvmField val CHANPON_SIMULATION_DISABLE: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.simulation.disable", setOf())
+    @JvmField val CHANPON_STATE_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.temporary_state.enabled", setOf())
+    @JvmField val CHANPON_STATE_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.controls.temporary_state.disabled", setOf())
+
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        CHANPON_REPAIR_BYPASS_DISPLAY,
+        CHANPON_REPAIR_BYPASS_DESCRIPTION,
+        CHANPON_REPAIR_BYPASS_ENABLE,
+        CHANPON_REPAIR_BYPASS_DISABLE,
+        CHANPON_SIMULATION_DISPLAY,
+        CHANPON_SIMULATION_DESCRIPTION,
+        CHANPON_SIMULATION_ENABLE,
+        CHANPON_SIMULATION_DISABLE,
+        CHANPON_STATE_ENABLED,
+        CHANPON_STATE_DISABLED,
         CHANPON_CONTROLS_BUILD_DISPLAY,
         CHANPON_CONTROLS_BUILD_CURRENT,
         CHANPON_CONTROLS_BUILD_ALLOWED,

@@ -364,7 +364,10 @@ object MyworldMessagesKeys {
     @JvmField val MESSAGES_CUSTOM_ITEM_BIOME_BOTTLE_DISABLED: LocalizationKey<String> = LocalizationKey.text("messages.custom_item.biome_bottle_disabled", setOf())
     @JvmField val MESSAGES_MEMBER_REQUEST_IS_OWNER: LocalizationKey<String> = LocalizationKey.text("messages.member_request_is_owner", setOf())
 
+    @JvmField val MESSAGES_WORLD_DESC_TOO_LONG: LocalizationKey<String> = LocalizationKey.text("messages.world_desc_too_long", setOf("max"))
+
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        MESSAGES_WORLD_DESC_TOO_LONG,
         MESSAGES_WORLD_NAME_DUPLICATE,
         MESSAGES_UNLINK_SUCCESS,
         MESSAGES_UNLINK_FAILED,

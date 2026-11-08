@@ -45,6 +45,16 @@ internal object EnUsChanponPhaseCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.controls.command.archive_unzip_failed", value = EmbeddedLocalizedValue.Text("§cArchive extraction failed: §f{reason}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.creation_denied", value = EmbeddedLocalizedValue.Text("§cWorld creation is currently unavailable."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.production_denied", value = EmbeddedLocalizedValue.Text("§cProduction world creation and switching are currently unavailable."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.display", value = EmbeddedLocalizedValue.Text("Repair-period bypass"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.description", value = EmbeddedLocalizedValue.Text("Temporarily permits editing submitted and completed worlds."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.enable", value = EmbeddedLocalizedValue.Text("Start repair period"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.disable", value = EmbeddedLocalizedValue.Text("End repair period"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.display", value = EmbeddedLocalizedValue.Text("Tour simulation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("Apply submitted-world restrictions to this world."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.enable", value = EmbeddedLocalizedValue.Text("Start simulation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.disable", value = EmbeddedLocalizedValue.Text("Stop simulation"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.enabled", value = EmbeddedLocalizedValue.Text("Enabled"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.disabled", value = EmbeddedLocalizedValue.Text("Disabled"), domain = DOMAIN),
     )
 
 }
