@@ -28,7 +28,7 @@ internal object JaJpChanponAdminWizardCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.back", value = EmbeddedLocalizedValue.Text("テンプレート一覧へ戻る"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.input_name", value = EmbeddedLocalizedValue.Text("ワールド名を入力してください"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.name_placeholder", value = EmbeddedLocalizedValue.Text("ワールド名"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.invalid_name", value = EmbeddedLocalizedValue.Text("ワールド名は1〜32文字で入力してください"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.invalid_name", value = EmbeddedLocalizedValue.Text("ワールド名は1〜50文字で入力してください"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.confirm_title", value = EmbeddedLocalizedValue.Text("作成確認"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.confirm_content", value = EmbeddedLocalizedValue.Text("作成先: {owner}\nテンプレート: {template}\nワールド名: {world}\n作成時スポーン: {spawn}\n消費ポイント: {cost}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.create", value = EmbeddedLocalizedValue.Text("作成する"), domain = DOMAIN),
