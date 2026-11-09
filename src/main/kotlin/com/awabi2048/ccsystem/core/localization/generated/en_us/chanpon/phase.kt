@@ -50,7 +50,7 @@ internal object EnUsChanponPhaseCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.enable", value = EmbeddedLocalizedValue.Text("Start repair period"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.disable", value = EmbeddedLocalizedValue.Text("End repair period"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.display", value = EmbeddedLocalizedValue.Text("Tour simulation"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("Apply submitted-world restrictions to this world."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("Apply submitted-world and tour-mode restrictions to this world."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.enable", value = EmbeddedLocalizedValue.Text("Start simulation"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.disable", value = EmbeddedLocalizedValue.Text("Stop simulation"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.enabled", value = EmbeddedLocalizedValue.Text("Enabled"), domain = DOMAIN),

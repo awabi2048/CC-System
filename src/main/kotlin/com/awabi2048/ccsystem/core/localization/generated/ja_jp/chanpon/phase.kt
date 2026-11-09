@@ -50,7 +50,7 @@ internal object JaJpChanponPhaseCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.enable", value = EmbeddedLocalizedValue.Text("修正期間を開始"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.repair_bypass.disable", value = EmbeddedLocalizedValue.Text("修正期間を終了"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.display", value = EmbeddedLocalizedValue.Text("観光用シミュレーション"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("このワールドに提出・完成後の制限を適用します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.description", value = EmbeddedLocalizedValue.Text("このワールドに提出・完成後と観光モードの制限を適用します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.enable", value = EmbeddedLocalizedValue.Text("シミュレーションを開始"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.simulation.disable", value = EmbeddedLocalizedValue.Text("シミュレーションを終了"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.controls.temporary_state.enabled", value = EmbeddedLocalizedValue.Text("有効"), domain = DOMAIN),
