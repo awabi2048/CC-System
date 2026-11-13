@@ -135,6 +135,7 @@ internal object JaJpMyworldMessagesCatalog {
         EmbeddedLocalizationEntry(key = "messages.wizard_origin_set", value = EmbeddedLocalizedValue.Text("§a原点位置を設定しました。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "messages.wizard_id_missing", value = EmbeddedLocalizedValue.Text("§cIDが設定されていません。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "messages.wizard_id_exists", value = EmbeddedLocalizedValue.Text("§cそのIDは既に存在します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "messages.world_desc_too_long", value = EmbeddedLocalizedValue.Text("§c説明は{max}文字以下にしてください。"), domain = DOMAIN),
     )
 
     private fun chunk2(): List<EmbeddedLocalizationEntry> = listOf(

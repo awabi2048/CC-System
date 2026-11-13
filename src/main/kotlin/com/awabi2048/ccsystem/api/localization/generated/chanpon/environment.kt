@@ -58,6 +58,10 @@ object ChanponEnvironmentKeys {
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.enabled", setOf())
     @JvmField val CHANPON_ENVIRONMENT_FREECAM_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.freecam.disabled", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.interaction_physics.description", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.interaction_physics.display", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.interaction_physics.enabled", setOf())
+    @JvmField val CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DISABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.interaction_physics.disabled", setOf())
     @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.description", setOf())
     @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.display", setOf())
     @JvmField val CHANPON_ENVIRONMENT_RANDOM_TICK_ENABLED: LocalizationKey<String> = LocalizationKey.text("chanpon.environment.random_tick.enabled", setOf())
@@ -158,6 +162,10 @@ object ChanponEnvironmentKeys {
         CHANPON_ENVIRONMENT_FREECAM_DISPLAY,
         CHANPON_ENVIRONMENT_FREECAM_ENABLED,
         CHANPON_ENVIRONMENT_FREECAM_DISABLED,
+        CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DESCRIPTION,
+        CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DISPLAY,
+        CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_ENABLED,
+        CHANPON_ENVIRONMENT_INTERACTION_PHYSICS_DISABLED,
         CHANPON_ENVIRONMENT_RANDOM_TICK_DESCRIPTION,
         CHANPON_ENVIRONMENT_RANDOM_TICK_DISPLAY,
         CHANPON_ENVIRONMENT_RANDOM_TICK_ENABLED,

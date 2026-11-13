@@ -135,6 +135,7 @@ internal object EnUsMyworldMessagesCatalog {
         EmbeddedLocalizationEntry(key = "messages.wizard_origin_set", value = EmbeddedLocalizedValue.Text("§a The origin position has been set."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "messages.wizard_id_missing", value = EmbeddedLocalizedValue.Text("§cID is not set."), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "messages.wizard_id_exists", value = EmbeddedLocalizedValue.Text("§c That ID already exists."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "messages.world_desc_too_long", value = EmbeddedLocalizedValue.Text("§cDescription must be at most {max} characters."), domain = DOMAIN),
     )
 
     private fun chunk2(): List<EmbeddedLocalizationEntry> = listOf(

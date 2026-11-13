@@ -28,7 +28,7 @@ internal object EnUsChanponAdminWizardCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.back", value = EmbeddedLocalizedValue.Text("Back to template list"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.input_name", value = EmbeddedLocalizedValue.Text("Enter the world name"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.name_placeholder", value = EmbeddedLocalizedValue.Text("World name"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.invalid_name", value = EmbeddedLocalizedValue.Text("Enter a world name between 1 and 32 characters"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.invalid_name", value = EmbeddedLocalizedValue.Text("Enter a world name between 1 and 50 characters"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.confirm_title", value = EmbeddedLocalizedValue.Text("Confirm Creation"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.confirm_content", value = EmbeddedLocalizedValue.Text("Owner: {owner}\nTemplate: {template}\nWorld name: {world}\nCreation spawn: {spawn}\nCost: {cost}"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.admin_wizard.create", value = EmbeddedLocalizedValue.Text("Create"), domain = DOMAIN),
