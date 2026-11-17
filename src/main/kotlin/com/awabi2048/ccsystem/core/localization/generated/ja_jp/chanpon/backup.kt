@@ -83,7 +83,7 @@ internal object JaJpChanponBackupCatalog {
         EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.info.file_label", value = EmbeddedLocalizedValue.Text("出力ファイル名"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.info.warning", value = EmbeddedLocalizedValue.Text("代表ワールドがoverworldになります。ポータル位置のブロックと、その上のブロックは出力先で上書きされます。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.execute.display", value = EmbeddedLocalizedValue.Text("§aこの内容で出力"), domain = DOMAIN),
-        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.execute.description", value = EmbeddedLocalizedValue.Text("表示した代表ワールドと順序で出力します。"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.execute.description", value = EmbeddedLocalizedValue.Text("表示した方式と対象ワールドで出力します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.confirm.execute.action", value = EmbeddedLocalizedValue.Text("出力を開始"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.automation_notice.backup_warning", value = EmbeddedLocalizedValue.Text("§e定時バックアップを §f{remaining} §e後に開始します。対象ワールド内のプレイヤーは開始前にスポーンへ退避します。"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.automation_notice.rollback_warning", value = EmbeddedLocalizedValue.Text("§c定時ロールバックを §f{remaining} §c後に開始します。対象ワールド内のプレイヤーは開始前にスポーンへ退避します。\n§c⚠ ロールバック実施中は対象ワールドに入ることができません！"), domain = DOMAIN),
