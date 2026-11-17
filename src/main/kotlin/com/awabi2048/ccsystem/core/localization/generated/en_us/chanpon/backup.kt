@@ -14,6 +14,16 @@ internal object EnUsChanponBackupCatalog {
     }
 
     private fun chunk1(): List<EmbeddedLocalizationEntry> = listOf(
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.batch.display", value = EmbeddedLocalizedValue.Text("Export all as individual ZIPs"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.batch.description", value = EmbeddedLocalizedValue.Text("Bundle every completed world and the spawn world as individual ZIP files."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.batch.action", value = EmbeddedLocalizedValue.Text("Review individual ZIP export"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.batch.warning", value = EmbeddedLocalizedValue.Text("Each ZIP is an independent save. Portals to other ZIPs are not converted."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.batch.primary", value = EmbeddedLocalizedValue.Text("Individual saves"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.maintenance.warning", value = EmbeddedLocalizedValue.Text("All players will be temporarily disconnected. Export worlds are saved and unloaded; reconnecting is blocked until preparation and copying finish."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.maintenance.kick", value = EmbeddedLocalizedValue.Text("World export is in progress. Please reconnect shortly."), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.mode.label", value = EmbeddedLocalizedValue.Text("Export mode"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.mode.combined", value = EmbeddedLocalizedValue.Text("Combine selected worlds"), domain = DOMAIN),
+        EmbeddedLocalizationEntry(key = "chanpon.backup.export_menu.mode.individual", value = EmbeddedLocalizedValue.Text("Export all as individual ZIPs"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.common.on", value = EmbeddedLocalizedValue.Text("§aOn"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.common.off", value = EmbeddedLocalizedValue.Text("§7Off"), domain = DOMAIN),
         EmbeddedLocalizationEntry(key = "chanpon.backup.common.prev", value = EmbeddedLocalizedValue.Text("§ePrevious page"), domain = DOMAIN),

@@ -229,7 +229,28 @@ object ChanponBackupKeys {
     @JvmField val CHANPON_BACKUP_MESSAGE_ROLLBACK_COOLDOWN: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.rollback_cooldown", setOf("remaining"))
     @JvmField val CHANPON_BACKUP_MESSAGE_OWNER_BACKUP_COOLDOWN: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.message.owner_backup_cooldown", setOf("remaining"))
 
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_BATCH_DISPLAY: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.batch.display", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_BATCH_DESCRIPTION: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.batch.description", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_BATCH_ACTION: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.batch.action", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_BATCH_WARNING: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.batch.warning", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_BATCH_PRIMARY: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.batch.primary", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_MAINTENANCE_WARNING: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.maintenance.warning", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_MAINTENANCE_KICK: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.maintenance.kick", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_MODE_LABEL: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.mode.label", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_MODE_COMBINED: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.mode.combined", setOf())
+    @JvmField val CHANPON_BACKUP_EXPORT_MENU_MODE_INDIVIDUAL: LocalizationKey<String> = LocalizationKey.text("chanpon.backup.export_menu.mode.individual", setOf())
+
     internal fun all(): List<LocalizationKey<*>> = listOf(
+        CHANPON_BACKUP_EXPORT_MENU_BATCH_DISPLAY,
+        CHANPON_BACKUP_EXPORT_MENU_BATCH_DESCRIPTION,
+        CHANPON_BACKUP_EXPORT_MENU_BATCH_ACTION,
+        CHANPON_BACKUP_EXPORT_MENU_BATCH_WARNING,
+        CHANPON_BACKUP_EXPORT_MENU_BATCH_PRIMARY,
+        CHANPON_BACKUP_EXPORT_MENU_MAINTENANCE_WARNING,
+        CHANPON_BACKUP_EXPORT_MENU_MAINTENANCE_KICK,
+        CHANPON_BACKUP_EXPORT_MENU_MODE_LABEL,
+        CHANPON_BACKUP_EXPORT_MENU_MODE_COMBINED,
+        CHANPON_BACKUP_EXPORT_MENU_MODE_INDIVIDUAL,
         CHANPON_BACKUP_COMMON_ON,
         CHANPON_BACKUP_COMMON_OFF,
         CHANPON_BACKUP_COMMON_PREV,
